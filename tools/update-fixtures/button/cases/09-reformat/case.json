@@ -1,0 +1,7 @@
+{
+  "description": "Reformat the whole file with the project's Prettier config (printWidth 100).",
+  "overlap": "Every line Prettier rewraps.",
+  "prettier": {
+    "printWidth": 100
+  }
+}

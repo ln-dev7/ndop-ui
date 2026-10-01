@@ -1,0 +1,4 @@
+{
+  "description": "Rename the class from Button to AppButton.",
+  "overlap": "Upstream extends the host object two lines above."
+}

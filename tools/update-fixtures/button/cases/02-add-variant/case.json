@@ -1,0 +1,4 @@
+{
+  "description": "Add a success variant at the end of the variant map.",
+  "overlap": "Upstream appends a link variant at the same place."
+}

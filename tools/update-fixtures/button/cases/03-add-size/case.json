@@ -1,0 +1,4 @@
+{
+  "description": "Add an xl size at the end of the size map.",
+  "overlap": "Upstream prepends an xs size to the same map."
+}

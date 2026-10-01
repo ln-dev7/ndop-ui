@@ -1,0 +1,4 @@
+{
+  "description": "Expose the variant as a data-variant host attribute.",
+  "overlap": "Upstream appends two host bindings at the same place."
+}

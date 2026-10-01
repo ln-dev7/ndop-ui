@@ -1,0 +1,4 @@
+{
+  "description": "Round the button and add a shadow in the base class string.",
+  "overlap": "Upstream changes the focus ring in the same line: a true conflict."
+}

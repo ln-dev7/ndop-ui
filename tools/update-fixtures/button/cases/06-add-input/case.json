@@ -1,0 +1,4 @@
+{
+  "description": "Add a fullWidth input after the class input and apply it in classes().",
+  "overlap": "Upstream appends a loading input at the same place and makes the same import change."
+}
