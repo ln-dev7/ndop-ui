@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ndop.dev/schema/registry-item.json",
+  "name": "dialog",
+  "type": "registry:ui",
+  "version": "1.3.0",
+  "title": "Dialog",
+  "description": "A modal window that interrupts the user and requires a response.",
+  "dependencies": ["@ndop/primitives@^1.2.0"],
+  "registryDependencies": ["button", "@ndop/utils"],
+  "files": [
+    {
+      "path": "ui/dialog/dialog.ts",
+      "type": "registry:ui",
+      "target": "{ui}/dialog/dialog.ts"
+    }
+  ],
+  "cssVars": { "light": {}, "dark": {} },
+  "angular": {
+    "minVersion": "21.0.0",
+    "providers": [],
+    "exports": [
+      "Dialog",
+      "DialogTrigger",
+      "DialogContent",
+      "DialogTitle",
+      "DialogDescription",
+      "DialogClose"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/dialog.json",
+    "examples": ["dialog-demo", "dialog-form"]
+  }
+}

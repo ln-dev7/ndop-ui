@@ -1,0 +1,55 @@
+{
+  "name": "schema",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/schema/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
+  "tags": ["type:schema"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/schema",
+        "main": "packages/schema/src/index.ts",
+        "tsConfig": "packages/schema/tsconfig.lib.json",
+        "assets": ["packages/schema/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/packages/schema"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/packages/schema"
+      },
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "fileset": "{projectRoot}/tsconfig.spec.json",
+          "dependencies": true
+        },
+        {
+          "externalDependencies": ["vitest"]
+        },
+        {
+          "env": "CI"
+        },
+        "{workspaceRoot}/registry/registry.json"
+      ]
+    }
+  }
+}

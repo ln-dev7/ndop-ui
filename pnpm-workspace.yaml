@@ -1,0 +1,41 @@
+packages:
+  - apps/*
+  - packages/*
+  - tools/*
+
+saveExact: true
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  '@swc/core': false
+  # Pulled in through @nx/jest, which Ndop doesn't use; its postinstall only
+  # verifies a native binding that ships as an optional dependency anyway.
+  unrs-resolver: false
+
+# Versions pinned by ADR-0001 that are younger than pnpm's default
+# minimum release age; remove entries once they have aged past it.
+minimumReleaseAgeExclude:
+  - '@angular/common@22.2.1'
+  - '@angular/compiler-cli@22.2.1'
+  - '@angular/compiler@22.2.1'
+  - '@angular/core@22.2.1'
+  - '@angular/forms@22.2.1'
+  - '@angular/language-service@22.2.1'
+  - '@angular/platform-browser@22.2.1'
+  - '@angular/platform-server@22.2.1'
+  - '@angular/router@22.2.1'
+  - '@angular-devkit/architect@0.2202.1'
+  - '@angular-devkit/build-angular@22.2.1'
+  - '@angular-devkit/build-webpack@0.2202.1'
+  - '@angular-devkit/core@22.2.1'
+  - '@angular-devkit/schematics@22.2.1'
+  - '@angular/build@22.2.1'
+  - '@angular/cli@22.2.1'
+  - '@angular/ssr@22.2.1'
+  - '@ngtools/webpack@22.2.1'
+  - '@schematics/angular@22.2.1'
+  - ng-packagr@22.2.4

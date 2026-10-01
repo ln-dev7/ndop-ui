@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ndop.dev/schema/registry.json",
+  "name": "ndop",
+  "homepage": "https://ndop.dev",
+  "items": [
+    {
+      "name": "cn",
+      "type": "registry:lib",
+      "version": "1.0.0",
+      "title": "cn",
+      "description": "Merges class names so later Tailwind classes win.",
+      "dependencies": ["clsx", "tailwind-merge"],
+      "files": [
+        { "path": "lib/cn.ts", "type": "registry:lib", "target": "{lib}/cn.ts" }
+      ]
+    }
+  ]
+}

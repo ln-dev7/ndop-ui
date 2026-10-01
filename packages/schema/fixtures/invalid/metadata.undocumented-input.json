@@ -1,0 +1,61 @@
+{
+  "$schema": "https://ndop.dev/schema/metadata.json",
+  "name": "dialog",
+  "pattern": {
+    "name": "Dialog (Modal)",
+    "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/"
+  },
+  "parts": [
+    {
+      "name": "NdDialogTrigger",
+      "selector": "[ndDialogTrigger]",
+      "description": "Opens and closes the dialog it belongs to.",
+      "ariaAttributes": ["aria-haspopup", "aria-expanded", "aria-controls"],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "description": ""
+        }
+      ],
+      "models": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the dialog is open."
+        }
+      ],
+      "outputs": [],
+      "hostBindings": [
+        {
+          "name": "attr.aria-expanded",
+          "value": "ctx.open()"
+        }
+      ],
+      "dataAttributes": [
+        {
+          "name": "data-state",
+          "values": ["open", "closed"],
+          "description": "Open state, for styling."
+        }
+      ]
+    }
+  ],
+  "keyboard": [
+    {
+      "keys": ["Enter", "Space"],
+      "action": "Opens the dialog from the trigger."
+    },
+    {
+      "keys": ["Escape"],
+      "action": "Closes the dialog."
+    }
+  ],
+  "focus": [
+    "Focus moves to the first focusable element on open.",
+    "Focus returns to the trigger on close."
+  ],
+  "rtl": "No directional behavior.",
+  "examples": ["dialog-demo", "dialog-form"]
+}

@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "primitive": {
+      "factory": "./src/generators/primitive/primitive",
+      "schema": "./src/generators/primitive/schema.json",
+      "description": "Scaffold a headless primitive: folder, spec.md, directive and tests."
+    }
+  }
+}

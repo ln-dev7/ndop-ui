@@ -1,0 +1,29 @@
+# <%= className %>: accessibility contract
+
+Written before any code, as RFC-0001 requires ("Accessibility contract per
+primitive"). Tests are checked against this file, and the docs keyboard table
+is rendered from it.
+
+## WAI-ARIA pattern
+
+<% if (pattern) { %>[<%= pattern %>](https://www.w3.org/WAI/ARIA/apg/patterns/<%= pattern %>/)<% } else { %>Link the WAI-ARIA APG pattern this primitive implements, or explain why none applies.<% } %>
+
+## Parts, roles and attributes
+
+| Part | Selector | Role | ARIA attributes | Data attributes |
+| ---- | -------- | ---- | --------------- | --------------- |
+| <%= className %> | `[nd<%= className %>]` | | | |
+
+## Keyboard map
+
+| Key | Action |
+| --- | ------ |
+
+## Focus behavior
+
+- On open or activation:
+- On close or deactivation:
+
+## RTL behavior
+
+Describe what mirrors in right-to-left layouts (arrow keys, placement).

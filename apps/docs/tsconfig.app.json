@@ -2,8 +2,15 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": ["node"]
+    "types": [],
+    "target": "ES2022",
+    "useDefineForClassFields": false
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]
+  "files": ["src/main.ts", "src/main.server.ts"],
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/pages/**/*.page.ts",
+    "src/server/middleware/**/*.ts"
+  ],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }

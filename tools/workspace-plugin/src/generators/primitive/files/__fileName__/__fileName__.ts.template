@@ -1,0 +1,16 @@
+import { Directive } from '@angular/core';
+
+/**
+ * Headless <%= className %> primitive. Owns behavior and accessibility and
+ * renders no styles; its roles, keyboard map, focus and RTL rules are in
+ * `spec.md` next to this file.
+ *
+ * @example
+ * ```html
+ * <div nd<%= className %>></div>
+ * ```
+ */
+@Directive({
+  selector: '[nd<%= className %>]',
+})
+export class Nd<%= className %> {}

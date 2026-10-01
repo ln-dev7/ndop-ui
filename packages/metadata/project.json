@@ -1,0 +1,40 @@
+{
+  "name": "metadata",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/metadata/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
+  "tags": ["type:tooling"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/metadata",
+        "main": "packages/metadata/src/index.ts",
+        "tsConfig": "packages/metadata/tsconfig.lib.json",
+        "assets": ["packages/metadata/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/packages/metadata"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/packages/metadata"
+      }
+    }
+  }
+}

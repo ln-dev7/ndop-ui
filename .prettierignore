@@ -3,5 +3,8 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
-yarn.lock
+pnpm-lock.yaml
 .angular
+
+# Fixtures model users' files, including their own formatting.
+/tools/update-fixtures

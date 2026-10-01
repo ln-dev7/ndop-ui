@@ -1,0 +1,25 @@
+{
+  "name": "dialog-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Dialog demo",
+  "description": "The smallest correct dialog: a trigger, a title and a close button.",
+  "registryDependencies": ["dialog", "button"],
+  "files": [
+    {
+      "path": "examples/dialog-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dialog-demo.ts",
+      "content": "export {};\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": ["DialogDemo"],
+    "zoneless": true,
+    "ssr": true
+  },
+  "migrations": [
+    { "from": "examples/dialog-basic.ts", "to": "examples/dialog-demo.ts" }
+  ]
+}

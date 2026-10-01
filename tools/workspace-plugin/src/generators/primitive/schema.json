@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NdopPrimitive",
+  "title": "Ndop primitive",
+  "description": "Scaffold a headless primitive in @ndop/primitives: its folder, spec.md accessibility contract, directive and test.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Primitive name in kebab-case, for example `dialog` or `radio-group`.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Primitive name (kebab-case)?"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "Slug of the WAI-ARIA APG pattern it implements, for example `dialog-modal`. Linked from spec.md.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "project": {
+      "type": "string",
+      "description": "Project that hosts the primitive.",
+      "default": "primitives"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the generated files.",
+      "default": false
+    }
+  },
+  "required": ["name"]
+}

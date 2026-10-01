@@ -8,13 +8,28 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es2022",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2022", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "strict": false,
-    "paths": {}
+    "strict": true,
+    "paths": {
+      "@ndop/primitives": ["./packages/primitives/src/index.ts"],
+      "@ndop/core": ["./packages/core/src/index.ts"],
+      "@ndop/schema": ["./packages/schema/src/index.ts"],
+      "@ndop/cli": ["./packages/cli/src/index.ts"],
+      "@ndop/mcp": ["./packages/mcp/src/index.ts"],
+      "@ndop/metadata": ["./packages/metadata/src/index.ts"],
+      "@ndop/eslint-plugin": ["./packages/eslint-plugin/src/index.ts"],
+      "@ndop/workspace-plugin": ["./tools/workspace-plugin/src/index.ts"],
+      "@ndop/merge-spike": ["./tools/merge-spike/src/index.ts"]
+    },
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true
   },
   "exclude": ["node_modules", "tmp"]
 }

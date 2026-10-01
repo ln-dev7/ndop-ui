@@ -2,17 +2,20 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { appRoutes } from './app.routes';
-import {
-  provideClientHydration,
-  withEventReplay,
-} from '@angular/platform-browser';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideClientHydration } from '@angular/platform-browser';
+import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
 
+/**
+ * Application providers shared by the browser and server builds: file-based
+ * routing, hydration and `fetch`-backed HTTP with Analog's request context (FetchBackend is now Angular's default, so no need of withFetch).
+ */
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideClientHydration(withEventReplay()),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(appRoutes),
+
+    provideFileRouter(),
+    provideClientHydration(),
+    provideHttpClient(withInterceptors([requestContextInterceptor])),
   ],
 };
