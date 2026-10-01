@@ -1,0 +1,22 @@
+name: Component request
+description: Propose a component, block or theme for the registry.
+labels: [component-request]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Name
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: The screen or task it's for, and why existing items don't cover it.
+    validations:
+      required: true
+  - type: input
+    id: pattern
+    attributes:
+      label: WAI-ARIA pattern
+      description: Link to the APG pattern it would implement, if any.

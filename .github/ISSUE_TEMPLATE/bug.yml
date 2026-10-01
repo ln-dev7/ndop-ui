@@ -1,0 +1,31 @@
+name: Bug report
+description: Something in a component, the CLI, the MCP server or the docs doesn't work as documented.
+labels: [bug]
+body:
+  - type: input
+    id: area
+    attributes:
+      label: Package or item
+      description: For example `@ndop/primitives`, `ndop update`, or the `dialog` registry item.
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Smallest steps or a repository link that shows the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Angular, Ndop and Node versions; zoneless or zone; SSR or not.
+    validations:
+      required: true

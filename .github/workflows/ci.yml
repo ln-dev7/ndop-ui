@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Maintenance and active LTS lines (ADR-0001).
+        node: ['22.23.3', '24.21.0']
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Reads the pnpm version from package.json's packageManager field.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: master
+
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - run: pnpm nx format:check
+
+      # Pull requests run only what they affect; pushes to master run
+      # everything, so a batch of commits can't skip projects.
+      - if: github.event_name == 'pull_request'
+        run: pnpm nx affected -t lint typecheck test build e2e
+
+      - if: github.event_name == 'push'
+        run: pnpm nx run-many -t lint typecheck test build e2e

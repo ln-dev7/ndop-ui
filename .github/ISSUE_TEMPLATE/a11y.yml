@@ -1,0 +1,23 @@
+name: Accessibility issue
+description: A component's keyboard, focus, screen reader or ARIA behavior is wrong or missing.
+labels: [a11y]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happens, and what the WAI-ARIA pattern or spec.md says should happen
+    validations:
+      required: true
+  - type: textarea
+    id: assistive-tech
+    attributes:
+      label: Assistive technology and browser
+      description: For example NVDA 2026.2 with Firefox 140, or keyboard only in Safari.
+    validations:
+      required: true
