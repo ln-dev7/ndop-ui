@@ -572,12 +572,13 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 0 — Foundations and merge spike (week 1)
 
-- [ ] Nx + pnpm monorepo with the structure above, strict TS, ESLint, Prettier, Vitest, Playwright, Changesets, GitHub Actions, all set up through Nx generators; the tools/workspace-plugin project with its first local generator, primitive.
-- [ ] ADR-0001 (stack and exact versions), ADR-0002 (registry format as shadcn superset), ADR-0003 (merge strategy).
-- [ ] JSON schemas for registry item, `ndop.json`, lockfile and metadata in `packages/schema`.
-- [ ] Merge spike: a standalone script that three-way merges a sample `button.ts` across 10 fixture edits; record the clean-merge rate in ADR-0003.
+- [x] Nx + pnpm monorepo with the structure above, strict TS, ESLint, Prettier, Vitest, Playwright, Changesets, GitHub Actions, all set up through Nx generators; the tools/workspace-plugin project with its first local generator, primitive.
+- [x] ADR-0001 (stack and exact versions), ADR-0002 (registry format as shadcn superset), ADR-0003 (merge strategy).
+- [x] JSON schemas for registry item, `ndop.json`, lockfile and metadata in `packages/schema`.
+- [x] Merge spike: a standalone script that three-way merges a sample `button.ts` across 10 fixture edits; record the clean-merge rate in ADR-0003.
 
 * **Accept when:** CI is green on an empty-but-wired repo and the spike reports ≥ 8/10 clean merges.
+* **Accepted 2026-10-02:** CI green; spike 9/10 clean with the strategy in ADR-0003 amendment 1.
 
 ### Phase 1 — Core and first primitives (weeks 2–3)
 
