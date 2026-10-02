@@ -38,6 +38,42 @@ test.describe('token mechanics (ADR-0006)', () => {
     expect(await style(page, 'surface', 'background-color')).toBe(systemDark);
   });
 
+  test('borders and the page use theme tokens', async ({ page }) => {
+    await page.goto('/tokens');
+    // A probe styled straight from the tokens gives the browser's computed
+    // form of each value, whatever color syntax it reports.
+    const expected = await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.borderColor = 'var(--border)';
+      probe.style.backgroundColor = 'var(--background)';
+      probe.style.color = 'var(--foreground)';
+      document.body.append(probe);
+      const computed = getComputedStyle(probe);
+      const values = {
+        border: computed.borderTopColor,
+        background: computed.backgroundColor,
+        foreground: computed.color,
+      };
+      probe.remove();
+      return values;
+    });
+
+    expect(await style(page, 'bordered', 'border-top-color')).toBe(
+      expected.border,
+    );
+    const body = await page.evaluate(() => {
+      const computed = getComputedStyle(document.body);
+      return {
+        background: computed.backgroundColor,
+        foreground: computed.color,
+      };
+    });
+    expect(body).toEqual({
+      background: expected.background,
+      foreground: expected.foreground,
+    });
+  });
+
   test('density rescales spacing utilities for a subtree', async ({ page }) => {
     await page.goto('/tokens');
     expect(await style(page, 'density-default', 'padding-top')).toBe('16px');

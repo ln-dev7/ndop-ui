@@ -89,6 +89,19 @@
   }
 }
 
+/* Same defaults as shadcn's base style (registry item new-york-v4
+   "index"): Tailwind v4 draws borders in currentColor, so borders and focus
+   outlines take the theme's tokens instead, and the page uses the theme's
+   surface colors. */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
 /* Spacing utilities compile to calc(var(--spacing) * n), so density only
    rescales --spacing for the subtree. */
 [data-density='compact'] {

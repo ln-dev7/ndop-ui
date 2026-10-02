@@ -13,6 +13,7 @@ import { Component } from '@angular/core';
       <div data-testid="surface" class="bg-primary text-primary-foreground p-4">
         Primary surface
       </div>
+      <div data-testid="bordered" class="border p-4">Bordered</div>
       <div data-testid="density-default" class="p-4">Default density</div>
       <div data-density="compact">
         <div data-testid="density-compact" class="p-4">Compact density</div>
