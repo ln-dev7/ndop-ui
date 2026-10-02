@@ -23,7 +23,9 @@ No APG pattern: a native HTML `input`. Its accessible name comes from a
 - Ndop reads state from whichever forms directive is on the element:
   `FormField` for Signal Forms, `NgControl` for the others.
 - Input `invalid` (boolean, default `false`) marks the field invalid without
-  a forms library.
+  a forms library. With one, the field's state decides; Signal Forms binds
+  the field's raw validity into an `invalid` input (its `FormUiControl`
+  contract), so that binding is not used.
 - Invalid means: the `invalid` input is `true`, or the bound field is invalid
   **and** has been touched, so errors don't show before the user has
   interacted. While invalid: `aria-invalid="true"` and `data-invalid`.

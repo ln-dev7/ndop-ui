@@ -13,4 +13,11 @@ export interface Demo {
  * route discovery reaches them all, and the e2e suite iterates this list
  * for its axe and hydration checks.
  */
-export const DEMOS: readonly Demo[] = [];
+export const DEMOS: readonly Demo[] = [
+  { path: 'separator', title: 'Separator' },
+  { path: 'input', title: 'Input and Label' },
+  { path: 'button', title: 'Button' },
+  { path: 'dialog', title: 'Dialog' },
+  { path: 'popover', title: 'Popover' },
+  { path: 'tooltip', title: 'Tooltip' },
+];

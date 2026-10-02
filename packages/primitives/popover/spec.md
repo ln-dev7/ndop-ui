@@ -54,10 +54,15 @@ Same overlay convention as Dialog's `spec.md`.
 
 ## Keyboard map
 
-| Key      | Action                                                                                          |
-| -------- | ----------------------------------------------------------------------------------------------- |
-| `Escape` | Closes the popover and returns focus to the trigger.                                            |
-| `Tab`    | Moves focus through the content; past the last element, focus leaves the popover, which closes. |
+| Key           | Action                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `Escape`      | Closes the popover and returns focus to the trigger.                                                                      |
+| `Tab`         | Moves focus through the content; past the last element, the popover closes and focus moves to what follows the trigger.   |
+| `Shift + Tab` | Moves focus backwards through the content; before the first element, the popover closes and focus returns to the trigger. |
+
+The overlay is rendered at the end of the document, so Ndop moves focus at
+the content's edges itself; otherwise tabbing out would skip the page
+content after the trigger.
 
 ## Focus behavior
 

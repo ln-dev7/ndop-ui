@@ -34,7 +34,12 @@
       "@ndop/primitives/popover": [
         "./packages/primitives/popover/src/index.ts"
       ],
-      "@ndop/primitives/tooltip": ["./packages/primitives/tooltip/src/index.ts"]
+      "@ndop/primitives/tooltip": [
+        "./packages/primitives/tooltip/src/index.ts"
+      ],
+      "@ndop/primitives/internal": [
+        "./packages/primitives/internal/src/index.ts"
+      ]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

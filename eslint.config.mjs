@@ -2,6 +2,82 @@ import nx from '@nx/eslint-plugin';
 import jsdoc from 'eslint-plugin-jsdoc';
 import tsdoc from 'eslint-plugin-tsdoc';
 
+/**
+ * External packages primitive source may import. @angular/forms lets
+ * primitives read forms state and, where they own their value, implement
+ * Signal Forms and ControlValueAccessor (ADR-0004, amendment 1).
+ */
+const primitiveRuntimeImports = [
+  '@angular/core',
+  '@angular/core/*',
+  '@angular/aria',
+  '@angular/aria/*',
+  '@angular/cdk',
+  '@angular/cdk/*',
+  '@angular/forms',
+  '@angular/forms/*',
+  'tslib',
+];
+
+/**
+ * Encodes RFC-0001 "Dependency rules": behavior never depends on styling,
+ * and tooling reads the registry only as built JSON.
+ *
+ * @param {string[]} primitiveImports - External imports allowed in
+ *   primitives.
+ */
+const dependencyRules = (primitiveImports) => [
+  'error',
+  {
+    enforceBuildableLibDependency: true,
+    allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+    depConstraints: [
+      {
+        sourceTag: 'type:primitives',
+        onlyDependOnLibsWithTags: [],
+        allowedExternalImports: primitiveImports,
+      },
+      {
+        sourceTag: 'type:core',
+        onlyDependOnLibsWithTags: [],
+      },
+      {
+        sourceTag: 'type:registry',
+        onlyDependOnLibsWithTags: [
+          'type:primitives',
+          'type:core',
+          'type:registry',
+        ],
+      },
+      {
+        sourceTag: 'type:schema',
+        onlyDependOnLibsWithTags: [],
+      },
+      {
+        sourceTag: 'type:tooling',
+        onlyDependOnLibsWithTags: ['type:schema', 'type:tooling'],
+      },
+      {
+        sourceTag: 'type:tool',
+        onlyDependOnLibsWithTags: ['type:schema', 'type:tooling', 'type:tool'],
+      },
+      {
+        sourceTag: 'type:app',
+        onlyDependOnLibsWithTags: [
+          'type:primitives',
+          'type:core',
+          'type:schema',
+        ],
+      },
+      {
+        // e2e suites read spec.md contracts through @ndop/metadata.
+        sourceTag: 'type:e2e',
+        onlyDependOnLibsWithTags: ['type:tooling'],
+      },
+    ],
+  },
+];
+
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
@@ -12,75 +88,19 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      '@nx/enforce-module-boundaries': [
-        'error',
-        {
-          enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
-          // Encodes RFC-0001 "Dependency rules": behavior never depends on
-          // styling, and tooling reads the registry only as built JSON.
-          depConstraints: [
-            {
-              sourceTag: 'type:primitives',
-              onlyDependOnLibsWithTags: [],
-              // @angular/forms is allowed because value-bearing primitives
-              // must implement Signal Forms and ControlValueAccessor.
-              allowedExternalImports: [
-                '@angular/core',
-                '@angular/core/*',
-                '@angular/aria',
-                '@angular/aria/*',
-                '@angular/cdk',
-                '@angular/cdk/*',
-                '@angular/forms',
-                '@angular/forms/*',
-                'tslib',
-              ],
-            },
-            {
-              sourceTag: 'type:core',
-              onlyDependOnLibsWithTags: [],
-            },
-            {
-              sourceTag: 'type:registry',
-              onlyDependOnLibsWithTags: [
-                'type:primitives',
-                'type:core',
-                'type:registry',
-              ],
-            },
-            {
-              sourceTag: 'type:schema',
-              onlyDependOnLibsWithTags: [],
-            },
-            {
-              sourceTag: 'type:tooling',
-              onlyDependOnLibsWithTags: ['type:schema', 'type:tooling'],
-            },
-            {
-              sourceTag: 'type:tool',
-              onlyDependOnLibsWithTags: [
-                'type:schema',
-                'type:tooling',
-                'type:tool',
-              ],
-            },
-            {
-              sourceTag: 'type:app',
-              onlyDependOnLibsWithTags: [
-                'type:primitives',
-                'type:core',
-                'type:schema',
-              ],
-            },
-            {
-              // e2e suites read spec.md contracts through @ndop/metadata.
-              sourceTag: 'type:e2e',
-              onlyDependOnLibsWithTags: ['type:tooling'],
-            },
-          ],
-        },
-      ],
+      '@nx/enforce-module-boundaries': dependencyRules(primitiveRuntimeImports),
+    },
+  },
+  {
+    // Tests may use test tooling; the runtime limits above still hold for
+    // the code they exercise.
+    files: ['**/*.spec.ts', '**/*.test.ts'],
+    rules: {
+      '@nx/enforce-module-boundaries': dependencyRules([
+        ...primitiveRuntimeImports,
+        '@testing-library/*',
+        'vitest',
+      ]),
     },
   },
   {

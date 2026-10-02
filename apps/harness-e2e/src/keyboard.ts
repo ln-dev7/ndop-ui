@@ -1,4 +1,5 @@
 import { parseSpec } from '@ndop/metadata';
+import { workspaceRoot } from '@nx/devkit';
 import {
   test,
   type PlaywrightTestArgs,
@@ -34,12 +35,7 @@ export function keyboardContract(
 ): void {
   const spec = parseSpec(
     readFileSync(
-      join(
-        import.meta.dirname,
-        '../../../packages/primitives',
-        primitive,
-        'spec.md',
-      ),
+      join(workspaceRoot, 'packages/primitives', primitive, 'spec.md'),
       'utf-8',
     ),
   );
