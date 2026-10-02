@@ -1,6 +1,6 @@
 # ADR-0004: Primitives on `@angular/aria` + CDK, and custom fallbacks
 
-- Status: Accepted (approved by Valery on 2026-10-02); Amendment 1 proposed
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1 and 2
 - Date: 2026-10-02
 - Phase: 1
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Primitives layer (`@ndop/primitives`)"
@@ -115,7 +115,7 @@ version.
 
 ## Amendment 1 (2026-10-02): forms integration for native-element primitives
 
-Status: Proposed, pending Valery's approval. It deviates from RFC-0001
+Status: Accepted by Valery on 2026-10-02. It deviates from RFC-0001
 ("Forms": value-bearing primitives integrate with Signal Forms and also
 implement `ControlValueAccessor`).
 
@@ -141,5 +141,15 @@ Decision:
 - Primitives that own their value without a native control (Checkbox
   button, Switch, Radio Group, Select, Combobox, Slider, Toggle, Input OTP)
   implement both contracts as the RFC requires, starting in Phase 6.
-- The RFC's "Forms" bullet is updated to say this once the amendment is
-  accepted.
+- The RFC's "Forms" bullet says this.
+
+## Amendment 2 (2026-10-02): overlays don't use `usePopover`
+
+Status: Applied; records the measurement this ADR asked for.
+
+The Dialog e2e suite ran in Chromium, Firefox and WebKit with the overlay
+in the CDK's overlay container (the default) and with `usePopover: true`
+(native top layer). Results were identical except one: with `usePopover`,
+WebKit scrolled the page behind an open dialog, so the block scroll strategy
+no longer held. Ndop overlays keep the default overlay container. Revisit
+when a stacking problem appears that only the top layer solves.

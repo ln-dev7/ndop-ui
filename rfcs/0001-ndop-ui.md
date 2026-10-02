@@ -185,7 +185,7 @@ Primitives are headless, directive-first and signal-driven; they own behavior an
 - **State exposed as data attributes.** `data-state="open|closed"`, `data-disabled`, `data-highlighted`, `data-orientation`, so styles never reach into private APIs.
 - **Context via DI.** Compound parts (Dialog, Trigger, Content, Title) communicate through an injection token that provides a signal-based context, never through `@ContentChild` chains.
 - **Controlled and uncontrolled.** Every stateful primitive works with `[(open)]` binding or with no binding (internal default from a `defaultOpen` input).
-- **Forms.** Value-bearing primitives integrate with Signal Forms first and also implement `ControlValueAccessor` for reactive and template-driven forms. Disabled, touched and invalid states map to ARIA and data attributes.
+- **Forms.** Value-bearing primitives that own their value integrate with Signal Forms first and also implement `ControlValueAccessor` for reactive and template-driven forms. Primitives on native form elements (`input[ndInput]`) leave the value to the forms library and only read its state (ADR-0004, amendment 1). Disabled, touched and invalid states map to ARIA and data attributes.
 - **Naming.** Directive classes `Nd<Part>` in primitives (e.g. `NdDialogTrigger`), selector prefix `nd`. Exported tokens `ND_<NAME>`.
 
 **Accessibility contract per primitive (MUST be written before code)**

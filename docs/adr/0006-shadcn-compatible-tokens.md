@@ -1,6 +1,6 @@
 # ADR-0006: Token naming compatible with shadcn
 
-- Status: Accepted (approved by Valery on 2026-10-02)
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendment 1
 - Date: 2026-10-02
 - Phase: 1
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Token system"
@@ -96,3 +96,28 @@ customizable values owned by the user:
   ADR records the change when Ndop follows.
 - The RFC's Button example keeps `text-destructive-foreground`, backed by
   the added token.
+
+## Amendment 1 (2026-10-02): base layer and fonts
+
+Status: Accepted by Valery on 2026-10-02.
+
+**Base layer (Phase 1).** `@ndop/core/styles.css` also carries the base
+defaults from shadcn's style (registry item `new-york-v4/index`): every
+element's border and outline take `border-border` and `outline-ring/50`, and
+`body` takes `bg-background text-foreground`. Tailwind v4 draws borders in
+`currentColor`, so without this, borders rendered near-black. The token e2e
+suite checks it.
+
+**Fonts: Geist, as shadcn (Phase 2).**
+
+- Themes set `--font-sans` and `--font-mono`, which Tailwind v4 reads for
+  `font-sans` and `font-mono`. The default theme uses Geist and Geist Mono,
+  each followed by the system font stack as a fallback.
+- Fonts are self-hosted from npm: `@fontsource-variable/geist` and
+  `@fontsource-variable/geist-mono` (5.3.0 on 2026-10-02, SIL Open Font
+  License 1.1). They are the default theme item's dependencies; `ndop init`
+  adds their imports to the app stylesheet.
+- An app that brings its own font overrides the tokens only. The theme
+  studio (Phase 6) edits the same tokens.
+- Implemented with the default theme registry item in Phase 2, versions
+  re-checked then.
