@@ -36,7 +36,8 @@
     "test": {
       "executor": "@nx/angular:unit-test",
       "options": {
-        "watch": false
+        "watch": false,
+        "providersFile": "packages/core/test-providers.ts"
       }
     },
     "lint": {
