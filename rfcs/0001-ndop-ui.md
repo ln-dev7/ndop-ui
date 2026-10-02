@@ -582,12 +582,13 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 1 — Core and first primitives (weeks 2–3)
 
-- [ ] `@ndop/core`: `cn`, `variants` with full typing, `provideNdop` with theme mode handling, SSR-safe.
-- [ ] Token CSS (light, dark, density, motion) and the default theme.
-- [ ] Primitives with `spec.md` first, then code and tests: Button, Label, Input, Separator, Dialog, Popover, Tooltip.
-- [ ] Harness app routing every example, running in SSR and zoneless.
+- [x] `@ndop/core`: `cn`, `variants` with full typing, `provideNdop` with theme mode handling, SSR-safe.
+- [x] Token CSS (light, dark, density, motion) and the default theme.
+- [x] Primitives with `spec.md` first, then code and tests: Button, Label, Input, Separator, Dialog, Popover, Tooltip.
+- [x] Harness app routing every example, running in SSR and zoneless.
 
 * **Accept when:** the seven primitives pass unit, axe, keyboard, SSR and zoneless tests.
+* **Accepted 2026-10-02:** CI green on Node 22 and 24, Angular 21 and zone.js (run 37009540173).
 
 ### Phase 2 — Styled registry, `ndop build`, `init` and `add` (weeks 4–5)
 
