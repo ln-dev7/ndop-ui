@@ -1,7 +1,7 @@
 {
   "name": "primitives",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/primitives/src",
+  "sourceRoot": "packages/primitives",
   "prefix": "nd",
   "projectType": "library",
   "release": {

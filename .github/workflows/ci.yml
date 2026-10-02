@@ -52,3 +52,53 @@ jobs:
 
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t lint typecheck test build e2e
+
+  # RFC-0001's CI matrix covers the previous Angular major and zone.js apps.
+  # The workspace is pinned to Angular 22 and zoneless, so each variant swaps
+  # dependencies in CI only and reruns the published Angular packages.
+  compat:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Angular 21 with the TypeScript and CDK versions it supports
+          # (ADR-0001); @angular/build 21 requires TypeScript below 6.0.
+          - name: Angular 21
+            targets: typecheck test build
+            swap: >-
+              typescript@5.9.3
+              @angular/common@21.2.25 @angular/compiler@21.2.25
+              @angular/core@21.2.25 @angular/forms@21.2.25
+              @angular/platform-browser@21.2.25
+              @angular/platform-server@21.2.25 @angular/router@21.2.25
+              @angular/compiler-cli@21.2.25
+              @angular/language-service@21.2.25
+              @angular/build@21.2.24 @angular/cli@21.2.24
+              @schematics/angular@21.2.24 @angular-devkit/core@21.2.24
+              @angular/cdk@21.2.14 ng-packagr@21.2.7
+          # Angular's test builder loads zone.js and switches TestBed to zone
+          # change detection whenever zone.js resolves, so installing it is
+          # the whole switch.
+          - name: zone.js
+            targets: test
+            swap: zone.js@0.16.3
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The swapped versions can be younger than pnpm's minimum release age.
+      - run: pnpm add -Dw --config.minimumReleaseAge=0 ${{ matrix.swap }}
+
+      # Called directly: `pnpm nx` would recheck release age and reject the
+      # swapped versions.
+      - run: ./node_modules/.bin/nx run-many -t ${{ matrix.targets }} -p core primitives

@@ -1,15 +1,36 @@
 # @ndop/core
 
-Shared utilities for Ndop styled items: cn(), variants(), token helpers, provideNdop() and the icons adapter.
+Utilities shared by Ndop styled items, app configuration, and the token
+mechanics CSS.
 
-> Not released yet. This package's API lands in Phase 1 of
-> [RFC-0001](../../rfcs/0001-ndop-ui.md).
+> Not released yet. See [RFC-0001](../../rfcs/0001-ndop-ui.md).
 
 ## Install
 
 ```bash
 pnpm add @ndop/core
 ```
+
+## Usage
+
+```ts
+import { provideNdop } from '@ndop/core';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideNdop({ theme: 'system' })],
+};
+```
+
+```css
+@import 'tailwindcss';
+@import '@ndop/core/styles.css';
+/* then your theme's :root and .dark token blocks */
+```
+
+- `cn(...classes)`: joins classes; later Tailwind utilities win.
+- `variants(config)`: typed class-variance tables, with `VariantOf` for
+  input types.
+- `provideNdop({ theme })` and `NdopTheme`: color scheme, SSR-safe.
 
 ## Docs
 

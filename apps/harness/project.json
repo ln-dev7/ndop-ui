@@ -1,0 +1,67 @@
+{
+  "name": "harness",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "harness",
+  "sourceRoot": "apps/harness/src",
+  "tags": ["type:app"],
+  "targets": {
+    "build": {
+      "executor": "@analogjs/platform:vite",
+      "defaultConfiguration": "production",
+      "outputs": ["{workspaceRoot}/dist/apps/harness"],
+      "options": {
+        "configFile": "apps/harness/vite.config.ts",
+        "main": "apps/harness/src/main.ts",
+        "outputPath": "dist/apps/harness/client",
+        "tsConfig": "apps/harness/tsconfig.app.json"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "sourcemap": false,
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@analogjs/platform:vite-dev-server",
+      "continuous": true,
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "harness:build",
+        "port": 4300
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "harness:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "harness:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "harness:build",
+        "port": 4300,
+        "staticFilePath": "dist/apps/harness/browser",
+        "spa": true
+      }
+    },
+    "test": {
+      "executor": "@analogjs/vitest-angular:test",
+      "options": {
+        "config": "vite.config.ts"
+      }
+    }
+  }
+}

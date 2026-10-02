@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+/* Relative paths: the harness tests the workspace sources, not a published
+   build of @ndop/core or the theme. */
+@import '../../../packages/core/styles.css';
+@import '../../../registry/themes/default/theme.css';
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}

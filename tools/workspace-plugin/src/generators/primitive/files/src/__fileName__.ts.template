@@ -3,7 +3,7 @@ import { Directive } from '@angular/core';
 /**
  * Headless <%= className %> primitive. Owns behavior and accessibility and
  * renders no styles; its roles, keyboard map, focus and RTL rules are in
- * `spec.md` next to this file.
+ * `spec.md` at the root of this entry point.
  *
  * @example
  * ```html

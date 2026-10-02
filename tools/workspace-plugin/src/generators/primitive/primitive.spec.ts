@@ -1,9 +1,14 @@
-import { addProjectConfiguration, readJson, type Tree } from '@nx/devkit';
+import {
+  addProjectConfiguration,
+  readJson,
+  type Tree,
+  writeJson,
+} from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 
 import { primitiveGenerator } from './primitive';
 
-const src = 'packages/primitives/src';
+const root = 'packages/primitives';
 
 describe('primitive generator', () => {
   let tree: Tree;
@@ -11,25 +16,71 @@ describe('primitive generator', () => {
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
     addProjectConfiguration(tree, 'primitives', {
-      root: 'packages/primitives',
-      sourceRoot: src,
+      root,
+      sourceRoot: root,
       projectType: 'library',
     });
-    tree.write(`${src}/index.ts`, '/** Docs. */\nexport {};\n');
-    tree.write(
-      `${src}/index.spec.ts`,
-      "describe('public API', () => { it('exports nothing yet', () => {}); });\n",
+    writeJson(tree, `${root}/package.json`, { name: '@ndop/primitives' });
+    writeJson(tree, `${root}/ng-package.json`, {
+      lib: { entryFile: 'src/index.ts' },
+    });
+    writeJson(tree, `${root}/tsconfig.lib.json`, {
+      include: ['src/**/*.ts'],
+      exclude: ['src/**/*.spec.ts'],
+    });
+    tree.write(`${root}/src/index.ts`, 'export {};\n');
+    writeJson(tree, 'tsconfig.base.json', {
+      compilerOptions: {
+        paths: { '@ndop/primitives': [`${root}/src/index.ts`] },
+      },
+    });
+  });
+
+  it('creates a secondary entry point for the primitive', async () => {
+    await primitiveGenerator(tree, { name: 'radio-group', skipFormat: true });
+
+    expect(
+      readJson(tree, 'tsconfig.base.json').compilerOptions.paths[
+        '@ndop/primitives/radio-group'
+      ],
+    ).toEqual([`./${root}/radio-group/src/index.ts`]);
+    expect(tree.exists(`${root}/radio-group/ng-package.json`)).toBe(true);
+    expect(tree.read(`${root}/radio-group/src/index.ts`, 'utf-8')).toBe(
+      "export * from './radio-group';\n",
     );
   });
 
-  it('writes the contract, directive and test into one folder', async () => {
+  it('writes the contract, directive, test and README', async () => {
     await primitiveGenerator(tree, { name: 'radio-group', skipFormat: true });
 
-    expect(tree.exists(`${src}/radio-group/spec.md`)).toBe(true);
-    expect(tree.exists(`${src}/radio-group/radio-group.spec.ts`)).toBe(true);
-    const directive = tree.read(`${src}/radio-group/radio-group.ts`, 'utf-8');
+    expect(tree.exists(`${root}/radio-group/spec.md`)).toBe(true);
+    expect(tree.exists(`${root}/radio-group/src/radio-group.spec.ts`)).toBe(
+      true,
+    );
+    const directive = tree.read(
+      `${root}/radio-group/src/radio-group.ts`,
+      'utf-8',
+    );
     expect(directive).toContain("selector: '[ndRadioGroup]'");
     expect(directive).toContain('export class NdRadioGroup {}');
+    expect(tree.read(`${root}/radio-group/README.md`, 'utf-8')).toContain(
+      "import { NdRadioGroup } from '@ndop/primitives/radio-group';",
+    );
+  });
+
+  it('keeps the library tsconfig patterns flat across several primitives', async () => {
+    await primitiveGenerator(tree, { name: 'dialog', skipFormat: true });
+    await primitiveGenerator(tree, { name: 'tooltip', skipFormat: true });
+
+    const lib = readJson(tree, `${root}/tsconfig.lib.json`);
+    expect(lib.include).toEqual(['src/**/*.ts', '*/src/**/*.ts']);
+    expect(lib.exclude).toEqual(['**/*.spec.ts', '**/*.test.ts']);
+  });
+
+  it('leaves the root entry point alone', async () => {
+    await primitiveGenerator(tree, { name: 'dialog', skipFormat: true });
+
+    expect(tree.read(`${root}/src/index.ts`, 'utf-8')).toBe('export {};\n');
   });
 
   it('links the WAI-ARIA pattern when one is given', async () => {
@@ -39,47 +90,25 @@ describe('primitive generator', () => {
       skipFormat: true,
     });
 
-    expect(tree.read(`${src}/dialog/spec.md`, 'utf-8')).toContain(
+    expect(tree.read(`${root}/dialog/spec.md`, 'utf-8')).toContain(
       'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/',
     );
   });
 
-  it('exports the primitive and retires the empty-API guard', async () => {
-    await primitiveGenerator(tree, { name: 'dialog', skipFormat: true });
-
-    expect(tree.read(`${src}/index.ts`, 'utf-8')).toBe(
-      "/** Docs. */\nexport * from './dialog/dialog';\n",
-    );
-    expect(tree.exists(`${src}/index.spec.ts`)).toBe(false);
-  });
-
-  it('appends further exports without touching earlier ones', async () => {
-    await primitiveGenerator(tree, { name: 'dialog', skipFormat: true });
-    await primitiveGenerator(tree, { name: 'tooltip', skipFormat: true });
-
-    expect(tree.read(`${src}/index.ts`, 'utf-8')).toBe(
-      "/** Docs. */\nexport * from './dialog/dialog';\nexport * from './tooltip/tooltip';\n",
-    );
-  });
-
   it('declares the Angular peer range and keeps an existing one', async () => {
-    tree.write(
-      'packages/primitives/package.json',
-      JSON.stringify({ name: '@ndop/primitives', peerDependencies: {} }),
-    );
     await primitiveGenerator(tree, { name: 'dialog', skipFormat: true });
-    expect(
-      readJson(tree, 'packages/primitives/package.json').peerDependencies,
-    ).toEqual({ '@angular/core': '^21.0.0 || ^22.0.0' });
+    expect(readJson(tree, `${root}/package.json`).peerDependencies).toEqual({
+      '@angular/core': '^21.0.0 || ^22.0.0',
+    });
 
-    tree.write(
-      'packages/primitives/package.json',
-      JSON.stringify({ peerDependencies: { '@angular/core': '^22.0.0' } }),
-    );
+    writeJson(tree, `${root}/package.json`, {
+      name: '@ndop/primitives',
+      peerDependencies: { '@angular/core': '^22.0.0' },
+    });
     await primitiveGenerator(tree, { name: 'tooltip', skipFormat: true });
-    expect(
-      readJson(tree, 'packages/primitives/package.json').peerDependencies,
-    ).toEqual({ '@angular/core': '^22.0.0' });
+    expect(readJson(tree, `${root}/package.json`).peerDependencies).toEqual({
+      '@angular/core': '^22.0.0',
+    });
   });
 
   it('refuses to overwrite an existing primitive', async () => {

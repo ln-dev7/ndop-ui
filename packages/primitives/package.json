@@ -1,6 +1,8 @@
 {
   "name": "@ndop/primitives",
   "version": "0.0.1",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/core": "^21.0.0 || ^22.0.0"
+  },
   "sideEffects": false
 }

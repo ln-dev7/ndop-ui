@@ -74,8 +74,9 @@ export default [
               ],
             },
             {
+              // e2e suites read spec.md contracts through @ndop/metadata.
               sourceTag: 'type:e2e',
-              onlyDependOnLibsWithTags: [],
+              onlyDependOnLibsWithTags: ['type:tooling'],
             },
           ],
         },

@@ -183,3 +183,30 @@ Facts found while applying this ADR; none changes a decision above.
 - Generated `tsconfig.spec.json` files for Vitest projects use
   `module: esnext`: Vitest runs specs as ESM, and the CommonJS setting broke
   type-checking of `import.meta` in configs and specs.
+
+## Phase 1 additions (2026-10-02)
+
+Installed versions, checked against npm the same day:
+
+| Package                                                | Version                       |
+| ------------------------------------------------------ | ----------------------------- |
+| `@angular/cdk`                                         | 22.2.1                        |
+| `clsx` / `tailwind-merge`                              | 2.1.1 / 3.7.0                 |
+| `@testing-library/angular`                             | 19.5.0 (peers Angular `>=21`) |
+| `@testing-library/dom` / `@testing-library/user-event` | 10.4.2 / 14.6.7               |
+| `axe-core` / `@axe-core/playwright`                    | 4.13.0 / 4.13.0               |
+
+Compatibility variants run in CI's `compat` job, which swaps dependencies
+in CI only and reruns `core` and `primitives`:
+
+- **Angular 21:** `@angular/*` 21.2.25 (`build`, `cli`, `schematics`,
+  `devkit` 21.2.24), `@angular/cdk` 21.2.14, `ng-packagr` 21.2.7 and
+  TypeScript 5.9.3, because `@angular/build` 21 requires TypeScript `<6.0`.
+- **zone.js 0.16.3:** Angular's unit-test builder loads zone.js and gives
+  TestBed zone change detection whenever zone.js resolves (checked in
+  `@angular/build` 22.2.1 source and with a probe: `NgZone` with it,
+  `NoopNgZone` without). So zone.js must **not** be installed in the
+  workspace: the default test run stays zoneless and the CI variant
+  installs it. Adding then removing zone.js locally leaves it recorded as
+  an optional peer in `pnpm-lock.yaml`, which makes the builder try to load
+  it and fail; restore the lockfile instead.

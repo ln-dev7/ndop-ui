@@ -1,6 +1,20 @@
 {
   "name": "@ndop/core",
   "version": "0.0.1",
-  "peerDependencies": {},
-  "sideEffects": false
+  "peerDependencies": {
+    "@angular/core": "^21.0.0 || ^22.0.0"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "exports": {
+    "./styles.css": {
+      "style": "./styles.css",
+      "default": "./styles.css"
+    }
+  },
+  "sideEffects": [
+    "*.css"
+  ]
 }

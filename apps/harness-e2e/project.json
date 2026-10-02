@@ -1,0 +1,10 @@
+{
+  "name": "harness-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/harness-e2e/src",
+  "implicitDependencies": ["harness"],
+  "// targets": "to see all targets run: nx show project harness-e2e --web",
+  "targets": {},
+  "tags": ["type:e2e"]
+}

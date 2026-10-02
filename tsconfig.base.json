@@ -23,7 +23,18 @@
       "@ndop/metadata": ["./packages/metadata/src/index.ts"],
       "@ndop/eslint-plugin": ["./packages/eslint-plugin/src/index.ts"],
       "@ndop/workspace-plugin": ["./tools/workspace-plugin/src/index.ts"],
-      "@ndop/merge-spike": ["./tools/merge-spike/src/index.ts"]
+      "@ndop/merge-spike": ["./tools/merge-spike/src/index.ts"],
+      "@ndop/primitives/separator": [
+        "./packages/primitives/separator/src/index.ts"
+      ],
+      "@ndop/primitives/label": ["./packages/primitives/label/src/index.ts"],
+      "@ndop/primitives/button": ["./packages/primitives/button/src/index.ts"],
+      "@ndop/primitives/input": ["./packages/primitives/input/src/index.ts"],
+      "@ndop/primitives/dialog": ["./packages/primitives/dialog/src/index.ts"],
+      "@ndop/primitives/popover": [
+        "./packages/primitives/popover/src/index.ts"
+      ],
+      "@ndop/primitives/tooltip": ["./packages/primitives/tooltip/src/index.ts"]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

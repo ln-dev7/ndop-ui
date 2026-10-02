@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/schema",
   "$id": "NdopPrimitive",
   "title": "Ndop primitive",
-  "description": "Scaffold a headless primitive in @ndop/primitives: its folder, spec.md accessibility contract, directive and test.",
+  "description": "Scaffold a headless primitive as a secondary entry point of @ndop/primitives: spec.md accessibility contract, directive, test and README.",
   "type": "object",
   "properties": {
     "name": {

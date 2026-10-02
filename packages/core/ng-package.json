@@ -3,5 +3,7 @@
   "dest": "../../dist/packages/core",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "assets": ["styles.css"],
+  "allowedNonPeerDependencies": ["clsx", "tailwind-merge"]
 }

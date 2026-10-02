@@ -1,0 +1,16 @@
+/**
+ * A primitive demo route in the harness.
+ */
+export interface Demo {
+  /** Route path, under `/primitives/`. */
+  path: string;
+  /** Primitive name shown in the index. */
+  title: string;
+}
+
+/**
+ * Every primitive demo. The home page links each one, so prerendering with
+ * route discovery reaches them all, and the e2e suite iterates this list
+ * for its axe and hydration checks.
+ */
+export const DEMOS: readonly Demo[] = [];

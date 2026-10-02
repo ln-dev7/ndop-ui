@@ -1,9 +1,24 @@
 /**
- * `@ndop/core`: Shared utilities for Ndop styled items: cn(), variants(), token helpers, provideNdop() and the icons adapter.
- *
- * Empty until Phase 1 of RFC-0001; the package exists now so its
- * build, lint, test and dependency rules are wired from the start.
+ * `@ndop/core`: utilities shared by Ndop styled items (`cn()`,
+ * `variants()`) and app configuration (`provideNdop()`, `NdopTheme`). The
+ * token mechanics CSS ships as `@ndop/core/styles.css` (ADR-0006).
  *
  * @packageDocumentation
  */
-export {};
+export { cn, type ClassValue } from './lib/cn';
+export {
+  ND_CONFIG,
+  NdopTheme,
+  provideNdop,
+  type NdopConfig,
+  type NdopThemeMode,
+} from './lib/theme';
+export {
+  variants,
+  type VariantDefinitions,
+  type VariantOf,
+  type VariantSelection,
+  type VariantsConfig,
+  type VariantsFunction,
+  type VariantValue,
+} from './lib/variants';

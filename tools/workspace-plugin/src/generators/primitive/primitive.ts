@@ -1,9 +1,11 @@
+import { librarySecondaryEntryPointGenerator } from '@nx/angular/generators';
 import {
   formatFiles,
   generateFiles,
   joinPathFragments,
   names,
   OverwriteStrategy,
+  readJson,
   readProjectConfiguration,
   type Tree,
   updateJson,
@@ -12,23 +14,29 @@ import * as path from 'path';
 import type { PrimitiveGeneratorSchema } from './schema';
 
 /**
- * Text of the placeholder spec that guards an empty package's public API.
- * It is removed when the first primitive is exported, because from then on
- * the primitive's own tests cover the entry point.
- */
-const EMPTY_API_GUARD = "it('exports nothing yet'";
-
-/**
  * Angular peer range for published packages: the current major and the one
  * before it, per ADR-0001.
  */
 const ANGULAR_PEER_RANGE = '^21.0.0 || ^22.0.0';
 
 /**
- * Scaffolds a headless primitive so every primitive starts with the same
- * shape: `<name>/spec.md` (the accessibility contract, written before code),
- * `<name>/<name>.ts` (an `Nd<Name>` directive with selector `[nd<Name>]`) and
- * `<name>/<name>.spec.ts`, plus an export from the project's `src/index.ts`.
+ * Library tsconfig patterns that cover the root and every secondary entry
+ * point, so adding a primitive never needs a new pattern.
+ */
+const LIB_INCLUDE = ['src/**/*.ts', '*/src/**/*.ts'];
+const LIB_EXCLUDE = ['**/*.spec.ts', '**/*.test.ts'];
+
+/**
+ * Scaffolds a headless primitive as its own secondary entry point,
+ * `@ndop/primitives/<name>` (ADR-0004), so every primitive starts with the
+ * same shape:
+ *
+ * - `<name>/spec.md`: the accessibility contract, written before code;
+ * - `<name>/src/<name>.ts`: an `Nd<Name>` directive with selector
+ *   `[nd<Name>]`, and its test;
+ * - `<name>/ng-package.json`, the tsconfig path and lib include, via
+ *   `@nx/angular:library-secondary-entry-point`;
+ * - an `@angular/core` peer on the hosting package.
  *
  * @param tree - Virtual file system the generator writes to.
  * @param options - Generator options; see `schema.json`.
@@ -44,28 +52,42 @@ export async function primitiveGenerator(
   tree: Tree,
   options: PrimitiveGeneratorSchema,
 ): Promise<void> {
-  const project = readProjectConfiguration(
-    tree,
-    options.project ?? 'primitives',
-  );
-  const sourceRoot =
-    project.sourceRoot ?? joinPathFragments(project.root, 'src');
+  const projectName = options.project ?? 'primitives';
+  const project = readProjectConfiguration(tree, projectName);
   const n = names(options.name);
-  const folder = joinPathFragments(sourceRoot, n.fileName);
+  const folder = joinPathFragments(project.root, n.fileName);
 
   if (tree.exists(folder)) {
     throw new Error(`Primitive "${n.fileName}" already exists at ${folder}.`);
   }
 
+  await librarySecondaryEntryPointGenerator(tree, {
+    library: projectName,
+    name: n.fileName,
+    skipModule: true,
+    skipFormat: true,
+  });
+
+  normalizeLibTsconfig(tree, project.root);
+
+  const packageName = readJson<{ name: string }>(
+    tree,
+    joinPathFragments(project.root, 'package.json'),
+  ).name;
+
+  // Overwrite: the Nx generator writes a placeholder index.ts and README.
   generateFiles(
     tree,
     path.join(__dirname, 'files'),
-    sourceRoot,
-    { ...n, pattern: options.pattern ?? '' },
-    { overwriteStrategy: OverwriteStrategy.ThrowIfExisting },
+    folder,
+    {
+      ...n,
+      pattern: options.pattern ?? '',
+      importPath: `${packageName}/${n.fileName}`,
+    },
+    { overwriteStrategy: OverwriteStrategy.Overwrite },
   );
 
-  addExport(tree, sourceRoot, n.fileName);
   addAngularPeer(tree, project.root);
 
   if (!options.skipFormat) {
@@ -74,29 +96,25 @@ export async function primitiveGenerator(
 }
 
 /**
- * Exports the new primitive from the project's entry point, dropping the
- * empty-package placeholder export and its guard spec on first use.
+ * Resets the library's `tsconfig.lib.json` include and exclude lists to
+ * wildcard patterns. `@nx/angular:library-secondary-entry-point` prefixes
+ * every existing pattern with the new entry point's name, so each additional
+ * primitive would otherwise nest the previous ones
+ * (`popover/label/separator/src/**`).
  *
  * @param tree - Virtual file system the generator writes to.
- * @param sourceRoot - The hosting project's source root.
- * @param fileName - Kebab-case primitive name, used for folder and file.
+ * @param projectRoot - Root folder of the hosting project.
  */
-function addExport(tree: Tree, sourceRoot: string, fileName: string): void {
-  const indexPath = joinPathFragments(sourceRoot, 'index.ts');
-  const exportLine = `export * from './${fileName}/${fileName}';`;
-  const current = tree.read(indexPath, 'utf-8') ?? '';
-  if (current.includes(exportLine)) {
+function normalizeLibTsconfig(tree: Tree, projectRoot: string): void {
+  const tsconfig = joinPathFragments(projectRoot, 'tsconfig.lib.json');
+  if (!tree.exists(tsconfig)) {
     return;
   }
-  tree.write(
-    indexPath,
-    `${current.replace('export {};\n', '')}${exportLine}\n`,
-  );
-
-  const guardSpec = joinPathFragments(sourceRoot, 'index.spec.ts');
-  if (tree.read(guardSpec, 'utf-8')?.includes(EMPTY_API_GUARD)) {
-    tree.delete(guardSpec);
-  }
+  updateJson(tree, tsconfig, (json) => ({
+    ...json,
+    include: LIB_INCLUDE,
+    exclude: LIB_EXCLUDE,
+  }));
 }
 
 /**
@@ -107,11 +125,7 @@ function addExport(tree: Tree, sourceRoot: string, fileName: string): void {
  * @param projectRoot - Root folder of the hosting project.
  */
 function addAngularPeer(tree: Tree, projectRoot: string): void {
-  const packageJson = joinPathFragments(projectRoot, 'package.json');
-  if (!tree.exists(packageJson)) {
-    return;
-  }
-  updateJson(tree, packageJson, (json) => {
+  updateJson(tree, joinPathFragments(projectRoot, 'package.json'), (json) => {
     json.peerDependencies ??= {};
     json.peerDependencies['@angular/core'] ??= ANGULAR_PEER_RANGE;
     return json;
