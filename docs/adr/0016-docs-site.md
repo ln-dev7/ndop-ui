@@ -183,3 +183,55 @@ instead of RFC-0001's design spec in two places:
 
 On large screens the page no longer rubber-bands when pulled past its top
 or bottom (`overscroll-behavior-y: none`); phones keep pull-to-refresh.
+
+## Amendment 3 (2026-10-03): site-wide preview theme, steps, collapsing and Badge
+
+Status: Accepted; approved by Valery on 2026-10-03.
+
+- **A preview's dark toggle switches the site's theme**, instead of
+  putting `.dark` on the preview (see "Previews"). A preview can't be
+  light inside a dark page: the `dark:` variant matches any `.dark`
+  ancestor, so the page's own class wins. The toggle is the same switch as
+  the header's, and the viewport frames follow it.
+- **Numbered steps.** A component page's manual installation is a list of
+  numbered steps, each with a title and its code, as on ui.shadcn.com.
+  Guides write the same steps in Markdown with a `:::steps` block, in which
+  each `###` heading starts a step; step titles stay out of the "On this
+  page" rail.
+- **Collapsing long files**, which amendment 2 left out: a titled block
+  whose fence meta also has `collapse` starts collapsed when longer than
+  12 lines, with an "Expand" button in its header and over its faded end.
+  RFC-0001's code block spec lists "collapse for long files"; component
+  pages use it for the files a manual install copies.
+- **Badge comes forward from phase 6.** The docs use the registry's own
+  components for their chrome, so the header's facts are `ndBadge` and its
+  actions `ndButton`. Badge follows shadcn/ui new-york-v4 (ADR-0014) and
+  is the first styled item without a primitive: it only styles its host,
+  so it has no `spec.md`, and its metadata has no keyboard map or pattern.
+
+## Amendment 4 (2026-10-03): no viewport switcher on component pages
+
+Status: Accepted; approved by Valery on 2026-10-03.
+
+**Deviation:** RFC-0001's hero preview has a viewport width switcher
+(mobile, tablet, desktop). Component pages drop it, and with it the
+`/preview/<example>` frame route (see "Previews"). Previews render inline
+only, with the RTL and dark toggles.
+
+Component examples are small, and readers can see a breakpoint by
+resizing their window, as on ui.shadcn.com's component pages. The frame
+cost a second Angular bootstrap whenever it was used and a prerendered,
+`noindex` page per example for the quality gates to crawl. The Blocks
+gallery, where layouts do depend on the viewport, brings device frames
+back.
+
+## Amendment 5 (2026-10-03): no per-preview toggles
+
+Status: Accepted; requested by Valery on 2026-10-03.
+
+**Deviation:** RFC-0001's hero preview has its own light/dark and RTL
+toggles. Previews drop them, and with them their toolbar and their own
+CDK `OverlayContainer` (see "Previews" and amendment 3). The site header's
+theme and direction toggles apply to the whole page, previews and their
+overlays included, as on ui.shadcn.com. A preview is now its example on a
+dotted backdrop, with its code attached below.
