@@ -102,7 +102,7 @@ list says.
 
 ## Amendment 1 (2026-10-03): `init` and `add` details
 
-Status: Proposed.
+Status: Accepted by Valery on 2026-10-03.
 
 Implementing `init` and `add` settled points this ADR left open:
 
