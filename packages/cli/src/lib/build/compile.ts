@@ -80,6 +80,7 @@ export async function compileFiles(
       issues: diagnostics(
         stripVTControlCharacters(`${result.stdout}\n${result.stderr}`),
         root,
+        scratch,
       ),
     };
   } finally {
@@ -136,10 +137,15 @@ function resolveNgc(root: string): string | undefined {
  * `file(line,column): error TS…` form is TypeScript's plain format.
  *
  * @param output - Compiler output.
- * @param root - Registry root, for relative file paths.
+ * @param root - Registry root, which reported paths are made relative to.
+ * @param configDir - Folder of the tsconfig `ngc` ran with.
  * @returns Issues; one with the raw output when nothing could be parsed.
  */
-function diagnostics(output: string, root: string): BuildIssue[] {
+function diagnostics(
+  output: string,
+  root: string,
+  configDir: string,
+): BuildIssue[] {
   const issues: BuildIssue[] = [];
   for (const match of output.matchAll(
     /^(.+?)(?::(\d+):(\d+) - |\((\d+),(\d+)\): )error (\w+): (.*)$/gm,
@@ -148,7 +154,8 @@ function diagnostics(output: string, root: string): BuildIssue[] {
     const line = line1 ?? line2;
     const column = column1 ?? column2;
     issues.push({
-      file: relative(resolve(root), resolve(root, file)),
+      // ngc prints paths relative to the tsconfig's folder, not its cwd.
+      file: relative(resolve(root), resolve(configDir, file)),
       message: `Line ${line}, column ${column}: ${code} ${message}`,
     });
   }
