@@ -592,12 +592,13 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 2 — Styled registry, `ndop build`, `init` and `add` (weeks 4–5)
 
-- [ ] Styled items and at least two examples each for the Phase 1 primitives.
-- [ ] `ndop build` producing static registry JSON and versioned snapshots.
-- [ ] `ndop init` and `ndop add` with AST edits, alias resolution, package-manager detection, lockfile writing, `--dry-run` and `--json`.
-- [ ] Registry e2e in CI.
+- [x] Styled items and at least two examples each for the Phase 1 primitives.
+- [x] `ndop build` producing static registry JSON and versioned snapshots.
+- [x] `ndop init` and `ndop add` with AST edits, alias resolution, package-manager detection, lockfile writing, `--dry-run` and `--json`.
+- [x] Registry e2e in CI.
 
 * **Accept when:** `ng new` → `ndop init` → `ndop add dialog` → `ng build` passes on npm, pnpm and bun in under 2 minutes, and re-running `add` is a no-op.
+* **Accepted 2026-10-03:** CI green on Node 22 and 24, Angular 21, zone.js and the registry install test, where npm, pnpm and bun on Angular 22 took 26–41 s and pnpm on Angular 21 took 63 s (run 37118019017).
 
 ### Phase 3 — Metadata and docs v1 (weeks 6–8)
 

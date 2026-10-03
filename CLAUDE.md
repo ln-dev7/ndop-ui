@@ -4,7 +4,7 @@ The source of truth is `rfcs/0001-ndop-ui.md`. Read "How to use this RFC" in ful
 
 ## Current phase
 
-Phase 2 (Phase 0 and Phase 1 accepted on 2026-10-02). Do not start work from a later phase until I confirm this one is accepted.
+Phase 3 (Phase 0 and Phase 1 accepted on 2026-10-02, Phase 2 on 2026-10-03). Do not start work from a later phase until I confirm this one is accepted.
 
 ## Hard rules
 
