@@ -13,13 +13,36 @@
   "tags": ["type:tooling"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
+        "main": "packages/cli/src/main.ts",
         "outputPath": "dist/packages/cli",
-        "main": "packages/cli/src/index.ts",
+        "outputFileName": "main.js",
         "tsConfig": "packages/cli/tsconfig.lib.json",
-        "assets": ["packages/cli/*.md"]
+        "platform": "node",
+        "format": ["esm"],
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/cli",
+            "output": "."
+          }
+        ],
+        "thirdParty": false,
+        "external": ["@ndop/schema"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "banner": {
+            "js": "#!/usr/bin/env node"
+          },
+          "sourcemap": true
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
       }
     },
     "nx-release-publish": {

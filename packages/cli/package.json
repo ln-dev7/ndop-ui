@@ -1,10 +1,23 @@
 {
   "name": "@ndop/cli",
   "version": "0.0.1",
-  "type": "commonjs",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "description": "The ndop CLI: init, add and build for Ndop UI registries.",
+  "type": "module",
+  "exports": {
+    ".": "./main.js"
+  },
+  "bin": {
+    "ndop": "./main.js"
+  },
+  "files": [
+    "main.js",
+    "main.js.map",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "commander": "15.0.0"
   }
 }

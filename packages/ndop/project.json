@@ -1,0 +1,8 @@
+{
+  "name": "ndop",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/ndop",
+  "projectType": "library",
+  "tags": ["type:tooling"],
+  "targets": {}
+}

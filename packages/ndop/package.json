@@ -1,0 +1,19 @@
+{
+  "name": "ndop",
+  "version": "0.0.1",
+  "description": "Runs the Ndop UI CLI, so `npx ndop init` works. The CLI itself is @ndop/cli.",
+  "type": "module",
+  "bin": {
+    "ndop": "./bin.js"
+  },
+  "files": [
+    "bin.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@ndop/cli": "workspace:*"
+  }
+}
