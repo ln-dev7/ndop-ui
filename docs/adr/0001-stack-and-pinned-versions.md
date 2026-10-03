@@ -210,3 +210,20 @@ in CI only and reruns `core` and `primitives`:
   installs it. Adding then removing zone.js locally leaves it recorded as
   an optional peer in `pnpm-lock.yaml`, which makes the builder try to load
   it and fail; restore the lockfile instead.
+
+## Phase 2 additions (2026-10-02)
+
+Installed versions, checked against npm the same day:
+
+| Package                                                          | Version       | Use                                                                     |
+| ---------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------- |
+| `@nx/esbuild`                                                    | 23.2.1        | Builds `@ndop/cli` as one ESM bin with npm packages external (ADR-0011) |
+| `esbuild`                                                        | 0.28.2        | Pinned to the version `@angular/build` already brings                   |
+| `commander`                                                      | 15.0.0        | CLI parsing                                                             |
+| `@lucide/angular`                                                | 1.50.0        | Default icon library (ADR-0013)                                         |
+| `@fontsource-variable/geist` / `@fontsource-variable/geist-mono` | 5.3.0 / 5.3.0 | Default theme fonts (ADR-0006, amendment 1)                             |
+
+The remaining CLI libraries from ADR-0011 (`@clack/prompts`, `ts-morph`,
+`jsonc-parser`, `postcss`, `package-manager-detector`, `tinyexec`, `diff`,
+`picocolors`) are installed in the step that first uses them, since lint
+rejects declared dependencies nothing imports.

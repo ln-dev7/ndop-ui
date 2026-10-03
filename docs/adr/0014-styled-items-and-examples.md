@@ -1,0 +1,64 @@
+# ADR-0014: Styled items and examples
+
+- Status: Accepted (approved by Valery on 2026-10-02)
+- Date: 2026-10-02
+- Phase: 2
+- RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Styled layer, variants and
+  theming"; ADR-0005; ADR-0006
+
+## Context
+
+Phase 2 ships a styled item and at least two examples for each Phase 1
+primitive. Valery wants them to look like shadcn's defaults. shadcn's
+registry serves each component's source with its exact classes at
+`https://ui.shadcn.com/r/styles/new-york-v4/<item>.json` (checked for
+`button` on 2026-10-02).
+
+## Decision
+
+### Look: shadcn new-york-v4, verbatim
+
+- Classes are copied from the shadcn new-york-v4 registry item, including
+  its `data-slot` attributes, which some of shadcn's selectors rely on
+  (`has-data-[slot=…]`).
+- Changes are allowed only where Angular or Ndop's architecture needs them:
+  React-only constructs (`asChild`, Radix `Portal`) map to Ndop's directive
+  and portal parts, and lucide React icons become `ndIcon` (ADR-0013). Each
+  change is noted in a comment in the item.
+- Every styled file starts with a comment crediting shadcn/ui (MIT) and
+  naming the source item and the date it was copied.
+- A parity test per item compares its `variants()` table with the class
+  strings in the fetched shadcn source, so drift on either side is caught.
+  The shadcn sources are vendored next to the shadcn schema snapshot
+  (ADR-0002) and refreshed deliberately.
+
+### Shape (ADR-0005)
+
+`registry/ui/<name>/<name>.ts`: one file, directives only, each composing its
+primitive through `hostDirectives` with the primitive's selector, a
+`variants()` table, a `class` input merged last through `cn()` from
+`@/lib/utils`, and re-exports of the primitive parts it wraps. Class names
+drop the `Nd` prefix (`Button`, `DialogContent`), as in RFC-0001's example.
+
+### Default theme
+
+`registry/themes/default` becomes a `registry:theme` item: the token blocks
+from Phase 1 plus the fonts from ADR-0006 amendment 1 (Geist and Geist Mono
+through `@fontsource-variable/*`, imports in the item's `css`).
+
+### Examples
+
+- `registry/examples/<item>-<case>.ts`: standalone components, type
+  `registry:primitive-usage`, at least two per item, one of them realistic
+  (for example a dialog with a Signal Forms form).
+- The harness routes every example at `/examples/<name>` and links each one
+  from its home page, so the existing e2e quality crawl covers them: server
+  rendering, hydration without console errors, and axe.
+- Styled items get unit tests for their variants and class merging.
+
+## Consequences
+
+- Ndop's components look like shadcn's from the first release, and the
+  parity tests show exactly where they differ.
+- Following shadcn's later visual changes is a deliberate re-copy, recorded
+  by the date in each file.

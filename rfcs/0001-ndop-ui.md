@@ -265,11 +265,11 @@ export class Button {
 
 A theme is a registry item of type `registry:theme` containing CSS variables. `ndop add theme:<name>` or `ndop init --theme <url>` installs one; the theme studio on the docs site produces the same format.
 
-**Icons (decided): icon-agnostic, lucide-angular by default**
+**Icons (decided): icon-agnostic, Lucide (`@lucide/angular`) by default**
 
 - No styled item imports an icon library directly. Icons enter through content projection (`<svg ndIcon>` or any icon component the user prefers) or through a small `NdIcon` adapter directive.
 - `@ndop/core` exposes `provideNdopIcons(resolver)`; built-in items that need an icon (chevrons, close, check) ask the resolver by semantic name (`chevron-down`, `x`, `check`).
-- `ndop init` installs lucide-angular and registers its resolver by default. `iconLibrary` in `ndop.json` lets users switch; the CLI then rewrites icon imports in items it installs.
+- `ndop init` installs `@lucide/angular` and registers its resolver by default (ADR-0013: `lucide-angular` is deprecated and stops at Angular 21). `iconLibrary` in `ndop.json` lets users switch; the CLI then rewrites icon imports in items it installs.
 
 ## Registry spec
 
@@ -556,7 +556,7 @@ ndop/
 | Behavior  | `@angular/aria`, `@angular/cdk`                                             |
 | Styling   | Tailwind CSS v4, CSS variables, OKLCH colors                                |
 | Utilities | clsx, tailwind-merge                                                        |
-| Icons     | lucide-angular by default via an adapter (swappable)                        |
+| Icons     | `@lucide/angular` by default via an adapter (swappable, ADR-0013)           |
 | Docs      | Analog, Shiki, Algolia DocSearch                                            |
 | Monorepo  | Nx + pnpm                                                                   |
 | CLI       | Node LTS, commander or citty, ts-morph, prompts, node-diff3 (or equivalent) |
@@ -684,7 +684,7 @@ The biggest risk is the update promise: if merges conflict often, Ndop's main di
 | Name                 | Ndop UI at ndop.dev: npm scope `@ndop`, CLI `ndop`, selector prefix `nd` |
 | Docs search          | Algolia DocSearch                                                        |
 | Styled API           | Directive-only                                                           |
-| Icons                | Icon-agnostic API, lucide-angular by default                             |
+| Icons                | Icon-agnostic API, `@lucide/angular` by default (ADR-0013)               |
 | shadcn compatibility | Yes: compat registry output alongside the native format                  |
 
 **Before Phase 0 (owner: Valery)**
