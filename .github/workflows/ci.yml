@@ -46,13 +46,22 @@ jobs:
       - run: pnpm nx format:check
 
       # Pull requests run only what they affect; pushes to master run
-      # everything, so a batch of commits can't skip projects. The registry
-      # install test has its own job.
+      # everything, so a batch of commits can't skip projects.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t lint typecheck test build e2e --exclude=registry-e2e
+        run: pnpm nx affected -t lint typecheck test build
 
       - if: github.event_name == 'push'
-        run: pnpm nx run-many -t lint typecheck test build e2e --exclude=registry-e2e
+        run: pnpm nx run-many -t lint typecheck test build
+
+      # E2E runs on its own: the dev servers render pages on demand, and
+      # sharing the runner with lint, type-check and test tasks starved them
+      # past Vite's 60s server-render limit. The registry install test has
+      # its own job.
+      - if: github.event_name == 'pull_request'
+        run: pnpm nx affected -t e2e --exclude=registry-e2e
+
+      - if: github.event_name == 'push'
+        run: pnpm nx run-many -t e2e --exclude=registry-e2e
 
   # ADR-0015: ng new, ndop init, ndop add dialog and ng build with npm, pnpm
   # and bun on Angular 22 and pnpm on Angular 21, against packages published
