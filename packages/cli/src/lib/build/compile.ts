@@ -32,60 +32,85 @@ const ANGULAR_OPTIONS = {
 };
 
 /**
- * Type-checks registry files with the Angular compiler (`ngc`), resolving
- * `@/` to the registry root as an installed app resolves it to its source
- * folder (ADR-0012).
+ * A tsconfig written to a temporary folder for one build: the items'
+ * TypeScript files, `ng new`'s strict options, and `@/` resolving to the
+ * registry root as an installed app resolves it to its source folder
+ * (ADR-0012). The compile check and the metadata extractor both use it.
+ */
+export interface ScratchTsconfig {
+  /** Absolute path of the tsconfig. */
+  path: string;
+  /** Deletes the temporary folder. */
+  dispose(): Promise<void>;
+}
+
+/**
+ * Writes a {@link ScratchTsconfig}.
  *
  * @param root - Registry root.
- * @param files - Registry-relative TypeScript files to check.
+ * @param files - Registry-relative TypeScript files.
  * @param base - Optional tsconfig to extend, keeping its `paths`.
+ * @returns The tsconfig.
+ */
+export async function writeScratchTsconfig(
+  root: string,
+  files: readonly string[],
+  base?: string,
+): Promise<ScratchTsconfig> {
+  const folder = await mkdtemp(join(tmpdir(), 'ndop-build-'));
+  const path = join(folder, 'tsconfig.json');
+  await writeFile(
+    path,
+    JSON.stringify({
+      ...(base ? { extends: resolve(base) } : {}),
+      compilerOptions: {
+        ...APP_OPTIONS,
+        paths: {
+          ...(base ? inheritedPaths(resolve(base)) : {}),
+          '@/*': [`${resolve(root)}/*`],
+        },
+      },
+      files: files.map((file) => resolve(root, file)),
+      angularCompilerOptions: ANGULAR_OPTIONS,
+    }),
+  );
+  return {
+    path,
+    dispose: () => rm(folder, { recursive: true, force: true }),
+  };
+}
+
+/**
+ * Type-checks the files of a {@link ScratchTsconfig} with the Angular
+ * compiler (`ngc`) the registry itself would use.
+ *
+ * @param root - Registry root.
+ * @param tsconfig - The scratch tsconfig.
  * @returns `skipped` when `@angular/compiler-cli` can't be resolved from
  *   the root, otherwise the type errors found.
  */
 export async function compileFiles(
   root: string,
-  files: readonly string[],
-  base?: string,
+  tsconfig: ScratchTsconfig,
 ): Promise<{ skipped: true } | { skipped: false; issues: BuildIssue[] }> {
   const ngc = resolveNgc(root);
   if (!ngc) {
     return { skipped: true };
   }
-  const scratch = await mkdtemp(join(tmpdir(), 'ndop-build-'));
-  try {
-    const tsconfig = join(scratch, 'tsconfig.json');
-    await writeFile(
-      tsconfig,
-      JSON.stringify({
-        ...(base ? { extends: resolve(base) } : {}),
-        compilerOptions: {
-          ...APP_OPTIONS,
-          paths: {
-            ...(base ? inheritedPaths(resolve(base)) : {}),
-            '@/*': [`${resolve(root)}/*`],
-          },
-        },
-        files: files.map((file) => resolve(root, file)),
-        angularCompilerOptions: ANGULAR_OPTIONS,
-      }),
-    );
-    const result = await x(process.execPath, [ngc, '-p', tsconfig], {
-      nodeOptions: { cwd: root },
-    });
-    if (result.exitCode === 0) {
-      return { skipped: false, issues: [] };
-    }
-    return {
-      skipped: false,
-      issues: diagnostics(
-        stripVTControlCharacters(`${result.stdout}\n${result.stderr}`),
-        root,
-        scratch,
-      ),
-    };
-  } finally {
-    await rm(scratch, { recursive: true, force: true });
+  const result = await x(process.execPath, [ngc, '-p', tsconfig.path], {
+    nodeOptions: { cwd: root },
+  });
+  if (result.exitCode === 0) {
+    return { skipped: false, issues: [] };
   }
+  return {
+    skipped: false,
+    issues: diagnostics(
+      stripVTControlCharacters(`${result.stdout}\n${result.stderr}`),
+      root,
+      dirname(tsconfig.path),
+    ),
+  };
 }
 
 /**

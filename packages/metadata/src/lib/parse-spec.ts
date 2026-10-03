@@ -91,8 +91,9 @@ export function parseSpec(markdown: string): ParsedSpec {
     parts: tableRows(sections.get('Parts, roles and attributes') ?? '').map(
       ([name = '', selector = '', role = '', aria = '', data = '']) => ({
         name,
-        selector: stripCode(selector),
-        role: stripCode(role),
+        // A part matching several elements lists one code span per selector.
+        selector: codeList(selector).join(', ') || stripCode(selector),
+        role: role.replace(/`/g, ''),
         ariaAttributes: codeList(aria),
         dataAttributes: codeList(data),
       }),
@@ -106,11 +107,10 @@ export function parseSpec(markdown: string): ParsedSpec {
         return { keys: parsed, action };
       },
     ),
-    focus: (sections.get('Focus behavior') ?? '')
-      .split('\n')
-      .map((line) => /^- (.+)$/.exec(line.trim())?.[1]?.trim() ?? '')
-      .filter((text) => text.length > 0 && !text.endsWith(':')),
-    rtl: (sections.get('RTL behavior') ?? '').trim(),
+    focus: bullets(sections.get('Focus behavior') ?? '').filter(
+      (text) => !text.endsWith(':'),
+    ),
+    rtl: (sections.get('RTL behavior') ?? '').replace(/\s+/g, ' ').trim(),
   };
 }
 
@@ -169,6 +169,25 @@ function tableRows(section: string): string[][] {
  */
 function codeList(cell: string): string[] {
   return [...cell.matchAll(/`([^`]+)`/g)].map((match) => match[1] ?? '');
+}
+
+/**
+ * Reads a section's bullet list, joining each bullet's wrapped lines.
+ *
+ * @param section - A section body.
+ * @returns One string per non-empty bullet.
+ */
+function bullets(section: string): string[] {
+  const items: string[] = [];
+  for (const line of section.split('\n')) {
+    const bullet = /^- (.*)$/.exec(line.trim());
+    if (bullet) {
+      items.push(bullet[1]?.trim() ?? '');
+    } else if (line.trim() && items.length > 0 && /^\s/.test(line)) {
+      items[items.length - 1] = `${items[items.length - 1]} ${line.trim()}`;
+    }
+  }
+  return items.filter((text) => text.length > 0);
 }
 
 /**

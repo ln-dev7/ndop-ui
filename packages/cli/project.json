@@ -36,7 +36,7 @@
           }
         ],
         "thirdParty": false,
-        "external": ["@ndop/schema"],
+        "external": ["@ndop/schema", "@ndop/metadata"],
         "generatePackageJson": true,
         "esbuildOptions": {
           "banner": {

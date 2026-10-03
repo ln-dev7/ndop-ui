@@ -126,8 +126,8 @@ async function fixture(
 }
 
 /**
- * Runs the build on the fixture, without CI's frozen snapshots or `ngc`
- * unless asked.
+ * Runs the build on the fixture, without CI's frozen snapshots, `ngc` or
+ * metadata unless asked.
  *
  * @param options - Overrides.
  * @returns The build result.
@@ -138,6 +138,7 @@ function build(options: Partial<BuildOptions> = {}) {
     output: join(root, 'dist'),
     frozenSnapshots: false,
     compile: false,
+    metadata: false,
     ...options,
   });
 }
@@ -381,6 +382,52 @@ describe('buildRegistry', () => {
           'Imports "@fontsource-variable/geist", which isn\'t in the item\'s dependencies.',
       },
     ]);
+  });
+
+  describe('metadata', () => {
+    const DOCS =
+      "A small label.\n\n## Do\n\n- Keep it short.\n\n## Don't\n\n- Use it as a button.\n";
+
+    /**
+     * The manifest with `badge` pointing at its metadata.
+     *
+     * @returns Manifest items.
+     */
+    function withPointer(): Record<string, unknown>[] {
+      const list = items();
+      list[1] = { ...list[1], ndop: { metadata: 'metadata/badge.json' } };
+      return list;
+    }
+
+    it('writes r/metadata/<name>.json for each registry:ui item', async () => {
+      await fixture({ 'ui/badge/docs.md': DOCS }, withPointer());
+      const result = await build({ metadata: true });
+      expect(result.issues).toEqual([]);
+      expect(result.files).toContain('r/metadata/badge.json');
+      const metadata = await readJson('dist/r/metadata/badge.json');
+      expect(metadata).toEqual(
+        expect.objectContaining({
+          name: 'badge',
+          intro: 'A small label.',
+          agentNotes: { do: ['Keep it short.'], dont: ['Use it as a button.'] },
+        }),
+      );
+      expect(
+        (metadata['parts'] as { name: string }[]).map((part) => part.name),
+      ).toEqual(['Badge']);
+    });
+
+    it('fails on incomplete docs and a missing pointer', async () => {
+      await fixture({ 'ui/badge/docs.md': 'Intro only.\n' });
+      const result = await build({ metadata: true });
+      expect(result.ok).toBe(false);
+      expect(result.issues.map((issue) => issue.message)).toEqual(
+        expect.arrayContaining([
+          'docs.md has no "## Do" list.',
+          'ndop.metadata must be "metadata/badge.json".',
+        ]),
+      );
+    });
   });
 
   it('reports type errors from ngc with their file and line', async () => {

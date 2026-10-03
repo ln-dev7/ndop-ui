@@ -34,6 +34,11 @@ export interface BuildOptions {
    */
   compile?: boolean;
   /**
+   * Extract `r/metadata/<name>.json` for each `registry:ui` item and fail
+   * on incomplete docs (ADR-0007). Defaults to `true`.
+   */
+  metadata?: boolean;
+  /**
    * A tsconfig the compile check extends, for registries whose packages
    * resolve through `paths` rather than `node_modules`, such as a monorepo.
    * Its `paths` are kept, with `@/*` added.

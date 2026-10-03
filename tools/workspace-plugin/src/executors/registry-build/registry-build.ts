@@ -40,6 +40,7 @@ const registryBuild: PromiseExecutor<RegistryBuildExecutorSchema> = async (
       ? {}
       : { frozenSnapshots: options.frozenSnapshots }),
     ...(options.compile === undefined ? {} : { compile: options.compile }),
+    ...(options.metadata === undefined ? {} : { metadata: options.metadata }),
     ...(options.tsconfig
       ? { tsconfig: join(context.root, options.tsconfig) }
       : {}),

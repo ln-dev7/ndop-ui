@@ -56,7 +56,7 @@ describe('ndop add', () => {
 
     expect(result.items).toEqual([
       { registry: '@ndop', name: 'utils', version: '0.1.0' },
-      { registry: '@ndop', name: 'dialog', version: '0.1.0' },
+      { registry: '@ndop', name: 'dialog', version: '0.1.1' },
     ]);
     expect(result.files).toEqual([
       { path: 'src/app/ui/dialog/dialog.ts', action: 'create' },
@@ -78,7 +78,7 @@ describe('ndop add', () => {
     expect(lock.items['@ndop/dialog']).toEqual({
       name: 'dialog',
       registry: '@ndop',
-      version: '0.1.0',
+      version: '0.1.1',
       files: [
         {
           path: 'src/app/ui/dialog/dialog.ts',

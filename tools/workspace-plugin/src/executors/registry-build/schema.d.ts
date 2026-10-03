@@ -10,6 +10,8 @@ export interface RegistryBuildExecutorSchema {
   tsconfig?: string;
   /** Fail when an item version has no committed snapshot. */
   frozenSnapshots?: boolean;
+  /** Extract component metadata and fail on incomplete docs. */
+  metadata?: boolean;
   /** Type-check items with ngc. */
   compile?: boolean;
 }

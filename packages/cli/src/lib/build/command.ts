@@ -11,6 +11,7 @@ interface BuildCommandOptions {
   output: string;
   frozenSnapshots?: boolean;
   compile: boolean;
+  metadata: boolean;
   tsconfig?: string;
   dryRun?: boolean;
   json?: boolean;
@@ -49,6 +50,10 @@ export function registerBuildCommand(program: Command): Command {
     )
     .option('--no-compile', 'skip type-checking items with ngc')
     .option(
+      '--no-metadata',
+      'skip extracting component metadata and its completeness checks',
+    )
+    .option(
       '--tsconfig <path>',
       'tsconfig the compile check extends, keeping its paths (relative to --cwd)',
     )
@@ -62,6 +67,7 @@ export function registerBuildCommand(program: Command): Command {
         output: resolve(root, options.output),
         ...(options.frozenSnapshots ? { frozenSnapshots: true } : {}),
         compile: options.compile,
+        metadata: options.metadata,
         ...(options.tsconfig
           ? { tsconfig: resolve(root, options.tsconfig) }
           : {}),

@@ -25,6 +25,11 @@
       "type": "boolean",
       "description": "Type-check items with ngc.",
       "default": true
+    },
+    "metadata": {
+      "type": "boolean",
+      "description": "Extract component metadata into r/metadata and fail on incomplete docs (ADR-0007).",
+      "default": true
     }
   },
   "required": ["outputPath"]

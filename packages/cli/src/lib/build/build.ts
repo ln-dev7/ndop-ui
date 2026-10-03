@@ -1,12 +1,13 @@
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { extractMetadata } from '@ndop/metadata';
 import {
   schemas,
   validate,
   type Registry,
   type RegistryItem,
 } from '@ndop/schema';
-import { compileFiles } from './compile';
+import { compileFiles, writeScratchTsconfig } from './compile';
 import { checkExports, checkImports, sourceProject } from './sources';
 import { themeFromCss } from './theme';
 import type {
@@ -24,7 +25,10 @@ import type {
  * - `<output>/r/index.json`: the manifest, items without file contents;
  * - `<output>/r/<name>.json`: each item's latest version, with contents;
  * - `<output>/r/<name>@<version>.json`: every snapshotted version, the
- *   immutable merge bases `ndop update` reads.
+ *   immutable merge bases `ndop update` reads;
+ * - `<output>/r/metadata/<name>.json`: each `registry:ui` item's API,
+ *   accessibility contract and docs notes (ADR-0007), which fail the build
+ *   when incomplete.
  *
  * A snapshot is written to `<root>/snapshots/<name>@<version>.json` the
  * first time a version is built, and must be committed. If one already
@@ -87,19 +91,41 @@ export async function buildRegistry(
     issues.push(...checkExports(item, project));
   }
 
-  if (options.compile !== false && issues.length === 0) {
+  const metadata = new Map<string, string>();
+  const wantsCompile = options.compile !== false;
+  const wantsMetadata =
+    options.metadata !== false &&
+    built.some((item) => item.type === 'registry:ui');
+  if ((wantsCompile || wantsMetadata) && issues.length === 0) {
     const files = built.flatMap((item) =>
       (item.files ?? [])
         .map((file) => file.path)
         .filter((path) => path.endsWith('.ts')),
     );
-    const compiled = await compileFiles(root, files, options.tsconfig);
-    if (compiled.skipped) {
-      warnings.push(
-        '@angular/compiler-cli was not found from the registry root, so items were not type-checked.',
-      );
-    } else {
-      issues.push(...compiled.issues);
+    const tsconfig = await writeScratchTsconfig(root, files, options.tsconfig);
+    try {
+      if (wantsCompile) {
+        const compiled = await compileFiles(root, tsconfig);
+        if (compiled.skipped) {
+          warnings.push(
+            '@angular/compiler-cli was not found from the registry root, so items were not type-checked.',
+          );
+        } else {
+          issues.push(...compiled.issues);
+        }
+      }
+      if (wantsMetadata && issues.length === 0) {
+        await addMetadata(
+          root,
+          built,
+          tsconfig.path,
+          metadata,
+          issues,
+          warnings,
+        );
+      }
+    } finally {
+      await tsconfig.dispose();
     }
   }
 
@@ -134,6 +160,9 @@ export async function buildRegistry(
   for (const item of built) {
     outputs.set(`r/${item.name}.json`, json(item));
   }
+  for (const [name, content] of metadata) {
+    outputs.set(`r/metadata/${name}.json`, content);
+  }
   for (const [file, content] of snapshots.all) {
     outputs.set(`r/${file}`, content);
   }
@@ -148,6 +177,47 @@ export async function buildRegistry(
     }
   }
   return result({ items: reports, files: [...outputs.keys()] });
+}
+
+/**
+ * Extracts every `registry:ui` item's metadata (ADR-0007) and checks that
+ * the item points at it from `ndop.metadata`.
+ *
+ * @param root - Registry root.
+ * @param built - Built items.
+ * @param tsconfig - The build's scratch tsconfig.
+ * @param metadata - Receives each file's content, by item name.
+ * @param issues - Receives completeness problems.
+ * @param warnings - Receives a note when the Angular compiler is missing.
+ */
+async function addMetadata(
+  root: string,
+  built: readonly RegistryItem[],
+  tsconfig: string,
+  metadata: Map<string, string>,
+  issues: BuildIssue[],
+  warnings: string[],
+): Promise<void> {
+  const result = await extractMetadata({ root, items: built, tsconfig });
+  if (result.skipped) {
+    warnings.push(
+      '@angular/compiler-cli was not found from the registry root, so no metadata was extracted.',
+    );
+    return;
+  }
+  issues.push(...result.issues);
+  for (const entry of result.metadata) {
+    const expected = `metadata/${entry.name}.json`;
+    const item = built.find((candidate) => candidate.name === entry.name);
+    if (item?.ndop?.metadata !== expected) {
+      issues.push({
+        item: entry.name,
+        file: 'registry.json',
+        message: `ndop.metadata must be "${expected}".`,
+      });
+    }
+    metadata.set(entry.name, json(entry));
+  }
 }
 
 /**
