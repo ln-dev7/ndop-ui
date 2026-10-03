@@ -1,12 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-ndop-theme="system">
   <head>
     <meta charset="utf-8" />
     <title>Ndop UI</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Accessible Angular components you own and can still update, built for you and your agent."
+    />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/src/styles.css" />
+    <!-- Applies the saved theme and direction before the first paint, so a
+         prerendered page never flashes; the app re-applies them on boot. -->
+    <script>
+      try {
+        var root = document.documentElement;
+        var theme = localStorage.getItem('ndop-theme');
+        if (theme === 'light' || theme === 'dark') {
+          root.removeAttribute('data-ndop-theme');
+          root.classList.toggle('dark', theme === 'dark');
+        }
+        if (localStorage.getItem('ndop-dir') === 'rtl') root.dir = 'rtl';
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <docs-root></docs-root>
