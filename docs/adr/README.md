@@ -18,7 +18,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0011](0011-cli-architecture.md)                | CLI architecture and stack                                | Accepted, with amendment 1    |
 | [0012](0012-registry-source-and-build.md)       | Registry source, build and distribution                   | Accepted, with amendment 1    |
 | [0013](0013-icons-adapter.md)                   | Icons adapter on `@lucide/angular`                        | Accepted                      |
-| [0014](0014-styled-items-and-examples.md)       | Styled items and examples                                 | Accepted                      |
+| [0014](0014-styled-items-and-examples.md)       | Styled items and examples                                 | Accepted, with amendment 1    |
 | [0015](0015-registry-install-test.md)           | Registry install test                                     | Accepted                      |
 | [0016](0016-docs-site.md)                       | Docs site architecture and quality gates                  | Accepted, with amendments 1–5 |
 

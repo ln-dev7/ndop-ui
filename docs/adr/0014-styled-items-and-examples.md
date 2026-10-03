@@ -62,3 +62,23 @@ through `@fontsource-variable/*`, imports in the item's `css`).
   parity tests show exactly where they differ.
 - Following shadcn's later visual changes is a deliberate re-copy, recorded
   by the date in each file.
+
+## Amendment 1 (2026-10-03): no notices in registry files
+
+Status: Accepted; requested by Valery on 2026-10-03.
+
+Registry files no longer start with a comment crediting shadcn/ui, naming
+the copy date and listing the changes. Those files are copied into users'
+projects, where the comments are noise. Instead:
+
+- `registry/vendor/shadcn/new-york-v4/README.md` records, per item, the
+  copy date and every deliberate difference from shadcn, and where the
+  default theme's palette and fonts come from. It stays in the repository
+  and doesn't ship.
+- **Release blocker:** Ndop doesn't ship before it has a registry-level
+  license notice served with the registry (shadcn/ui's MIT terms and any
+  other third-party terms), acknowledgements in the README, and a credit
+  to shadcn/ui on the docs site. RFC-0001's Phase 7 checklist lists them.
+
+Behavior that users need to know, such as writing the dialog's portal and
+overlay themselves, stays in each item's TSDoc and `docs.md`, which ship.

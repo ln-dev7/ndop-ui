@@ -637,6 +637,7 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 - [ ] Migration guides, landing page with live hero demo, OG images, Changelog.
 - [ ] Launch write-up: "Updating code you own: three-way merges in a component registry."
+- [ ] Third-party notices: a license notice served with the registry (shadcn/ui's MIT terms and any others), acknowledgements in the README, and a shadcn/ui credit on the docs site (ADR-0014, amendment 1). Registry files carry no notices of their own.
 - [ ] Public roadmap and contribution guide; 1.0.0 release.
 
 * **Accept when:** every success metric with a CI measurement is met and the launch checklist is complete.
