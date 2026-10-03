@@ -1,6 +1,4 @@
-// A namespace import works both bundled as ESM and loaded as CommonJS by
-// the workspace's registry-build executor.
-import * as pc from 'picocolors';
+import { pc } from '../colors';
 import type { BuildResult } from './types';
 
 /**
