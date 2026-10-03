@@ -45,6 +45,12 @@ export const configSchema = {
       },
     },
     importAlias: { type: 'string', minLength: 1 },
+    registry: {
+      type: 'string',
+      pattern: '\\{name\\}',
+      description:
+        'URL template of the default registry, containing `{name}`. Overrides https://ndop.dev/r/{name}.json (ADR-0012).',
+    },
     iconLibrary: { type: 'string', minLength: 1 },
     registries: {
       type: 'object',

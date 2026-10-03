@@ -28,6 +28,7 @@ const expectedIssuePaths: Record<string, string> = {
   'registry-item.empty-files.json': '/files',
   'config.missing-aliases.json': '',
   'config.registry-without-name-token.json': '/registries/@acme/url',
+  'config.registry-without-name.json': '/registry',
   'lock.bad-hash.json': '/items/@ndop~1dialog/files/0/sha256',
   'metadata.undocumented-input.json': '/parts/0/inputs/0/description',
   'metadata.no-keyboard.json': '',
