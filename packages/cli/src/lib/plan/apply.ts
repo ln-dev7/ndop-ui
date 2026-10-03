@@ -24,11 +24,14 @@ export function packageManagerInstaller(root: string): Installer {
   return async (specs, dev) => {
     const detected = await detect({ cwd: root });
     const agent = detected?.agent ?? getUserAgent() ?? 'npm';
-    const command = resolveCommand(
-      agent,
-      'add',
-      dev ? ['-D', ...specs] : [...specs],
-    );
+    const args = dev ? ['-D', ...specs] : [...specs];
+    if (agent.startsWith('pnpm')) {
+      // pnpm 11+ fails any add while some installed dependency has build
+      // scripts nobody approved, as `ng new` leaves esbuild and lmdb. The
+      // scripts still don't run; only the unrelated failure is turned off.
+      args.push('--config.strict-dep-builds=false');
+    }
+    const command = resolveCommand(agent, 'add', args);
     if (!command) {
       throw new CliError(`Don't know how to add packages with ${agent}.`);
     }
