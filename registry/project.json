@@ -1,0 +1,13 @@
+{
+  "name": "registry",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "registry",
+  "prefix": "nd",
+  "projectType": "library",
+  "tags": ["type:registry"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
