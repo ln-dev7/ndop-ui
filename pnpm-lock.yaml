@@ -543,6 +543,12 @@ importers:
       '@nx/devkit':
         specifier: 23.2.1
         version: 23.2.1(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))
+      '@nx/js':
+        specifier: 23.2.1
+        version: 23.2.1(@babel/traverse@7.29.8(supports-color@8.1.1))(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/cli@0.8.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@8.1.1))(@swc/core@1.15.47(@swc/helpers@0.5.23))(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))(supports-color@8.1.1)(verdaccio@6.10.4(supports-color@8.1.1)(typanion@3.14.0))
+      nx:
+        specifier: 23.2.1
+        version: 23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23))
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

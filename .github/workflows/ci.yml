@@ -46,12 +46,60 @@ jobs:
       - run: pnpm nx format:check
 
       # Pull requests run only what they affect; pushes to master run
-      # everything, so a batch of commits can't skip projects.
+      # everything, so a batch of commits can't skip projects. The registry
+      # install test has its own job.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t lint typecheck test build e2e
+        run: pnpm nx affected -t lint typecheck test build e2e --exclude=registry-e2e
 
       - if: github.event_name == 'push'
-        run: pnpm nx run-many -t lint typecheck test build e2e
+        run: pnpm nx run-many -t lint typecheck test build e2e --exclude=registry-e2e
+
+  # ADR-0015: ng new, ndop init, ndop add dialog and ng build with npm, pnpm
+  # and bun on Angular 22 and pnpm on Angular 21, against packages published
+  # to a local Verdaccio. Pull requests run it when they affect the CLI, core,
+  # primitives, schema or registry (registry-e2e's implicit dependencies).
+  registry-e2e:
+    name: Registry install test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.11'
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: master
+
+      - if: github.event_name == 'pull_request'
+        run: |
+          if pnpm nx show projects --affected --projects=registry-e2e --json | grep -q '"registry-e2e"'; then
+            pnpm nx e2e registry-e2e
+          else
+            echo "No change affects the registry install test."
+          fi
+
+      - if: github.event_name == 'push'
+        run: pnpm nx e2e registry-e2e
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: registry-e2e-logs
+          path: tmp/registry-e2e/*.log
+          if-no-files-found: ignore
 
   # RFC-0001's CI matrix covers the previous Angular major and zone.js apps.
   # The workspace is pinned to Angular 22 and zoneless, so each variant swaps

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Registry install test",
+  "description": "Publishes the @ndop/* packages to a local Verdaccio and serves the built registry, then, for each case, creates an app with ng new, runs ndop init, ndop add and the app's build within the time budget, and checks that running ndop add again changes nothing (ADR-0015).",
+  "type": "object",
+  "properties": {
+    "cases": {
+      "type": "array",
+      "description": "Package manager and Angular CLI version of each run.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "packageManager": {
+            "type": "string",
+            "enum": ["npm", "pnpm", "bun"]
+          },
+          "angular": {
+            "type": "string",
+            "description": "Exact @angular/cli version for ng new."
+          }
+        },
+        "required": ["packageManager", "angular"]
+      }
+    },
+    "only": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Run only these cases, by name, such as pnpm-ng21."
+    },
+    "item": {
+      "type": "string",
+      "description": "Item to add.",
+      "default": "dialog"
+    },
+    "budgetSeconds": {
+      "type": "number",
+      "description": "Longest allowed time from ndop init to the end of the build.",
+      "default": 120
+    },
+    "registryPath": {
+      "type": "string",
+      "description": "Built registry to serve, relative to the workspace root.",
+      "default": "dist/registry"
+    },
+    "workDir": {
+      "type": "string",
+      "description": "Folder the apps and logs go in, relative to the workspace root; emptied first.",
+      "default": "tmp/registry-e2e"
+    },
+    "localRegistryTarget": {
+      "type": "string",
+      "description": "Target that starts Verdaccio.",
+      "default": "@ndop/source:local-registry"
+    }
+  },
+  "required": ["cases"]
+}

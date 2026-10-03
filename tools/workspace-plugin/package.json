@@ -9,7 +9,9 @@
     "@nx/devkit": "23.2.1",
     "tslib": "^2.3.0",
     "@nx/angular": "23.2.1",
-    "@ndop/cli": "workspace:*"
+    "@ndop/cli": "workspace:*",
+    "@nx/js": "23.2.1",
+    "nx": "23.2.1"
   },
   "generators": "./generators.json",
   "executors": "./executors.json"

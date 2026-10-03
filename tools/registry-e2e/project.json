@@ -1,0 +1,44 @@
+{
+  "name": "registry-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "implicitDependencies": [
+    "cli",
+    "ndop",
+    "core",
+    "primitives",
+    "schema",
+    "registry"
+  ],
+  "targets": {
+    "e2e": {
+      "executor": "@ndop/workspace-plugin:registry-e2e",
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": [
+            "cli",
+            "ndop",
+            "core",
+            "primitives",
+            "schema",
+            "metadata",
+            "mcp",
+            "eslint-plugin",
+            "registry"
+          ]
+        }
+      ],
+      "cache": false,
+      "options": {
+        "cases": [
+          { "packageManager": "npm", "angular": "22.2.1" },
+          { "packageManager": "pnpm", "angular": "22.2.1" },
+          { "packageManager": "bun", "angular": "22.2.1" },
+          { "packageManager": "pnpm", "angular": "21.2.24" }
+        ]
+      }
+    }
+  }
+}

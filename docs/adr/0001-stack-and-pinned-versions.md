@@ -228,6 +228,7 @@ Installed versions, checked against npm the same day:
 | `jsonc-parser`                                                   | 3.3.1         | Edits `tsconfig.json` and reads `angular.json`, keeping comments          |
 | `package-manager-detector`                                       | 1.8.0         | Detects the project's package manager and its install command             |
 | `diff`                                                           | 9.0.0         | Unified diffs for `--dry-run`                                             |
+| `bun` (CI only, through `oven-sh/setup-bun`)                     | 1.3.11        | The bun case of the registry install test (ADR-0015)                      |
 | `@lucide/angular`                                                | 1.50.0        | Default icon library (ADR-0013)                                           |
 | `@fontsource-variable/geist` / `@fontsource-variable/geist-mono` | 5.3.0 / 5.3.0 | Default theme fonts (ADR-0006, amendment 1)                               |
 

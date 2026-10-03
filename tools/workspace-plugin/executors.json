@@ -4,6 +4,11 @@
       "implementation": "./src/executors/registry-build/registry-build",
       "schema": "./src/executors/registry-build/schema.json",
       "description": "Build Ndop's registry with ndop build: validate, type-check, snapshot and write static JSON."
+    },
+    "registry-e2e": {
+      "implementation": "./src/executors/registry-e2e/registry-e2e",
+      "schema": "./src/executors/registry-e2e/schema.json",
+      "description": "Install-test the registry: publish @ndop/* to Verdaccio, then ng new, ndop init, ndop add and ng build per package manager (ADR-0015)."
     }
   }
 }
