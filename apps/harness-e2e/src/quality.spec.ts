@@ -8,6 +8,8 @@ test('every route renders on the server, hydrates cleanly and passes axe', async
 }) => {
   const routes = await harnessRoutes(page);
   expect(routes).toContain('/tokens');
+  // One test walks every route, so its budget grows with the route count.
+  test.setTimeout(routes.length * 10_000);
 
   for (const route of routes) {
     await test.step(route, async () => {

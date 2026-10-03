@@ -10,6 +10,7 @@ import {
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
 import { provideNdop } from '@ndop/core';
+import { provideIcons } from '@/lib/icons';
 
 /**
  * Providers shared by the browser and server builds. The harness runs
@@ -26,5 +27,6 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([requestContextInterceptor]),
     ),
     provideNdop({ theme: 'system' }),
+    provideIcons(),
   ],
 };

@@ -3,3 +3,7 @@
    build of @ndop/core or the theme. */
 @import '../../../packages/core/styles.css';
 @import '../../../registry/themes/default/theme.css';
+/* Registry items and examples live outside the app's source tree; the
+   vendored shadcn sources next to them must not add classes. */
+@source '../../../registry/ui';
+@source '../../../registry/examples';

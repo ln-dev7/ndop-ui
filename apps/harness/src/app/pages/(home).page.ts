@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DEMOS } from '../demos/demos';
+import { EXAMPLE_NAMES } from '../examples/example-names';
 
 /**
- * Harness index (`/`): links every primitive demo.
+ * Harness index (`/`): links every primitive demo and registry example.
  */
 @Component({
   selector: 'harness-home',
@@ -29,9 +30,20 @@ import { DEMOS } from '../demos/demos';
           <li class="text-muted-foreground">No primitives yet.</li>
         }
       </ul>
+      <h2 class="mt-8 text-lg font-semibold">Examples</h2>
+      <ul class="mt-4 space-y-2">
+        @for (example of examples; track example) {
+          <li>
+            <a class="underline" [routerLink]="'/examples/' + example">{{
+              example
+            }}</a>
+          </li>
+        }
+      </ul>
     </main>
   `,
 })
 export default class HomePage {
   protected readonly demos = DEMOS;
+  protected readonly examples = EXAMPLE_NAMES;
 }
