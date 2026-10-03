@@ -124,3 +124,40 @@ test("a preview's overlays follow the site's direction", async ({ page }) => {
     await dialog.evaluate((element) => getComputedStyle(element).direction),
   ).toBe('rtl');
 });
+
+test('the playground updates the preview, the snippet and the URL', async ({
+  page,
+}) => {
+  await open(page, '/docs/components/button');
+  const playground = page.locator('docs-playground');
+  const fieldset = playground.getByRole('group', { name: 'variant' });
+  // The radios are visually hidden behind their segments.
+  await fieldset.getByText('secondary', { exact: true }).click();
+  await expect(
+    fieldset.getByRole('radio', { name: 'secondary' }),
+  ).toBeChecked();
+  await playground.getByRole('switch', { name: 'disabled' }).check();
+  await expect(playground.locator('.preview-backdrop button')).toHaveAttribute(
+    'data-variant',
+    'secondary',
+  );
+  await expect(playground.locator('.preview-backdrop button')).toBeDisabled();
+  await expect(playground.locator('pre')).toHaveText(
+    '<button ndButton variant="secondary" [disabled]="true">Button</button>',
+  );
+  await expect(page).toHaveURL(/\?variant=secondary&disabled=true$/);
+});
+
+test('a playground link opens with its values', async ({ page }) => {
+  await open(page, '/docs/components/popover?side=top&sideOffset=12');
+  const playground = page.locator('docs-playground');
+  await expect(
+    playground.getByRole('radio', { name: 'top', exact: true }).first(),
+  ).toBeChecked();
+  await expect(
+    playground.getByRole('slider', { name: 'sideOffset' }),
+  ).toHaveValue('12');
+  await expect(playground.locator('pre')).toContainText(
+    'side="top" [sideOffset]="12"',
+  );
+});

@@ -77,6 +77,8 @@ export interface MemberData {
   type: string;
   /** Default, as source text. */
   default?: string;
+  /** The values of a union of string literals, in order. */
+  values?: string[];
   /** Whether it must be set. */
   required?: boolean;
   /** Description. */
@@ -107,6 +109,22 @@ export interface PartData {
   outputs: MemberData[];
   /** Data attributes, with their values when known. */
   dataAttributes: { name: string; values?: string[] }[];
+}
+
+/**
+ * Colors Shiki gives the parts of an Angular template, for code generated
+ * in the browser, such as the playground's snippet. Each is a style with
+ * both themes' colors as CSS variables, like Shiki's own spans.
+ */
+export interface TemplatePalette {
+  /** Punctuation and text. */
+  plain: string;
+  /** Element names. */
+  tag: string;
+  /** Attribute and binding names. */
+  attribute: string;
+  /** Quoted values. */
+  string: string;
 }
 
 /**
