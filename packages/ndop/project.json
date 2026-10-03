@@ -1,8 +1,58 @@
 {
   "name": "ndop",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/ndop",
+  "sourceRoot": "packages/ndop/src",
   "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": [
+        {
+          "path": "dist/{projectRoot}",
+          "preserveLocalDependencyProtocols": false
+        }
+      ],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
   "tags": ["type:tooling"],
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "main": "packages/ndop/src/bin.ts",
+        "outputPath": "dist/packages/ndop",
+        "outputFileName": "bin.js",
+        "tsConfig": "packages/ndop/tsconfig.lib.json",
+        "platform": "node",
+        "format": ["esm"],
+        "assets": [
+          {
+            "glob": "{README.md,package.json}",
+            "input": "packages/ndop",
+            "output": "."
+          }
+        ],
+        "thirdParty": false,
+        "external": ["@ndop/cli"],
+        "generatePackageJson": false,
+        "esbuildOptions": {
+          "banner": {
+            "js": "#!/usr/bin/env node"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    }
+  }
 }
