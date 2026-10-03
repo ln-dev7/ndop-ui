@@ -42,7 +42,12 @@ export async function projectFormatter(root: string): Promise<Formatter> {
   let prettier: PrettierApi;
   try {
     const entry = createRequire(join(root, 'package.json')).resolve('prettier');
-    prettier = (await import(pathToFileURL(entry).href)) as PrettierApi;
+    // require.resolve finds Prettier's CommonJS entry, whose API an ESM
+    // import exposes only as the default export.
+    const loaded = (await import(pathToFileURL(entry).href)) as PrettierApi & {
+      default?: PrettierApi;
+    };
+    prettier = loaded.default ?? loaded;
   } catch {
     return noFormat;
   }
