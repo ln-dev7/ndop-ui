@@ -12,6 +12,8 @@ export default [
         'error',
         {
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
+          // Imported by styles.css, which the check doesn't read.
+          ignoredDependencies: ['tw-animate-css'],
         },
       ],
     },

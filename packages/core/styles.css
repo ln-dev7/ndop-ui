@@ -9,6 +9,10 @@
  * themes supply the values, using shadcn-compatible names.
  */
 
+/* Enter and exit animation utilities (animate-in, fade-in-0, zoom-in-95,
+   slide-in-from-*) used by styled items, as in shadcn (ADR-0014). */
+@import 'tw-animate-css';
+
 /*
  * `dark:` matches the .dark class, and the OS preference when the root has
  * data-ndop-theme="system", so system mode needs no script and server-rendered

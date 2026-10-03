@@ -5,5 +5,5 @@
     "entryFile": "src/index.ts"
   },
   "assets": ["styles.css"],
-  "allowedNonPeerDependencies": ["clsx", "tailwind-merge"]
+  "allowedNonPeerDependencies": ["clsx", "tailwind-merge", "tw-animate-css"]
 }
