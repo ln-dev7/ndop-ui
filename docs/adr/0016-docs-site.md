@@ -144,3 +144,42 @@ on it.
   in the indexed HTML; the iframe, and its second bootstrap, only appears
   when a reader picks a narrower viewport.
 - One playground host per item is the only per-component docs code.
+
+## Amendment 1 (2026-10-03): a 640px content column
+
+Status: Accepted; requested by Valery on 2026-10-03.
+
+RFC-0001's design spec gives prose a 760px maximum. The docs cap the whole
+middle column (title, description, prose and page links) at 640px instead,
+centered between the navigation and the "On this page" rail, for shorter
+lines. The navigation's 260px column is unchanged; its links' hover and
+active backgrounds hug their text, its edge is a 1px line that fades out
+toward both ends, and its list fades where it scrolls in and out of view.
+
+## Amendment 2 (2026-10-03): shadcn's typography and plain code blocks
+
+Status: Accepted; requested by Valery on 2026-10-03.
+
+The docs match ui.shadcn.com's docs, measured on its pages that day,
+instead of RFC-0001's design spec in two places:
+
+- **Typography:** guides use 15px text with a 1.75 line height (not 16px
+  and 1.65), a 30px title and 16px description, and headings scaled from
+  the text (h2 1.25em, h3 1.125em) instead of a fluid `clamp()` scale. The
+  navigation and the "On this page" rail use 12.8px links under 12px
+  labels.
+- **Code blocks:** as plain as ui.shadcn.com's: a copy button, line
+  numbers on blocks of more than one line, and a 384px maximum height that
+  scrolls without a visible scrollbar. Each block is configured where it
+  is written, through its fence's meta string: `title="tsconfig.json"`
+  adds a header with a file icon and the name; `pm` turns one npm command
+  into npm, pnpm, yarn and bun tabs (WAI-ARIA tabs), whose copy button
+  copies exactly the selected command, and whose choice applies to every
+  block and is remembered. Guides show one command per block, so every
+  copy is runnable. Line and word highlighting and diffs stay; there is
+  no language label or collapsing. In step 3, examples sit in a card with
+  the preview above and the code block attached below it. yarn is offered
+  although the install test covers npm, pnpm and bun only.
+
+On large screens the page no longer rubber-bands when pulled past its top
+or bottom (`overscroll-behavior-y: none`); phones keep pull-to-refresh.

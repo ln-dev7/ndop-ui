@@ -104,3 +104,15 @@ calls it from `ndop build`.
   extractor change.
 - `ndop build` now needs `@angular/compiler-cli`, which it already uses for
   the compile check.
+
+## Amendment 1 (2026-10-03): the TypeScript program instead of ts-morph
+
+Status: Accepted by Valery on 2026-10-03.
+
+What the documentation extractor misses (forwarded inputs, defaults, enum
+values, host data attributes) is read from the TypeScript program that
+Angular's `NgtscProgram` builds, through its type checker, instead of from
+ts-morph. Enum values need the checker: `NdSide`, for example, is an alias
+declared in another package, and ts-morph would parse and type-check every
+file a second time to resolve it. This replaces "ts-morph" in "Sources, in
+order", item 2; the decision is otherwise unchanged.
