@@ -110,6 +110,15 @@ export default [
     },
   },
   {
+    // Vite configs run in Node at build time, outside the app code the
+    // dependency rules protect, and share build plugins with the workspace
+    // plugin by path, since a config can't resolve tsconfig aliases.
+    files: ['**/vite.config.{ts,mts}'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+    },
+  },
+  {
     // RFC-0001 "Code documentation rules": every export carries TSDoc,
     // because the metadata extractor turns it into docs, MCP answers and
     // llms.txt. Tests, configs and e2e specs are not public API.

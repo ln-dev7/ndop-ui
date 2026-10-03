@@ -1,30 +1,10 @@
 /// <reference types="vitest" />
 
 import analog from '@analogjs/platform';
-import { defineConfig, type Plugin } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
-
-/**
- * Sets `ngServerMode` in every Angular package file the dev server renders
- * on the server. Analog 2.7.5 (and 2.8.0) does this only for files ending
- * in `core.mjs` or `platform-server.mjs`, but Angular 22 also reads the flag
- * from chunk files such as `_debug_node-chunk.mjs` and from
- * `@angular/common`, so browser-only hooks like `afterNextRender` ran during
- * dev SSR. Production builds define the flag and are unaffected.
- *
- * @returns A Vite plugin.
- */
-function angularServerMode(): Plugin {
-  return {
-    name: 'harness-angular-server-mode',
-    transform(code, id, options) {
-      if (options?.ssr && /\/@angular\/[^/]+\/fesm2022\/[^/]+\.mjs$/.test(id)) {
-        return { code: code.replaceAll('ngServerMode', 'true') };
-      }
-      return undefined;
-    },
-  };
-}
+import { angularServerMode } from '../../tools/workspace-plugin/src/vite/angular-server-mode';
 
 export default defineConfig(() => {
   return {
@@ -60,6 +40,9 @@ export default defineConfig(() => {
     plugins: [
       analog({ prerender: { discover: true, routes: ['/'] } }),
       angularServerMode(),
+      // Rewrites the url()s of inlined stylesheets, such as Fontsource's
+      // font files, which Tailwind's PostCSS plugin left unresolved.
+      tailwindcss(),
       // The app tsconfig only includes entry files, and the plugin applies
       // aliases only to files its tsconfig includes; the base config covers
       // every workspace file.
