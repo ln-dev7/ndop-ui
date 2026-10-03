@@ -43,47 +43,56 @@ question, or `--dry-run` to see every change as a diff first.
 for now. Nx and Analog apps can use Ndop with a few manual steps, after
 which `ndop add` works as usual. Run every command from the workspace root.
 
-1. Write `ndop.json` at the root, pointing at your app's folders:
+:::steps
 
-   ```json title="ndop.json"
-   {
-     "$schema": "https://ndop.dev/schema/config.json",
-     "style": "default",
-     "tailwind": { "css": "apps/my-app/src/styles.css" },
-     "aliases": {
-       "ui": "apps/my-app/src/app/ui",
-       "lib": "apps/my-app/src/app/lib",
-       "blocks": "apps/my-app/src/app/blocks"
-     },
-     "importAlias": "@/",
-     "iconLibrary": "lucide"
-   }
-   ```
+### Write `ndop.json`
 
-2. Make sure the stylesheet imports Tailwind CSS v4 and Ndop's token
-   mechanics:
+At the root, pointing at your app's folders:
 
-   ```css title="apps/my-app/src/styles.css"
-   @import 'tailwindcss';
-   @import '@ndop/core/styles.css';
-   ```
+```json title="ndop.json"
+{
+  "$schema": "https://ndop.dev/schema/config.json",
+  "style": "default",
+  "tailwind": { "css": "apps/my-app/src/styles.css" },
+  "aliases": {
+    "ui": "apps/my-app/src/app/ui",
+    "lib": "apps/my-app/src/app/lib",
+    "blocks": "apps/my-app/src/app/blocks"
+  },
+  "importAlias": "@/",
+  "iconLibrary": "lucide"
+}
+```
 
-3. Add the theme and the helper files:
+### Import Tailwind CSS and Ndop's styles
 
-   ```bash pm
-   npx ndop add default utils icons
-   ```
+The stylesheet needs Tailwind CSS v4 and Ndop's token mechanics:
 
-4. Register Ndop and the icons in the app's `app.config.ts`:
+```css title="apps/my-app/src/styles.css"
+@import 'tailwindcss';
+@import '@ndop/core/styles.css';
+```
 
-   ```ts title="apps/my-app/src/app/app.config.ts"
-   import { provideNdop } from '@ndop/core';
-   import { provideIcons } from './lib/icons';
+### Add the theme and the helper files
 
-   export const appConfig: ApplicationConfig = {
-     providers: [provideNdop(), provideIcons()],
-   };
-   ```
+```bash pm
+npx ndop add default utils icons
+```
+
+### Register Ndop and the icons
+
+In the app's `app.config.ts`:
+
+```ts title="apps/my-app/src/app/app.config.ts"
+import { provideNdop } from '@ndop/core';
+import { provideIcons } from './lib/icons';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideNdop(), provideIcons()],
+};
+```
+
+:::
 
 Without an `@/*` path alias in the root `tsconfig.json`, `ndop add` rewrites
 each component's `@/` imports to relative paths.

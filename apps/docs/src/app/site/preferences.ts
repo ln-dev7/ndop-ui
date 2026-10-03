@@ -1,3 +1,4 @@
+import { Directionality } from '@angular/cdk/bidi';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { NdopTheme, type NdopThemeMode } from '@ndop/core';
@@ -16,6 +17,7 @@ export class Preferences {
   private readonly root = inject(DOCUMENT).documentElement;
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly currentDirection = signal<Direction>('ltr');
+  private readonly directionality = inject(Directionality);
 
   /** The color scheme: light, dark, or the operating system's. */
   readonly mode = this.theme.mode;
@@ -32,7 +34,7 @@ export class Preferences {
     if (!this.browser) return;
     const saved = this.read('ndop-theme');
     if (saved === 'light' || saved === 'dark') this.theme.set(saved);
-    this.currentDirection.set(this.root.dir === 'rtl' ? 'rtl' : 'ltr');
+    this.applyDirection(this.root.dir === 'rtl' ? 'rtl' : 'ltr');
   }
 
   /**
@@ -51,9 +53,24 @@ export class Preferences {
    * @param direction - The direction.
    */
   setDirection(direction: Direction): void {
-    this.currentDirection.set(direction);
     this.root.dir = direction;
+    this.applyDirection(direction);
     this.write('ndop-dir', direction);
+  }
+
+  /**
+   * Tells the app the direction changed. The CDK reads `<html dir>` only
+   * when it starts, so its root `Directionality`, which overlays and
+   * keyboard handling follow, is updated here too.
+   *
+   * @param direction - The direction.
+   */
+  private applyDirection(direction: Direction): void {
+    this.currentDirection.set(direction);
+    if (this.directionality.value !== direction) {
+      this.directionality.valueSignal.set(direction);
+      this.directionality.change.emit(direction);
+    }
   }
 
   /**

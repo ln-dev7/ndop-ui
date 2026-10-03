@@ -1,4 +1,5 @@
 import { computed, Injectable } from '@angular/core';
+import { components } from 'virtual:ndop/components';
 import { guideEntries } from './guides';
 
 /**
@@ -30,7 +31,8 @@ const SECTIONS: [folder: string, title: string][] = [
 
 /**
  * The docs navigation, built from the front matter of the guides in
- * `src/guides/<section>/<page>.md`. Every page is reachable from it, which
+ * `src/guides/<section>/<page>.md`, then the components from the built
+ * registry. Every page is reachable from it, which
  * is how prerendering discovers the whole site.
  */
 @Injectable({ providedIn: 'root' })
@@ -38,8 +40,8 @@ export class Navigation {
   private readonly guides = guideEntries();
 
   /** Sections with their links. */
-  readonly sections = computed<NavSection[]>(() =>
-    SECTIONS.map(([folder, title]) => ({
+  readonly sections = computed<NavSection[]>(() => [
+    ...SECTIONS.map(([folder, title]) => ({
       title,
       links: this.guides
         .filter((guide) => guide.section === folder)
@@ -50,7 +52,15 @@ export class Navigation {
           url: `/docs/${folder}/${guide.page}`,
         })),
     })),
-  );
+    {
+      title: 'Components',
+      links: components.map((component) => ({
+        title: component.title,
+        description: component.description,
+        url: `/docs/components/${component.name}`,
+      })),
+    },
+  ]);
 
   /** Every link, in reading order, for previous and next. */
   readonly links = computed(() =>

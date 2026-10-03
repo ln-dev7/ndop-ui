@@ -5,6 +5,7 @@
   "prefix": "docs",
   "sourceRoot": "apps/docs/src",
   "tags": ["type:app"],
+  "implicitDependencies": ["registry"],
   "targets": {
     "build": {
       "executor": "@analogjs/platform:vite",
@@ -24,7 +25,8 @@
           "sourcemap": false,
           "mode": "production"
         }
-      }
+      },
+      "dependsOn": ["^build"]
     },
     "serve": {
       "executor": "@analogjs/platform:vite-dev-server",
@@ -42,7 +44,8 @@
         "production": {
           "buildTarget": "docs:build:production"
         }
-      }
+      },
+      "dependsOn": ["^build"]
     },
     "lint": {
       "inputs": [
@@ -71,7 +74,8 @@
       "executor": "@analogjs/vitest-angular:test",
       "options": {
         "config": "vite.config.ts"
-      }
+      },
+      "dependsOn": ["^build"]
     }
   }
 }

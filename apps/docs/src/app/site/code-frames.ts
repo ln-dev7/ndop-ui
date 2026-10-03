@@ -14,6 +14,7 @@ const STORAGE_KEY = 'ndop-pm';
  * Makes the build-time code blocks inside an element interactive, through
  * delegated listeners:
  *
+ * - "Expand" buttons show the whole of a collapsed file;
  * - copy buttons copy the visible code (in a command block, the selected
  *   package manager's command) and show a check for two seconds; the
  *   result, or a refused copy, is announced to screen readers;
@@ -59,26 +60,70 @@ export class CodeFrames {
       this.choose(tab.dataset['pm']);
       return;
     }
+    const expand = target?.closest<HTMLElement>('[data-code-expand]');
+    if (expand) {
+      this.toggle(expand.closest('figure'));
+      return;
+    }
     const copy = target?.closest<HTMLElement>('[data-code-copy]');
     if (!copy) return;
     const frame = copy.closest('figure');
     const pre =
       frame?.querySelector('[role="tabpanel"]:not([hidden]) pre') ??
       frame?.querySelector('pre');
+    await this.copy(pre?.textContent?.trim() ?? '', copy);
+  }
+
+  /**
+   * Expands a collapsed file, or collapses it again.
+   *
+   * @param frame - The code block.
+   */
+  private toggle(frame: HTMLElement | null): void {
+    if (!frame) return;
+    const expanded = !frame.hasAttribute('data-expanded');
+    frame.toggleAttribute('data-expanded', expanded);
+    const header = frame.querySelector('.code-frame-expand');
+    header?.setAttribute('aria-expanded', String(expanded));
+    if (header) header.textContent = expanded ? 'Collapse' : 'Expand';
+    // Collapsing from the end of a long file would leave the reader far
+    // below it.
+    if (!expanded) frame.scrollIntoView({ block: 'nearest' });
+  }
+
+  /**
+   * Copies text, announces the result, and marks the button that asked
+   * with `data-copied` for two seconds.
+   *
+   * @param text - Text to copy.
+   * @param button - The button that asked.
+   * @returns Whether the browser accepted it.
+   */
+  async copy(text: string, button: HTMLElement): Promise<boolean> {
     try {
-      await navigator.clipboard.writeText(pre?.textContent?.trim() ?? '');
+      await navigator.clipboard.writeText(text);
     } catch {
       // The browser refused, for example in an embedded frame; say so
       // instead of pretending.
       this.announcement.set("Couldn't copy; select the code instead");
-      return;
+      return false;
     }
-    copy.setAttribute('data-copied', '');
+    button.setAttribute('data-copied', '');
     this.announcement.set('Copied to the clipboard');
     setTimeout(() => {
-      copy.removeAttribute('data-copied');
+      button.removeAttribute('data-copied');
       this.announcement.set('');
     }, 2000);
+    return true;
+  }
+
+  /**
+   * The reader's package manager, as chosen in a command block.
+   *
+   * @returns It, or `npm` when none was chosen.
+   */
+  packageManager(): string {
+    return this.manager ?? 'npm';
   }
 
   /**

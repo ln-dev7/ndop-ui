@@ -2,10 +2,15 @@ import type { EnvironmentProviders } from '@angular/core';
 import {
   LucideArrowLeft,
   LucideArrowRight,
+  LucideBug,
+  LucideCode,
+  LucideCopy,
+  LucideExternalLink,
   LucideLanguages,
   LucideMenu,
   LucideMonitor,
   LucideMoon,
+  LucidePencil,
   LucideSun,
 } from '@lucide/angular';
 import { provideNdopIcons } from '@ndop/core';
@@ -22,10 +27,15 @@ export function provideDocsIcons(): EnvironmentProviders {
     ...ndopIcons,
     'arrow-left': LucideArrowLeft.icon,
     'arrow-right': LucideArrowRight.icon,
+    bug: LucideBug.icon,
+    code: LucideCode.icon,
+    copy: LucideCopy.icon,
+    'external-link': LucideExternalLink.icon,
     languages: LucideLanguages.icon,
     menu: LucideMenu.icon,
     monitor: LucideMonitor.icon,
     moon: LucideMoon.icon,
+    pencil: LucidePencil.icon,
     sun: LucideSun.icon,
   });
 }

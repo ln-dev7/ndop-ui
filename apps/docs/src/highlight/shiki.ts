@@ -153,6 +153,49 @@ function copyButton(): Element {
   );
 }
 
+/** Lines a collapsible block shows whole; longer ones start collapsed. */
+const COLLAPSE_AFTER = 12;
+
+/**
+ * The header button that expands and collapses a long file; the app
+ * toggles `data-expanded` on the block.
+ *
+ * @returns The button.
+ */
+function expandButton(): Element {
+  return h(
+    'button',
+    {
+      type: 'button',
+      className: ['code-frame-expand'],
+      dataCodeExpand: '',
+      ariaExpanded: 'false',
+    },
+    [text('Expand')],
+  );
+}
+
+/**
+ * The "Expand" button over the faded end of a collapsed file. The header
+ * button already serves keyboard and screen reader users, so this one is
+ * for the pointer only.
+ *
+ * @returns The button.
+ */
+function expandOverlay(): Element {
+  return h(
+    'button',
+    {
+      type: 'button',
+      className: ['code-frame-expand-overlay'],
+      dataCodeExpand: '',
+      tabIndex: -1,
+      ariaHidden: 'true',
+    },
+    [text('Expand')],
+  );
+}
+
 /** Package managers a command block offers, in tab order. */
 export const PACKAGE_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun'] as const;
 
@@ -296,7 +339,10 @@ export function transformerMetaTitle(): ShikiTransformer {
  * - `title="tsconfig.json"`: a header with a file icon, the name and the
  *   copy button;
  * - `pm`: a single npm command shown for every package manager (see
- *   {@link commandFor}).
+ *   {@link commandFor});
+ * - `attached`: no frame of its own, for a block inside an example card.
+ * - `collapse`, with a title: a file longer than 12 lines starts
+ *   collapsed, with an "Expand" button in the header and over its end.
  *
  * Line numbers and the maximum height come from CSS.
  *
@@ -317,7 +363,13 @@ export function transformerCodeFrame(): ShikiTransformer {
       }
       const title = (this.options.meta as { title?: string } | undefined)
         ?.title;
-      const numbered = this.source.trimEnd().includes('\n');
+      const lines = this.source.trimEnd().split('\n').length;
+      const numbered = lines > 1;
+      // Short files show whole; collapsing them would hide nothing.
+      const collapsible =
+        Boolean(title) &&
+        /(?:^|\s)collapse(?:\s|$)/.test(meta) &&
+        lines > COLLAPSE_AFTER;
       const children: Element[] = title
         ? [
             h('div', { className: ['code-frame-header'] }, [
@@ -326,9 +378,11 @@ export function transformerCodeFrame(): ShikiTransformer {
                 /^json/.test(language) ? BRACES_ICON : FILE_ICON,
               ),
               h('span', { className: ['code-frame-title'] }, [text(title)]),
+              ...(collapsible ? [expandButton()] : []),
               copyButton(),
             ]),
             pre,
+            ...(collapsible ? [expandOverlay()] : []),
           ]
         : [copyButton(), pre];
       root.children = [
@@ -338,8 +392,13 @@ export function transformerCodeFrame(): ShikiTransformer {
             className: [
               'code-frame',
               ...(title ? ['code-frame-titled'] : []),
+              ...(collapsible ? ['code-frame-collapsible'] : []),
               // A single line needs no line number.
               ...(numbered ? ['code-frame-numbered'] : []),
+              // Under an example's preview, inside its card.
+              ...(/(?:^|\s)attached(?:\s|$)/.test(meta)
+                ? ['code-frame-attached']
+                : []),
             ],
             dataLanguage: language,
           },

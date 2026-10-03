@@ -1,11 +1,16 @@
 /// <reference types="vitest" />
 
+import { join } from 'node:path';
 import analog from '@analogjs/platform';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { angularServerMode } from '../../tools/workspace-plugin/src/vite/angular-server-mode';
+import { componentDocs } from './build/component-docs';
 import { LANGUAGES, THEMES, transformers } from './src/highlight/shiki';
+import { stepsExtension } from './src/markdown/steps';
+
+const workspace = join(import.meta.dirname, '../..');
 
 export default defineConfig(() => {
   return {
@@ -41,6 +46,7 @@ export default defineConfig(() => {
         // highlighter ships to the browser.
         content: {
           highlighter: 'shiki',
+          markedOptions: { extensions: [stepsExtension()] },
           shikiOptions: {
             highlighter: { langs: LANGUAGES, themes: Object.values(THEMES) },
             highlight: {
@@ -54,6 +60,8 @@ export default defineConfig(() => {
         // from the home page prerenders the whole site.
         prerender: { discover: true, routes: ['/'] },
       }),
+      // Component pages' data, from the built registry (`^build`).
+      componentDocs({ workspace }),
       angularServerMode(),
       // Tailwind's Vite plugin rewrites the url()s of stylesheets it
       // inlines, such as Fontsource's font files; its PostCSS plugin left

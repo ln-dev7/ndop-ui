@@ -6,7 +6,10 @@ import {
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideClientHydration } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
 import { withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
 import { provideNdop } from '@ndop/core';
@@ -30,7 +33,8 @@ export const appConfig: ApplicationConfig = {
       // prerendered page in place.
       withViewTransitions({ skipInitialTransition: true }),
     ),
-    provideClientHydration(),
+    // Previews hydrate when they scroll into view (ADR-0016).
+    provideClientHydration(withIncrementalHydration()),
     provideHttpClient(withInterceptors([requestContextInterceptor])),
     provideNdop({ theme: 'system' }),
     provideDocsIcons(),

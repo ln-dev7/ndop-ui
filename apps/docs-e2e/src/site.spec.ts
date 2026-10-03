@@ -141,3 +141,14 @@ test('command blocks follow the chosen package manager everywhere', async ({
     'yarn dlx ndop add dialog',
   );
 });
+
+test('guides write numbered steps with :::steps', async ({ page }) => {
+  await open(page, '/docs/getting-started/installation');
+  const steps = page.locator('ol.steps > li');
+  await expect(steps).toHaveCount(4);
+  await expect(steps.first().locator('.step-title')).toHaveText(
+    'Write ndop.json',
+  );
+  // Code inside a step is highlighted like any other block.
+  await expect(steps.first().locator('figure.code-frame')).toBeVisible();
+});
