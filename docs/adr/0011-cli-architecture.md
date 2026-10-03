@@ -99,3 +99,38 @@ list says.
 - The CLI depends on `ts-morph`, whose bundled TypeScript is only used to
   edit user files, not to compile them.
 - Publishing needs the `ndop` npm name in addition to `@ndop/*`.
+
+## Amendment 1 (2026-10-03): `init` and `add` details
+
+Status: Proposed.
+
+Implementing `init` and `add` settled points this ADR left open:
+
+1. **Files are formatted while planning, not after writing.** Each planned
+   file holds the text the project's Prettier produces, so `--dry-run`
+   diffs, the "nothing changed" check and the lockfile hashes (ADR-0002:
+   "after formatting") all see exactly what is written. Files are then
+   written as planned, and dependencies installed.
+2. **`add` never overwrites a user's edits.** A target file that exists
+   with different content is replaced only if it still matches the hash
+   in `ndop.lock.json` (the user never touched it) or `--overwrite` is
+   passed; otherwise it is reported as skipped. Merging upstream changes
+   into edited files stays `ndop update`'s job (Phase 5).
+3. **Prompts only on a terminal.** Without `--yes`, a command asks before
+   applying only when stdin and stdout are TTYs; agents and CI never
+   block. `--json` never prompts.
+4. **Install failures keep the written files.** The plan's files are
+   written first; if the package manager fails, the command exits with
+   code 1 and prints its output. Running the command again installs only
+   what is still missing from `package.json`.
+5. **`init` details.** `--theme <name>` installs the theme item of that
+   name (default `default`) and records it as `style`. `--registry`
+   is saved to `ndop.json`; `NDOP_REGISTRY` is not. Item folders default
+   to `<sourceRoot>/app/{ui,lib,blocks}`, or follow an existing `@/*`
+   path alias. Projects with several applications need `--project`.
+   Missing Tailwind v4 is set up as `ng new --style tailwind` does it.
+6. **Item references are names.** `add` accepts `name` and
+   `@namespace/name`; installing by URL is rejected with a clear message
+   until a later phase needs it, since the lockfile keys items by
+   namespace.
+7. **The lockfile names the default registry `@ndop`.**
