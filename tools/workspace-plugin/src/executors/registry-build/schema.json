@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Registry build",
+  "description": "Builds an Ndop registry with ndop build (ADR-0012): validates items, checks imports, type-checks with ngc, checks version snapshots and writes the static registry.",
+  "type": "object",
+  "properties": {
+    "registryRoot": {
+      "type": "string",
+      "description": "Folder holding registry.json, relative to the workspace root. Defaults to the project root."
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Folder the static registry is written to (files land under its r/ subfolder), relative to the workspace root."
+    },
+    "tsconfig": {
+      "type": "string",
+      "description": "tsconfig the compile check extends, relative to the workspace root, so packages mapped in its paths resolve."
+    },
+    "frozenSnapshots": {
+      "type": "boolean",
+      "description": "Fail when an item version has no committed snapshot. Defaults to true when the CI environment variable is set."
+    },
+    "compile": {
+      "type": "boolean",
+      "description": "Type-check items with ngc.",
+      "default": true
+    }
+  },
+  "required": ["outputPath"]
+}

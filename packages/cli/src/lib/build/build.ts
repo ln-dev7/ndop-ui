@@ -1,0 +1,360 @@
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import {
+  schemas,
+  validate,
+  type Registry,
+  type RegistryItem,
+} from '@ndop/schema';
+import { compileFiles } from './compile';
+import { checkExports, checkImports, sourceProject } from './sources';
+import { themeFromCss } from './theme';
+import type {
+  BuildIssue,
+  BuildOptions,
+  BuildResult,
+  SnapshotStatus,
+} from './types';
+
+/**
+ * Builds a registry: validates the source manifest and every item, checks
+ * imports and exports, type-checks the items with `ngc`, checks version
+ * snapshots, then writes the static registry (ADR-0012):
+ *
+ * - `<output>/r/index.json`: the manifest, items without file contents;
+ * - `<output>/r/<name>.json`: each item's latest version, with contents;
+ * - `<output>/r/<name>@<version>.json`: every snapshotted version, the
+ *   immutable merge bases `ndop update` reads.
+ *
+ * A snapshot is written to `<root>/snapshots/<name>@<version>.json` the
+ * first time a version is built, and must be committed. If one already
+ * exists and the item now builds differently, the build fails: the item
+ * changed without a version bump.
+ *
+ * `registry:theme` items without `cssVars` read them from
+ * `<root>/themes/<name>/theme.css` (see {@link themeFromCss}), so a theme's
+ * tokens live in one stylesheet that apps and tests can import directly.
+ *
+ * Nothing is written when any check fails, or with `dryRun`.
+ *
+ * @param options - Where the registry is and where it goes.
+ * @returns What was built, written and found wrong.
+ *
+ * @example
+ * ```ts
+ * const result = await buildRegistry({ root: 'registry', output: 'dist/registry' });
+ * if (!result.ok) process.exitCode = 1;
+ * ```
+ */
+export async function buildRegistry(
+  options: BuildOptions,
+): Promise<BuildResult> {
+  const { root, output } = options;
+  const frozen = options.frozenSnapshots ?? Boolean(process.env['CI']);
+  const issues: BuildIssue[] = [];
+  const warnings: string[] = [];
+  const result = (extra: Partial<BuildResult> = {}): BuildResult => ({
+    ok: issues.length === 0,
+    items: [],
+    files: [],
+    issues,
+    warnings,
+    ...extra,
+  });
+
+  const manifest = await readManifest(root, issues);
+  if (!manifest) {
+    return result();
+  }
+
+  const byName = new Map<string, RegistryItem>();
+  for (const item of manifest.items) {
+    if (byName.has(item.name)) {
+      issues.push({ item: item.name, message: 'Duplicate item name.' });
+    }
+    byName.set(item.name, item);
+  }
+
+  const built: RegistryItem[] = [];
+  for (const item of manifest.items) {
+    built.push(await buildItem(item, root, byName, issues));
+  }
+
+  const builtByName = new Map(built.map((item) => [item.name, item]));
+  const project = sourceProject();
+  for (const item of built) {
+    issues.push(...checkImports(item, builtByName, project));
+    issues.push(...checkExports(item, project));
+  }
+
+  if (options.compile !== false && issues.length === 0) {
+    const files = built.flatMap((item) =>
+      (item.files ?? [])
+        .map((file) => file.path)
+        .filter((path) => path.endsWith('.ts')),
+    );
+    const compiled = await compileFiles(root, files, options.tsconfig);
+    if (compiled.skipped) {
+      warnings.push(
+        '@angular/compiler-cli was not found from the registry root, so items were not type-checked.',
+      );
+    } else {
+      issues.push(...compiled.issues);
+    }
+  }
+
+  const snapshots = await checkSnapshots(built, root, frozen, issues);
+  const reports = built.map((item) => ({
+    name: item.name,
+    version: item.version,
+    snapshot: snapshots.status.get(item.name),
+  }));
+  if (issues.length > 0) {
+    return result({ items: reports });
+  }
+
+  const index: Registry = {
+    $schema: schemas.registry.$id,
+    name: manifest.name,
+    homepage: manifest.homepage,
+    items: built.map(withoutContent),
+  };
+  const indexCheck = validate('registry', index);
+  if (!indexCheck.valid) {
+    issues.push(
+      ...indexCheck.issues.map((issue) => ({
+        file: 'r/index.json',
+        message: `${issue.path} ${issue.message}`,
+      })),
+    );
+    return result({ items: reports });
+  }
+
+  const outputs = new Map<string, string>([['r/index.json', json(index)]]);
+  for (const item of built) {
+    outputs.set(`r/${item.name}.json`, json(item));
+  }
+  for (const [file, content] of snapshots.all) {
+    outputs.set(`r/${file}`, content);
+  }
+
+  if (!options.dryRun) {
+    await rm(join(output, 'r'), { recursive: true, force: true });
+    for (const [file, content] of outputs) {
+      await write(join(output, file), content);
+    }
+    for (const [file, content] of snapshots.created) {
+      await write(join(root, 'snapshots', file), content);
+    }
+  }
+  return result({ items: reports, files: [...outputs.keys()] });
+}
+
+/**
+ * Reads and validates `<root>/registry.json`.
+ *
+ * @param root - Registry root.
+ * @param issues - Receives problems.
+ * @returns The manifest, or `undefined` when it can't be used.
+ */
+async function readManifest(
+  root: string,
+  issues: BuildIssue[],
+): Promise<Registry | undefined> {
+  const file = 'registry.json';
+  let data: unknown;
+  try {
+    data = JSON.parse(await readFile(join(root, file), 'utf-8'));
+  } catch (error) {
+    issues.push({ file, message: `Can't read the manifest: ${String(error)}` });
+    return undefined;
+  }
+  const checked = validate('registry', data);
+  if (!checked.valid) {
+    issues.push(
+      ...checked.issues.map((issue) => ({
+        file,
+        message: `${issue.path || '/'} ${issue.message}`,
+      })),
+    );
+    return undefined;
+  }
+  return checked.value;
+}
+
+/**
+ * Builds one item: embeds file contents, derives theme tokens, checks
+ * registry dependencies and validates the result against the item schema.
+ *
+ * @param source - The manifest entry.
+ * @param root - Registry root.
+ * @param byName - Every manifest item, by name.
+ * @param issues - Receives problems.
+ * @returns The built item.
+ */
+async function buildItem(
+  source: RegistryItem,
+  root: string,
+  byName: ReadonlyMap<string, RegistryItem>,
+  issues: BuildIssue[],
+): Promise<RegistryItem> {
+  const item: RegistryItem = {
+    ...structuredClone(source),
+    $schema: schemas['registry-item'].$id,
+  };
+  const report = (message: string, file?: string) =>
+    issues.push({ item: item.name, ...(file ? { file } : {}), message });
+
+  for (const file of item.files ?? []) {
+    try {
+      file.content = await readFile(join(root, file.path), 'utf-8');
+    } catch {
+      report('File not found.', file.path);
+    }
+  }
+
+  for (const dependency of item.registryDependencies ?? []) {
+    if (!dependency.includes('/') && !byName.has(dependency)) {
+      report(
+        `registryDependencies lists "${dependency}", which isn't in the manifest.`,
+      );
+    }
+  }
+
+  if (item.type === 'registry:theme' && !item.cssVars) {
+    const file = `themes/${item.name}/theme.css`;
+    let css: string | undefined;
+    try {
+      css = await readFile(join(root, file), 'utf-8');
+    } catch {
+      report('A theme without cssVars needs this stylesheet.', file);
+    }
+    if (css !== undefined) {
+      const theme = themeFromCss(css);
+      if ('problems' in theme) {
+        theme.problems.forEach((problem) => report(problem, file));
+      } else {
+        item.cssVars = theme.parts.cssVars;
+        item.css = { ...theme.parts.css, ...item.css };
+        const declared = new Set(
+          (item.dependencies ?? []).map((d) => d.replace(/(?<=.)@.*$/, '')),
+        );
+        for (const name of theme.parts.packages) {
+          if (!declared.has(name)) {
+            report(
+              `Imports "${name}", which isn't in the item's dependencies.`,
+              file,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  const checked = validate('registry-item', item);
+  if (!checked.valid) {
+    checked.issues.forEach((issue) =>
+      report(`${issue.path || '/'} ${issue.message}`),
+    );
+  }
+  return item;
+}
+
+/**
+ * Compares each built item with its version's snapshot.
+ *
+ * @param built - Built items.
+ * @param root - Registry root.
+ * @param frozen - Whether a missing snapshot is an error.
+ * @param issues - Receives problems.
+ * @returns Each item's status, the snapshots to create, and every snapshot
+ *   (existing and new) by file name.
+ */
+async function checkSnapshots(
+  built: readonly RegistryItem[],
+  root: string,
+  frozen: boolean,
+  issues: BuildIssue[],
+): Promise<{
+  status: Map<string, SnapshotStatus>;
+  created: Map<string, string>;
+  all: Map<string, string>;
+}> {
+  const folder = join(root, 'snapshots');
+  const all = new Map<string, string>();
+  let names: string[] = [];
+  try {
+    names = (await readdir(folder)).filter((name) => name.endsWith('.json'));
+  } catch {
+    // No snapshots folder yet: every item is on its first version.
+  }
+  for (const name of names.sort()) {
+    all.set(name, await readFile(join(folder, name), 'utf-8'));
+  }
+
+  const status = new Map<string, SnapshotStatus>();
+  const created = new Map<string, string>();
+  for (const item of built) {
+    const file = `${item.name}@${item.version}.json`;
+    const content = json(item);
+    const existing = all.get(file);
+    if (existing === undefined) {
+      if (frozen) {
+        issues.push({
+          item: item.name,
+          file: `snapshots/${file}`,
+          message:
+            'No snapshot for this version. Run ndop build without frozen snapshots and commit it.',
+        });
+      }
+      created.set(file, content);
+      all.set(file, content);
+      status.set(item.name, 'created');
+    } else if (json(JSON.parse(existing)) !== content) {
+      issues.push({
+        item: item.name,
+        file: `snapshots/${file}`,
+        message: `The item changed but its version is still ${item.version}. Bump the version.`,
+      });
+    } else {
+      status.set(item.name, 'unchanged');
+    }
+  }
+  return { status, created, all };
+}
+
+/**
+ * An item as listed in `index.json`: everything but file contents.
+ *
+ * @param item - A built item.
+ * @returns A copy without `files[].content`.
+ */
+function withoutContent(item: RegistryItem): RegistryItem {
+  const listed = structuredClone(item);
+  delete listed.$schema;
+  for (const file of listed.files ?? []) {
+    delete file.content;
+  }
+  return listed;
+}
+
+/**
+ * Serializes JSON the way every registry file is written.
+ *
+ * @param value - Any JSON value.
+ * @returns Two-space-indented JSON with a trailing newline.
+ */
+function json(value: unknown): string {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+/**
+ * Writes a file, creating its folder.
+ *
+ * @param path - Absolute or cwd-relative path.
+ * @param content - File text.
+ */
+async function write(path: string, content: string): Promise<void> {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, content);
+}

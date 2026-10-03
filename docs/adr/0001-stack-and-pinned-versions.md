@@ -215,15 +215,20 @@ in CI only and reruns `core` and `primitives`:
 
 Installed versions, checked against npm the same day:
 
-| Package                                                          | Version       | Use                                                                     |
-| ---------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------- |
-| `@nx/esbuild`                                                    | 23.2.1        | Builds `@ndop/cli` as one ESM bin with npm packages external (ADR-0011) |
-| `esbuild`                                                        | 0.28.2        | Pinned to the version `@angular/build` already brings                   |
-| `commander`                                                      | 15.0.0        | CLI parsing                                                             |
-| `@lucide/angular`                                                | 1.50.0        | Default icon library (ADR-0013)                                         |
-| `@fontsource-variable/geist` / `@fontsource-variable/geist-mono` | 5.3.0 / 5.3.0 | Default theme fonts (ADR-0006, amendment 1)                             |
+| Package                                                          | Version       | Use                                                                       |
+| ---------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------- |
+| `@nx/esbuild`                                                    | 23.2.1        | Builds `@ndop/cli` as one ESM bin with npm packages external (ADR-0011)   |
+| `esbuild`                                                        | 0.28.2        | Pinned to the version `@angular/build` already brings                     |
+| `commander`                                                      | 15.0.0        | CLI parsing                                                               |
+| `ts-morph`                                                       | 28.0.0        | Reads item imports and exports in `ndop build`; AST edits in `init`/`add` |
+| `postcss`                                                        | 8.5.28        | Reads theme stylesheets in `ndop build`                                   |
+| `tinyexec`                                                       | 1.3.1         | Runs `ngc` for the build's compile check                                  |
+| `picocolors`                                                     | 1.1.1         | Terminal colors                                                           |
+| `@lucide/angular`                                                | 1.50.0        | Default icon library (ADR-0013)                                           |
+| `@fontsource-variable/geist` / `@fontsource-variable/geist-mono` | 5.3.0 / 5.3.0 | Default theme fonts (ADR-0006, amendment 1)                               |
 
-The remaining CLI libraries from ADR-0011 (`@clack/prompts`, `ts-morph`,
-`jsonc-parser`, `postcss`, `package-manager-detector`, `tinyexec`, `diff`,
-`picocolors`) are installed in the step that first uses them, since lint
-rejects declared dependencies nothing imports.
+The remaining CLI libraries from ADR-0011 (`@clack/prompts`, `jsonc-parser`,
+`package-manager-detector`, `diff`) are installed in the step that first uses
+them, since lint rejects declared dependencies nothing imports. The CLI's
+dependencies live in `packages/cli/package.json`, not the root, because they
+ship with the package.

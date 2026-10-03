@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "registry-build": {
+      "implementation": "./src/executors/registry-build/registry-build",
+      "schema": "./src/executors/registry-build/schema.json",
+      "description": "Build Ndop's registry with ndop build: validate, type-check, snapshot and write static JSON."
+    }
+  }
+}

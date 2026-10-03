@@ -8,7 +8,9 @@
   "dependencies": {
     "@nx/devkit": "23.2.1",
     "tslib": "^2.3.0",
-    "@nx/angular": "23.2.1"
+    "@nx/angular": "23.2.1",
+    "@ndop/cli": "workspace:*"
   },
-  "generators": "./generators.json"
+  "generators": "./generators.json",
+  "executors": "./executors.json"
 }
