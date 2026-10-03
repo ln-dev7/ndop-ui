@@ -14,7 +14,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0005](0005-directive-only-styled-api.md)       | Directive-only styled API                                 | Accepted, with amendment 1    |
 | [0006](0006-shadcn-compatible-tokens.md)        | Token naming compatible with shadcn                       | Accepted, with amendment 1    |
 | [0011](0011-cli-architecture.md)                | CLI architecture and stack                                | Accepted                      |
-| [0012](0012-registry-source-and-build.md)       | Registry source, build and distribution                   | Accepted                      |
+| [0012](0012-registry-source-and-build.md)       | Registry source, build and distribution                   | Accepted, with amendment 1    |
 | [0013](0013-icons-adapter.md)                   | Icons adapter on `@lucide/angular`                        | Accepted                      |
 | [0014](0014-styled-items-and-examples.md)       | Styled items and examples                                 | Accepted                      |
 | [0015](0015-registry-install-test.md)           | Registry install test                                     | Accepted                      |

@@ -81,3 +81,44 @@ registry; third parties run the CLI directly.
 - Snapshots add a committed file per released item version. That history is
   small JSON and is exactly what `ndop update` needs.
 - `@ndop/schema`'s config schema gains `registry`.
+
+## Amendment 1 (2026-10-03): `ndop build` details
+
+Status: Accepted by Valery on 2026-10-03.
+
+Implementing `ndop build` settled points this ADR left open:
+
+1. **Themes are built from a stylesheet.** A `registry:theme` item without
+   `cssVars` gets them from `themes/<name>/theme.css`: `:root` becomes
+   `cssVars.light`, `.dark` becomes `cssVars.dark`, `@theme` becomes
+   `cssVars.theme`, and each package `@import` becomes a `css` entry whose
+   package must be in the item's `dependencies`. The
+   `@media (prefers-color-scheme: dark)` block for
+   `data-ndop-theme="system"` must repeat `.dark` exactly and isn't shipped:
+   `ndop init` regenerates it. Anything else in the file fails the build.
+   The token values thus live in one stylesheet that the harness imports
+   directly. Ndop's default theme is the item `default`, matching
+   `"style": "default"` in `ndop.json`.
+2. **`@ndop/*` imports must be declared.** Only `@angular/*` is allowed
+   without a `dependencies` entry. `@ndop/core` and `@ndop/primitives`
+   need one like any package, because `ndop add` installs only what items
+   declare.
+3. **`@/` imports must stay valid after install.** A file reached through
+   `@/a/b` must have the target `{a}/b.ts`, so the unchanged import finds it
+   in the user's app.
+4. **`angular.exports` is checked**: each name must be exported by one of
+   the item's files.
+5. **The compile check uses `ng new`'s compiler options** (`strict`,
+   `strictTemplates` and the rest), so items are checked as strictly as the
+   apps they land in. `--tsconfig <path>` extends a tsconfig and keeps its
+   `paths`, for monorepos whose packages resolve through `paths`, as Ndop's
+   do. `--no-compile` skips the check.
+6. **Snapshots are frozen in CI.** A version with no snapshot fails the
+   build when `--frozen-snapshots` is passed, or by default when the `CI`
+   environment variable is set, as pnpm does for `--frozen-lockfile`. This
+   way CI catches a snapshot that wasn't committed.
+7. **Nothing is written when any check fails**, and nothing at all with
+   `--dry-run`.
+8. **Examples install to `{blocks}/examples/<name>.ts`**, outside `{ui}`, so
+   copying an example doesn't add to the user's component folder.
+9. **`r/index.json` lists items without file contents or `$schema`.**
