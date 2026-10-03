@@ -1,0 +1,37 @@
+{
+  "name": "label",
+  "type": "registry:ui",
+  "version": "0.1.1",
+  "title": "Label",
+  "description": "Renders an accessible label associated with controls.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/label/label.ts",
+      "type": "registry:ui",
+      "target": "{ui}/label/label.ts",
+      "content": "/*\n * Styles from shadcn/ui new-york-v4 \"label\" (MIT License, Copyright (c) 2023\n * shadcn), copied on 2026-10-02 (ADR-0014). No changes.\n */\nimport { computed, Directive, input } from '@angular/core';\nimport { NdLabel } from '@ndop/primitives/label';\nimport { cn } from '@/lib/utils';\n\n/**\n * Styled label. Names its control natively through `for`, and mirrors an\n * `input[ndInput]`'s disabled and invalid state (`@ndop/primitives/label`).\n *\n * @example\n * ```html\n * <label ndLabel for=\"email\">Email</label>\n * ```\n */\n@Directive({\n  selector: 'label[ndLabel]',\n  hostDirectives: [{ directive: NdLabel, inputs: ['for'] }],\n  host: { 'data-slot': 'label', '[class]': 'classes()' },\n})\nexport class Label {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Label"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/label.json",
+    "examples": [
+      "label-demo",
+      "label-disabled"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

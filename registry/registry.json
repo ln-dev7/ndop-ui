@@ -47,7 +47,7 @@
     {
       "name": "button",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Button",
       "description": "Displays a button or a component that looks like a button.",
       "dependencies": ["@ndop/primitives"],
@@ -66,6 +66,7 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/button.json",
         "examples": [
           "button-anchor",
           "button-link",
@@ -77,7 +78,7 @@
     {
       "name": "label",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Label",
       "description": "Renders an accessible label associated with controls.",
       "dependencies": ["@ndop/primitives"],
@@ -96,13 +97,14 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/label.json",
         "examples": ["label-demo", "label-disabled"]
       }
     },
     {
       "name": "input",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Input",
       "description": "Displays a form input field.",
       "dependencies": ["@ndop/primitives"],
@@ -121,13 +123,14 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/input.json",
         "examples": ["input-demo", "input-signal-forms", "input-with-button"]
       }
     },
     {
       "name": "separator",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Separator",
       "description": "Visually or semantically separates content.",
       "dependencies": ["@ndop/primitives"],
@@ -146,13 +149,14 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/separator.json",
         "examples": ["separator-decorative", "separator-demo"]
       }
     },
     {
       "name": "dialog",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Dialog",
       "description": "A window overlaid on the primary window, rendering the content underneath inert.",
       "dependencies": ["@ndop/primitives"],
@@ -183,13 +187,14 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/dialog.json",
         "examples": ["dialog-close-button", "dialog-demo"]
       }
     },
     {
       "name": "popover",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Popover",
       "description": "Displays rich content in a portal, triggered by a button.",
       "dependencies": ["@ndop/primitives"],
@@ -217,13 +222,14 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/popover.json",
         "examples": ["popover-demo", "popover-placement"]
       }
     },
     {
       "name": "tooltip",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Tooltip",
       "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
       "dependencies": ["@ndop/primitives"],
@@ -247,6 +253,7 @@
         "ssr": true
       },
       "ndop": {
+        "metadata": "metadata/tooltip.json",
         "examples": ["tooltip-demo", "tooltip-icon-button"]
       }
     },

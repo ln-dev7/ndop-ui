@@ -1,0 +1,44 @@
+{
+  "name": "popover",
+  "type": "registry:ui",
+  "version": "0.1.1",
+  "title": "Popover",
+  "description": "Displays rich content in a portal, triggered by a button.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/popover/popover.ts",
+      "type": "registry:ui",
+      "target": "{ui}/popover/popover.ts",
+      "content": "/*\n * Styles from shadcn/ui new-york-v4 \"popover\" (MIT License, Copyright (c)\n * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Changes:\n * - data-[side=left|right] become data-[side=start|end] with\n *   slide-in-from-end|start: Ndop sides are logical (RFC-0001);\n * - origin-(--radix-popover-content-transform-origin) is dropped: the CDK\n *   overlay sets no such variable;\n * - no PopoverAnchor: the trigger is always the anchor;\n * - exit animations don't play, as for Dialog.\n */\nimport { computed, Directive, input } from '@angular/core';\nimport {\n  NdPopover,\n  NdPopoverClose,\n  NdPopoverContent,\n  NdPopoverPortal,\n  NdPopoverTrigger,\n} from '@ndop/primitives/popover';\nimport { cn } from '@/lib/utils';\n\nexport { NdPopover, NdPopoverClose, NdPopoverPortal, NdPopoverTrigger };\n\n/**\n * The popover panel, placed next to its trigger.\n *\n * @example\n * ```html\n * <div ndPopoverContent align=\"start\" aria-label=\"Filters\">…</div>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverContent]',\n  hostDirectives: [\n    { directive: NdPopoverContent, inputs: ['side', 'align', 'sideOffset'] },\n  ],\n  host: { 'data-slot': 'popover-content', '[class]': 'classes()' },\n})\nexport class PopoverContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Layout for the popover's title and description.\n *\n * @example\n * ```html\n * <div ndPopoverHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverHeader]',\n  host: { 'data-slot': 'popover-header', '[class]': 'classes()' },\n})\nexport class PopoverHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex flex-col gap-1 text-sm', this.class()),\n  );\n}\n\n/**\n * The popover's title. Point the content's `aria-labelledby` at it.\n *\n * @example\n * ```html\n * <h2 ndPopoverTitle id=\"filters-title\">Filters</h2>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverTitle]',\n  host: { 'data-slot': 'popover-title', '[class]': 'classes()' },\n})\nexport class PopoverTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() => cn('font-medium', this.class()));\n}\n\n/**\n * Supporting text under the popover's title.\n *\n * @example\n * ```html\n * <p ndPopoverDescription>Narrow the results.</p>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverDescription]',\n  host: { 'data-slot': 'popover-description', '[class]': 'classes()' },\n})\nexport class PopoverDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-muted-foreground', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "PopoverContent",
+      "PopoverHeader",
+      "PopoverTitle",
+      "PopoverDescription",
+      "NdPopover",
+      "NdPopoverClose",
+      "NdPopoverPortal",
+      "NdPopoverTrigger"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/popover.json",
+    "examples": [
+      "popover-demo",
+      "popover-placement"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
