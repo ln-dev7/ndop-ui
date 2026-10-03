@@ -1,6 +1,13 @@
 {
   "$schema": "https://ndop.dev/schema/metadata.json",
   "name": "dialog",
+  "title": "Dialog",
+  "description": "A window overlaid on the primary window, rendering the content underneath inert.",
+  "intro": "Use a dialog to ask for a decision or input that blocks the page until it is answered.",
+  "agentNotes": {
+    "do": ["Give every dialog a `DialogTitle`."],
+    "dont": ["Don't open a dialog from another dialog."]
+  },
   "pattern": {
     "name": "Dialog (Modal)",
     "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/"

@@ -12,6 +12,13 @@ const member = {
     type: { type: 'string', minLength: 1 },
     default: { type: 'string' },
     required: { type: 'boolean' },
+    values: {
+      type: 'array',
+      minItems: 1,
+      items: { type: 'string' },
+      description:
+        'Allowed values of an enum-like member, such as the options of a variants() input.',
+    },
     description: described,
   },
 } as const;
@@ -21,8 +28,8 @@ const member = {
  * API of one component merged with its hand-written `spec.md`. Served at
  * `https://ndop.dev/schema/metadata.json`.
  *
- * Phase 0 draft (v0): ADR-0007 finalizes it in Phase 3. Descriptions are
- * required on every member because CI fails on undocumented public inputs.
+ * Version 1 (ADR-0007). Descriptions are required on every part and member
+ * because `ndop build` fails on undocumented public API.
  */
 export const metadataSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
@@ -32,10 +39,44 @@ export const metadataSchema = {
     'API, accessibility contract and examples of one component, feeding the docs, MCP server and llms.txt.',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'parts', 'keyboard', 'focus', 'examples'],
+  required: [
+    'name',
+    'title',
+    'description',
+    'intro',
+    'agentNotes',
+    'parts',
+    'keyboard',
+    'focus',
+    'examples',
+  ],
   properties: {
     $schema: { type: 'string' },
     name: { type: 'string', pattern: ITEM_NAME_PATTERN },
+    title: described,
+    description: described,
+    intro: {
+      ...described,
+      description: "Markdown introduction, from the item's docs.md.",
+    },
+    agentNotes: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['do', 'dont'],
+      description: "Do and don't guidance for people and agents, from docs.md.",
+      properties: {
+        do: { type: 'array', minItems: 1, items: described },
+        dont: { type: 'array', minItems: 1, items: described },
+      },
+    },
+    bundleSize: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['gzip'],
+      description:
+        "Size of the item's own code, minified and gzipped, with Angular and @ndop/* packages external.",
+      properties: { gzip: { type: 'integer', minimum: 0 } },
+    },
     pattern: {
       type: 'object',
       additionalProperties: false,
@@ -68,6 +109,12 @@ export const metadataSchema = {
           },
           selector: described,
           description: described,
+          source: {
+            type: 'string',
+            minLength: 1,
+            description:
+              "Where the part is defined: `item` for the item's own files, otherwise the primitive entry point, such as `@ndop/primitives/dialog`.",
+          },
           exportAs: { type: 'string' },
           role: { type: 'string' },
           ariaAttributes: { type: 'array', items: { type: 'string' } },
@@ -91,7 +138,7 @@ export const metadataSchema = {
             items: {
               type: 'object',
               additionalProperties: false,
-              required: ['name', 'description'],
+              required: ['name'],
               properties: {
                 name: { type: 'string', pattern: '^data-[a-z0-9-]+$' },
                 values: { type: 'array', items: { type: 'string' } },

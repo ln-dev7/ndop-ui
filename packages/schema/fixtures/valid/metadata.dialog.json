@@ -1,6 +1,13 @@
 {
   "$schema": "https://ndop.dev/schema/metadata.json",
   "name": "dialog",
+  "title": "Dialog",
+  "description": "A window overlaid on the primary window, rendering the content underneath inert.",
+  "intro": "Use a dialog to ask for a decision or input that blocks the page until it is answered.",
+  "agentNotes": {
+    "do": ["Give every dialog a `DialogTitle`."],
+    "dont": ["Don't open a dialog from another dialog."]
+  },
   "pattern": {
     "name": "Dialog (Modal)",
     "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/"
@@ -21,14 +28,20 @@
         }
       ],
       "outputs": [],
-      "hostBindings": [{ "name": "attr.aria-expanded", "value": "ctx.open()" }],
+      "hostBindings": [
+        {
+          "name": "attr.aria-expanded",
+          "value": "ctx.open()"
+        }
+      ],
       "dataAttributes": [
         {
           "name": "data-state",
           "values": ["open", "closed"],
           "description": "Open state, for styling."
         }
-      ]
+      ],
+      "source": "@ndop/primitives/dialog"
     }
   ],
   "keyboard": [
@@ -36,12 +49,18 @@
       "keys": ["Enter", "Space"],
       "action": "Opens the dialog from the trigger."
     },
-    { "keys": ["Escape"], "action": "Closes the dialog." }
+    {
+      "keys": ["Escape"],
+      "action": "Closes the dialog."
+    }
   ],
   "focus": [
     "Focus moves to the first focusable element on open.",
     "Focus returns to the trigger on close."
   ],
   "rtl": "No directional behavior.",
-  "examples": ["dialog-demo", "dialog-form"]
+  "examples": ["dialog-demo", "dialog-form"],
+  "bundleSize": {
+    "gzip": 812
+  }
 }
