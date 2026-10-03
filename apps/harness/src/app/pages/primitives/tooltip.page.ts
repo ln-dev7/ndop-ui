@@ -28,7 +28,6 @@ import {
         <ng-template ndTooltipPortal>
           <div
             ndTooltipContent
-            side="top"
             class="bg-primary text-primary-foreground rounded-md px-2 py-1 text-sm"
           >
             Delete permanently

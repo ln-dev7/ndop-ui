@@ -79,7 +79,7 @@ export class NdTooltip {
   readonly contentId = signal(injectId('nd-tooltip-content'));
 
   /** Where the content actually sits, after any flip. */
-  readonly placement = signal<NdPlacement>({ side: 'bottom', align: 'center' });
+  readonly placement = signal<NdPlacement>({ side: 'top', align: 'center' });
 
   /** The trigger element. */
   trigger: HTMLElement | null = null;

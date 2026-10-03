@@ -18,7 +18,7 @@ import { ND_TOOLTIP } from './tooltip';
  *
  * @example
  * ```html
- * <div ndTooltipContent side="top">Delete permanently</div>
+ * <div ndTooltipContent>Delete permanently</div>
  * ```
  */
 @Directive({
@@ -34,8 +34,11 @@ import { ND_TOOLTIP } from './tooltip';
   },
 })
 export class NdTooltipContent {
-  /** Preferred side of the trigger; `start` and `end` swap in RTL. */
-  readonly side = input<NdSide>('bottom');
+  /**
+   * Preferred side of the trigger; `start` and `end` swap in RTL. Defaults
+   * to `top`, as in Radix and shadcn.
+   */
+  readonly side = input<NdSide>('top');
 
   /** Preferred alignment along that side. */
   readonly align = input<NdAlign>('center');

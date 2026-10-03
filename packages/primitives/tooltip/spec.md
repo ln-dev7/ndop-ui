@@ -16,7 +16,7 @@ Same overlay convention as Dialog's `spec.md`.
 <ng-container ndTooltip>
   <button ndTooltipTrigger aria-label="Delete">…</button>
   <ng-template ndTooltipPortal>
-    <div ndTooltipContent side="top">Delete permanently</div>
+    <div ndTooltipContent>Delete permanently</div>
   </ng-template>
 </ng-container>
 ```
@@ -35,7 +35,8 @@ Same overlay convention as Dialog's `spec.md`.
 - **TooltipTrigger**: any focusable element. While open, the content's id
   is added to its `aria-describedby`, keeping ids the user set there.
 - **TooltipContent**: `role="tooltip"`; never focusable. `side`, `align` and
-  `sideOffset` work as in Popover's `spec.md`.
+  `sideOffset` work as in Popover's `spec.md`, except that `side` defaults to
+  `'top'`, as in Radix and shadcn.
 - Opens: when the pointer enters the trigger, after `openDelay`; when the
   trigger receives keyboard focus, at once.
 - Closes: when the pointer leaves both trigger and content, after

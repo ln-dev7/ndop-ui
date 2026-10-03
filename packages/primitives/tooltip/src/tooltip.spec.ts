@@ -15,7 +15,7 @@ import {
         X
       </button>
       <ng-template ndTooltipPortal>
-        <div ndTooltipContent side="top">Delete permanently</div>
+        <div ndTooltipContent>Delete permanently</div>
       </ng-template>
     </ng-container>
     <p id="hint">Cannot be undone.</p>
@@ -111,5 +111,12 @@ describe('NdTooltip', () => {
     host.open.set(true);
     await settle();
     expect(screen.getByRole('tooltip').hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('prefers the top side by default', async () => {
+    const { host, settle } = await setup();
+    host.open.set(true);
+    await settle();
+    expect(screen.getByRole('tooltip').getAttribute('data-side')).toBe('top');
   });
 });
