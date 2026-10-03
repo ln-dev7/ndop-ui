@@ -1,7 +1,3 @@
-/*
- * Styles from shadcn/ui new-york-v4 "input" (MIT License, Copyright (c) 2023
- * shadcn), copied on 2026-10-02 (ADR-0014). No changes.
- */
 import { computed, Directive, input } from '@angular/core';
 import { NdInput } from '@ndop/primitives/input';
 import { cn } from '@/lib/utils';

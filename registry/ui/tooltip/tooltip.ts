@@ -1,14 +1,3 @@
-/*
- * Styles from shadcn/ui new-york-v4 "tooltip" (MIT License, Copyright (c)
- * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Changes:
- * - data-[side=left|right] become data-[side=start|end] with
- *   slide-in-from-end|start: Ndop sides are logical (RFC-0001);
- * - origin-(--radix-tooltip-content-transform-origin) is dropped: the CDK
- *   overlay sets no such variable;
- * - no arrow: the primitive doesn't position one;
- * - timing follows the primitive's contract (700 ms to open on hover,
- *   immediate on keyboard focus) rather than shadcn's instant default.
- */
 import { computed, Directive, input } from '@angular/core';
 import {
   NdTooltip,

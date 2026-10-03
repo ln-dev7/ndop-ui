@@ -47,7 +47,7 @@
     {
       "name": "button",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Button",
       "description": "Displays a button or a component that looks like a button.",
       "dependencies": ["@ndop/primitives"],
@@ -68,17 +68,42 @@
       "ndop": {
         "metadata": "metadata/button.json",
         "examples": [
+          "button-variants",
           "button-anchor",
           "button-link",
-          "button-sizes",
-          "button-variants"
+          "button-sizes"
         ]
+      }
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Badge",
+      "description": "Displays a badge or a component that looks like a badge.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/badge/badge.ts",
+          "type": "registry:ui",
+          "target": "{ui}/badge/badge.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Badge"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/badge.json",
+        "examples": ["badge-demo", "badge-link"]
       }
     },
     {
       "name": "label",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Label",
       "description": "Renders an accessible label associated with controls.",
       "dependencies": ["@ndop/primitives"],
@@ -104,7 +129,7 @@
     {
       "name": "input",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Input",
       "description": "Displays a form input field.",
       "dependencies": ["@ndop/primitives"],
@@ -130,7 +155,7 @@
     {
       "name": "separator",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Separator",
       "description": "Visually or semantically separates content.",
       "dependencies": ["@ndop/primitives"],
@@ -150,13 +175,13 @@
       },
       "ndop": {
         "metadata": "metadata/separator.json",
-        "examples": ["separator-decorative", "separator-demo"]
+        "examples": ["separator-demo", "separator-decorative"]
       }
     },
     {
       "name": "dialog",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Dialog",
       "description": "A window overlaid on the primary window, rendering the content underneath inert.",
       "dependencies": ["@ndop/primitives"],
@@ -188,13 +213,13 @@
       },
       "ndop": {
         "metadata": "metadata/dialog.json",
-        "examples": ["dialog-close-button", "dialog-demo"]
+        "examples": ["dialog-demo", "dialog-close-button"]
       }
     },
     {
       "name": "popover",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Popover",
       "description": "Displays rich content in a portal, triggered by a button.",
       "dependencies": ["@ndop/primitives"],
@@ -229,7 +254,7 @@
     {
       "name": "tooltip",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Tooltip",
       "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
       "dependencies": ["@ndop/primitives"],
@@ -255,6 +280,48 @@
       "ndop": {
         "metadata": "metadata/tooltip.json",
         "examples": ["tooltip-demo", "tooltip-icon-button"]
+      }
+    },
+    {
+      "name": "badge-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Badge demo",
+      "description": "The four main Badge variants, then badges used as counts.",
+      "registryDependencies": ["badge"],
+      "files": [
+        {
+          "path": "examples/badge-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/badge-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["BadgeDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "badge-link",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Badge link",
+      "description": "A badge that links somewhere, with a hover style.",
+      "registryDependencies": ["badge"],
+      "files": [
+        {
+          "path": "examples/badge-link.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/badge-link.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["BadgeLinkExample"],
+        "zoneless": true,
+        "ssr": true
       }
     },
     {

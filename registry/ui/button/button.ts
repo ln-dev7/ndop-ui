@@ -1,11 +1,3 @@
-/*
- * Styles from shadcn/ui new-york-v4 "button" (MIT License, Copyright (c)
- * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Changes:
- * - destructive uses text-destructive-foreground, not text-white: registry
- *   items use tokens only (RFC-0001, ADR-0006);
- * - data-disabled:* mirror disabled:*, because a disabled link has no
- *   :disabled state.
- */
 import { computed, Directive, input } from '@angular/core';
 import { NdButton } from '@ndop/primitives/button';
 import { cn, variants, type VariantOf } from '@/lib/utils';

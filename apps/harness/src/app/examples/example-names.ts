@@ -3,6 +3,8 @@
  * the home page doesn't load every example's code (ADR-0014).
  */
 export const EXAMPLE_NAMES: readonly string[] = [
+  'badge-demo',
+  'badge-link',
   'button-anchor',
   'button-link',
   'button-sizes',

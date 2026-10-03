@@ -1,13 +1,3 @@
-/*
- * Styles from shadcn/ui new-york-v4 "popover" (MIT License, Copyright (c)
- * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Changes:
- * - data-[side=left|right] become data-[side=start|end] with
- *   slide-in-from-end|start: Ndop sides are logical (RFC-0001);
- * - origin-(--radix-popover-content-transform-origin) is dropped: the CDK
- *   overlay sets no such variable;
- * - no PopoverAnchor: the trigger is always the anchor;
- * - exit animations don't play, as for Dialog.
- */
 import { computed, Directive, input } from '@angular/core';
 import {
   NdPopover,

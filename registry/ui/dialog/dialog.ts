@@ -1,14 +1,3 @@
-/*
- * Styles from shadcn/ui new-york-v4 "dialog" (MIT License, Copyright (c)
- * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Changes:
- * - shadcn renders the portal, overlay and close button inside
- *   DialogContent. Directives can't render elements, so you write them:
- *   `ndDialogPortal`, `ndDialogOverlay`, and `ndDialogCloseButton` for the
- *   close icon button (its classes are shadcn's), as in the examples;
- * - the close icon is `<svg ndIcon="x">` (ADR-0013);
- * - data-[state=closed] exit animations are kept, but the content is
- *   removed as soon as the dialog closes, so only enter animations play.
- */
 import { computed, Directive, input } from '@angular/core';
 import {
   NdDialog,

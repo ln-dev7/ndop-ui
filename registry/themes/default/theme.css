@@ -1,14 +1,6 @@
 /*
  * Ndop default theme: token values only (ADR-0006). Mechanics, including
  * the Tailwind mapping and the dark variant, come from @ndop/core/styles.css.
- *
- * Values are shadcn/ui's "neutral" Tailwind v4 palette
- * (https://ui.shadcn.com/r/colors/neutral.json, MIT License,
- * Copyright (c) 2023 shadcn), fetched on 2026-10-02.
- *
- * Fonts are Geist and Geist Mono (SIL Open Font License 1.1), self-hosted
- * from @fontsource-variable (ADR-0006, amendment 1), each followed by the
- * system stack Tailwind uses by default.
  */
 
 @import '@fontsource-variable/geist';

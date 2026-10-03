@@ -53,10 +53,12 @@ describe('ndop add', () => {
   it('installs an item, its registry dependencies and its packages', async () => {
     const environment = await initialized();
     const result = await add(environment, 'dialog');
+    // From the registry, which bumps versions as items change.
+    const version = (name: string) => environment.registry[name]?.version;
 
     expect(result.items).toEqual([
-      { registry: '@ndop', name: 'utils', version: '0.1.0' },
-      { registry: '@ndop', name: 'dialog', version: '0.1.1' },
+      { registry: '@ndop', name: 'utils', version: version('utils') },
+      { registry: '@ndop', name: 'dialog', version: version('dialog') },
     ]);
     expect(result.files).toEqual([
       { path: 'src/app/ui/dialog/dialog.ts', action: 'create' },
@@ -78,7 +80,7 @@ describe('ndop add', () => {
     expect(lock.items['@ndop/dialog']).toEqual({
       name: 'dialog',
       registry: '@ndop',
-      version: '0.1.1',
+      version: version('dialog'),
       files: [
         {
           path: 'src/app/ui/dialog/dialog.ts',

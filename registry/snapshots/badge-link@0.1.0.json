@@ -1,0 +1,27 @@
+{
+  "name": "badge-link",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Badge link",
+  "description": "A badge that links somewhere, with a hover style.",
+  "registryDependencies": [
+    "badge"
+  ],
+  "files": [
+    {
+      "path": "examples/badge-link.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/badge-link.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Badge } from '@/ui/badge/badge';\n\n/** A badge that links somewhere, with a hover style. */\n@Component({\n  selector: 'example-badge-link',\n  imports: [Badge],\n  template: `<a ndBadge variant=\"outline\" href=\"#changelog\">Changelog</a>`,\n})\nexport class BadgeLinkExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "BadgeLinkExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,4 +1,6 @@
 import type { Type } from '@angular/core';
+import { BadgeDemoExample } from '@/examples/badge-demo';
+import { BadgeLinkExample } from '@/examples/badge-link';
 import { ButtonAnchorExample } from '@/examples/button-anchor';
 import { ButtonLinkExample } from '@/examples/button-link';
 import { ButtonSizesExample } from '@/examples/button-sizes';
@@ -23,6 +25,8 @@ import { TooltipIconButtonExample } from '@/examples/tooltip-icon-button';
  * (ADR-0014). A unit test keeps this list in sync with `registry/examples`.
  */
 export const EXAMPLES: Readonly<Record<string, Type<unknown>>> = {
+  'badge-demo': BadgeDemoExample,
+  'badge-link': BadgeLinkExample,
   'button-anchor': ButtonAnchorExample,
   'button-link': ButtonLinkExample,
   'button-sizes': ButtonSizesExample,

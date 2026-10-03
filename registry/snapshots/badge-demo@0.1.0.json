@@ -1,0 +1,27 @@
+{
+  "name": "badge-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Badge demo",
+  "description": "The four main Badge variants, then badges used as counts.",
+  "registryDependencies": [
+    "badge"
+  ],
+  "files": [
+    {
+      "path": "examples/badge-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/badge-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Badge } from '@/ui/badge/badge';\n\n/** The four main Badge variants, then badges used as counts. */\n@Component({\n  selector: 'example-badge-demo',\n  imports: [Badge],\n  template: `\n    <div class=\"flex flex-col items-center gap-2\">\n      <div class=\"flex w-full flex-wrap gap-2\">\n        <span ndBadge>Badge</span>\n        <span ndBadge variant=\"secondary\">Secondary</span>\n        <span ndBadge variant=\"destructive\">Destructive</span>\n        <span ndBadge variant=\"outline\">Outline</span>\n      </div>\n      <div class=\"flex w-full flex-wrap gap-2\">\n        <span\n          ndBadge\n          class=\"h-5 min-w-5 rounded-full px-1 font-mono tabular-nums\"\n          >8</span\n        >\n        <span\n          ndBadge\n          variant=\"destructive\"\n          class=\"h-5 min-w-5 rounded-full px-1 font-mono tabular-nums\"\n          >99</span\n        >\n        <span\n          ndBadge\n          variant=\"outline\"\n          class=\"h-5 min-w-5 rounded-full px-1 font-mono tabular-nums\"\n          >20+</span\n        >\n      </div>\n    </div>\n  `,\n})\nexport class BadgeDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "BadgeDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
