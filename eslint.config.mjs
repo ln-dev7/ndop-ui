@@ -30,7 +30,10 @@ const dependencyRules = (primitiveImports) => [
   'error',
   {
     enforceBuildableLibDependency: true,
-    allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+    // `@/` is the registry's alias for its own items, mirroring the user's
+    // project so installed files need no import rewriting (ADR-0012); only
+    // the registry resolves through it.
+    allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$', '^@/.*$'],
     depConstraints: [
       {
         sourceTag: 'type:primitives',
@@ -62,11 +65,14 @@ const dependencyRules = (primitiveImports) => [
         onlyDependOnLibsWithTags: ['type:schema', 'type:tooling', 'type:tool'],
       },
       {
+        // The harness renders registry examples; the docs site reads the
+        // registry only as built JSON (RFC-0001), which no import can do.
         sourceTag: 'type:app',
         onlyDependOnLibsWithTags: [
           'type:primitives',
           'type:core',
           'type:schema',
+          'type:registry',
         ],
       },
       {

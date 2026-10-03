@@ -257,12 +257,24 @@ importers:
       '@eslint/js':
         specifier: 9.39.5
         version: 9.39.5
+      '@fontsource-variable/geist':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@fontsource-variable/geist-mono':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@lucide/angular':
+        specifier: 1.50.0
+        version: 1.50.0(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))
       '@nx/angular':
         specifier: 23.2.1
         version: 23.2.1(35b663ded60aa09ce5ce614af77cadec)
       '@nx/devkit':
         specifier: 23.2.1
         version: 23.2.1(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))
+      '@nx/esbuild':
+        specifier: 23.2.1
+        version: 23.2.1(@babel/traverse@7.29.8(supports-color@8.1.1))(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/cli@0.8.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@8.1.1))(@swc/core@1.15.47(@swc/helpers@0.5.23))(esbuild@0.28.2)(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))(supports-color@8.1.1)(verdaccio@6.10.4(supports-color@8.1.1)(typanion@3.14.0))
       '@nx/eslint':
         specifier: 23.2.1
         version: 23.2.1(86721446fc44cef563852fca396a6244)
@@ -290,6 +302,9 @@ importers:
       '@nx/workspace':
         specifier: 23.2.1
         version: 23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23))
+      '@oxc-project/runtime':
+        specifier: 0.115.0
+        version: 0.115.0
       '@playwright/test':
         specifier: 1.63.0
         version: 1.63.0
@@ -344,6 +359,9 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       eslint:
         specifier: 9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
@@ -414,9 +432,9 @@ importers:
 
   packages/cli:
     dependencies:
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
+      commander:
+        specifier: 15.0.0
+        version: 15.0.0
 
   packages/core:
     dependencies:
@@ -429,6 +447,9 @@ importers:
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
 
   packages/eslint-plugin:
     dependencies:
@@ -450,6 +471,12 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+
+  packages/ndop:
+    dependencies:
+      '@ndop/cli':
+        specifier: workspace:*
+        version: link:../cli
 
   packages/primitives:
     dependencies:
@@ -2538,6 +2565,12 @@ packages:
       '@noble/hashes':
         optional: true
 
+  '@fontsource-variable/geist-mono@5.3.0':
+    resolution: {integrity: sha512-vBbuwDEo9AkrqADMXOrlAR3DFcJi4/JxeuU43FoiQERnNwsfXNnvxvReZG02cQKmyk4DZkZdBZX3oTDvy2zBAw==}
+
+  '@fontsource-variable/geist@5.3.0':
+    resolution: {integrity: sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA==}
+
   '@harperfast/extended-iterable@1.0.3':
     resolution: {integrity: sha512-sSAYhQca3rDWtQUHSAPeO7axFIUJOI6hn1gjRC5APVE1a90tuyT8f5WIgRsFhhWA7htNkju2veB9eWL6YHi/Lw==}
 
@@ -2981,6 +3014,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@lucide/angular@1.50.0':
+    resolution: {integrity: sha512-YnOcit8wxw7op837Y/jrr+wVmexVG+AR7KstVQ0dlPYVT/M4Z7fT3pPMuJZchf7W9rJjqTVwdSJO1eu1q6YHqQ==}
+    peerDependencies:
+      '@angular/common': '>=17.0.0'
+      '@angular/core': '>=17.0.0'
+
   '@manypkg/find-root@3.1.0':
     resolution: {integrity: sha512-BcSqCyKhBVZ5YkSzOiheMCV41kqAFptW6xGqYSTjkVTl9XQpr+pqHhwgGCOHQtjDCv7Is6EFyA14Sm5GVbVABA==}
     engines: {node: '>=20.0.0'}
@@ -3237,6 +3276,14 @@ packages:
     resolution: {integrity: sha512-uMGbMJpCi+y7eHBEWqygA8JITNgzFZdzVmcKX17EXnFreu14aWZ1kyo6Qh9pKIcbJigO3F46w6ANlYp6wgCovQ==}
     peerDependencies:
       nx: '>= 22 <= 24 || ^23.0.0-0'
+
+  '@nx/esbuild@23.2.1':
+    resolution: {integrity: sha512-TpN8jf4R2r/e7a+qlHLTDikuMteL8xFV2zMWHWz4/6/IrfvBIrBm8EHmpivXhrY5008rc50YR0klmMSYMTeyVg==}
+    peerDependencies:
+      esbuild: '>=0.19.2 <1.0.0'
+    peerDependenciesMeta:
+      esbuild:
+        optional: true
 
   '@nx/eslint-plugin@23.2.1':
     resolution: {integrity: sha512-hvGaCALUQ5t/I8Loexrk5/Ggwikh1Z38iuf+9Eh37HfiedCYtXnW+QeZH+yZkVDQ44ytJGRQ7jJKqDv/ghhTtg==}
@@ -3662,6 +3709,10 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
+
+  '@oxc-project/runtime@0.115.0':
+    resolution: {integrity: sha512-Rg8Wlt5dCbXhQnsXPrkOjL1DTSvXLgb2R/KYfnf1/K+R0k6UMLEmbQXPM+kwrWqSmWA2t0B1EtHy2/3zikQpvQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
 
   '@oxc-project/types@0.121.0':
     resolution: {integrity: sha512-CGtOARQb9tyv7ECgdAlFxi0Fv7lmzvmlm2rpD/RdijOO9rfk/JvB1CjT8EnoD+tjna/IYgKKw3IV7objRb+aYw==}
@@ -9917,6 +9968,9 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
+  tw-animate-css@1.4.0:
+    resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
+
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
 
@@ -13111,6 +13165,10 @@ snapshots:
     optionalDependencies:
       '@noble/hashes': 1.8.0
 
+  '@fontsource-variable/geist-mono@5.3.0': {}
+
+  '@fontsource-variable/geist@5.3.0': {}
+
   '@harperfast/extended-iterable@1.0.3':
     optional: true
 
@@ -13630,6 +13688,12 @@ snapshots:
   '@lmdb/lmdb-win32-x64@3.5.6':
     optional: true
 
+  '@lucide/angular@1.50.0(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))':
+    dependencies:
+      '@angular/common': 22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2)
+      '@angular/core': 22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)
+      tslib: 2.8.1
+
   '@manypkg/find-root@3.1.0':
     dependencies:
       '@manypkg/tools': 2.1.2
@@ -13864,6 +13928,25 @@ snapshots:
       semver: 7.8.5
       tslib: 2.8.1
       yargs-parser: 21.1.1
+
+  '@nx/esbuild@23.2.1(@babel/traverse@7.29.8(supports-color@8.1.1))(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/cli@0.8.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@8.1.1))(@swc/core@1.15.47(@swc/helpers@0.5.23))(esbuild@0.28.2)(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))(supports-color@8.1.1)(verdaccio@6.10.4(supports-color@8.1.1)(typanion@3.14.0))':
+    dependencies:
+      '@nx/devkit': 23.2.1(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))
+      '@nx/js': 23.2.1(@babel/traverse@7.29.8(supports-color@8.1.1))(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/cli@0.8.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@8.1.1))(@swc/core@1.15.47(@swc/helpers@0.5.23))(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))(supports-color@8.1.1)(verdaccio@6.10.4(supports-color@8.1.1)(typanion@3.14.0))
+      picocolors: 1.1.1
+      tinyglobby: 0.2.17
+      tsconfig-paths: 4.2.0
+      tslib: 2.8.1
+    optionalDependencies:
+      esbuild: 0.28.2
+    transitivePeerDependencies:
+      - '@babel/traverse'
+      - '@swc-node/register'
+      - '@swc/cli'
+      - '@swc/core'
+      - nx
+      - supports-color
+      - verdaccio
 
   '@nx/eslint-plugin@23.2.1(@babel/traverse@7.29.8(supports-color@8.1.1))(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/cli@0.8.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(chokidar@5.0.0)(supports-color@8.1.1))(@swc/core@1.15.47(@swc/helpers@0.5.23))(@typescript-eslint/parser@8.71.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint-config-prettier@10.1.8(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1)))(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@8.1.1)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))(supports-color@8.1.1)(typescript@6.0.3)(verdaccio@6.10.4(supports-color@8.1.1)(typanion@3.14.0))':
     dependencies:
@@ -14287,6 +14370,8 @@ snapshots:
 
   '@oxc-parser/binding-win32-x64-msvc@0.150.0':
     optional: true
+
+  '@oxc-project/runtime@0.115.0': {}
 
   '@oxc-project/types@0.121.0': {}
 
@@ -21295,6 +21380,8 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+
+  tw-animate-css@1.4.0: {}
 
   tweetnacl@0.14.5: {}
 

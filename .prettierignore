@@ -8,3 +8,7 @@ pnpm-lock.yaml
 
 # Fixtures model users' files, including their own formatting.
 /tools/update-fixtures
+
+# Vendored upstream files stay byte-identical to what was fetched.
+/packages/schema/vendor
+/registry/vendor
