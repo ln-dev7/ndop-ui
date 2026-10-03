@@ -11,6 +11,9 @@ export default defineConfig(() => ({
     watch: false,
     globals: true,
     environment: 'node',
+    // Tests run ngc, Prettier and ts-morph on real files, which takes
+    // seconds when the whole workspace tests in parallel.
+    testTimeout: 30_000,
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {

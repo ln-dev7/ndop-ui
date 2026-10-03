@@ -1,0 +1,3 @@
+# Fixture Angular apps for the CLI tests; their package.json files are
+# not workspace projects.
+packages/cli/fixtures

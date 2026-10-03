@@ -1,0 +1,346 @@
+import { posix } from 'node:path';
+import { schemas, type NdopConfig } from '@ndop/schema';
+import { parseJsonc, setJsonc } from '../edit/json';
+import { ensureImports } from '../edit/stylesheet';
+import { addProviders } from '../edit/typescript';
+import { CliError } from '../errors';
+import type { PlanBuilder } from '../plan/plan';
+import {
+  DEFAULT_NAMESPACE,
+  resolveItems,
+  type RegistryClient,
+  type ResolvedItem,
+} from '../registry/client';
+import { planItems } from './items';
+import {
+  aliasPrefix,
+  CONFIG_FILE,
+  projectSpecifier,
+  readAliasBase,
+  readConfig,
+  type InstallContext,
+} from './project-files';
+
+/** Oldest Angular major Ndop supports (RFC-0001: current and previous). */
+const MIN_ANGULAR_MAJOR = 21;
+
+/** Items `ndop init` installs besides the theme (ADR-0011). */
+const BASE_ITEMS = ['utils', 'icons'];
+
+/**
+ * What `ndop init` found in the project.
+ */
+export interface Detection {
+  /** Installed `@angular/core` version, or the declared range. */
+  angularVersion: string;
+  /** Name of the Angular project in `angular.json`. */
+  project: string;
+  /** Its source root, such as `src`. */
+  sourceRoot: string;
+  /** Path of the standalone `app.config.ts`. */
+  appConfig: string;
+  /** Path of the global stylesheet. */
+  stylesheet: string;
+  /** Whether the app runs without zone.js. */
+  zoneless: boolean;
+  /** Whether the app renders on the server. */
+  ssr: boolean;
+  /** Whether Tailwind v4 is already set up through PostCSS. */
+  tailwind: boolean;
+  /** Folder the `@/` alias already points at, if it exists. */
+  aliasBase: string | undefined;
+}
+
+/**
+ * Options for {@link planInit}.
+ */
+export interface InitOptions {
+  /** Theme item to install. */
+  theme: string;
+  /** Angular project to set up, when `angular.json` has several. */
+  project?: string;
+  /** Registry URL template to record in `ndop.json`. */
+  registry?: string;
+}
+
+/**
+ * Shape of the parts of `angular.json` init reads.
+ */
+interface AngularJson {
+  projects?: Record<
+    string,
+    {
+      projectType?: string;
+      sourceRoot?: string;
+      root?: string;
+      architect?: Record<string, { options?: Record<string, unknown> }>;
+    }
+  >;
+}
+
+/**
+ * Detects how an Angular workspace is set up (RFC-0001, `ndop init`): the
+ * Angular version, standalone bootstrap, zoneless change detection, SSR,
+ * Tailwind v4 and an existing `@/` path alias.
+ *
+ * @param builder - Plan builder, used as a project reader.
+ * @param options - Which project to read.
+ * @returns What was found.
+ * @throws {@link CliError} for anything init can't support: no
+ *   `angular.json`, Angular older than 21, an NgModule app, or a
+ *   non-CSS global stylesheet.
+ */
+export async function detectProject(
+  builder: PlanBuilder,
+  options: Pick<InitOptions, 'project'> = {},
+): Promise<Detection> {
+  const angularText = await builder.read('angular.json');
+  if (angularText === undefined) {
+    throw new CliError(
+      'No angular.json here. Run ndop init in an Angular workspace, or pass --cwd.',
+    );
+  }
+  const workspace = parseJsonc<AngularJson>(angularText, 'angular.json');
+  const applications = Object.entries(workspace.projects ?? {}).filter(
+    ([, project]) => project.projectType === 'application',
+  );
+  const chosen = options.project
+    ? applications.find(([name]) => name === options.project)
+    : applications.length === 1
+      ? applications[0]
+      : undefined;
+  if (!chosen) {
+    throw new CliError(
+      options.project
+        ? `angular.json has no application named "${options.project}".`
+        : `angular.json has ${applications.length} applications; pick one with --project.`,
+      'angular.json',
+    );
+  }
+  const [name, project] = chosen;
+  const sourceRoot =
+    project.sourceRoot ?? posix.join(project.root ?? '', 'src');
+  const build = project.architect?.['build']?.options ?? {};
+
+  const angularVersion = await readAngularVersion(builder);
+  const major = Number(/\d+/.exec(angularVersion)?.[0]);
+  if (!(major >= MIN_ANGULAR_MAJOR)) {
+    throw new CliError(
+      `Ndop needs Angular ${MIN_ANGULAR_MAJOR} or later; this project has ${angularVersion}.`,
+      'package.json',
+    );
+  }
+
+  const appConfig = posix.join(sourceRoot, 'app/app.config.ts');
+  if ((await builder.read(appConfig)) === undefined) {
+    throw new CliError(
+      `No ${appConfig}. ndop init supports standalone apps bootstrapped with an ApplicationConfig.`,
+    );
+  }
+
+  const stylesheet =
+    firstStylesheet(build['styles']) ?? posix.join(sourceRoot, 'styles.css');
+  if (!stylesheet.endsWith('.css')) {
+    throw new CliError(
+      `The global stylesheet is ${stylesheet}; Tailwind v4 needs a .css file.`,
+      'angular.json',
+    );
+  }
+
+  const polyfills = [build['polyfills']].flat().filter(Boolean);
+  const postcss =
+    (await builder.read('.postcssrc.json')) ??
+    (await builder.read('postcss.config.json')) ??
+    '';
+  const css = (await builder.read(stylesheet)) ?? '';
+
+  return {
+    angularVersion,
+    project: name,
+    sourceRoot,
+    appConfig,
+    stylesheet,
+    zoneless: !polyfills.some((entry) => String(entry).includes('zone.js')),
+    ssr: Boolean(build['ssr'] ?? build['server']),
+    tailwind:
+      postcss.includes('@tailwindcss/postcss') &&
+      /@import\s+['"]tailwindcss['"]/.test(css),
+    aliasBase: await readAliasBase(builder, '@/'),
+  };
+}
+
+/**
+ * The installed `@angular/core` version, falling back to the range in
+ * `package.json` before dependencies are installed.
+ *
+ * @param builder - Project reader.
+ * @returns A version or range.
+ * @throws {@link CliError} when the project doesn't depend on Angular.
+ */
+async function readAngularVersion(builder: PlanBuilder): Promise<string> {
+  const installed = await builder.read(
+    'node_modules/@angular/core/package.json',
+  );
+  if (installed) {
+    return (JSON.parse(installed) as { version: string }).version;
+  }
+  const manifest = JSON.parse((await builder.read('package.json')) ?? '{}') as {
+    dependencies?: Record<string, string>;
+  };
+  const declared = manifest.dependencies?.['@angular/core'];
+  if (!declared) {
+    throw new CliError(
+      "package.json doesn't depend on @angular/core.",
+      'package.json',
+    );
+  }
+  return declared;
+}
+
+/**
+ * The first global stylesheet in a build's `styles` option.
+ *
+ * @param styles - The option: strings or `{ input }` objects.
+ * @returns Its path, if any.
+ */
+function firstStylesheet(styles: unknown): string | undefined {
+  const [first] = Array.isArray(styles) ? styles : [];
+  if (typeof first === 'string') {
+    return first;
+  }
+  if (first && typeof first === 'object' && 'input' in first) {
+    return String((first as { input: unknown }).input);
+  }
+  return undefined;
+}
+
+/**
+ * Stages everything `ndop init` does (ADR-0011): `ndop.json`, the `@/`
+ * path alias, Tailwind v4 when it's missing, the `@ndop/core` stylesheet
+ * import, the theme, `utils` and `icons` items, and `provideNdop()` and
+ * `provideIcons()` in `app.config.ts`. An existing `ndop.json` is kept, so
+ * running init again changes nothing.
+ *
+ * @param builder - The plan being built.
+ * @param client - Registry client.
+ * @param options - Theme, project and registry.
+ * @returns What was detected and which items will be installed.
+ */
+export async function planInit(
+  builder: PlanBuilder,
+  client: RegistryClient,
+  options: InitOptions,
+): Promise<{ detection: Detection; items: ResolvedItem[] }> {
+  const detection = await detectProject(builder, options);
+  const config = await initConfig(builder, detection, options);
+  await builder.stage(CONFIG_FILE, `${JSON.stringify(config, null, 2)}\n`);
+
+  const prefix = aliasPrefix(config.importAlias ?? '@/');
+  let aliasBase = await readAliasBase(builder, prefix);
+  if (aliasBase === undefined) {
+    aliasBase = posix.dirname(config.aliases.ui);
+    const tsconfig = await builder.read('tsconfig.json');
+    if (tsconfig === undefined) {
+      throw new CliError('No tsconfig.json to add the path alias to.');
+    }
+    await builder.stage(
+      'tsconfig.json',
+      setJsonc(
+        tsconfig,
+        ['compilerOptions', 'paths', `${prefix}*`],
+        [`./${aliasBase}/*`],
+      ),
+    );
+  }
+
+  if (!detection.tailwind) {
+    const file =
+      (await builder.read('postcss.config.json')) !== undefined
+        ? 'postcss.config.json'
+        : '.postcssrc.json';
+    const current = (await builder.read(file)) ?? '{}';
+    await builder.stage(
+      file,
+      setJsonc(current, ['plugins', '@tailwindcss/postcss'], {}),
+    );
+    builder.depend(['tailwindcss', '@tailwindcss/postcss', 'postcss'], true);
+  }
+  const css = (await builder.read(config.tailwind.css)) ?? '';
+  await builder.stage(
+    config.tailwind.css,
+    ensureImports(css, ['tailwindcss', '@ndop/core/styles.css']),
+  );
+  builder.depend(['@ndop/core']);
+
+  const context: InstallContext = { config, aliasBase };
+  const items = await resolveItems(
+    client,
+    [options.theme, ...BASE_ITEMS].map((name) => ({
+      registry: DEFAULT_NAMESPACE,
+      name,
+    })),
+  );
+  await planItems(builder, context, items);
+
+  const appConfig = (await builder.read(detection.appConfig)) ?? '';
+  const edited = addProviders(detection.appConfig, appConfig, [
+    { name: 'provideNdop', module: '@ndop/core' },
+    {
+      name: 'provideIcons',
+      module: projectSpecifier(
+        context,
+        detection.appConfig,
+        posix.join(config.aliases.lib, 'icons'),
+      ),
+    },
+  ]);
+  if (edited === undefined) {
+    builder.warn(
+      `Couldn't find the providers array in ${detection.appConfig}. Add provideNdop() from @ndop/core and provideIcons() from your icons file by hand.`,
+    );
+  } else {
+    await builder.stage(detection.appConfig, edited);
+  }
+  if (!detection.zoneless) {
+    builder.warn(
+      'This app uses zone.js. Ndop works with it, but is built and tested zoneless first.',
+    );
+  }
+  return { detection, items };
+}
+
+/**
+ * The project's configuration: the existing `ndop.json`, with `--registry`
+ * applied, or defaults derived from the detected project.
+ *
+ * @param builder - Project reader.
+ * @param detection - What init found.
+ * @param options - Init options.
+ * @returns The configuration to write.
+ */
+async function initConfig(
+  builder: PlanBuilder,
+  detection: Detection,
+  options: InitOptions,
+): Promise<NdopConfig> {
+  const existing = await readConfig(builder);
+  if (existing) {
+    return options.registry
+      ? { ...existing, registry: options.registry }
+      : existing;
+  }
+  const base = detection.aliasBase ?? posix.join(detection.sourceRoot, 'app');
+  return {
+    $schema: schemas.config.$id,
+    style: options.theme,
+    tailwind: { css: detection.stylesheet },
+    aliases: {
+      ui: posix.join(base, 'ui'),
+      lib: posix.join(base, 'lib'),
+      blocks: posix.join(base, 'blocks'),
+    },
+    importAlias: '@/',
+    iconLibrary: 'lucide',
+    ...(options.registry ? { registry: options.registry } : {}),
+  };
+}

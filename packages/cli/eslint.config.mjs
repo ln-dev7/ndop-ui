@@ -2,6 +2,8 @@ import baseConfig from '../../eslint.config.mjs';
 
 export default [
   ...baseConfig,
+  // Fixtures are copies of generated Angular apps, not CLI source.
+  { ignores: ['fixtures/**'] },
   {
     files: ['**/*.json'],
     rules: {

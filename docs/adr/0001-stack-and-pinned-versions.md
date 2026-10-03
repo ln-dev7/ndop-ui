@@ -224,11 +224,14 @@ Installed versions, checked against npm the same day:
 | `postcss`                                                        | 8.5.28        | Reads theme stylesheets in `ndop build`                                   |
 | `tinyexec`                                                       | 1.3.1         | Runs `ngc` for the build's compile check                                  |
 | `picocolors`                                                     | 1.1.1         | Terminal colors                                                           |
+| `@clack/prompts`                                                 | 1.8.1         | Confirmation prompt in `init` and `add`                                   |
+| `jsonc-parser`                                                   | 3.3.1         | Edits `tsconfig.json` and reads `angular.json`, keeping comments          |
+| `package-manager-detector`                                       | 1.8.0         | Detects the project's package manager and its install command             |
+| `diff`                                                           | 9.0.0         | Unified diffs for `--dry-run`                                             |
 | `@lucide/angular`                                                | 1.50.0        | Default icon library (ADR-0013)                                           |
 | `@fontsource-variable/geist` / `@fontsource-variable/geist-mono` | 5.3.0 / 5.3.0 | Default theme fonts (ADR-0006, amendment 1)                               |
 
-The remaining CLI libraries from ADR-0011 (`@clack/prompts`, `jsonc-parser`,
-`package-manager-detector`, `diff`) are installed in the step that first uses
-them, since lint rejects declared dependencies nothing imports. The CLI's
-dependencies live in `packages/cli/package.json`, not the root, because they
-ship with the package.
+Each CLI library was installed in the step that first used it, since lint
+rejects declared dependencies nothing imports. They live in
+`packages/cli/package.json`, not the root, because they ship with the
+package.
