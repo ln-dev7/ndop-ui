@@ -1,0 +1,36 @@
+{
+  "name": "separator",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Separator",
+  "description": "Visually or semantically separates content.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/separator/separator.ts",
+      "type": "registry:ui",
+      "target": "{ui}/separator/separator.ts",
+      "content": "/*\n * Styles from shadcn/ui new-york-v4 \"separator\" (MIT License, Copyright (c)\n * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Change: shadcn defaults to\n * decorative; Ndop keeps the primitive's semantic default\n * (role=\"separator\"), so pass `decorative` for purely visual lines.\n */\nimport { computed, Directive, input } from '@angular/core';\nimport { NdSeparator } from '@ndop/primitives/separator';\nimport { cn } from '@/lib/utils';\n\n/**\n * Styled separator line, horizontal or vertical\n * (`@ndop/primitives/separator`).\n *\n * @example\n * ```html\n * <div ndSeparator orientation=\"vertical\" decorative></div>\n * ```\n */\n@Directive({\n  selector: '[ndSeparator]',\n  hostDirectives: [\n    { directive: NdSeparator, inputs: ['orientation', 'decorative'] },\n  ],\n  host: { 'data-slot': 'separator', '[class]': 'classes()' },\n})\nexport class Separator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Separator"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "examples": [
+      "separator-decorative",
+      "separator-demo"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

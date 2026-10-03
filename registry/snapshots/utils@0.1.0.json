@@ -1,0 +1,19 @@
+{
+  "name": "utils",
+  "type": "registry:lib",
+  "version": "0.1.0",
+  "title": "Utils",
+  "description": "cn() and variants(), re-exported from @ndop/core so you have a place to customize them.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "files": [
+    {
+      "path": "lib/utils.ts",
+      "type": "registry:lib",
+      "target": "{lib}/utils.ts",
+      "content": "/**\n * Class helpers used by every styled item. They come from `@ndop/core`;\n * this file is yours, so it is the place to customize them, for example by\n * wrapping `cn` with an extended tailwind-merge configuration for your own\n * utilities.\n *\n * @packageDocumentation\n */\nexport { cn, variants, type ClassValue, type VariantOf } from '@ndop/core';\n"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

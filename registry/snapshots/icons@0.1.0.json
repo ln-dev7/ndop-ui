@@ -1,0 +1,20 @@
+{
+  "name": "icons",
+  "type": "registry:lib",
+  "version": "0.1.0",
+  "title": "Icons",
+  "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
+  "dependencies": [
+    "@lucide/angular@^1.50.0",
+    "@ndop/core"
+  ],
+  "files": [
+    {
+      "path": "lib/icons.ts",
+      "type": "registry:lib",
+      "target": "{lib}/icons.ts",
+      "content": "import { type EnvironmentProviders } from '@angular/core';\nimport { LucideX } from '@lucide/angular';\nimport { provideNdopIcons, type NdIcons } from '@ndop/core';\n\n/**\n * Icons styled items ask for by semantic name, drawn with Lucide\n * (ADR-0013). Add an entry when you install an item that needs a new name;\n * to switch icon libraries, change the values here.\n */\nexport const ndopIcons = {\n  x: LucideX.icon,\n} satisfies NdIcons;\n\n/**\n * Registers {@link ndopIcons}. `ndop init` adds it to the providers in\n * `app.config.ts`.\n *\n * @returns Providers for `ApplicationConfig`.\n *\n * @example\n * ```ts\n * providers: [provideNdop(), provideIcons()];\n * ```\n */\nexport function provideIcons(): EnvironmentProviders {\n  return provideNdopIcons(ndopIcons);\n}\n"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

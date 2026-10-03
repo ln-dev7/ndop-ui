@@ -1,0 +1,39 @@
+{
+  "name": "button",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Button",
+  "description": "Displays a button or a component that looks like a button.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/button/button.ts",
+      "type": "registry:ui",
+      "target": "{ui}/button/button.ts",
+      "content": "/*\n * Styles from shadcn/ui new-york-v4 \"button\" (MIT License, Copyright (c)\n * 2023 shadcn), copied on 2026-10-02 (ADR-0014). Changes:\n * - destructive uses text-destructive-foreground, not text-white: registry\n *   items use tokens only (RFC-0001, ADR-0006);\n * - data-disabled:* mirror disabled:*, because a disabled link has no\n *   :disabled state.\n */\nimport { computed, Directive, input } from '@angular/core';\nimport { NdButton } from '@ndop/primitives/button';\nimport { cn, variants, type VariantOf } from '@/lib/utils';\n\n/**\n * Class table for {@link Button}; also usable to style other elements like\n * a button.\n */\nexport const buttonVariants = variants({\n  base: \"inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-disabled:pointer-events-none data-disabled:opacity-50\",\n  variants: {\n    variant: {\n      default: 'bg-primary text-primary-foreground hover:bg-primary/90',\n      destructive:\n        'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',\n      outline:\n        'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',\n      secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',\n      ghost:\n        'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',\n      link: 'text-primary underline-offset-4 hover:underline',\n    },\n    size: {\n      default: 'h-9 px-4 py-2 has-[>svg]:px-3',\n      xs: \"h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3\",\n      sm: 'h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5',\n      lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',\n      icon: 'size-9',\n      'icon-xs': \"size-6 rounded-md [&_svg:not([class*='size-'])]:size-3\",\n      'icon-sm': 'size-8',\n      'icon-lg': 'size-10',\n    },\n  },\n  defaults: { variant: 'default', size: 'default' },\n});\n\n/** Visual style of a {@link Button}. */\nexport type ButtonVariant = VariantOf<typeof buttonVariants, 'variant'>;\n\n/** Size of a {@link Button}. */\nexport type ButtonSize = VariantOf<typeof buttonVariants, 'size'>;\n\n/**\n * Styled button for a native `button` or an `a`, with the\n * `@ndop/primitives/button` behavior (safe default type, disabled links).\n *\n * @example\n * ```html\n * <button ndButton variant=\"outline\" size=\"sm\">Cancel</button>\n * <a ndButton variant=\"link\" href=\"/docs\">Docs</a>\n * ```\n */\n@Directive({\n  selector: 'button[ndButton], a[ndButton]',\n  hostDirectives: [{ directive: NdButton, inputs: ['disabled'] }],\n  host: {\n    'data-slot': 'button',\n    '[attr.data-variant]': 'variant()',\n    '[attr.data-size]': 'size()',\n    '[class]': 'classes()',\n  },\n})\nexport class Button {\n  /** Visual style. */\n  readonly variant = input<ButtonVariant>('default');\n\n  /** Height, padding and icon size. */\n  readonly size = input<ButtonSize>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({ variant: this.variant(), size: this.size() }),\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "buttonVariants",
+      "Button"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "examples": [
+      "button-anchor",
+      "button-link",
+      "button-sizes",
+      "button-variants"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

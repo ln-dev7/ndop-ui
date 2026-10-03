@@ -12,3 +12,6 @@ pnpm-lock.yaml
 # Vendored upstream files stay byte-identical to what was fetched.
 /packages/schema/vendor
 /registry/vendor
+
+# Snapshots are compared byte for byte with what ndop build writes.
+/registry/snapshots

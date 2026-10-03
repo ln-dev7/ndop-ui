@@ -2,5 +2,614 @@
   "$schema": "https://ndop.dev/schema/registry.json",
   "name": "ndop",
   "homepage": "https://ndop.dev",
-  "items": []
+  "items": [
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "version": "0.1.0",
+      "title": "Utils",
+      "description": "cn() and variants(), re-exported from @ndop/core so you have a place to customize them.",
+      "dependencies": ["@ndop/core"],
+      "files": [
+        {
+          "path": "lib/utils.ts",
+          "type": "registry:lib",
+          "target": "{lib}/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "icons",
+      "type": "registry:lib",
+      "version": "0.1.0",
+      "title": "Icons",
+      "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
+      "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
+      "files": [
+        {
+          "path": "lib/icons.ts",
+          "type": "registry:lib",
+          "target": "{lib}/icons.ts"
+        }
+      ]
+    },
+    {
+      "name": "default",
+      "type": "registry:theme",
+      "version": "0.1.0",
+      "title": "Default theme",
+      "description": "shadcn's neutral palette with Geist and Geist Mono, in light and dark.",
+      "dependencies": [
+        "@fontsource-variable/geist@^5.3.0",
+        "@fontsource-variable/geist-mono@^5.3.0"
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Button",
+      "description": "Displays a button or a component that looks like a button.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/button/button.ts",
+          "type": "registry:ui",
+          "target": "{ui}/button/button.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["buttonVariants", "Button"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": [
+          "button-anchor",
+          "button-link",
+          "button-sizes",
+          "button-variants"
+        ]
+      }
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Label",
+      "description": "Renders an accessible label associated with controls.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/label/label.ts",
+          "type": "registry:ui",
+          "target": "{ui}/label/label.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Label"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": ["label-demo", "label-disabled"]
+      }
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Input",
+      "description": "Displays a form input field.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/input/input.ts",
+          "type": "registry:ui",
+          "target": "{ui}/input/input.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Input"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": ["input-demo", "input-signal-forms", "input-with-button"]
+      }
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Separator",
+      "description": "Visually or semantically separates content.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/separator/separator.ts",
+          "type": "registry:ui",
+          "target": "{ui}/separator/separator.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Separator"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": ["separator-decorative", "separator-demo"]
+      }
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Dialog",
+      "description": "A window overlaid on the primary window, rendering the content underneath inert.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/dialog/dialog.ts",
+          "type": "registry:ui",
+          "target": "{ui}/dialog/dialog.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "DialogOverlay",
+          "DialogContent",
+          "DialogCloseButton",
+          "DialogHeader",
+          "DialogFooter",
+          "DialogTitle",
+          "DialogDescription",
+          "NdDialog",
+          "NdDialogClose",
+          "NdDialogPortal",
+          "NdDialogTrigger"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": ["dialog-close-button", "dialog-demo"]
+      }
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Popover",
+      "description": "Displays rich content in a portal, triggered by a button.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/popover/popover.ts",
+          "type": "registry:ui",
+          "target": "{ui}/popover/popover.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "PopoverContent",
+          "PopoverHeader",
+          "PopoverTitle",
+          "PopoverDescription",
+          "NdPopover",
+          "NdPopoverClose",
+          "NdPopoverPortal",
+          "NdPopoverTrigger"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": ["popover-demo", "popover-placement"]
+      }
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Tooltip",
+      "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "ui/tooltip/tooltip.ts",
+          "type": "registry:ui",
+          "target": "{ui}/tooltip/tooltip.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "TooltipContent",
+          "NdTooltip",
+          "NdTooltipPortal",
+          "NdTooltipTrigger"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "examples": ["tooltip-demo", "tooltip-icon-button"]
+      }
+    },
+    {
+      "name": "button-anchor",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Button anchor",
+      "description": "Button styles on links, where shadcn uses `asChild`: an enabled link, and a disabled one that stays focusable and announces itself as disabled.",
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "examples/button-anchor.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/button-anchor.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ButtonAnchorExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "button-link",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Button link",
+      "description": "The `link` variant: a button that looks like a text link.",
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "examples/button-link.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/button-link.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ButtonLinkExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "button-sizes",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Button sizes",
+      "description": "Button sizes, including an icon-only button with an accessible name.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "examples/button-sizes.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/button-sizes.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ButtonSizesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "button-variants",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Button variants",
+      "description": "Every Button variant, side by side.",
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "examples/button-variants.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/button-variants.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ButtonVariantsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "dialog-close-button",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Dialog close button",
+      "description": "A share dialog with a read-only link and a footer close button.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "dialog", "input", "label"],
+      "files": [
+        {
+          "path": "examples/dialog-close-button.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/dialog-close-button.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DialogCloseButtonExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "dialog-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Dialog demo",
+      "description": "An edit-profile dialog with a Signal Forms form. Saving validates the form, closes the dialog when it passes, and keeps it open otherwise.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "dialog", "input", "label"],
+      "files": [
+        {
+          "path": "examples/dialog-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/dialog-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DialogDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "input-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Input demo",
+      "description": "A plain email input.",
+      "registryDependencies": ["input"],
+      "files": [
+        {
+          "path": "examples/input-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/input-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["InputDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "input-signal-forms",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Input signal forms",
+      "description": "An input bound with Signal Forms. It turns invalid once the field is touched and fails validation, and the label follows it.",
+      "registryDependencies": ["input", "label"],
+      "files": [
+        {
+          "path": "examples/input-signal-forms.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/input-signal-forms.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["InputSignalFormsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "input-with-button",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Input with button",
+      "description": "An input and a button on one row, as in a newsletter sign-up.",
+      "registryDependencies": ["button", "input"],
+      "files": [
+        {
+          "path": "examples/input-with-button.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/input-with-button.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["InputWithButtonExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "label-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Label demo",
+      "description": "A label naming its input.",
+      "registryDependencies": ["input", "label"],
+      "files": [
+        {
+          "path": "examples/label-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/label-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["LabelDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "label-disabled",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Label disabled",
+      "description": "A label that dims with its disabled input.",
+      "registryDependencies": ["input", "label"],
+      "files": [
+        {
+          "path": "examples/label-disabled.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/label-disabled.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["LabelDisabledExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "popover-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Popover demo",
+      "description": "A popover holding a small dimensions form.",
+      "registryDependencies": ["button", "input", "label", "popover"],
+      "files": [
+        {
+          "path": "examples/popover-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/popover-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["PopoverDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "popover-placement",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Popover placement",
+      "description": "Popovers on each logical side, with a close button inside. `start` and `end` follow the text direction.",
+      "registryDependencies": ["button", "popover"],
+      "files": [
+        {
+          "path": "examples/popover-placement.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/popover-placement.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["PopoverPlacementExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "separator-decorative",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Separator decorative",
+      "description": "A decorative separator, hidden from assistive technology because the headings already divide the content.",
+      "registryDependencies": ["separator"],
+      "files": [
+        {
+          "path": "examples/separator-decorative.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/separator-decorative.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SeparatorDecorativeExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "separator-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Separator demo",
+      "description": "Horizontal and vertical separators between blocks of content.",
+      "registryDependencies": ["separator"],
+      "files": [
+        {
+          "path": "examples/separator-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/separator-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SeparatorDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "tooltip-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Tooltip demo",
+      "description": "A tooltip describing a button, shown on hover and keyboard focus.",
+      "registryDependencies": ["button", "tooltip"],
+      "files": [
+        {
+          "path": "examples/tooltip-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/tooltip-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TooltipDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "tooltip-icon-button",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Tooltip icon button",
+      "description": "An icon-only button with its own accessible name and a tooltip on the end side for sighted users.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "tooltip"],
+      "files": [
+        {
+          "path": "examples/tooltip-icon-button.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/tooltip-icon-button.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TooltipIconButtonExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    }
+  ]
 }

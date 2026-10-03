@@ -1,0 +1,27 @@
+{
+  "name": "button-anchor",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Button anchor",
+  "description": "Button styles on links, where shadcn uses `asChild`: an enabled link, and a disabled one that stays focusable and announces itself as disabled.",
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "examples/button-anchor.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/button-anchor.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { Button } from '@/ui/button/button';\n\n/**\n * Button styles on links, where shadcn uses `asChild`: an enabled link, and\n * a disabled one that stays focusable and announces itself as disabled.\n */\n@Component({\n  selector: 'example-button-anchor',\n  imports: [Button],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-2\">\n      <a ndButton href=\"#login\">Login</a>\n      <a ndButton variant=\"outline\" href=\"#billing\" [disabled]=\"locked()\">\n        Billing\n      </a>\n    </div>\n  `,\n})\nexport class ButtonAnchorExample {\n  protected readonly locked = signal(true);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ButtonAnchorExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

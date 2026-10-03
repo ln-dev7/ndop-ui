@@ -1,0 +1,27 @@
+{
+  "name": "input-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Input demo",
+  "description": "A plain email input.",
+  "registryDependencies": [
+    "input"
+  ],
+  "files": [
+    {
+      "path": "examples/input-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Input } from '@/ui/input/input';\n\n/** A plain email input. */\n@Component({\n  selector: 'example-input-demo',\n  imports: [Input],\n  template: `\n    <input\n      ndInput\n      type=\"email\"\n      placeholder=\"Email\"\n      aria-label=\"Email\"\n      class=\"max-w-sm\"\n    />\n  `,\n})\nexport class InputDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,37 @@
+{
+  "name": "input",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Input",
+  "description": "Displays a form input field.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/input/input.ts",
+      "type": "registry:ui",
+      "target": "{ui}/input/input.ts",
+      "content": "/*\n * Styles from shadcn/ui new-york-v4 \"input\" (MIT License, Copyright (c) 2023\n * shadcn), copied on 2026-10-02 (ADR-0014). No changes.\n */\nimport { computed, Directive, input } from '@angular/core';\nimport { NdInput } from '@ndop/primitives/input';\nimport { cn } from '@/lib/utils';\n\n/**\n * Styled text input. Forms bind the native input directly; the\n * `@ndop/primitives/input` behavior reflects their state as\n * `aria-invalid` once the field is touched.\n *\n * @example\n * ```html\n * <input ndInput id=\"email\" type=\"email\" [formField]=\"form.email\" />\n * ```\n */\n@Directive({\n  selector: 'input[ndInput]',\n  hostDirectives: [{ directive: NdInput, inputs: ['id', 'invalid'] }],\n  host: { 'data-slot': 'input', '[class]': 'classes()' },\n})\nexport class Input {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30',\n      'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',\n      'aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Input"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "examples": [
+      "input-demo",
+      "input-signal-forms",
+      "input-with-button"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

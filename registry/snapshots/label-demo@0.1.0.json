@@ -1,0 +1,28 @@
+{
+  "name": "label-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Label demo",
+  "description": "A label naming its input.",
+  "registryDependencies": [
+    "input",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/label-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/label-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/** A label naming its input. */\n@Component({\n  selector: 'example-label-demo',\n  imports: [Label, Input],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <label ndLabel for=\"label-demo-name\">Full name</label>\n      <input ndInput id=\"label-demo-name\" placeholder=\"Ada Lovelace\" />\n    </div>\n  `,\n})\nexport class LabelDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "LabelDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "input-signal-forms",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Input signal forms",
+  "description": "An input bound with Signal Forms. It turns invalid once the field is touched and fails validation, and the label follows it.",
+  "registryDependencies": [
+    "input",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/input-signal-forms.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-signal-forms.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { email, form, FormField, required } from '@angular/forms/signals';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/**\n * An input bound with Signal Forms. It turns invalid once the field is\n * touched and fails validation, and the label follows it.\n */\n@Component({\n  selector: 'example-input-signal-forms',\n  imports: [Input, Label, FormField],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <label ndLabel for=\"input-signal-forms-email\">Work email</label>\n      <input\n        ndInput\n        id=\"input-signal-forms-email\"\n        type=\"email\"\n        placeholder=\"you@company.com\"\n        aria-describedby=\"input-signal-forms-hint\"\n        [formField]=\"account.email\"\n      />\n      <p id=\"input-signal-forms-hint\" class=\"text-muted-foreground text-sm\">\n        @if (account.email().touched() && account.email().invalid()) {\n          Enter a valid email address.\n        } @else {\n          We'll send the invite here.\n        }\n      </p>\n    </div>\n  `,\n})\nexport class InputSignalFormsExample {\n  private readonly model = signal({ email: '' });\n\n  protected readonly account = form(this.model, (path) => {\n    required(path.email);\n    email(path.email);\n  });\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputSignalFormsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

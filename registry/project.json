@@ -8,6 +8,24 @@
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "executor": "@ndop/workspace-plugin:registry-build",
+      "outputs": ["{workspaceRoot}/dist/registry"],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/packages/cli/src/**/*",
+        "{workspaceRoot}/packages/schema/src/**/*",
+        "{workspaceRoot}/tsconfig.base.json",
+        {
+          "env": "CI"
+        }
+      ],
+      "options": {
+        "outputPath": "dist/registry",
+        "tsconfig": "tsconfig.base.json"
+      }
     }
   }
 }

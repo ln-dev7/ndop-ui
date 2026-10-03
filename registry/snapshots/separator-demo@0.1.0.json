@@ -1,0 +1,27 @@
+{
+  "name": "separator-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Separator demo",
+  "description": "Horizontal and vertical separators between blocks of content.",
+  "registryDependencies": [
+    "separator"
+  ],
+  "files": [
+    {
+      "path": "examples/separator-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/separator-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Separator } from '@/ui/separator/separator';\n\n/** Horizontal and vertical separators between blocks of content. */\n@Component({\n  selector: 'example-separator-demo',\n  imports: [Separator],\n  template: `\n    <div>\n      <div class=\"space-y-1\">\n        <div class=\"text-sm leading-none font-medium\">Ndop UI</div>\n        <p class=\"text-muted-foreground text-sm\">\n          Accessible Angular components you own.\n        </p>\n      </div>\n      <div ndSeparator class=\"my-4\"></div>\n      <div class=\"flex h-5 items-center space-x-4 text-sm\">\n        <div>Blog</div>\n        <div ndSeparator orientation=\"vertical\"></div>\n        <div>Docs</div>\n        <div ndSeparator orientation=\"vertical\"></div>\n        <div>Source</div>\n      </div>\n    </div>\n  `,\n})\nexport class SeparatorDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SeparatorDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
