@@ -61,7 +61,10 @@ export default defineConfig(() => {
         prerender: { discover: true, routes: ['/'] },
       }),
       // Component pages' data, from the built registry (`^build`).
-      componentDocs({ workspace }),
+      componentDocs({
+        workspace,
+        guides: join(import.meta.dirname, 'src/guides'),
+      }),
       angularServerMode(),
       // Tailwind's Vite plugin rewrites the url()s of stylesheets it
       // inlines, such as Fontsource's font files; its PostCSS plugin left

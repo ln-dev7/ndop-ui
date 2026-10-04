@@ -12,6 +12,7 @@ import {
   LucideMonitor,
   LucideMoon,
   LucidePencil,
+  LucideSearch,
   LucideSun,
 } from '@lucide/angular';
 import { provideNdopIcons } from '@ndop/core';
@@ -38,6 +39,7 @@ export function provideDocsIcons(): EnvironmentProviders {
     monitor: LucideMonitor.icon,
     moon: LucideMoon.icon,
     pencil: LucidePencil.icon,
+    search: LucideSearch.icon,
     sun: LucideSun.icon,
   });
 }

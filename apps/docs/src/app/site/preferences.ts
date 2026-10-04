@@ -48,6 +48,18 @@ export class Preferences {
   }
 
   /**
+   * Switches between light and dark from whichever shows now, including
+   * the operating system's scheme in system mode, and saves the choice.
+   */
+  toggleDark(): void {
+    const dark =
+      this.root.classList.contains('dark') ||
+      (this.mode() === 'system' &&
+        matchMedia('(prefers-color-scheme: dark)').matches);
+    this.setMode(dark ? 'light' : 'dark');
+  }
+
+  /**
    * Switches and saves the text direction.
    *
    * @param direction - The direction.

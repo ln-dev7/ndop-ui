@@ -20,6 +20,7 @@ import {
   TooltipContent,
 } from '@/ui/tooltip/tooltip';
 import { Preferences } from './preferences';
+import { CommandPalette } from './command-palette';
 import { SiteNav } from './site-nav';
 
 /** The order the theme button cycles through, and how each is shown. */
@@ -37,8 +38,8 @@ const SYSTEM = {
 };
 
 /**
- * The sticky site header: the logo, primary links, the theme and direction
- * toggles, and, on small screens, a button that opens the navigation in a
+ * The sticky site header: the logo, primary links, the search palette,
+ * the theme and direction toggles, and, on small screens, a button that opens the navigation in a
  * bottom sheet.
  */
 @Component({
@@ -59,6 +60,7 @@ const SYSTEM = {
     NdTooltipPortal,
     TooltipContent,
     SiteNav,
+    CommandPalette,
   ],
   template: `
     <header
@@ -107,6 +109,7 @@ const SYSTEM = {
         </nav>
 
         <div class="ms-auto flex items-center gap-1">
+          <docs-command-palette class="me-1" />
           <a
             ndButton
             variant="ghost"

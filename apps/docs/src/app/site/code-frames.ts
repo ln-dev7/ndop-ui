@@ -11,6 +11,20 @@ import {
 const STORAGE_KEY = 'ndop-pm';
 
 /**
+ * The package manager the reader chose in a command block, saved for
+ * every page.
+ *
+ * @returns It, or `null` when none is saved or storage is unavailable.
+ */
+export function savedPackageManager(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Makes the build-time code blocks inside an element interactive, through
  * delegated listeners:
  *
@@ -39,7 +53,7 @@ export class CodeFrames {
 
   constructor() {
     if (isPlatformBrowser(inject(PLATFORM_ID))) {
-      this.manager = this.read();
+      this.manager = savedPackageManager();
     }
     // Blocks arrive with each page's HTML; bring new ones in line with the
     // saved choice once they are in the DOM.
@@ -198,19 +212,6 @@ export class CodeFrames {
       ) ?? []) {
         panel.hidden = panel.dataset['pm'] !== manager;
       }
-    }
-  }
-
-  /**
-   * The saved package manager.
-   *
-   * @returns It, or `null` when none is saved or storage is unavailable.
-   */
-  private read(): string | null {
-    try {
-      return localStorage.getItem(STORAGE_KEY);
-    } catch {
-      return null;
     }
   }
 }

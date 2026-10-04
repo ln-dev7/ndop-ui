@@ -14,9 +14,11 @@ import type {
   TemplatePalette,
 } from '../src/app/components/component-data';
 import { LANGUAGES, THEMES, transformers } from '../src/highlight/shiki';
+import { searchIndex, type IndexedComponent } from './search-index';
 
 const INDEX_ID = 'virtual:ndop/components';
 const PAGE_PREFIX = 'virtual:ndop/component/';
+const SEARCH_ID = 'virtual:ndop/search-index';
 const REPOSITORY = 'https://github.com/valerymelou/ndop';
 
 /** The shapes of the built registry files this plugin reads. */
@@ -70,6 +72,8 @@ interface Member {
 export interface ComponentDocsOptions {
   /** Absolute workspace root. */
   workspace: string;
+  /** Absolute path of the guides, for the search index. */
+  guides: string;
 }
 
 /** What building a page's data needs. */
@@ -83,13 +87,14 @@ interface PageTools {
 }
 
 /**
- * Generates the component pages' data from the built registry (ADR-0016):
- * `virtual:ndop/components` lists the components and loads each page's
- * data from `virtual:ndop/component/<name>`, with Markdown rendered and
- * code highlighted here, at build time. The registry must be built first
+ * Generates the docs' data from the built registry, at build time
+ * (ADR-0016): `virtual:ndop/components` lists the components and loads
+ * each page's data from `virtual:ndop/component/<name>`, with Markdown
+ * rendered and code highlighted here; `virtual:ndop/search-index` holds
+ * the palette's index (ADR-0008). The registry must be built first
  * (`registry:build`), which the docs' targets depend on.
  *
- * @param options - Where the workspace and the built registry are.
+ * @param options - Where the workspace and the guides are.
  * @returns The Vite plugin.
  */
 export function componentDocs(options: ComponentDocsOptions): Plugin {
@@ -114,11 +119,21 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
   return {
     name: 'ndop:component-docs',
     resolveId(id) {
-      return id === INDEX_ID || id.startsWith(PAGE_PREFIX)
+      return id === INDEX_ID || id === SEARCH_ID || id.startsWith(PAGE_PREFIX)
         ? `\0${id}`
         : undefined;
     },
     async load(id) {
+      if (id === `\0${SEARCH_ID}`) {
+        const index = read<{ items: BuiltItem[] }>('index.json');
+        const components = index.items
+          .filter((item) => item.type === 'registry:ui')
+          .map((item) => ({
+            ...read<IndexedComponent>(`metadata/${item.name}.json`),
+            title: item.title,
+          }));
+        return `export const entries = ${JSON.stringify(searchIndex(options.guides, components))};`;
+      }
       if (id === `\0${INDEX_ID}`) {
         const index = read<{ items: BuiltItem[] }>('index.json');
         const components: ComponentSummary[] = index.items
