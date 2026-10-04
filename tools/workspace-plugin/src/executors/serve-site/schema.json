@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Serve a static site",
+  "description": "Serves a built static site the way Cloudflare Pages does: routes from their index.html, content types by extension, the site's _headers rules, and 404 for anything else. Runs until stopped.",
+  "type": "object",
+  "properties": {
+    "dir": {
+      "type": "string",
+      "description": "Folder to serve, relative to the workspace root."
+    },
+    "port": {
+      "type": "number",
+      "description": "Port to listen on.",
+      "default": 4400
+    }
+  },
+  "required": ["dir"]
+}

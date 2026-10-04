@@ -9,6 +9,16 @@
       "implementation": "./src/executors/registry-e2e/registry-e2e",
       "schema": "./src/executors/registry-e2e/schema.json",
       "description": "Install-test the registry: publish @ndop/* to Verdaccio, then ng new, ndop init, ndop add and ng build per package manager (ADR-0015)."
+    },
+    "serve-site": {
+      "implementation": "./src/executors/serve-site/serve-site",
+      "schema": "./src/executors/serve-site/schema.json",
+      "description": "Serve a built static site the way Cloudflare Pages does, for end-to-end tests."
+    },
+    "docs-lighthouse": {
+      "implementation": "./src/executors/docs-lighthouse/docs-lighthouse",
+      "schema": "./src/executors/docs-lighthouse/schema.json",
+      "description": "Run Lighthouse on every route of the built docs site and fail under the minimum score (ADR-0016)."
     }
   }
 }

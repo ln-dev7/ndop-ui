@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Docs Lighthouse",
+  "description": "Serves the built docs the way Cloudflare Pages does and runs Lighthouse on every prerendered route with Lighthouse's default mobile profile, in Playwright's Chromium. Any category under the minimum score fails it (ADR-0016).",
+  "type": "object",
+  "properties": {
+    "dir": {
+      "type": "string",
+      "description": "The built site, relative to the workspace root."
+    },
+    "minScore": {
+      "type": "number",
+      "description": "Lowest passing score, 0 to 100, in every category.",
+      "default": 95
+    },
+    "outputDir": {
+      "type": "string",
+      "description": "Where the HTML reports go, relative to the workspace root.",
+      "default": "dist/lighthouse/docs"
+    },
+    "routes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Routes to audit; every prerendered route by default."
+    }
+  },
+  "required": ["dir"]
+}

@@ -10,7 +10,6 @@ import {
   run,
   runScriptCommand,
 } from './scenario';
-import { serveFolder } from './static-server';
 
 let folder: string;
 
@@ -88,24 +87,5 @@ describe('run', () => {
         options,
       ),
     ).rejects.toThrow(/exited with 3:\nboom/);
-  });
-});
-
-describe('serveFolder', () => {
-  it('serves files inside the folder only', async () => {
-    await mkdir(join(folder, 'r'));
-    await writeFile(join(folder, 'r/dialog.json'), '{"name":"dialog"}');
-    const server = await serveFolder(folder);
-    try {
-      const response = await fetch(`${server.url}/r/dialog.json`);
-      expect(response.headers.get('content-type')).toBe('application/json');
-      expect(await response.json()).toEqual({ name: 'dialog' });
-      expect((await fetch(`${server.url}/r/missing.json`)).status).toBe(404);
-      expect((await fetch(`${server.url}/..%2f..%2fetc%2fpasswd`)).status).toBe(
-        403,
-      );
-    } finally {
-      await server.close();
-    }
   });
 });

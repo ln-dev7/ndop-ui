@@ -14,7 +14,7 @@ import {
   runScriptCommand,
   type InstallCase,
 } from './scenario';
-import { serveFolder } from './static-server';
+import { serveSite } from '../../utils/serve-site';
 
 /**
  * Outcome of one case.
@@ -76,7 +76,7 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
     storage: join(context.root, 'tmp/local-registry/storage'),
     clearStorage: true,
   });
-  const server = await serveFolder(
+  const server = await serveSite(
     join(context.root, options.registryPath ?? 'dist/registry'),
   );
   const results: CaseResult[] = [];
