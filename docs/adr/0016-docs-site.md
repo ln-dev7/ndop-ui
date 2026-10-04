@@ -136,6 +136,16 @@ job is written; if not, Pages' Git integration provides them. The deploy
 job is added once ndop.dev is registered; Phase 3 acceptance doesn't depend
 on it.
 
+Checked against Cloudflare's docs on 2026-10-04, for the deploy job:
+`about/index.html` is served at `/about/`, but the docs don't say whether
+`/about` is served directly or redirected, so the job checks that
+`/docs/components/dialog` answers 200 without a redirect, and otherwise
+prerenders `dialog.html` files (Nitro's `autoSubfolderIndex: false`).
+Without a top-level `404.html`, Pages answers unknown paths with the home
+page, so the site gets a real 404 page then. Pages sends
+`Cache-Control: public, max-age=0, must-revalidate` by default; `_headers`
+caches the hashed `/assets/*` files for a year.
+
 ## Consequences
 
 - Every component page and every machine-readable twin comes from the same

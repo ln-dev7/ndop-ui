@@ -27,8 +27,21 @@ export const LANGUAGES: BundledLanguage[] = [
 /**
  * Both themes are rendered into every block as CSS variables, so the
  * site's dark mode switches code colors without a client highlighter.
+ * GitHub's current themes, whose colors reach 4.5:1 on the code
+ * background, unlike the classic ones.
  */
-export const THEMES = { light: 'github-light', dark: 'github-dark' } as const;
+export const THEMES = {
+  light: 'github-light-default',
+  dark: 'github-dark-default',
+} as const;
+
+/**
+ * The one text color of {@link THEMES} under 4.5:1 on the light code
+ * background (comments, 4.3:1), replaced by GitHub's darker muted gray.
+ */
+export const COLOR_REPLACEMENTS = {
+  'github-light-default': { '#6e7781': '#59636e' },
+};
 
 /** An icon as Lucide data: shapes with their attributes. */
 type IconNodes = [string, Record<string, string>][];

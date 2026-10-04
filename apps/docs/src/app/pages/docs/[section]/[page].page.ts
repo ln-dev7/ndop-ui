@@ -97,11 +97,11 @@ function decodeEntities(text: string): string {
           <h1 class="text-3xl font-semibold">Page not found</h1>
         }
       </main>
-      <aside
+      <div
         class="sticky top-22 hidden h-fit max-h-[calc(100dvh-5.5rem)] w-[220px] shrink-0 overflow-y-auto xl:block"
       >
         <docs-on-this-page [headings]="headings()" />
-      </aside>
+      </div>
     </div>
   `,
 })

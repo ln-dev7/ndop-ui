@@ -192,7 +192,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   <button
                     type="button"
                     role="tab"
-                    class="rounded-md px-3 py-1 text-sm font-medium text-muted-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+                    class="rounded-md px-3 py-1 text-sm font-medium text-foreground/70 aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
                     [id]="'install-' + tab.id + '-tab'"
                     [attr.aria-controls]="'install-' + tab.id"
                     [attr.aria-selected]="install() === tab.id"
@@ -424,11 +424,11 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
           <h1 class="text-3xl font-semibold">Page not found</h1>
         }
       </main>
-      <aside
+      <div
         class="sticky top-22 hidden h-fit max-h-[calc(100dvh-5.5rem)] w-[220px] shrink-0 overflow-y-auto xl:block"
       >
         <docs-on-this-page [headings]="headings()" />
-      </aside>
+      </div>
     </div>
   `,
 })

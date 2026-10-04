@@ -126,7 +126,7 @@ export class PaletteOption implements Highlightable {
       <svg ndIcon="search" class="mx-auto sm:mx-0"></svg>
       <span class="hidden sm:inline">Search the docs…</span>
       <kbd
-        class="ms-auto hidden h-5 items-center rounded border bg-muted px-1.5 font-mono text-[0.7rem] sm:inline-flex"
+        class="ms-auto hidden h-5 items-center rounded border bg-muted px-1.5 font-mono text-[0.7rem] text-foreground/70 sm:inline-flex"
         >{{ shortcut() }}</kbd
       >
     </button>

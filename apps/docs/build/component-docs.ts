@@ -13,7 +13,12 @@ import type {
   PartData,
   TemplatePalette,
 } from '../src/app/components/component-data';
-import { LANGUAGES, THEMES, transformers } from '../src/highlight/shiki';
+import {
+  COLOR_REPLACEMENTS,
+  LANGUAGES,
+  THEMES,
+  transformers,
+} from '../src/highlight/shiki';
 import {
   componentMarkdown,
   guideMarkdown,
@@ -117,6 +122,7 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
     return (await highlighter).codeToHtml(code, {
       lang,
       themes: THEMES,
+      colorReplacements: COLOR_REPLACEMENTS,
       defaultColor: false,
       meta: { __raw: meta },
       transformers: transformers(),

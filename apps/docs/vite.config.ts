@@ -6,8 +6,14 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { angularServerMode } from '../../tools/workspace-plugin/src/vite/angular-server-mode';
+import { inlineCss } from '../../tools/workspace-plugin/src/vite/inline-css';
 import { componentDocs } from './build/component-docs';
-import { LANGUAGES, THEMES, transformers } from './src/highlight/shiki';
+import {
+  COLOR_REPLACEMENTS,
+  LANGUAGES,
+  THEMES,
+  transformers,
+} from './src/highlight/shiki';
 import { stepsExtension } from './src/markdown/steps';
 
 const workspace = join(import.meta.dirname, '../..');
@@ -51,6 +57,7 @@ export default defineConfig(() => {
             highlighter: { langs: LANGUAGES, themes: Object.values(THEMES) },
             highlight: {
               themes: THEMES,
+              colorReplacements: COLOR_REPLACEMENTS,
               defaultColor: false,
               transformers: transformers(),
             },
@@ -70,6 +77,11 @@ export default defineConfig(() => {
       // inlines, such as Fontsource's font files; its PostCSS plugin left
       // them relative to the inlined file, so the built site had no fonts.
       tailwindcss(),
+      inlineCss({
+        // The Latin files of the two fonts every page uses (Geist and
+        // Geist Mono); the other subsets load only when text needs them.
+        preloadFonts: [/geist-(mono-)?latin-wght-normal-/],
+      }),
       // The base config covers workspace files outside the app, such as
       // the registry items the docs render.
       viteTsConfigPaths({ projects: ['../../tsconfig.base.json'] }),

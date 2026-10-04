@@ -61,13 +61,12 @@
       ]
     },
     "serve-static": {
+      "executor": "@ndop/workspace-plugin:serve-site",
       "continuous": true,
-      "executor": "@nx/web:file-server",
+      "dependsOn": ["build"],
       "options": {
-        "buildTarget": "docs:build",
-        "port": 4200,
-        "staticFilePath": "dist/apps/docs/browser",
-        "spa": true
+        "dir": "dist/apps/docs/analog/public",
+        "port": 4400
       }
     },
     "test": {
@@ -76,6 +75,16 @@
         "config": "vite.config.ts"
       },
       "dependsOn": ["^build"]
+    },
+    "lighthouse": {
+      "executor": "@ndop/workspace-plugin:docs-lighthouse",
+      "dependsOn": ["build"],
+      "cache": false,
+      "outputs": ["{workspaceRoot}/dist/lighthouse/docs"],
+      "options": {
+        "dir": "dist/apps/docs/analog/public",
+        "outputDir": "dist/lighthouse/docs"
+      }
     }
   }
 }

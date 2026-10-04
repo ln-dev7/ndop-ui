@@ -1,10 +1,12 @@
 import {
   ApplicationConfig,
+  ApplicationRef,
   inject,
+  PLATFORM_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, ViewportScroller } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   provideClientHydration,
@@ -39,6 +41,14 @@ export const appConfig: ApplicationConfig = {
     provideNdop({ theme: 'system' }),
     provideDocsIcons(),
     provideAppInitializer(() => {
+      // Marks the page once it has hydrated and settled, which production
+      // builds don't log, so tests and audits can wait for it.
+      if (isPlatformBrowser(inject(PLATFORM_ID))) {
+        const root = inject(DOCUMENT).documentElement;
+        void inject(ApplicationRef)
+          .whenStable()
+          .then(() => root.setAttribute('data-hydrated', ''));
+      }
       inject(Preferences).restore();
       // Anchor scrolls stop below the sticky header (3.5rem) with some air,
       // matching the scroll-margin-top the stylesheet gives headings.
