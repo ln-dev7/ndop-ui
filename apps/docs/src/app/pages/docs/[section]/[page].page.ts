@@ -6,7 +6,9 @@ import { NdIcon } from '@ndop/core';
 import { CodeFrames } from '../../../site/code-frames';
 import { loadGuide } from '../../../site/guides';
 import { Navigation } from '../../../site/navigation';
+import { injectCurrentPath } from '../../../site/current-path';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
+import { PageActions } from '../../../site/page-actions';
 
 /**
  * Decodes the character references Markdown rendering produces in heading
@@ -43,15 +45,21 @@ function decodeEntities(text: string): string {
  */
 @Component({
   selector: 'docs-content-page',
-  imports: [RouterLink, NdIcon, CodeFrames, OnThisPage],
+  imports: [RouterLink, NdIcon, CodeFrames, OnThisPage, PageActions],
   template: `
     <div class="flex gap-10 py-8">
       <main id="main" class="mx-auto w-full max-w-[640px] min-w-0">
         @if (page.value(); as value) {
           <article docsCodeFrames #frames="docsCodeFrames">
-            <h1 class="text-3xl font-semibold tracking-tight">
-              {{ value.attributes.title }}
-            </h1>
+            <div class="flex items-start justify-between gap-4">
+              <h1 class="text-3xl font-semibold tracking-tight">
+                {{ value.attributes.title }}
+              </h1>
+              <docs-page-actions
+                [path]="path()"
+                [title]="value.attributes.title"
+              />
+            </div>
             <p
               class="mt-2 text-[1.05rem] text-muted-foreground sm:text-base sm:text-balance"
             >
@@ -102,6 +110,7 @@ export default class ContentPage {
     requireSync: true,
   });
   private readonly navigation = inject(Navigation);
+  protected readonly path = injectCurrentPath();
   private readonly sanitizer = inject(DomSanitizer);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);

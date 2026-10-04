@@ -17,6 +17,7 @@ import { ApiReference } from '../../../components/api-reference';
 import { TrustHtmlPipe } from '../../../components/trust-html.pipe';
 import type { PlaygroundHost } from '../../../playground/playground';
 import { PlaygroundPanel } from '../../../playground/playground-panel';
+import { PageActions } from '../../../site/page-actions';
 import { playgrounds } from '../../../playground/hosts';
 import type {
   ComponentPageData,
@@ -24,7 +25,6 @@ import type {
 } from '../../../components/component-data';
 import { ExamplePreview } from '../../../components/example-preview';
 import { KeyboardTable } from '../../../components/keyboard-table';
-import { commandFor, type PackageManager } from '../../../../highlight/shiki';
 import { CodeFrames } from '../../../site/code-frames';
 import { Navigation } from '../../../site/navigation';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
@@ -91,6 +91,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
     ApiReference,
     TrustHtmlPipe,
     PlaygroundPanel,
+    PageActions,
   ],
   template: `
     <div class="flex gap-10 py-8">
@@ -103,30 +104,41 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                 <h1 class="text-3xl font-semibold tracking-tight">
                   {{ item.title }}
                 </h1>
-                <nav aria-label="Components" class="flex gap-2">
-                  @if (neighbors().previous; as previous) {
-                    <a
-                      ndButton
-                      variant="outline"
-                      size="icon-sm"
-                      [routerLink]="previous.url"
-                      [attr.aria-label]="'Previous: ' + previous.title"
-                      [attr.title]="previous.title"
-                      ><svg ndIcon="arrow-left" class="rtl:rotate-180"></svg
-                    ></a>
-                  }
-                  @if (neighbors().next; as next) {
-                    <a
-                      ndButton
-                      variant="outline"
-                      size="icon-sm"
-                      [routerLink]="next.url"
-                      [attr.aria-label]="'Next: ' + next.title"
-                      [attr.title]="next.title"
-                      ><svg ndIcon="arrow-right" class="rtl:rotate-180"></svg
-                    ></a>
-                  }
-                </nav>
+                <div class="flex shrink-0 items-center gap-2">
+                  <docs-page-actions
+                    [path]="'/docs/components/' + item.name"
+                    [title]="item.title"
+                    [component]="{
+                      name: item.name,
+                      source: item.links.source,
+                      issue: item.links.issue,
+                    }"
+                  />
+                  <nav aria-label="Components" class="flex gap-2">
+                    @if (neighbors().previous; as previous) {
+                      <a
+                        ndButton
+                        variant="outline"
+                        size="icon-sm"
+                        [routerLink]="previous.url"
+                        [attr.aria-label]="'Previous: ' + previous.title"
+                        [attr.title]="previous.title"
+                        ><svg ndIcon="arrow-left" class="rtl:rotate-180"></svg
+                      ></a>
+                    }
+                    @if (neighbors().next; as next) {
+                      <a
+                        ndButton
+                        variant="outline"
+                        size="icon-sm"
+                        [routerLink]="next.url"
+                        [attr.aria-label]="'Next: ' + next.title"
+                        [attr.title]="next.title"
+                        ><svg ndIcon="arrow-right" class="rtl:rotate-180"></svg
+                      ></a>
+                    }
+                  </nav>
+                </div>
               </div>
               <p
                 class="mt-2 text-[1.05rem] text-muted-foreground sm:text-base sm:text-balance"
@@ -152,35 +164,6 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   <li ndBadge variant="outline">{{ kilobytes(size) }} gzip</li>
                 }
               </ul>
-              <div class="mt-4 flex flex-wrap gap-2">
-                <button
-                  ndButton
-                  variant="outline"
-                  size="sm"
-                  (click)="copyInstall($event, frames)"
-                >
-                  <svg ndIcon="copy"></svg>
-                  Copy install command
-                </button>
-                <a
-                  ndButton
-                  variant="outline"
-                  size="sm"
-                  [href]="item.links.source"
-                >
-                  <svg ndIcon="code"></svg>
-                  View source
-                </a>
-                <a
-                  ndButton
-                  variant="outline"
-                  size="sm"
-                  [href]="item.links.issue"
-                >
-                  <svg ndIcon="bug"></svg>
-                  Report issue
-                </a>
-              </div>
             </header>
 
             @if (item.examples[0]; as main) {
@@ -525,20 +508,6 @@ export default class ComponentPage {
    */
   protected kilobytes(bytes: number): string {
     return `${(bytes / 1000).toFixed(1)} kB`;
-  }
-
-  /**
-   * Copies `ndop add` for the reader's package manager.
-   *
-   * @param event - The button's click.
-   * @param frames - The page's code frames, which know the package manager.
-   */
-  protected async copyInstall(event: Event, frames: CodeFrames): Promise<void> {
-    const command = commandFor(
-      frames.packageManager() as PackageManager,
-      `npx ndop add ${this.page.value()?.data.name}`,
-    );
-    await frames.copy(command, event.currentTarget as HTMLElement);
   }
 
   /**

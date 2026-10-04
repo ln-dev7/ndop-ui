@@ -31,6 +31,8 @@ import { commandFor, type PackageManager } from '../../highlight/shiki';
 import type { SearchEntry } from '../search/search-entry';
 import { score, search } from '../search/search';
 import { savedPackageManager } from './code-frames';
+import { injectCurrentPath } from './current-path';
+import { copyPageMarkdown } from './page-actions';
 import { Preferences } from './preferences';
 
 /** One choice in the palette: a page to open or an action to run. */
@@ -209,6 +211,7 @@ export class CommandPalette {
 
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
+  private readonly path = injectCurrentPath();
   private readonly preferences = inject(Preferences);
   private readonly options = viewChildren(PaletteOption);
   private readonly keys = new ActiveDescendantKeyManager(
@@ -234,6 +237,12 @@ export class CommandPalette {
         this.preferences.setDirection(
           this.preferences.direction() === 'rtl' ? 'ltr' : 'rtl',
         ),
+    },
+    {
+      id: 'action-copy-page',
+      title: 'Copy page for agent',
+      context: 'Action',
+      run: () => this.copyPage(),
     },
     ...components.map((component) => ({
       id: `action-install-${component.name}`,
@@ -373,6 +382,22 @@ export class CommandPalette {
         void this.router.navigateByUrl(entry.url);
       },
     };
+  }
+
+  /**
+   * Copies the current docs page's Markdown twin; elsewhere there is none.
+   */
+  private async copyPage(): Promise<void> {
+    const path = this.path();
+    if (!path.startsWith('/docs/')) {
+      this.announcement.set('This page has no Markdown version');
+      return;
+    }
+    this.announcement.set(
+      (await copyPageMarkdown(path))
+        ? 'Copied the page as Markdown'
+        : "Couldn't copy the page",
+    );
   }
 
   /**

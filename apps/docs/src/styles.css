@@ -146,6 +146,15 @@
   background-size: 16px 16px;
 }
 
+/* Items of the page menu (site/page-actions.ts), as shadcn's dropdown
+   menu items; the CDK focuses the active one. */
+.page-menu-item {
+  @apply relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-start text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground;
+  & svg {
+    @apply size-4 shrink-0 text-muted-foreground;
+  }
+}
+
 /* The playground's controls (playground/playground-panel.ts): segmented
    radios for enums, a switch for booleans. */
 .playground-label {

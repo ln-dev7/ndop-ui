@@ -104,10 +104,9 @@ test('the header uses the registry badge and button', async ({ page }) => {
   await expect(
     page.getByRole('list', { name: 'Facts' }).locator('[data-slot="badge"]'),
   ).not.toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'View source' })).toHaveAttribute(
-    'data-slot',
-    'button',
-  );
+  await expect(
+    page.getByRole('button', { name: 'Copy page', exact: true }),
+  ).toHaveAttribute('data-slot', 'button');
 });
 
 test("a preview's overlays follow the site's direction", async ({ page }) => {

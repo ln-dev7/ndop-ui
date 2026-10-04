@@ -4,9 +4,11 @@ import {
   LucideArrowRight,
   LucideBug,
   LucideCheck,
+  LucideChevronDown,
   LucideCode,
   LucideCopy,
   LucideExternalLink,
+  LucideFileText,
   LucideLanguages,
   LucideMenu,
   LucideMonitor,
@@ -14,6 +16,7 @@ import {
   LucidePencil,
   LucideSearch,
   LucideSun,
+  LucideTerminal,
 } from '@lucide/angular';
 import { provideNdopIcons } from '@ndop/core';
 import { ndopIcons } from '@/lib/icons';
@@ -31,9 +34,11 @@ export function provideDocsIcons(): EnvironmentProviders {
     'arrow-right': LucideArrowRight.icon,
     bug: LucideBug.icon,
     check: LucideCheck.icon,
+    'chevron-down': LucideChevronDown.icon,
     code: LucideCode.icon,
     copy: LucideCopy.icon,
     'external-link': LucideExternalLink.icon,
+    'file-text': LucideFileText.icon,
     languages: LucideLanguages.icon,
     menu: LucideMenu.icon,
     monitor: LucideMonitor.icon,
@@ -41,5 +46,6 @@ export function provideDocsIcons(): EnvironmentProviders {
     pencil: LucidePencil.icon,
     search: LucideSearch.icon,
     sun: LucideSun.icon,
+    terminal: LucideTerminal.icon,
   });
 }

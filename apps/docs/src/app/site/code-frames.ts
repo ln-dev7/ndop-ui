@@ -132,15 +132,6 @@ export class CodeFrames {
   }
 
   /**
-   * The reader's package manager, as chosen in a command block.
-   *
-   * @returns It, or `npm` when none was chosen.
-   */
-  packageManager(): string {
-    return this.manager ?? 'npm';
-  }
-
-  /**
    * Moves between package manager tabs with the arrow keys, Home and End,
    * selecting as focus moves. Arrows follow the reading direction.
    *

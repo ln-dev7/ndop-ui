@@ -14,6 +14,13 @@ import type {
   TemplatePalette,
 } from '../src/app/components/component-data';
 import { LANGUAGES, THEMES, transformers } from '../src/highlight/shiki';
+import {
+  componentMarkdown,
+  guideMarkdown,
+  llmsFullTxt,
+  llmsTxt,
+  readGuides,
+} from './markdown-twins';
 import { searchIndex, type IndexedComponent } from './search-index';
 
 const INDEX_ID = 'virtual:ndop/components';
@@ -22,7 +29,7 @@ const SEARCH_ID = 'virtual:ndop/search-index';
 const REPOSITORY = 'https://github.com/valerymelou/ndop';
 
 /** The shapes of the built registry files this plugin reads. */
-interface BuiltItem {
+export interface BuiltItem {
   name: string;
   type: string;
   version: string;
@@ -36,7 +43,7 @@ interface BuiltItem {
 }
 
 /** The metadata fields this plugin reads (`@ndop/schema`'s metadata v1). */
-interface Metadata {
+export interface Metadata {
   intro: string;
   agentNotes: { do: string[]; dont: string[] };
   pattern?: { name: string; url: string };
@@ -59,7 +66,7 @@ interface Metadata {
 }
 
 /** One input, model or output in the metadata. */
-interface Member {
+export interface Member {
   name: string;
   type: string;
   default?: string;
@@ -91,7 +98,9 @@ interface PageTools {
  * (ADR-0016): `virtual:ndop/components` lists the components and loads
  * each page's data from `virtual:ndop/component/<name>`, with Markdown
  * rendered and code highlighted here; `virtual:ndop/search-index` holds
- * the palette's index (ADR-0008). The registry must be built first
+ * the palette's index (ADR-0008); and `/llms.txt`, `/llms-full.txt` and
+ * every page's `.md` twin are served in development and emitted with the
+ * build (amendment 6). The registry must be built first
  * (`registry:build`), which the docs' targets depend on.
  *
  * @param options - Where the workspace and the guides are.
@@ -116,8 +125,74 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
   const read = <T>(file: string): T =>
     JSON.parse(readFileSync(join(registry, file), 'utf-8')) as T;
 
+  // Paths of the machine-readable docs (ADR-0016, amendment 6) and their
+  // content, generated from the same data as the pages.
+  const machineReadable = (): Map<string, { type: string; body: string }> => {
+    const guides = readGuides(options.guides);
+    const components = read<{ items: BuiltItem[] }>('index.json')
+      .items.filter((item) => item.type === 'registry:ui')
+      .sort((a, b) => a.title.localeCompare(b.title));
+    const twins = [
+      ...guides.map(
+        (guide) => [`${guide.url}.md`, guideMarkdown(guide)] as const,
+      ),
+      ...components.map(
+        (item) =>
+          [
+            `/docs/components/${item.name}.md`,
+            componentMarkdown(item.name, read),
+          ] as const,
+      ),
+    ];
+    const markdown = 'text/markdown; charset=utf-8';
+    const text = 'text/plain; charset=utf-8';
+    return new Map([
+      ...twins.map(([path, body]) => [path, { type: markdown, body }] as const),
+      [
+        '/llms.txt',
+        {
+          type: text,
+          body: llmsTxt(
+            guides,
+            components.map((item) => ({
+              title: item.title,
+              url: `/docs/components/${item.name}`,
+              description: item.description,
+            })),
+          ),
+        },
+      ],
+      [
+        '/llms-full.txt',
+        { type: text, body: llmsFullTxt(twins.map(([, body]) => body)) },
+      ],
+    ]);
+  };
+
   return {
     name: 'ndop:component-docs',
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        const path = request.url?.split(/[?#]/)[0] ?? '';
+        if (!path.endsWith('.md') && !path.startsWith('/llms')) return next();
+        const file = machineReadable().get(path);
+        if (!file) return next();
+        response.setHeader('Content-Type', file.type);
+        response.end(file.body);
+      });
+    },
+    generateBundle() {
+      // Once, with the browser build, whose output is the site's static
+      // files; the server build has no use for them.
+      if (this.environment.config.consumer !== 'client') return;
+      for (const [path, file] of machineReadable()) {
+        this.emitFile({
+          type: 'asset',
+          fileName: path.slice(1),
+          source: file.body,
+        });
+      }
+    },
     resolveId(id) {
       return id === INDEX_ID || id === SEARCH_ID || id.startsWith(PAGE_PREFIX)
         ? `\0${id}`
@@ -327,7 +402,7 @@ async function pageData(
  * @param read - Reads a built registry file.
  * @returns The item first, then its dependencies.
  */
-function withDependencies(
+export function withDependencies(
   item: BuiltItem,
   read: <T>(file: string) => T,
 ): BuiltItem[] {
