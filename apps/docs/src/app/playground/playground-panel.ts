@@ -10,7 +10,6 @@ import {
 import { NdIcon } from '@ndop/core';
 import { Input } from '@/ui/input/input';
 import type { PartData, TemplatePalette } from '../components/component-data';
-import { TrustHtmlPipe } from '../components/trust-html.pipe';
 import {
   controlsFor,
   defaultValues,
@@ -32,7 +31,7 @@ import {
  */
 @Component({
   selector: 'docs-playground',
-  imports: [NgComponentOutlet, NdIcon, Input, TrustHtmlPipe],
+  imports: [NgComponentOutlet, NdIcon, Input],
   host: { class: 'block' },
   template: `
     <div class="overflow-hidden rounded-xl border">

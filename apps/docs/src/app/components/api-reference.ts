@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import type { MemberData, PartData } from './component-data';
+import { StaticHtml } from '../site/static-html';
 
 /** A member with the kind of binding it is. */
 interface Row extends MemberData {
@@ -12,6 +13,7 @@ interface Row extends MemberData {
  */
 @Component({
   selector: 'docs-api-reference',
+  imports: [StaticHtml],
   template: `
     <div class="flex flex-wrap items-center gap-2 text-sm">
       <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.8rem]">{{
@@ -30,7 +32,7 @@ interface Row extends MemberData {
     </div>
     <p
       class="mt-3 text-sm leading-relaxed text-muted-foreground"
-      [innerHTML]="part().descriptionHtml"
+      [docsHtml]="part().descriptionHtml"
     ></p>
     @if (part().ariaAttributes.length) {
       <p class="mt-2 text-sm text-muted-foreground">
@@ -71,7 +73,7 @@ interface Row extends MemberData {
                   }
                   <div
                     class="mt-1 text-muted-foreground"
-                    [innerHTML]="row.descriptionHtml"
+                    [docsHtml]="row.descriptionHtml"
                   ></div>
                 </td>
                 <td class="px-4 py-2.5">

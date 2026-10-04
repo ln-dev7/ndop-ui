@@ -14,10 +14,10 @@ import { Badge } from '@/ui/badge/badge';
 import { Button } from '@/ui/button/button';
 import { examples, pages, templatePalette } from 'virtual:ndop/components';
 import { ApiReference } from '../../../components/api-reference';
-import { TrustHtmlPipe } from '../../../components/trust-html.pipe';
 import type { PlaygroundHost } from '../../../playground/playground';
 import { PlaygroundPanel } from '../../../playground/playground-panel';
 import { PageActions } from '../../../site/page-actions';
+import { StaticHtml } from '../../../site/static-html';
 import { playgrounds } from '../../../playground/hosts';
 import type {
   ComponentPageData,
@@ -89,7 +89,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
     ExamplePreview,
     KeyboardTable,
     ApiReference,
-    TrustHtmlPipe,
+    StaticHtml,
     PlaygroundPanel,
     PageActions,
   ],
@@ -176,10 +176,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
               />
             }
 
-            <div
-              class="prose mt-8"
-              [innerHTML]="item.introHtml | trustHtml"
-            ></div>
+            <div class="prose mt-8" [docsHtml]="item.introHtml"></div>
 
             <section class="mt-12" aria-labelledby="installation">
               <h2 id="installation" [class]="h2">Installation</h2>
@@ -210,7 +207,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                 aria-labelledby="install-cli-tab"
                 class="prose"
                 [hidden]="install() !== 'cli'"
-                [innerHTML]="item.install.cliHtml | trustHtml"
+                [docsHtml]="item.install.cliHtml"
               ></div>
               <div
                 role="tabpanel"
@@ -223,7 +220,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   @if (item.install.dependenciesHtml; as dependencies) {
                     <li>
                       <h3 class="step-title">Install the dependencies</h3>
-                      <div [innerHTML]="dependencies | trustHtml"></div>
+                      <div [docsHtml]="dependencies"></div>
                     </li>
                   }
                   <li>
@@ -236,7 +233,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                       aliases point to; these use the defaults.
                     </p>
                     @for (file of item.install.files; track file.target) {
-                      <div [innerHTML]="file.html | trustHtml"></div>
+                      <div [docsHtml]="file.html"></div>
                     }
                   </li>
                   <li>
@@ -257,14 +254,8 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
 
             <section class="mt-12" aria-labelledby="usage">
               <h2 id="usage" [class]="h2">Usage</h2>
-              <div
-                class="prose"
-                [innerHTML]="item.usage.importsHtml | trustHtml"
-              ></div>
-              <div
-                class="prose"
-                [innerHTML]="item.usage.templateHtml | trustHtml"
-              ></div>
+              <div class="prose" [docsHtml]="item.usage.importsHtml"></div>
+              <div class="prose" [docsHtml]="item.usage.templateHtml"></div>
             </section>
 
             @if (loaded.playground; as playground) {
@@ -288,7 +279,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   </h3>
                   <p
                     class="mt-2 text-[0.9375rem] leading-7 text-muted-foreground"
-                    [innerHTML]="example.descriptionHtml"
+                    [docsHtml]="example.descriptionHtml"
                   ></p>
                   <docs-example-preview
                     class="mt-4"
@@ -318,7 +309,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                 <div class="prose mt-3">
                   <ul>
                     @for (rule of item.accessibility.focusHtml; track $index) {
-                      <li [innerHTML]="rule"></li>
+                      <li [docsHtml]="rule"></li>
                     }
                   </ul>
                 </div>
@@ -335,7 +326,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
               }
               @if (item.accessibility.rtlHtml; as rtl) {
                 <h3 id="right-to-left" [class]="h3 + ' mt-8'">Right-to-left</h3>
-                <p class="prose mt-3" [innerHTML]="rtl"></p>
+                <p class="prose mt-3" [docsHtml]="rtl"></p>
               }
             </section>
 
@@ -357,7 +348,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   <div class="prose mt-2 text-sm">
                     <ul>
                       @for (note of item.agentNotes.doHtml; track $index) {
-                        <li [innerHTML]="note"></li>
+                        <li [docsHtml]="note"></li>
                       }
                     </ul>
                   </div>
@@ -367,7 +358,7 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   <div class="prose mt-2 text-sm">
                     <ul>
                       @for (note of item.agentNotes.dontHtml; track $index) {
-                        <li [innerHTML]="note"></li>
+                        <li [docsHtml]="note"></li>
                       }
                     </ul>
                   </div>

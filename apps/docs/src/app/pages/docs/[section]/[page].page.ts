@@ -1,6 +1,6 @@
 import { Component, computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { DomSanitizer, Meta, Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { CodeFrames } from '../../../site/code-frames';
@@ -9,6 +9,7 @@ import { Navigation } from '../../../site/navigation';
 import { injectCurrentPath } from '../../../site/current-path';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
 import { PageActions } from '../../../site/page-actions';
+import { StaticHtml } from '../../../site/static-html';
 
 /**
  * Decodes the character references Markdown rendering produces in heading
@@ -45,7 +46,14 @@ function decodeEntities(text: string): string {
  */
 @Component({
   selector: 'docs-content-page',
-  imports: [RouterLink, NdIcon, CodeFrames, OnThisPage, PageActions],
+  imports: [
+    RouterLink,
+    NdIcon,
+    CodeFrames,
+    OnThisPage,
+    PageActions,
+    StaticHtml,
+  ],
   template: `
     <div class="flex gap-10 py-8">
       <main id="main" class="mx-auto w-full max-w-[640px] min-w-0">
@@ -65,7 +73,7 @@ function decodeEntities(text: string): string {
             >
               {{ value.attributes.description }}
             </p>
-            <div class="prose mt-8" [innerHTML]="html()"></div>
+            <div class="prose mt-8" [docsHtml]="html()"></div>
             <p aria-live="polite" class="sr-only">
               {{ frames.announcement() }}
             </p>
@@ -111,7 +119,6 @@ export default class ContentPage {
   });
   private readonly navigation = inject(Navigation);
   protected readonly path = injectCurrentPath();
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
 
@@ -134,11 +141,7 @@ export default class ContentPage {
     },
   });
 
-  // The HTML is generated from the repository's own Markdown at build
-  // time; it keeps Shiki's inline color variables, which sanitizing drops.
-  protected readonly html = computed(() =>
-    this.sanitizer.bypassSecurityTrustHtml(this.page.value()?.html ?? ''),
-  );
+  protected readonly html = computed(() => this.page.value()?.html ?? '');
 
   protected readonly headings = computed<PageHeading[]>(() =>
     [

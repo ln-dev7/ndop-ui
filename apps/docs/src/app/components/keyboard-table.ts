@@ -1,4 +1,5 @@
 import { Component, computed, input, signal } from '@angular/core';
+import { StaticHtml } from '../site/static-html';
 
 /** One row of a keyboard table. */
 export interface KeyboardRow {
@@ -19,6 +20,7 @@ const KEY_NAMES: Record<string, string> = { ' ': 'Space', Esc: 'Escape' };
  */
 @Component({
   selector: 'docs-keyboard-table',
+  imports: [StaticHtml],
   template: `
     <div class="mb-3 flex items-center justify-between gap-4">
       <p class="text-sm text-muted-foreground">
@@ -78,7 +80,7 @@ const KEY_NAMES: Record<string, string> = { ' ': 'Space', Esc: 'Escape' };
               </td>
               <td
                 class="px-4 py-2.5 text-muted-foreground"
-                [innerHTML]="row.actionHtml"
+                [docsHtml]="row.actionHtml"
               ></td>
             </tr>
           }

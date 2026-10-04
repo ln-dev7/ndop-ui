@@ -1,6 +1,6 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, input, type Type } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, input, type Type } from '@angular/core';
+import { StaticHtml } from '../site/static-html';
 
 /**
  * A live example on a component page: rendered inline and hydrated when it
@@ -10,7 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
  */
 @Component({
   selector: 'docs-example-preview',
-  imports: [NgComponentOutlet],
+  imports: [NgComponentOutlet, StaticHtml],
   host: { class: 'block' },
   template: `
     <figure
@@ -26,7 +26,7 @@ import { DomSanitizer } from '@angular/platform-browser';
           }
         }
       </div>
-      <div [innerHTML]="code()"></div>
+      <div [docsHtml]="codeHtml()"></div>
     </figure>
   `,
 })
@@ -37,12 +37,4 @@ export class ExamplePreview {
   readonly component = input.required<Type<unknown> | undefined>();
   /** The example's source, highlighted at build time. */
   readonly codeHtml = input.required<string>();
-
-  private readonly sanitizer = inject(DomSanitizer);
-
-  // Generated at build time from the registry's own sources; keeps
-  // Shiki's inline color variables, which sanitizing drops.
-  protected readonly code = computed(() =>
-    this.sanitizer.bypassSecurityTrustHtml(this.codeHtml()),
-  );
 }
