@@ -3,7 +3,9 @@ import { nxE2EPreset } from '@nx/playwright/preset';
 import { workspaceRoot } from '@nx/devkit';
 
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
+// The production build, served the way Cloudflare Pages serves it
+// (ADR-0016, "Quality gates"); the dev server is on 4200.
+const baseURL = process.env['BASE_URL'] || 'http://localhost:4400';
 
 /**
  * Read environment variables from file.
@@ -31,9 +33,11 @@ export default defineConfig({
   },
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'pnpm exec nx run docs:serve',
-    url: 'http://localhost:4200',
-    reuseExistingServer: true,
+    command: 'pnpm exec nx run docs:serve-static',
+    url: 'http://localhost:4400',
+    reuseExistingServer: !process.env['CI'],
+    // Builds the site first.
+    timeout: 300_000,
     cwd: workspaceRoot,
   },
   projects: [

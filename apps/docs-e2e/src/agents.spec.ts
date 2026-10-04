@@ -1,18 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
-
-/**
- * Opens a page and waits until Angular has hydrated it.
- *
- * @param page - A Playwright page.
- * @param url - Route to open.
- */
-async function open(page: Page, url: string): Promise<void> {
-  const hydrated = page.waitForEvent('console', (message) =>
-    message.text().startsWith('Angular hydrated'),
-  );
-  await page.goto(url);
-  await hydrated;
-}
+import { expect, test } from '@playwright/test';
+import { open } from './support/open';
 
 test('llms.txt links a Markdown twin of every page', async ({ request }) => {
   const index = await request.get('/llms.txt');

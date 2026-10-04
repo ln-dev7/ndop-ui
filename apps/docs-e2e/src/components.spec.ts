@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { open } from './support/open';
 
 /** Every component the registry publishes, in navigation order. */
 const COMPONENTS = [
@@ -11,21 +12,6 @@ const COMPONENTS = [
   'separator',
   'tooltip',
 ];
-
-/**
- * Opens a page and waits until Angular has hydrated it, so clicks reach
- * the app rather than the prerendered markup.
- *
- * @param page - A Playwright page.
- * @param url - Route to open.
- */
-async function open(page: Page, url: string): Promise<void> {
-  const hydrated = page.waitForEvent('console', (message) =>
-    message.text().startsWith('Angular hydrated'),
-  );
-  await page.goto(url);
-  await hydrated;
-}
 
 for (const name of COMPONENTS) {
   test(`the ${name} page renders and hydrates without errors`, async ({

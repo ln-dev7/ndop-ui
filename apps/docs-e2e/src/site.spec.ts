@@ -1,19 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-
-/**
- * Opens a page and waits until Angular has hydrated it, so clicks reach
- * the app rather than the prerendered markup.
- *
- * @param page - A Playwright page.
- * @param url - Route to open.
- */
-async function open(page: Page, url: string): Promise<void> {
-  const hydrated = page.waitForEvent('console', (message) =>
-    message.text().startsWith('Angular hydrated'),
-  );
-  await page.goto(url);
-  await hydrated;
-}
+import { open } from './support/open';
 
 /**
  * Where a heading's top edge is in the viewport.
