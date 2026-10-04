@@ -1,5 +1,3 @@
-import { parseRawContentFile } from '@analogjs/content';
-
 /**
  * Front matter every guide declares.
  */
@@ -74,8 +72,34 @@ export async function loadGuide(
 ): Promise<Guide | undefined> {
   const load = CONTENT[`../../guides/${section}/${page}.md`];
   if (!load) return undefined;
-  const { attributes, content } = parseRawContentFile<PageAttributes>(
-    await load(),
+  return splitGuide(await load());
+}
+
+/**
+ * Splits a guide, as Analog's content plugin outputs it, into its front
+ * matter and its rendered HTML. Guides' front matter is plain `key: value`
+ * lines, so this replaces `@analogjs/content`'s YAML parser, which put
+ * 58 KB of gzipped JavaScript on every page.
+ *
+ * @param file - Front matter between `---` lines, then HTML.
+ * @returns The guide.
+ */
+export function splitGuide(file: string): Guide {
+  const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(file);
+  const fields = Object.fromEntries(
+    (match?.[1] ?? '').split(/\r?\n/).flatMap((line) => {
+      const separator = line.indexOf(':');
+      return separator > 0
+        ? [[line.slice(0, separator).trim(), line.slice(separator + 1).trim()]]
+        : [];
+    }),
   );
-  return { attributes, html: content };
+  return {
+    attributes: {
+      title: fields['title'] ?? '',
+      description: fields['description'] ?? '',
+      order: Number(fields['order']) || 0,
+    },
+    html: file.slice(match?.[0].length ?? 0),
+  };
 }
