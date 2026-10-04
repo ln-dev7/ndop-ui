@@ -23,6 +23,12 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
 
       const problems: string[] = [];
       page.on('console', (message) => {
+        // Firefox warns that a preloaded font went unused when a later
+        // page in the same session already has it in memory, as the crawl
+        // does; a first visit uses the preload.
+        if (/preloaded with link preload was not used/.test(message.text())) {
+          return;
+        }
         if (message.type() === 'error' || message.type() === 'warning') {
           problems.push(`${message.type()}: ${message.text()}`);
         }
