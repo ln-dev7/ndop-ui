@@ -53,15 +53,60 @@ jobs:
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t lint typecheck test build
 
-      # E2E runs on its own: the dev servers render pages on demand, and
-      # sharing the runner with lint, type-check and test tasks starved them
-      # past Vite's 60s server-render limit. The registry install test has
-      # its own job.
+      # E2E runs on its own: the harness's dev server renders pages on
+      # demand, and sharing the runner with lint, type-check and test tasks
+      # starved it past Vite's 60s server-render limit. The docs' e2e runs
+      # against their production build. The registry install test has its
+      # own job.
       - if: github.event_name == 'pull_request'
         run: pnpm nx affected -t e2e --exclude=registry-e2e
 
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --exclude=registry-e2e
+
+  # ADR-0016: Lighthouse on every prerendered docs route, served the way
+  # Cloudflare Pages serves it; any category under 95 fails. On its own
+  # runner, so other tasks don't skew the performance measurements.
+  docs-lighthouse:
+    name: Docs Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: master
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - if: github.event_name == 'pull_request'
+        run: |
+          if pnpm nx show projects --affected --projects=docs --json | grep -q '"docs"'; then
+            pnpm nx lighthouse docs
+          else
+            echo "No change affects the docs."
+          fi
+
+      - if: github.event_name == 'push'
+        run: pnpm nx lighthouse docs
+
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docs-lighthouse-reports
+          path: dist/lighthouse/docs
+          if-no-files-found: ignore
 
   # ADR-0015: ng new, ndop init, ndop add dialog and ng build with npm, pnpm
   # and bun on Angular 22 and pnpm on Angular 21, against packages published
