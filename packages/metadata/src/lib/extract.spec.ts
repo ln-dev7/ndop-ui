@@ -158,7 +158,9 @@ async function extract() {
   return result;
 }
 
-describe('extractMetadata', () => {
+// Each test compiles a project with the Angular compiler, and the first
+// also loads it; on a busy CI runner that exceeds Vitest's 5s default.
+describe('extractMetadata', { timeout: 30_000 }, () => {
   it('merges the API, the primitive spec and docs.md', async () => {
     await fixture();
     const { metadata, issues } = await extract();
