@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { failures, prerenderedRoutes, reportName } from './routes';
+import { failures, medianRun, prerenderedRoutes, reportName } from './routes';
 
 describe('prerenderedRoutes', () => {
   it('lists every folder with an index.html', async () => {
@@ -40,5 +40,13 @@ describe('reportName', () => {
     expect(reportName('/docs/components/dialog')).toBe(
       'docs-components-dialog.html',
     );
+  });
+});
+
+describe('medianRun', () => {
+  it('picks the run with the median performance score', () => {
+    expect(medianRun([0.9, 0.7, 0.95])).toBe(0);
+    expect(medianRun([0.8])).toBe(0);
+    expect(medianRun([0.6, 0.9])).toBe(0);
   });
 });

@@ -19,6 +19,11 @@
       "description": "Where the HTML reports go, relative to the workspace root.",
       "default": "dist/lighthouse/docs"
     },
+    "runs": {
+      "type": "number",
+      "description": "Runs per route; the run with the median performance score counts, as in Lighthouse CI.",
+      "default": 3
+    },
     "routes": {
       "type": "array",
       "items": { "type": "string" },

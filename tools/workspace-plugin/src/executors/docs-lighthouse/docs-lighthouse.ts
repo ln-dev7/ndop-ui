@@ -4,6 +4,7 @@ import { logger, type PromiseExecutor } from '@nx/devkit';
 import { serveSite } from '../../utils/serve-site';
 import {
   failures,
+  medianRun,
   prerenderedRoutes,
   reportName,
   type RouteScores,
@@ -14,7 +15,8 @@ import type { DocsLighthouseExecutorSchema } from './schema';
  * The docs' Lighthouse gate (ADR-0016, "Quality gates"): serves the built
  * site the way Cloudflare Pages does, runs `lighthouse` on every
  * prerendered route with its default mobile profile in Playwright's
- * Chromium, writes an HTML report per route, and fails when any category
+ * Chromium, three times by default, keeps the run with the median
+ * performance score as Lighthouse CI does, writes its HTML report, and fails when any category
  * of any route scores under the minimum (RFC-0001: 95).
  *
  * @param options - The site, minimum score, report folder and routes.
@@ -60,12 +62,24 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
   const results: RouteScores[] = [];
   try {
     for (const route of routes) {
-      const result = await lighthouse(`${site.url}${route}`, {
-        port: chrome.port,
-        output: 'html',
-        logLevel: 'error',
-      });
-      if (!result) throw new Error(`Lighthouse returned nothing for ${route}.`);
+      const runs = [];
+      for (let run = 0; run < (options.runs ?? 3); run++) {
+        const result = await lighthouse(`${site.url}${route}`, {
+          port: chrome.port,
+          output: 'html',
+          logLevel: 'error',
+        });
+        if (!result)
+          throw new Error(`Lighthouse returned nothing for ${route}.`);
+        runs.push(result);
+      }
+      const result =
+        runs[
+          medianRun(
+            runs.map((run) => run.lhr.categories['performance']?.score ?? 0),
+          )
+        ];
+      if (!result) throw new Error(`No Lighthouse run for ${route}.`);
       const scores = Object.fromEntries(
         Object.values(result.lhr.categories).map((category) => [
           category.title,

@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { angularServerMode } from '../../tools/workspace-plugin/src/vite/angular-server-mode';
+import { deferScripts } from '../../tools/workspace-plugin/src/vite/defer-scripts';
 import { inlineCss } from '../../tools/workspace-plugin/src/vite/inline-css';
 import { componentDocs } from './build/component-docs';
 import {
@@ -82,6 +83,7 @@ export default defineConfig(() => {
         // Geist Mono); the other subsets load only when text needs them.
         preloadFonts: [/geist-(mono-)?latin-wght-normal-/],
       }),
+      deferScripts(),
       // The base config covers workspace files outside the app, such as
       // the registry items the docs render.
       viteTsConfigPaths({ projects: ['../../tsconfig.base.json'] }),

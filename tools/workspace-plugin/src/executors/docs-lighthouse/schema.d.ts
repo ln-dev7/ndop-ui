@@ -6,6 +6,11 @@ export interface DocsLighthouseExecutorSchema {
   minScore?: number;
   /** Where the HTML reports go, relative to the workspace root. */
   outputDir?: string;
+  /**
+   * Runs per route; the run with the median performance score counts, as
+   * in Lighthouse CI.
+   */
+  runs?: number;
   /** Routes to audit; every prerendered route by default. */
   routes?: string[];
 }

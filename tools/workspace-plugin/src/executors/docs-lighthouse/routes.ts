@@ -51,3 +51,17 @@ export function failures(results: RouteScores[], minScore: number): string[] {
 export function reportName(route: string): string {
   return `${route.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'index'}.html`;
 }
+
+/**
+ * The run that represents a route, as Lighthouse CI picks it: the one with
+ * the median performance score, so one slow or lucky run doesn't decide.
+ *
+ * @param runs - The runs' performance scores, in run order.
+ * @returns The index of the median run.
+ */
+export function medianRun(runs: number[]): number {
+  const order = runs
+    .map((score, index) => ({ score, index }))
+    .sort((a, b) => a.score - b.score);
+  return order[Math.floor((order.length - 1) / 2)]?.index ?? 0;
+}
