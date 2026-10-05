@@ -11,7 +11,11 @@ export default [
           ignoredFiles: [
             '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
             '{projectRoot}/vitest.config.{js,ts,mjs,mts}',
+            '{projectRoot}/src/testing/**',
           ],
+          // Rules run inside the user's ESLint, which is a peer the code
+          // never imports.
+          ignoredDependencies: ['eslint'],
         },
       ],
     },

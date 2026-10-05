@@ -23,6 +23,9 @@
       "@ndop/mcp": ["./packages/mcp/src/index.ts"],
       "@ndop/metadata": ["./packages/metadata/src/index.ts"],
       "@ndop/eslint-plugin": ["./packages/eslint-plugin/src/index.ts"],
+      "@ndop/eslint-plugin/catalog": [
+        "./packages/eslint-plugin/src/lib/catalog.ts"
+      ],
       "@ndop/workspace-plugin": ["./tools/workspace-plugin/src/index.ts"],
       "@ndop/merge-spike": ["./tools/merge-spike/src/index.ts"],
       "@ndop/primitives/separator": [

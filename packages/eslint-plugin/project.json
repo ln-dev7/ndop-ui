@@ -34,7 +34,20 @@
       ],
       "options": {
         "coverage.reportsDirectory": "../../coverage/packages/eslint-plugin"
-      }
+      },
+      "dependsOn": [
+        {
+          "projects": ["registry", "primitives"],
+          "target": "build"
+        }
+      ],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "dependentTasksOutputFiles": "**/*.json"
+        }
+      ]
     }
   }
 }

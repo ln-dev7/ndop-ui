@@ -1,10 +1,21 @@
 {
   "name": "@ndop/eslint-plugin",
   "version": "0.0.1",
+  "description": "ESLint rules for apps that use Ndop UI: accessible names, labels, dialog titles, tokens and logical utilities.",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
+    "@angular-eslint/bundled-angular-compiler": "22.5.0",
+    "@angular-eslint/utils": "22.5.0",
+    "@typescript-eslint/utils": "8.71.0",
     "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0 || ^10.0.0"
+  },
+  "devDependencies": {
+    "@angular-eslint/template-parser": "22.5.0",
+    "@typescript-eslint/parser": "8.71.0"
   }
 }

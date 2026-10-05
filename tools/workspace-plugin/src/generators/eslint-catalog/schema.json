@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "EslintCatalog",
+  "title": "Regenerate @ndop/eslint-plugin's catalog",
+  "description": "Writes packages/eslint-plugin/src/lib/catalog.generated.ts from the built registry's metadata and @ndop/primitives' exports (ADR-0018). Build the registry and the primitives first.",
+  "type": "object",
+  "properties": {
+    "registry": {
+      "type": "string",
+      "description": "Built registry folder, holding metadata/<name>.json.",
+      "default": "dist/registry/r"
+    },
+    "primitives": {
+      "type": "string",
+      "description": "Built @ndop/primitives package.json, whose exports list the entry points.",
+      "default": "dist/packages/primitives/package.json"
+    }
+  }
+}

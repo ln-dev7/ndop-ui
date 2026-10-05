@@ -11,7 +11,8 @@
     "@nx/angular": "23.2.1",
     "@ndop/cli": "workspace:*",
     "@nx/js": "23.2.1",
-    "nx": "23.2.1"
+    "nx": "23.2.1",
+    "@ndop/eslint-plugin": "workspace:*"
   },
   "generators": "./generators.json",
   "executors": "./executors.json"
