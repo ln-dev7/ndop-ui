@@ -602,9 +602,9 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 3 — Metadata and docs v1 (weeks 6–8)
 
-- [ ] Metadata extractor and schema; CI rule for missing descriptions and keyboard maps.
-- [ ] Analog docs with the full component page anatomy, code blocks, ⌘K palette, dark/RTL toggles and playground generated from metadata.
-- [ ] `llms.txt`, `llms-full.txt` and `.md` twins.
+- [x] Metadata extractor and schema; CI rule for missing descriptions and keyboard maps.
+- [x] Analog docs with the full component page anatomy, code blocks, ⌘K palette, dark/RTL toggles and playground generated from metadata.
+- [x] `llms.txt`, `llms-full.txt` and `.md` twins.
 
 * **Accept when:** every Phase 1 component has a complete page generated from metadata, and Lighthouse ≥ 95 and zero axe violations hold on all routes.
 
