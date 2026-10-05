@@ -3,6 +3,7 @@ import {
   type Highlightable,
 } from '@angular/cdk/a11y';
 import {
+  afterNextRender,
   afterRenderEffect,
   Component,
   computed,
@@ -201,6 +202,9 @@ export class PaletteOption implements Highlightable {
   `,
 })
 export class CommandPalette {
+  /** Whether to open as soon as it's created, for a ⌘K pressed earlier. */
+  readonly openOnStart = input(false);
+
   /** Whether the palette is open. */
   readonly open = signal(false);
 
@@ -277,6 +281,9 @@ export class CommandPalette {
   protected readonly activeId = signal<string | null>(null);
 
   constructor() {
+    afterNextRender(() => {
+      if (this.openOnStart()) this.open.set(true);
+    });
     this.keys.change.subscribe(() =>
       this.activeId.set(this.keys.activeItem?.item().id ?? null),
     );

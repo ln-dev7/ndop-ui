@@ -42,11 +42,22 @@ export const appConfig: ApplicationConfig = {
     provideDocsIcons(),
     provideAppInitializer(() => {
       // Marks the page once it has hydrated and settled, which production
-      // builds don't log, so tests and audits can wait for it.
+      // builds don't log, so tests and audits can wait for it. Parts that
+      // hydrate on idle, such as the page menu, do so after the first
+      // settling, so the mark waits for an idle period and settles again.
       if (isPlatformBrowser(inject(PLATFORM_ID))) {
         const root = inject(DOCUMENT).documentElement;
-        void inject(ApplicationRef)
+        const app = inject(ApplicationRef);
+        const idle = () =>
+          new Promise<void>((resolve) =>
+            typeof requestIdleCallback === 'function'
+              ? requestIdleCallback(() => resolve())
+              : setTimeout(resolve, 50),
+          );
+        void app
           .whenStable()
+          .then(idle)
+          .then(() => app.whenStable())
           .then(() => root.setAttribute('data-hydrated', ''));
       }
       inject(Preferences).restore();

@@ -105,15 +105,17 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   {{ item.title }}
                 </h1>
                 <div class="flex shrink-0 items-center gap-2">
-                  <docs-page-actions
-                    [path]="'/docs/components/' + item.name"
-                    [title]="item.title"
-                    [component]="{
-                      name: item.name,
-                      source: item.links.source,
-                      issue: item.links.issue,
-                    }"
-                  />
+                  @defer (on immediate; hydrate on idle) {
+                    <docs-page-actions
+                      [path]="'/docs/components/' + item.name"
+                      [title]="item.title"
+                      [component]="{
+                        name: item.name,
+                        source: item.links.source,
+                        issue: item.links.issue,
+                      }"
+                    />
+                  }
                   <nav aria-label="Components" class="flex gap-2">
                     @if (neighbors().previous; as previous) {
                       <a
@@ -418,7 +420,10 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
       <div
         class="sticky top-22 hidden h-fit max-h-[calc(100dvh-5.5rem)] w-[220px] shrink-0 overflow-y-auto xl:block"
       >
-        <docs-on-this-page [headings]="headings()" />
+        <!-- Soon after load: its scroll-spy follows the reader. -->
+        @defer (on immediate; hydrate on idle) {
+          <docs-on-this-page [headings]="headings()" />
+        }
       </div>
     </div>
   `,

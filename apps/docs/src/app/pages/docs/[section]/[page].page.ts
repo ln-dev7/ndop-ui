@@ -63,10 +63,12 @@ function decodeEntities(text: string): string {
               <h1 class="text-3xl font-semibold tracking-tight">
                 {{ value.attributes.title }}
               </h1>
-              <docs-page-actions
-                [path]="path()"
-                [title]="value.attributes.title"
-              />
+              @defer (on immediate; hydrate on idle) {
+                <docs-page-actions
+                  [path]="path()"
+                  [title]="value.attributes.title"
+                />
+              }
             </div>
             <p
               class="mt-2 text-[1.05rem] text-muted-foreground sm:text-base sm:text-balance"
@@ -108,7 +110,10 @@ function decodeEntities(text: string): string {
       <div
         class="sticky top-22 hidden h-fit max-h-[calc(100dvh-5.5rem)] w-[220px] shrink-0 overflow-y-auto xl:block"
       >
-        <docs-on-this-page [headings]="headings()" />
+        <!-- Soon after load: its scroll-spy follows the reader. -->
+        @defer (on immediate; hydrate on idle) {
+          <docs-on-this-page [headings]="headings()" />
+        }
       </div>
     </div>
   `,

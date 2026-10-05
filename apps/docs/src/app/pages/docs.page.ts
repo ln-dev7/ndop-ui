@@ -17,7 +17,11 @@ import { SiteNav } from '../site/site-nav';
         class="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-[260px] shrink-0 after:absolute after:inset-y-6 after:end-0 after:w-px after:bg-linear-to-b after:from-transparent after:via-border after:to-transparent lg:block"
       >
         <div class="fade-y h-full overflow-y-auto pe-4">
-          <docs-site-nav />
+          <!-- Soon after load, in its own task; the server already marks
+               the current page. -->
+          @defer (on immediate; hydrate on idle) {
+            <docs-site-nav />
+          }
         </div>
       </div>
       <div class="min-w-0 flex-1">
