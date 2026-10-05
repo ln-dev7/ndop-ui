@@ -23,7 +23,10 @@ import {
 describe('Dialog', () => {
   it('matches shadcn new-york-v4 classes', () => {
     expect(
-      missingShadcnClasses('dialog', registrySource('ui/dialog/dialog.ts')),
+      missingShadcnClasses('dialog', registrySource('ui/dialog/dialog.ts'), {
+        'top-4 right-4': 'top-4 end-4',
+        'sm:text-left': 'sm:text-start',
+      }),
     ).toEqual([]);
   });
 
@@ -70,7 +73,7 @@ describe('Dialog', () => {
     expect(dialog.getAttribute('data-slot')).toBe('dialog-content');
     expect(dialog.classList).toContain('sm:max-w-lg');
     expect(screen.getByTestId('overlay').classList).toContain('bg-black/50');
-    expect(screen.getByTestId('header').classList).toContain('sm:text-left');
+    expect(screen.getByTestId('header').classList).toContain('sm:text-start');
     expect(screen.getByTestId('footer').classList).toContain('sm:justify-end');
     expect(screen.getByText('Edit profile').classList).toContain(
       'font-semibold',

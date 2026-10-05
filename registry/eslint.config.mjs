@@ -1,10 +1,19 @@
 import nx from '@nx/eslint-plugin';
+import { createJiti } from 'jiti';
 import baseConfig from '../eslint.config.mjs';
+
+// The registry lints with Ndop's own rules (ADR-0018), loaded from source so
+// rule changes apply without a build.
+const ndop = await createJiti(import.meta.url).import(
+  '../packages/eslint-plugin/src/index.ts',
+  { default: true },
+);
 
 export default [
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
   ...baseConfig,
+  ...ndop.configs.recommended,
   {
     files: ['**/*.ts'],
     rules: {

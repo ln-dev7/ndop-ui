@@ -90,7 +90,7 @@ export class DialogCloseButton {
 
   protected readonly classes = computed(() =>
     cn(
-      "absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+      "absolute top-4 end-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
       this.class(),
     ),
   );
@@ -113,7 +113,7 @@ export class DialogHeader {
   readonly class = input('');
 
   protected readonly classes = computed(() =>
-    cn('flex flex-col gap-2 text-center sm:text-left', this.class()),
+    cn('flex flex-col gap-2 text-center sm:text-start', this.class()),
   );
 }
 
