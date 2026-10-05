@@ -22,9 +22,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "main": "packages/mcp/src/index.ts",
+        "main": "packages/mcp/src/main.ts",
         "outputPath": "dist/packages/mcp",
-        "outputFileName": "index.js",
         "tsConfig": "packages/mcp/tsconfig.lib.json",
         "platform": "node",
         "format": ["esm"],
@@ -33,13 +32,23 @@
             "glob": "README.md",
             "input": "packages/mcp",
             "output": "."
+          },
+          {
+            "glob": "package.json",
+            "input": "packages/mcp",
+            "output": "."
           }
         ],
         "thirdParty": false,
-        "generatePackageJson": true,
+        "generatePackageJson": false,
         "esbuildOptions": {
+          "banner": {
+            "js": "#!/usr/bin/env node"
+          },
           "sourcemap": true
-        }
+        },
+        "additionalEntryPoints": ["packages/mcp/src/index.ts"],
+        "external": ["@ndop/schema", "@ndop/metadata"]
       },
       "configurations": {
         "development": {},

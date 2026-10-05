@@ -19,6 +19,7 @@
       "@ndop/core": ["./packages/core/src/index.ts"],
       "@ndop/schema": ["./packages/schema/src/index.ts"],
       "@ndop/cli": ["./packages/cli/src/index.ts"],
+      "@ndop/cli/registry": ["./packages/cli/src/lib/registry/client.ts"],
       "@ndop/mcp": ["./packages/mcp/src/index.ts"],
       "@ndop/metadata": ["./packages/metadata/src/index.ts"],
       "@ndop/eslint-plugin": ["./packages/eslint-plugin/src/index.ts"],

@@ -84,7 +84,7 @@ item with the closest names.
 
 | Tool                  | Input                         | Returns                                                                                                                                          |
 | --------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `search_components`   | `query`, `limit?` (default 8) | Ranked `{name, title, description, type, score, docsUrl}`; with no match, every component with its one-line description                          |
+| `search_components`   | `query`, `limit?` (default 8) | Ranked `{name, title, description, score}`; with no match, every component with its one-line description                                         |
 | `get_component`       | `name`                        | The Markdown twin (API, parts, keyboard map, accessibility, do and don't, minimal usage) and the metadata JSON                                   |
 | `get_example`         | `name`                        | Full source, the item it demonstrates and the registry dependencies it needs                                                                     |
 | `list_blocks`         | `category?`                   | `registry:block` items with title, description and category                                                                                      |
