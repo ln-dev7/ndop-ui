@@ -1,3 +1,7 @@
+---
+keywords: action, submit, CTA, icon button, link button
+---
+
 Buttons start actions: submitting a form, opening a dialog, saving a change.
 `ndButton` styles a native `button`, or an `a` when the action navigates, so
 both keep their native keyboard behavior and semantics. Six variants set the

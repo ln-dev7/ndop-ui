@@ -1,3 +1,7 @@
+---
+keywords: modal, popup, confirm, confirmation, overlay, lightbox
+---
+
 A dialog interrupts the page to ask for a decision or information, and
 blocks the rest of the page until it closes. It follows the WAI-ARIA modal
 dialog pattern: focus moves into the dialog and stays there, Escape and the

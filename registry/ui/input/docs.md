@@ -1,3 +1,7 @@
+---
+keywords: text field, textbox, form field, text input, email, password
+---
+
 A text input collects a single line of text. `ndInput` styles a native
 `input` and adds no value accessor, so forms bind it directly: Signal Forms
 with `[formField]`, reactive forms with `formControlName`, or plain

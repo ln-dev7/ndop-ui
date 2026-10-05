@@ -17,6 +17,7 @@ import {
 import type * as Ts from 'typescript';
 import { parseDocs } from './parse-docs';
 import { parseSpec, type ParsedSpec, type SpecPart } from './parse-spec';
+import { usageOf } from './usage';
 
 /**
  * A problem found while extracting metadata. `ndop build` fails on any.
@@ -117,6 +118,7 @@ export async function extractMetadata(
     checker: program.getTsProgram().getTypeChecker(),
     docs: new Map(),
     fromRoot,
+    items: options.items,
   };
 
   const metadata: ComponentMetadata[] = [];
@@ -142,6 +144,8 @@ interface Context {
   /** Documentation entries by absolute file path. */
   docs: Map<string, DocEntry[]>;
   fromRoot: NodeJS.Require;
+  /** Every built item, for examples' sources. */
+  items: readonly RegistryItem[];
 }
 
 /** One part's metadata, as in `metadata.json`. */
@@ -177,6 +181,7 @@ async function extractItem(
   let composesPrimitive = false;
   const parts: Part[] = [];
   const selectors = new Map<Part, string[]>();
+  const classes = new Map<Part, Ts.ClassDeclaration[]>();
   const specs = new Map<string, ParsedSpec>();
   for (const file of files) {
     const absolute = resolve(context.root, file);
@@ -200,9 +205,12 @@ async function extractItem(
       );
       parts.push(built.part);
       selectors.set(built.part, built.selectors);
+      classes.set(built.part, built.classes);
       composesPrimitive ||= built.composes;
     }
   }
+
+  addRequires(context, parts, classes);
 
   const spec = mergeSpecs([...specs.values()]);
   for (const part of parts) {
@@ -213,7 +221,12 @@ async function extractItem(
   }
 
   const docsFile = join(dirname(files[0] ?? ''), 'docs.md');
-  let docs = { intro: '', do: [] as string[], dont: [] as string[] };
+  let docs = {
+    keywords: [] as string[],
+    intro: '',
+    do: [] as string[],
+    dont: [] as string[],
+  };
   try {
     docs = parseDocs(readFileSync(join(context.root, docsFile), 'utf-8'));
   } catch {
@@ -226,12 +239,17 @@ async function extractItem(
     report('docs.md has no "## Don\'t" list.', docsFile);
 
   const bundleSize = await measure(context, files);
+  const mainExample = context.items.find(
+    (candidate) => candidate.name === item.ndop?.examples?.[0],
+  );
+  const mainSource: string | undefined = mainExample?.files?.[0]?.content;
   const metadata: ComponentMetadata = {
     $schema: schemas.metadata.$id,
     name: item.name,
     title: item.title,
     description: item.description,
     intro: docs.intro,
+    ...(docs.keywords.length ? { keywords: docs.keywords } : {}),
     agentNotes: { do: docs.do, dont: docs.dont },
     ...(spec?.pattern ? { pattern: spec.pattern } : {}),
     parts,
@@ -239,6 +257,7 @@ async function extractItem(
     focus: spec?.focus ?? [],
     ...(spec?.rtl ? { rtl: spec.rtl } : {}),
     examples: item.ndop?.examples ?? [],
+    ...(mainSource ? { usage: usageOf(context.ts, mainSource) } : {}),
     ...(bundleSize === undefined ? {} : { bundleSize: { gzip: bundleSize } }),
   };
 
@@ -303,7 +322,8 @@ function classDeclaration(
  * @param specs - Receives the `spec.md` of each primitive involved.
  * @param report - Records a problem.
  * @returns The part, the selectors its spec row may be listed under (its
- *   own and its primitives'), and whether it involves a primitive.
+ *   own and its primitives'), the classes behind it (its own and its host
+ *   directives'), and whether it involves a primitive.
  */
 function buildPart(
   context: Context,
@@ -313,7 +333,12 @@ function buildPart(
   ownFiles: ReadonlySet<string>,
   specs: Map<string, ParsedSpec>,
   report: (message: string) => void,
-): { part: Part; selectors: string[]; composes: boolean } {
+): {
+  part: Part;
+  selectors: string[];
+  classes: Ts.ClassDeclaration[];
+  composes: boolean;
+} {
   const declaredIn = declaration?.getSourceFile().fileName;
   const local = declaredIn !== undefined && ownFiles.has(resolve(declaredIn));
   const members = new Map<string, { kind: MemberKind; member: Member }>();
@@ -384,12 +409,138 @@ function buildPart(
   };
   return {
     part,
+    classes: [...(declaration ? [declaration] : []), ...primitives],
     composes: primitives.length > 0 || !local,
     selectors: [
       entry.selector,
       ...primitives.map((p) => selectorOf(context, p)),
     ],
   };
+}
+
+/**
+ * Records, on each part, the parts it must sit inside (ADR-0007, amendment
+ * 2): those providing something it injects without `optional: true`, such
+ * as `NdDialogTitle`'s `inject(ND_DIALOG)`, which `NdDialog` provides.
+ * Dependency injection is what breaks when a part is misplaced, so it is
+ * the source of truth.
+ *
+ * @param context - Extraction state.
+ * @param parts - The item's parts.
+ * @param classes - The classes behind each part.
+ */
+function addRequires(
+  context: Context,
+  parts: readonly Part[],
+  classes: ReadonlyMap<Part, readonly Ts.ClassDeclaration[]>,
+): void {
+  const provided = new Map<Part, Set<Ts.Symbol>>();
+  for (const part of parts) {
+    const tokens = new Set<Ts.Symbol>();
+    for (const declaration of classes.get(part) ?? []) {
+      for (const token of providedTokens(context, declaration)) {
+        tokens.add(token);
+      }
+    }
+    provided.set(part, tokens);
+  }
+  for (const part of parts) {
+    const required = new Set<string>();
+    for (const declaration of classes.get(part) ?? []) {
+      for (const token of injectedTokens(context, declaration)) {
+        for (const other of parts) {
+          if (other !== part && provided.get(other)?.has(token)) {
+            required.add(other.selector);
+          }
+        }
+      }
+    }
+    if (required.size) {
+      part.requires = [...required].sort();
+    }
+  }
+}
+
+/**
+ * What a directive makes injectable: its own class and every token in its
+ * `providers`.
+ *
+ * @param context - Extraction state.
+ * @param declaration - The directive's class.
+ * @returns The symbols.
+ */
+function providedTokens(
+  context: Context,
+  declaration: Ts.ClassDeclaration,
+): Ts.Symbol[] {
+  const tokens: Ts.Symbol[] = [];
+  const own = declaration.name && symbolOf(context, declaration.name);
+  if (own) tokens.push(own);
+  const providers = property(
+    context,
+    decoratorObject(context, declaration),
+    'providers',
+  );
+  if (providers && context.ts.isArrayLiteralExpression(providers)) {
+    for (const provider of providers.elements) {
+      const token = context.ts.isObjectLiteralExpression(provider)
+        ? property(context, provider, 'provide')
+        : provider;
+      const symbol = token && symbolOf(context, token);
+      if (symbol) tokens.push(symbol);
+    }
+  }
+  return tokens;
+}
+
+/**
+ * The tokens a class injects without `optional: true`, from its `inject()`
+ * calls.
+ *
+ * @param context - Extraction state.
+ * @param declaration - The class.
+ * @returns The symbols.
+ */
+function injectedTokens(
+  context: Context,
+  declaration: Ts.ClassDeclaration,
+): Ts.Symbol[] {
+  const { ts } = context;
+  const tokens: Ts.Symbol[] = [];
+  const visit = (node: Ts.Node): void => {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      symbolOf(context, node.expression)?.name === 'inject'
+    ) {
+      const [token, options] = node.arguments;
+      const optional =
+        options !== undefined &&
+        ts.isObjectLiteralExpression(options) &&
+        property(context, options, 'optional')?.kind ===
+          ts.SyntaxKind.TrueKeyword;
+      const symbol = token && !optional && symbolOf(context, token);
+      if (symbol) tokens.push(symbol);
+    }
+    ts.forEachChild(node, visit);
+  };
+  for (const member of declaration.members) visit(member);
+  return tokens;
+}
+
+/**
+ * The symbol an expression refers to, following imports and re-exports.
+ *
+ * @param context - Extraction state.
+ * @param node - An identifier or other reference.
+ * @returns The symbol, if any.
+ */
+function symbolOf(context: Context, node: Ts.Node): Ts.Symbol | undefined {
+  let symbol = context.checker.getSymbolAtLocation(node);
+  if (symbol && symbol.flags & context.ts.SymbolFlags.Alias) {
+    symbol = context.checker.getAliasedSymbol(symbol);
+  }
+  return symbol;
 }
 
 /**

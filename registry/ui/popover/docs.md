@@ -1,3 +1,7 @@
+---
+keywords: popup, flyout, dropdown panel, overlay, floating panel
+---
+
 A popover shows rich, interactive content next to the element that opens
 it, such as a small form or a list of filters. It is non-modal: the rest of
 the page stays usable, and clicking outside or pressing Escape closes it,

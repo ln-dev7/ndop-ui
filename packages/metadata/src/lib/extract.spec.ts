@@ -235,6 +235,55 @@ describe('extractMetadata', { timeout: 30_000 }, () => {
     );
   });
 
+  it('records the parts a part must sit inside, from what it injects', async () => {
+    await fixture({
+      'primitives/thing/thing.ts': `import { Directive, inject, InjectionToken } from '@angular/core';
+
+/** Provided by the root. */
+export const ND_THING_ROOT = new InjectionToken<NdThingRoot>('ND_THING_ROOT');
+
+/** Headless thing. */
+@Directive({ selector: '[ndThing]' })
+export class NdThing {
+  protected readonly root = inject(ND_THING_ROOT);
+  private readonly loose = inject(NdThingLoose, { optional: true });
+}
+
+/** Root that owns the open state. */
+@Directive({
+  selector: '[ndThingRoot]',
+  providers: [{ provide: ND_THING_ROOT, useExisting: NdThingRoot }],
+})
+export class NdThingRoot {}
+
+/** Only sometimes around a thing. */
+@Directive({ selector: '[ndThingLoose]' })
+export class NdThingLoose {}
+`,
+      'ui/thing/thing.ts': `import { Directive } from '@angular/core';
+import { NdThing } from '../../primitives/thing/thing';
+
+export { NdThingLoose, NdThingRoot } from '../../primitives/thing/thing';
+
+/** Styled thing. */
+@Directive({ selector: '[ndThing]', hostDirectives: [NdThing] })
+export class Thing {}
+`,
+      'ui/thing/docs.md': `---\nkeywords: toggle, switch\n---\n\n${DOCS}`,
+    });
+    const { metadata } = await extract();
+    const [thing] = metadata;
+    expect(thing?.keywords).toEqual(['toggle', 'switch']);
+    const requires = Object.fromEntries(
+      (thing?.parts ?? []).map((part) => [part.name, part.requires]),
+    );
+    expect(requires).toEqual({
+      Thing: ['[ndThingRoot]'],
+      NdThingRoot: undefined,
+      NdThingLoose: undefined,
+    });
+  });
+
   it('reports missing descriptions, specs and docs', async () => {
     await fixture({
       'ui/thing/thing.ts': STYLED.replace('  /** Color tone. */\n', ''),

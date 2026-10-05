@@ -1,3 +1,7 @@
+---
+keywords: form label, field label, caption
+---
+
 A label names a form control. `ndLabel` styles a native `label`, which names
 the control its `for` attribute points at and moves focus to it when
 clicked. When the control is an `input[ndInput]`, the label also mirrors its

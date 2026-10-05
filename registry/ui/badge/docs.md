@@ -1,3 +1,7 @@
+---
+keywords: tag, chip, pill, status, count
+---
+
 A badge marks something with a short status, count or label, such as
 "Beta", "3 new" or a version. `ndBadge` only styles its host, so a badge is
 as accessible as the element it's on: plain text in a `span`, a link in an

@@ -17,6 +17,7 @@ It blocks the page.
 - Open a dialog from a dialog.
 `;
     expect(parseDocs(markdown)).toEqual({
+      keywords: [],
       intro: 'Use a dialog to ask for a decision.\n\nIt blocks the page.',
       do: [
         'Give it a `DialogTitle`.',
@@ -28,9 +29,25 @@ It blocks the page.
 
   it('leaves missing parts empty', () => {
     expect(parseDocs('## Do\n\n- One.\n')).toEqual({
+      keywords: [],
       intro: '',
       do: ['One.'],
       dont: [],
     });
+  });
+
+  it('reads keywords from the front matter', () => {
+    const markdown = `---
+keywords: modal, popup , confirm,
+---
+
+A dialog.
+`;
+    expect(parseDocs(markdown)).toEqual(
+      expect.objectContaining({
+        keywords: ['modal', 'popup', 'confirm'],
+        intro: 'A dialog.',
+      }),
+    );
   });
 });

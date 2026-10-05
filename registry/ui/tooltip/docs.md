@@ -1,3 +1,7 @@
+---
+keywords: hint, help text, info, title
+---
+
 A tooltip shows a short text label for an element when it is hovered or
 focused, after a short delay. It describes the trigger through
 `aria-describedby`, stays open while the pointer is over it, and closes on

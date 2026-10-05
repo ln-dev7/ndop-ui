@@ -1,3 +1,7 @@
+---
+keywords: divider, rule, hr, line
+---
+
 A separator divides content, horizontally or vertically. By default it is
 semantic, with `role="separator"` and `aria-orientation`, so assistive
 technology announces the division. Set `decorative` when the separation is
