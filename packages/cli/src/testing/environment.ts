@@ -125,6 +125,7 @@ export function testEnvironment(
     },
     installer: () => fakeInstaller(project, installs),
     confirm: async () => true,
+    multiselect: async (_message, _options, initial) => initial,
     interactive: false,
     env: { NDOP_REGISTRY: 'mem://{name}', ...options.env },
   };

@@ -11,6 +11,7 @@ import {
   type RegistryClient,
   type ResolvedItem,
 } from '../registry/client';
+import { detectAgents, planAgentFiles, type Agent } from './agents';
 import { planItems } from './items';
 import {
   aliasPrefix,
@@ -61,6 +62,20 @@ export interface InitOptions {
   project?: string;
   /** Registry URL template to record in `ndop.json`. */
   registry?: string;
+  /** Agents from `--agent`, or `false` for `--agent none`. */
+  agents?: Agent[] | false;
+  /** Whether `--mcp` was passed. */
+  mcp?: boolean;
+  /**
+   * Asks which agents to write files for, when neither `--agent` nor
+   * `ndop.json` says; the detected ones are used without it.
+   */
+  chooseAgents?: (detected: Agent[]) => Promise<Agent[] | false>;
+  /**
+   * Asks whether to register the MCP server, when neither `--mcp` nor
+   * `ndop.json` says; it isn't registered without it.
+   */
+  chooseMcp?: (agents: Agent[]) => Promise<boolean>;
 }
 
 /**
@@ -232,7 +247,10 @@ export async function planInit(
   options: InitOptions,
 ): Promise<{ detection: Detection; items: ResolvedItem[] }> {
   const detection = await detectProject(builder, options);
-  const config = await initConfig(builder, detection, options);
+  const config = {
+    ...(await initConfig(builder, detection, options)),
+    ...(await agentChoice(builder, options)),
+  };
   await builder.stage(CONFIG_FILE, `${JSON.stringify(config, null, 2)}\n`);
 
   const prefix = aliasPrefix(config.importAlias ?? '@/');
@@ -301,12 +319,51 @@ export async function planInit(
   } else {
     await builder.stage(detection.appConfig, edited);
   }
+  await planAgentFiles(builder, config, aliasBase);
+  if (options.mcp && (config.agents === false || !config.agents?.length)) {
+    builder.warn(
+      'No agent to register the MCP server for; pass --agent claude-code, cursor or copilot.',
+    );
+  }
   if (!detection.zoneless) {
     builder.warn(
       'This app uses zone.js. Ndop works with it, but is built and tested zoneless first.',
     );
   }
   return { detection, items };
+}
+
+/**
+ * Which agents to write context files for, and whether to register the MCP
+ * server (ADR-0017): `--agent` and `--mcp` first, then what `ndop.json`
+ * already records, then the user's answer, then the detected agents and no
+ * server.
+ *
+ * @param builder - Project reader.
+ * @param options - Init options.
+ * @returns The `agents` and `mcp` properties of `ndop.json`.
+ */
+async function agentChoice(
+  builder: PlanBuilder,
+  options: InitOptions,
+): Promise<Pick<NdopConfig, 'agents' | 'mcp'>> {
+  const existing = await readConfig(builder);
+  let agents = options.agents ?? existing?.agents;
+  if (agents === undefined) {
+    const detected = await detectAgents(builder.fs);
+    agents = options.chooseAgents
+      ? await options.chooseAgents(detected)
+      : detected;
+  }
+  if (agents === false) return { agents };
+  const choices = [...agents] as Agent[];
+  const mcp = options.mcp
+    ? true
+    : (existing?.mcp ??
+      (choices.length > 0 && options.chooseMcp
+        ? await options.chooseMcp(choices)
+        : false));
+  return { agents: choices, mcp };
 }
 
 /**

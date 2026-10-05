@@ -1,4 +1,4 @@
-import { confirm, isCancel } from '@clack/prompts';
+import { confirm, isCancel, multiselect } from '@clack/prompts';
 import { packageManagerInstaller, type Installer } from '../plan/apply';
 import { nodeFs, type ProjectFs } from '../project/fs';
 import { projectFormatter, type Formatter } from '../project/format';
@@ -43,9 +43,23 @@ export interface CommandEnvironment {
    * Asks the user to confirm.
    *
    * @param message - The question.
+   * @param initial - The preselected answer; yes by default.
    * @returns Whether they agreed.
    */
-  confirm(message: string): Promise<boolean>;
+  confirm(message: string, initial?: boolean): Promise<boolean>;
+  /**
+   * Asks the user to pick any number of options.
+   *
+   * @param message - The question.
+   * @param options - The choices, with labels.
+   * @param initial - The preselected values.
+   * @returns The values picked, or `undefined` when the user cancelled.
+   */
+  multiselect<T extends string>(
+    message: string,
+    options: { value: T; label: string }[],
+    initial: T[],
+  ): Promise<T[] | undefined>;
   /** Whether the user can answer prompts. */
   interactive: boolean;
   /** Environment variables. */
@@ -64,9 +78,18 @@ export function nodeEnvironment(): CommandEnvironment {
     formatter: projectFormatter,
     fetcher: defaultFetcher,
     installer: packageManagerInstaller,
-    async confirm(message) {
-      const answer = await confirm({ message });
+    async confirm(message, initial = true) {
+      const answer = await confirm({ message, initialValue: initial });
       return !isCancel(answer) && answer;
+    },
+    async multiselect(message, options, initial) {
+      const answer = await multiselect({
+        message,
+        options: options as never,
+        initialValues: initial,
+        required: false,
+      });
+      return isCancel(answer) ? undefined : (answer as typeof initial);
     },
     interactive: Boolean(process.stdin.isTTY && process.stdout.isTTY),
     env: process.env,

@@ -1,4 +1,5 @@
 import type { Command } from 'commander';
+import { AGENTS, parseAgents, type Agent } from '../install/agents';
 import { planInit } from '../install/init';
 import type { CommandEnvironment } from './environment';
 import { runWriteCommand, type WriteOptions } from './run';
@@ -9,14 +10,24 @@ import { runWriteCommand, type WriteOptions } from './run';
 interface InitCommandOptions extends WriteOptions {
   theme: string;
   project?: string;
+  agent: string[];
+  mcp?: boolean;
 }
+
+/** How each agent is named in the prompt. */
+const AGENT_LABELS: Record<Agent, string> = {
+  'claude-code': 'Claude Code',
+  cursor: 'Cursor',
+  copilot: 'GitHub Copilot',
+};
 
 /**
  * Registers `ndop init`: sets an Angular app up for Ndop UI (RFC-0001,
  * ADR-0011). It writes `ndop.json`, adds the `@/` path alias, sets up
  * Tailwind v4 if needed, imports `@ndop/core/styles.css`, installs the
- * theme, `utils` and `icons` items, and registers `provideNdop()` and
- * `provideIcons()`. Running it again changes nothing.
+ * theme, `utils` and `icons` items, registers `provideNdop()` and
+ * `provideIcons()`, and writes the agent context files (ADR-0017), with the
+ * MCP server registered when asked. Running it again changes nothing.
  *
  * @param program - The root `ndop` program.
  * @param environment - Injected outside world.
@@ -26,6 +37,7 @@ interface InitCommandOptions extends WriteOptions {
  * ```sh
  * npx ndop init --yes
  * npx ndop init --dry-run --json
+ * npx ndop init --agent claude-code --mcp
  * ```
  */
 export function registerInitCommand(
@@ -40,8 +52,34 @@ export function registerInitCommand(
       .option(
         '--project <name>',
         'Angular project, when angular.json has several',
-      ),
+      )
+      .option(
+        '--agent <names>',
+        `agents to write context files for: ${AGENTS.join(', ')} or none; repeatable or comma-separated`,
+        (value: string, previous: string[]) => [...previous, value],
+        [],
+      )
+      .option('--mcp', "register the Ndop MCP server in the agents' settings"),
   ).action(async function (this: Command, options: InitCommandOptions) {
+    const ask =
+      environment.interactive && !options.yes && !options.json
+        ? {
+            chooseAgents: async (detected: Agent[]) =>
+              (await environment.multiselect(
+                'Write Ndop guidance for which coding agents? AGENTS.md is always written.',
+                AGENTS.map((agent) => ({
+                  value: agent,
+                  label: AGENT_LABELS[agent],
+                })),
+                detected,
+              )) ?? detected,
+            chooseMcp: (agents: Agent[]) =>
+              environment.confirm(
+                `Register the Ndop MCP server for ${agents.map((agent) => AGENT_LABELS[agent]).join(', ')}?`,
+                false,
+              ),
+          }
+        : {};
     await runWriteCommand(
       this,
       'init',
@@ -52,6 +90,11 @@ export function registerInitCommand(
           theme: options.theme,
           ...(options.project ? { project: options.project } : {}),
           ...(options.registry ? { registry: options.registry } : {}),
+          ...(options.agent.length
+            ? { agents: parseAgents(options.agent) }
+            : {}),
+          ...(options.mcp ? { mcp: true } : {}),
+          ...ask,
         });
         return items;
       },

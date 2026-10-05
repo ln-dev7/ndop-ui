@@ -1,4 +1,10 @@
-import { applyEdits, modify, parse, type ParseError } from 'jsonc-parser';
+import {
+  applyEdits,
+  format,
+  modify,
+  parse,
+  type ParseError,
+} from 'jsonc-parser';
 import { CliError } from '../errors';
 
 /**
@@ -37,5 +43,36 @@ export function setJsonc(
     modify(text, path, value, {
       formattingOptions: { insertSpaces: true, tabSize: 2, eol: '\n' },
     }),
+  );
+}
+
+/**
+ * Adds a value to a JSONC document, formatting only the inserted text, so
+ * the rest of the user's file keeps its exact layout; {@link setJsonc}
+ * formats the whole enclosing object.
+ *
+ * @param text - File text.
+ * @param path - Property path of the new value, such as
+ *   `['mcpServers', 'ndop']`.
+ * @param value - The value.
+ * @returns The edited text.
+ */
+export function insertJsonc(
+  text: string,
+  path: (string | number)[],
+  value: unknown,
+): string {
+  const [edit] = modify(text, path, value, {});
+  if (!edit) return text;
+  const edited = applyEdits(text, [edit]);
+  // The range takes in the brace or comma on each side, so an insertion
+  // into an empty object also gets its own lines.
+  return applyEdits(
+    edited,
+    format(
+      edited,
+      { offset: Math.max(edit.offset - 1, 0), length: edit.content.length + 2 },
+      { insertSpaces: true, tabSize: 2, eol: '\n' },
+    ),
   );
 }

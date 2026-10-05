@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 /**
@@ -16,6 +16,13 @@ export interface ProjectFs {
    * @returns Its text, or `undefined` when it doesn't exist.
    */
   read(path: string): Promise<string | undefined>;
+  /**
+   * Whether a file or folder exists.
+   *
+   * @param path - Project-relative path.
+   * @returns True when it exists.
+   */
+  exists(path: string): Promise<boolean>;
   /**
    * Writes a file, creating its folders.
    *
@@ -44,6 +51,12 @@ export function nodeFs(root: string): ProjectFs {
         throw error;
       }
     },
+    async exists(path) {
+      return stat(join(root, path)).then(
+        () => true,
+        () => false,
+      );
+    },
     async write(path, content) {
       await mkdir(dirname(join(root, path)), { recursive: true });
       await writeFile(join(root, path), content);
@@ -66,6 +79,12 @@ export function memoryFs(
     files: map,
     async read(path) {
       return map.get(path);
+    },
+    async exists(path) {
+      const folder = `${path.replace(/\/$/, '')}/`;
+      return (
+        map.has(path) || [...map.keys()].some((file) => file.startsWith(folder))
+      );
     },
     async write(path, content) {
       map.set(path, content);

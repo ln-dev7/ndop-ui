@@ -65,6 +65,17 @@ export function sha256(content: string): string {
 }
 
 /**
+ * Options for {@link PlanBuilder.stage}.
+ */
+export interface StageOptions {
+  /**
+   * `false` stages the text as is, for files the CLI only partly owns,
+   * where formatting would also change the user's text.
+   */
+  format?: boolean;
+}
+
+/**
  * Collects a command's changes before anything is written. Reads see
  * earlier staged changes, so several edits to one file chain; every staged
  * text is formatted at once, so {@link PlanBuilder.finish} compares exactly
@@ -103,10 +114,16 @@ export class PlanBuilder {
    *
    * @param path - Project-relative path.
    * @param content - Full new text; it is formatted here.
+   * @param options - How to stage it.
    * @returns The formatted text that will be written.
    */
-  async stage(path: string, content: string): Promise<string> {
-    const formatted = await this.format(path, content);
+  async stage(
+    path: string,
+    content: string,
+    options: StageOptions = {},
+  ): Promise<string> {
+    const formatted =
+      options.format === false ? content : await this.format(path, content);
     this.staged.set(path, formatted);
     return formatted;
   }

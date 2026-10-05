@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`agent context files > writes every agent file and registers the MCP server 1`] = `
+"<!-- ndop:start -->
+
+## Ndop UI
+
+This app uses [Ndop UI](https://ndop.dev): accessible Angular components installed as source files you own. The ndop CLI writes this section and refreshes it on \`ndop add\`; keep your own notes outside it.
+
+### Workflow
+
+1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run \`npx ndop add <name>\`; never copy component code by hand.
+2. Before using a component, call the \`get_component\` MCP tool. Use its selectors, inputs and nesting exactly; never guess an API.
+3. Style with theme tokens (\`bg-primary\`, \`text-muted-foreground\`, \`border-border\`), never palette colors such as \`bg-zinc-900\`, and with logical utilities (\`ms-\`, \`pe-\`, \`start-\`, \`text-start\`), never \`ml-\`, \`pr-\`, \`left-\` or \`text-left\`.
+4. Change how a component looks in its own file under \`src/app/ui\`. Don't edit \`@ndop/primitives\` or import its private paths.
+5. Run \`npx ndop verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes.
+
+### Installed
+
+\`default\` 0.1.0, \`icons\` 0.1.0, \`utils\` 0.1.0.
+
+Components are in \`src/app/ui\` (\`@/ui/…\`), helpers in \`src/app/lib\` (\`@/lib/…\`) and blocks in \`src/app/blocks\` (\`@/blocks/…\`).
+
+### Tokens
+
+Colors, as \`bg-*\`, \`text-*\` and \`border-*\` utilities: \`accent\`, \`accent-foreground\`, \`background\`, \`border\`, \`card\`, \`card-foreground\`, \`chart-1\`, \`chart-2\`, \`chart-3\`, \`chart-4\`, \`chart-5\`, \`destructive\`, \`foreground\`, \`input\`, \`muted\`, \`muted-foreground\`, \`popover\`, \`popover-foreground\`, \`primary\`, \`primary-foreground\`, \`ring\`, \`secondary\`, \`secondary-foreground\`, \`sidebar\`, \`sidebar-accent\`, \`sidebar-accent-foreground\`, \`sidebar-border\`, \`sidebar-foreground\`, \`sidebar-primary\`, \`sidebar-primary-foreground\`, \`sidebar-ring\`.
+
+Others: \`radius\`.
+
+### MCP server
+
+The \`ndop\` MCP server is set up for this project: \`search_components\` finds components, \`get_component\` documents one, and \`list_blocks\` and \`get_block\` offer whole sections.
+
+<!-- ndop:end -->
+"
+`;

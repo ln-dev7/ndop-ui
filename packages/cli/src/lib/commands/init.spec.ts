@@ -51,6 +51,7 @@ describe('ndop init', () => {
       { path: 'src/app/lib/icons.ts', action: 'create' },
       { path: 'ndop.lock.json', action: 'create' },
       { path: 'src/app/app.config.ts', action: 'update' },
+      { path: 'AGENTS.md', action: 'create' },
     ]);
     expect(environment.installs).toEqual([
       {
@@ -81,6 +82,8 @@ describe('ndop init', () => {
       },
       importAlias: '@/',
       iconLibrary: 'lucide',
+      agents: [],
+      mcp: false,
     });
     expect(files.get('tsconfig.json')).toMatchSnapshot();
     expect(files.get('src/styles.css')).toMatchSnapshot();

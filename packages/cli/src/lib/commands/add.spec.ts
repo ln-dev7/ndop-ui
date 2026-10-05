@@ -63,6 +63,7 @@ describe('ndop add', () => {
     expect(result.files).toEqual([
       { path: 'src/app/ui/dialog/dialog.ts', action: 'create' },
       { path: 'ndop.lock.json', action: 'update' },
+      { path: 'AGENTS.md', action: 'update' },
     ]);
     expect(result.dependencies).toEqual(['@ndop/primitives']);
     expect(environment.project.files.get('src/app/ui/dialog/dialog.ts')).toBe(
@@ -121,6 +122,7 @@ describe('ndop add', () => {
       'src/app/ui/label/label.ts',
       'src/app/blocks/examples/dialog-demo.ts',
       'ndop.lock.json',
+      'AGENTS.md',
     ]);
   });
 

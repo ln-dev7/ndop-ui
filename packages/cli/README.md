@@ -26,10 +26,26 @@ installs the default theme and the `utils` and `icons` items, and adds
 `provideNdop()` and `provideIcons()` to `app.config.ts`. Running it again
 changes nothing.
 
-| Option             | Effect                                            |
-| ------------------ | ------------------------------------------------- |
-| `--theme <name>`   | Theme item to install (default: `default`).       |
-| `--project <name>` | Angular project, when `angular.json` has several. |
+| Option             | Effect                                                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--theme <name>`   | Theme item to install (default: `default`).                                                                                                |
+| `--project <name>` | Angular project, when `angular.json` has several.                                                                                          |
+| `--agent <names>`  | Coding agents to write guidance for: `claude-code`, `cursor`, `copilot`, or `none`. Repeatable or comma-separated. Detected when left out. |
+| `--mcp`            | Also register the Ndop MCP server in the agents' MCP settings.                                                                             |
+
+### Agent context files
+
+`init` writes an Ndop section into `AGENTS.md`: how to use the installed
+components, the theme's tokens and the `ndop verify` loop. With
+`--agent claude-code` it also writes it into `CLAUDE.md` and adds a skill
+at `.claude/skills/ndop/SKILL.md`; with `cursor`, a rule at
+`.cursor/rules/ndop.mdc`; with `copilot`, a section in
+`.github/copilot-instructions.md`. `ndop add` keeps them up to date.
+
+Only the text between `<!-- ndop:start -->` and `<!-- ndop:end -->` is
+ever rewritten, so your own notes in those files are safe. The skill and
+the rule belong to Ndop; once you edit one, Ndop leaves it alone. The
+choice is saved in `ndop.json` as `agents` and `mcp`.
 
 ## `ndop add <items...>`
 

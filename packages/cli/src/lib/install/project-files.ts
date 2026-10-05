@@ -68,8 +68,8 @@ export async function readLock(reader: Reader): Promise<NdopLock> {
 }
 
 /**
- * Serializes the lockfile with items sorted by key, so its diffs stay
- * small and stable.
+ * Serializes the lockfile with items and agent files sorted by key, so its
+ * diffs stay small and stable.
  *
  * @param lock - The lockfile.
  * @returns File text.
@@ -80,7 +80,16 @@ export function serializeLock(lock: NdopLock): string {
       .sort()
       .map((key) => [key, lock.items[key]]),
   );
-  return `${JSON.stringify({ ...lock, items }, null, 2)}\n`;
+  const agentFiles = lock.agentFiles
+    ? {
+        agentFiles: Object.fromEntries(
+          Object.keys(lock.agentFiles)
+            .sort()
+            .map((key) => [key, lock.agentFiles?.[key]]),
+        ),
+      }
+    : {};
+  return `${JSON.stringify({ ...lock, items, ...agentFiles }, null, 2)}\n`;
 }
 
 /**
