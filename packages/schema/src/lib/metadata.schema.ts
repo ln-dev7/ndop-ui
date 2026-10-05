@@ -59,6 +59,13 @@ export const metadataSchema = {
       ...described,
       description: "Markdown introduction, from the item's docs.md.",
     },
+    keywords: {
+      type: 'array',
+      minItems: 1,
+      items: described,
+      description:
+        "Other words people use for the component, such as `modal` for Dialog, from docs.md's front matter. Searches match them.",
+    },
     agentNotes: {
       type: 'object',
       additionalProperties: false,
@@ -116,6 +123,13 @@ export const metadataSchema = {
               "Where the part is defined: `item` for the item's own files, otherwise the primitive entry point, such as `@ndop/primitives/dialog`.",
           },
           exportAs: { type: 'string' },
+          requires: {
+            type: 'array',
+            minItems: 1,
+            items: described,
+            description:
+              'Selectors of the parts this part must sit inside, read from the parts it injects without `optional: true`.',
+          },
           role: { type: 'string' },
           ariaAttributes: { type: 'array', items: { type: 'string' } },
           inputs: { type: 'array', items: member },
@@ -184,6 +198,17 @@ export const metadataSchema = {
     examples: {
       type: 'array',
       items: { type: 'string', pattern: ITEM_NAME_PATTERN },
+    },
+    usage: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['imports', 'template'],
+      description:
+        "The smallest correct usage, from the item's first example: its `@/ui/` imports and its template.",
+      properties: {
+        imports: { type: 'string' },
+        template: { type: 'string' },
+      },
     },
   },
 } as const;

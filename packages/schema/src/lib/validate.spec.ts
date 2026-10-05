@@ -32,6 +32,7 @@ const expectedIssuePaths: Record<string, string> = {
   'lock.bad-hash.json': '/items/@ndop~1dialog/files/0/sha256',
   'metadata.undocumented-input.json': '/parts/0/inputs/0/description',
   'metadata.no-keyboard.json': '',
+  'metadata.empty-keywords.json': '/keywords',
 };
 
 describe('validate', () => {

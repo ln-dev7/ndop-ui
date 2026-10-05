@@ -4,6 +4,7 @@
   "title": "Dialog",
   "description": "A window overlaid on the primary window, rendering the content underneath inert.",
   "intro": "Use a dialog to ask for a decision or input that blocks the page until it is answered.",
+  "keywords": ["modal", "popup", "confirm"],
   "agentNotes": {
     "do": ["Give every dialog a `DialogTitle`."],
     "dont": ["Don't open a dialog from another dialog."]
@@ -16,6 +17,7 @@
     {
       "name": "NdDialogTrigger",
       "selector": "[ndDialogTrigger]",
+      "requires": ["[ndDialog]"],
       "description": "Opens and closes the dialog it belongs to.",
       "ariaAttributes": ["aria-haspopup", "aria-expanded", "aria-controls"],
       "inputs": [],
@@ -62,5 +64,9 @@
   "examples": ["dialog-demo", "dialog-form"],
   "bundleSize": {
     "gzip": 812
+  },
+  "usage": {
+    "imports": "import { Dialog } from \"@/ui/dialog/dialog\";",
+    "template": "<ng-container ndDialog></ng-container>"
   }
 }
