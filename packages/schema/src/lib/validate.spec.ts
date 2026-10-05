@@ -30,6 +30,8 @@ const expectedIssuePaths: Record<string, string> = {
   'config.registry-without-name-token.json': '/registries/@acme/url',
   'config.registry-without-name.json': '/registry',
   'lock.bad-hash.json': '/items/@ndop~1dialog/files/0/sha256',
+  'lock.bad-agent-file-hash.json': '/agentFiles/AGENTS.md',
+  'config.unknown-agent.json': '/agents',
   'metadata.undocumented-input.json': '/parts/0/inputs/0/description',
   'metadata.no-keyboard.json': '',
   'metadata.empty-keywords.json': '/keywords',

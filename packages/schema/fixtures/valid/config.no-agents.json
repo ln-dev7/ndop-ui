@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ndop.dev/schema/config.json",
+  "style": "default",
+  "tailwind": {
+    "css": "src/styles.css",
+    "prefix": ""
+  },
+  "aliases": {
+    "ui": "src/app/ui",
+    "lib": "src/app/lib",
+    "blocks": "src/app/blocks"
+  },
+  "importAlias": "@/",
+  "iconLibrary": "lucide",
+  "registries": {
+    "@acme": {
+      "url": "https://ui.acme.dev/r/{name}.json",
+      "headers": {
+        "Authorization": "Bearer ${ACME_TOKEN}"
+      }
+    },
+    "@tiny": "https://tiny.dev/r/{name}.json"
+  },
+  "agents": false
+}

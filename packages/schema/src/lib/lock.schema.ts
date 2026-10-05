@@ -60,6 +60,12 @@ export const lockSchema = {
         },
       },
     },
+    agentFiles: {
+      type: 'object',
+      description:
+        'SHA-256 of each agent context file Ndop owns outright, as last written, keyed by project-relative path (ADR-0017). A file whose hash differs was edited, and is left alone.',
+      additionalProperties: { type: 'string', pattern: '^[a-f0-9]{64}$' },
+    },
   },
 } as const;
 

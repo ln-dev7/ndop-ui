@@ -52,6 +52,23 @@ export const configSchema = {
         'URL template of the default registry, containing `{name}`. Overrides https://ndop.dev/r/{name}.json (ADR-0012).',
     },
     iconLibrary: { type: 'string', minLength: 1 },
+    agents: {
+      description:
+        "Coding agents whose context files the CLI writes and refreshes (ADR-0017): `false` for none; otherwise `AGENTS.md` plus each listed agent's files.",
+      oneOf: [
+        { const: false },
+        {
+          type: 'array',
+          uniqueItems: true,
+          items: { enum: ['claude-code', 'cursor', 'copilot'] },
+        },
+      ],
+    },
+    mcp: {
+      type: 'boolean',
+      description:
+        "Whether the Ndop MCP server is registered in the agents' MCP configuration (ADR-0017).",
+    },
     registries: {
       type: 'object',
       propertyNames: { pattern: NAMESPACE_PATTERN },
