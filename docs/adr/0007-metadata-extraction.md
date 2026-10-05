@@ -116,3 +116,15 @@ ts-morph. Enum values need the checker: `NdSide`, for example, is an alias
 declared in another package, and ts-morph would parse and type-check every
 file a second time to resolve it. This replaces "ts-morph" in "Sources, in
 order", item 2; the decision is otherwise unchanged.
+
+## Amendment 2 (2026-10-05): required enclosing parts
+
+Status: Accepted by Valery on 2026-10-05 (for ADR-0018).
+
+`validate_usage` (ADR-0018) needs to know which part must sit inside which.
+The extractor reads it from dependency injection: a part whose class
+injects another part's class without `optional: true` requires that part
+around it (`NdDialogTitle` injects `NdDialog`). It records the selectors of
+those parts as `parts[].requires`, a new optional property in the metadata
+schema. Styled parts inherit it through their host directives. Nothing is
+written by hand, so it can't drift from the code.
