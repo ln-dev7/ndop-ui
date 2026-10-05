@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
+  agentFileProblems,
   caseId,
   changedPaths,
   execCommand,
@@ -9,6 +10,7 @@ import {
   lastJsonObject,
   run,
   runScriptCommand,
+  TEAM_NOTE,
 } from './scenario';
 
 let folder: string;
@@ -87,5 +89,41 @@ describe('run', () => {
         options,
       ),
     ).rejects.toThrow(/exited with 3:\nboom/);
+  });
+});
+
+describe('agentFileProblems', () => {
+  const section =
+    '<!-- ndop:start -->\n\n## Ndop UI\n\n`dialog` 0.1.2.\n\n<!-- ndop:end -->\n';
+  const good = {
+    'AGENTS.md': `${TEAM_NOTE}\n${section}`,
+    'CLAUDE.md': section,
+    '.claude/skills/ndop/SKILL.md': '---\nname: ndop\n---\n',
+    '.mcp.json': JSON.stringify({
+      mcpServers: { ndop: { args: ['-y', '@ndop/mcp'] } },
+    }),
+  };
+
+  it('accepts what init and add write', () => {
+    expect(agentFileProblems(good, 'dialog')).toEqual([]);
+  });
+
+  it('reports a lost note, a missing item, a different CLAUDE.md and no server', () => {
+    expect(
+      agentFileProblems(
+        {
+          ...good,
+          'AGENTS.md': section,
+          'CLAUDE.md': 'other',
+          '.mcp.json': undefined,
+        },
+        'popover',
+      ),
+    ).toEqual([
+      "AGENTS.md doesn't keep the team's note above the Ndop section",
+      "AGENTS.md doesn't list popover",
+      "CLAUDE.md doesn't carry the same section as AGENTS.md",
+      ".mcp.json doesn't register the ndop server",
+    ]);
   });
 });

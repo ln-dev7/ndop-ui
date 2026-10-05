@@ -1,14 +1,16 @@
-import { mkdir, rm } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { logger, type PromiseExecutor } from '@nx/devkit';
 import { startLocalRegistry } from '@nx/js/plugins/jest/local-registry';
 import { releasePublish, releaseVersion } from 'nx/release';
 import type { RegistryE2eExecutorSchema } from './schema';
 import {
+  agentFileProblems,
   caseId,
   changedPaths,
   execCommand,
   hashTree,
+  TEAM_NOTE,
   lastJsonObject,
   run,
   runScriptCommand,
@@ -34,8 +36,10 @@ interface CaseResult {
  * an older build), publishes them to a local Verdaccio, and serves the
  * built registry over HTTP. Then, for each case, it creates an app with
  * `ng new` and times `ndop init`, `ndop add <item>` and the app's build
- * against the budget. Finally it runs `ndop add <item> --json` again and
- * checks that the plan is empty and no file changed.
+ * against the budget. It checks the agent context files (ADR-0017), init
+ * having run with `--agent claude-code --mcp` over a team note in
+ * `AGENTS.md`. Finally it runs `ndop add <item> --json` again and checks
+ * that the plan is empty and no file changed.
  *
  * Dist manifests keep the test version afterwards; the next build restores
  * them.
@@ -175,8 +179,12 @@ async function runCase(
       { ...options, cwd: settings.workDir },
     );
 
+    await writeFile(join(app, 'AGENTS.md'), TEAM_NOTE);
     const start = performance.now();
-    await run(ndop(['init', '--yes']), options);
+    await run(
+      ndop(['init', '--yes', '--agent', 'claude-code', '--mcp']),
+      options,
+    );
     await run(ndop(['add', settings.item, '--yes']), options);
     await run(runScriptCommand(packageManager, 'build'), options);
     const seconds = Math.round((performance.now() - start) / 1000);
@@ -186,6 +194,22 @@ async function runCase(
         seconds,
         error: `took ${seconds}s, over the ${settings.budget}s budget`,
       };
+    }
+
+    const agentFiles: Record<string, string | undefined> = {};
+    for (const path of [
+      'AGENTS.md',
+      'CLAUDE.md',
+      '.claude/skills/ndop/SKILL.md',
+      '.mcp.json',
+    ]) {
+      agentFiles[path] = await readFile(join(app, path), 'utf-8').catch(
+        () => undefined,
+      );
+    }
+    const problems = agentFileProblems(agentFiles, settings.item);
+    if (problems.length > 0) {
+      return { id, seconds, error: problems.join('; ') };
     }
 
     const before = await hashTree(app);

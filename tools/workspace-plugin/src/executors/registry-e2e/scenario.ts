@@ -204,3 +204,49 @@ export function run(
     });
   });
 }
+
+/** What the install test writes to `AGENTS.md` before `ndop init`. */
+export const TEAM_NOTE = '# Team notes\n\nKeep components small.\n';
+
+/**
+ * Checks the agent context files `ndop init --agent claude-code --mcp` and
+ * `ndop add` wrote (ADR-0017): the team's own note in `AGENTS.md` survived
+ * above one Ndop section, which lists the added item; `CLAUDE.md` carries
+ * the same section; the skill exists; and `.mcp.json` registers the server.
+ *
+ * @param files - The files' text, by project-relative path.
+ * @param item - The item `ndop add` installed.
+ * @returns What's wrong; empty when all is well.
+ */
+export function agentFileProblems(
+  files: Readonly<Record<string, string | undefined>>,
+  item: string,
+): string[] {
+  const problems: string[] = [];
+  const agents = files['AGENTS.md'] ?? '';
+  if (!agents.startsWith(`${TEAM_NOTE}\n<!-- ndop:start -->`)) {
+    problems.push(
+      "AGENTS.md doesn't keep the team's note above the Ndop section",
+    );
+  }
+  if (agents.split('<!-- ndop:start -->').length !== 2) {
+    problems.push("AGENTS.md doesn't have exactly one Ndop section");
+  }
+  if (!agents.includes(`\`${item}\``)) {
+    problems.push(`AGENTS.md doesn't list ${item}`);
+  }
+  const section = agents.slice(agents.indexOf('<!-- ndop:start -->'));
+  if (files['CLAUDE.md'] !== section) {
+    problems.push("CLAUDE.md doesn't carry the same section as AGENTS.md");
+  }
+  if (!files['.claude/skills/ndop/SKILL.md']?.startsWith('---\nname: ndop\n')) {
+    problems.push('.claude/skills/ndop/SKILL.md is missing');
+  }
+  const mcp = JSON.parse(files['.mcp.json'] ?? '{}') as {
+    mcpServers?: Record<string, { args?: string[] }>;
+  };
+  if (!mcp.mcpServers?.['ndop']?.args?.includes('@ndop/mcp')) {
+    problems.push(".mcp.json doesn't register the ndop server");
+  }
+  return problems;
+}
