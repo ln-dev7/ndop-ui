@@ -7,6 +7,7 @@ export interface IndexedComponent {
   name: string;
   title: string;
   description: string;
+  keywords?: string[];
   keyboard: { keys: string[]; action: string }[];
   parts: {
     name: string;
@@ -109,6 +110,13 @@ export function componentEntries(component: IndexedComponent): SearchEntry[] {
       title: component.title,
       context: 'Component',
       description: plainText(component.description),
+      ...(component.keywords?.length
+        ? {
+            keywords: component.keywords.map((keyword) =>
+              keyword.toLowerCase(),
+            ),
+          }
+        : {}),
       url,
     },
     ...component.parts.flatMap((part) =>

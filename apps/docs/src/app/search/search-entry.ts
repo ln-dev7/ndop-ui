@@ -14,6 +14,8 @@ export interface SearchEntry {
   context: string;
   /** One line of plain text. */
   description: string;
+  /** Other words for it, lowercase, such as `modal` for Dialog. */
+  keywords?: string[];
   /** Route, with a fragment for a section. */
   url: string;
 }

@@ -14,8 +14,8 @@ const PER_GROUP = 6;
 
 /**
  * How well an entry matches. Every word of the query must appear in its
- * title or context; matches in the title, at its start or at a word's
- * start, rank higher.
+ * title, keywords or context; matches in the title, at its start or at a
+ * word's start, rank higher, then the start of a keyword's word.
  *
  * @param entry - An entry.
  * @param words - The query's words, lowercase.
@@ -24,12 +24,17 @@ const PER_GROUP = 6;
 export function score(entry: SearchEntry, words: readonly string[]): number {
   const title = entry.title.toLowerCase();
   const context = entry.context.toLowerCase();
+  const keywords = entry.keywords ?? [];
   let total = 0;
   for (const word of words) {
     if (title === word) total += 100;
     else if (title.startsWith(word)) total += 60;
     else if (new RegExp(`\\b${escape(word)}`).test(title)) total += 40;
     else if (title.includes(word)) total += 20;
+    else if (
+      keywords.some((keyword) => new RegExp(`\\b${escape(word)}`).test(keyword))
+    )
+      total += 30;
     else if (context.includes(word)) total += 5;
     else return 0;
   }

@@ -64,6 +64,7 @@ describe('componentEntries', () => {
       name: 'dialog',
       title: 'Dialog',
       description: 'A window over the page.',
+      keywords: ['Modal', 'popup'],
       keyboard: [
         {
           keys: ['Escape'],
@@ -93,6 +94,7 @@ describe('componentEntries', () => {
       ['prop', 'closeOnEscape', '/docs/components/dialog#api-NdDialog'],
       ['shortcut', 'Escape', '/docs/components/dialog#keyboard'],
     ]);
+    expect(entries[0]?.keywords).toEqual(['modal', 'popup']);
     expect(entries[1]?.description).toBe('Whether NdDialog closes on Escape.');
   });
 });

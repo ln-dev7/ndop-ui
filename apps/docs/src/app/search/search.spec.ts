@@ -37,6 +37,13 @@ describe('score', () => {
     expect(score(entry('page', 'x', 'dialog'), words('dialog'))).toBe(5);
     expect(score(entry('page', 'dialog'), words('dialog nope'))).toBe(0);
   });
+
+  it('matches keywords below the title and above the context', () => {
+    const dialog = { ...entry('component', 'Dialog'), keywords: ['modal'] };
+    expect(score(dialog, ['modal'])).toBe(30);
+    expect(score(dialog, ['mod'])).toBe(30);
+    expect(score(dialog, ['odal'])).toBe(0);
+  });
 });
 
 describe('search', () => {

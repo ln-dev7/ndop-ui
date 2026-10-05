@@ -62,11 +62,18 @@ The v2 README calls v2 "the stable release line", implementing the
   `https://ndop.dev/r/`. It fetches `index.json` once, then items and
   metadata on demand, and caches them for the life of the process. Items
   are validated against the schemas, as `add` does.
-- One renderer, no drift: the component Markdown renderer and `usageOf`
-  move from `apps/docs/build` into `@ndop/metadata`, so the Markdown twin
-  and `get_component` are byte-for-byte the same text. The docs build
-  imports them from there. This needs one module-boundary change: `type:app`
-  may depend on `@ndop/metadata`, which is only used at build time.
+- One renderer, no drift: the component Markdown renderer moves from
+  `apps/docs/build` into `@ndop/metadata`, so the Markdown twin and
+  `get_component` are byte-for-byte the same text.
+- The minimal usage (`usageOf`) runs during extraction instead, and is
+  stored in the metadata as an optional `usage` (`imports`, `template`).
+  The renderer and the MCP server then need no TypeScript at run time, and
+  agents get the usage in the metadata JSON too.
+- The docs build imports the renderer by path, with a lint exception that
+  says why: Vite bundles the build code with its config, and that bundler
+  resolves neither tsconfig paths nor unbuilt workspace packages. The docs
+  project lists `metadata` as an implicit dependency, so Nx still rebuilds
+  the docs when the renderer changes.
 
 ### Tools
 

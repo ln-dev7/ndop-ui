@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+// The same import as component-docs.ts, which explains why it's a path.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { componentMarkdown } from '../../../packages/metadata/src/lib/markdown';
 import {
-  componentMarkdown,
   guideMarkdown,
   llmsFullTxt,
   llmsTxt,

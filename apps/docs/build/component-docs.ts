@@ -3,7 +3,6 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { marked } from 'marked';
 import { createHighlighter, type Highlighter } from 'shiki';
-import ts from 'typescript';
 import type { Plugin } from 'vite';
 import type {
   ComponentPageData,
@@ -19,8 +18,20 @@ import {
   THEMES,
   transformers,
 } from '../src/highlight/shiki';
+// Vite bundles this file with its config, and that bundler resolves
+// neither tsconfig paths nor unbuilt workspace packages, so the renderer
+// shared with the MCP server (ADR-0009) is imported by path.
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   componentMarkdown,
+  defaultTarget,
+  withDependencies,
+  withoutTsdocLinks,
+  type BuiltItem,
+  type Member,
+  type Metadata,
+} from '../../../packages/metadata/src/lib/markdown';
+import {
   guideMarkdown,
   llmsFullTxt,
   llmsTxt,
@@ -32,53 +43,6 @@ const INDEX_ID = 'virtual:ndop/components';
 const PAGE_PREFIX = 'virtual:ndop/component/';
 const SEARCH_ID = 'virtual:ndop/search-index';
 const REPOSITORY = 'https://github.com/valerymelou/ndop';
-
-/** The shapes of the built registry files this plugin reads. */
-export interface BuiltItem {
-  name: string;
-  type: string;
-  version: string;
-  title: string;
-  description: string;
-  dependencies?: string[];
-  registryDependencies?: string[];
-  files?: { path: string; target: string; content: string }[];
-  angular?: { ssr: boolean; zoneless: boolean; exports?: string[] };
-  ndop?: { examples?: string[] };
-}
-
-/** The metadata fields this plugin reads (`@ndop/schema`'s metadata v1). */
-export interface Metadata {
-  intro: string;
-  agentNotes: { do: string[]; dont: string[] };
-  pattern?: { name: string; url: string };
-  bundleSize?: { gzip: number };
-  keyboard: { keys: string[]; action: string }[];
-  focus: string[];
-  rtl?: string;
-  parts: {
-    name: string;
-    selector: string;
-    description: string;
-    source?: string;
-    role?: string;
-    ariaAttributes?: string[];
-    inputs: Member[];
-    models: Member[];
-    outputs: Member[];
-    dataAttributes?: { name: string; values?: string[] }[];
-  }[];
-}
-
-/** One input, model or output in the metadata. */
-export interface Member {
-  name: string;
-  type: string;
-  default?: string;
-  values?: string[];
-  required?: boolean;
-  description: string;
-}
 
 /** Options of {@link componentDocs}. */
 export interface ComponentDocsOptions {
@@ -318,8 +282,7 @@ async function pageData(
   const dependencies = [
     ...new Set(installed.flatMap((entry) => entry.dependencies ?? [])),
   ];
-  const mainSource = examples[0]?.files?.[0]?.content ?? '';
-  const usage = usageOf(mainSource);
+  const usage = metadata.usage ?? { imports: '', template: '' };
   const itemFile = item.files?.[0]?.path ?? '';
 
   return {
@@ -350,7 +313,7 @@ async function pageData(
           return {
             target,
             html: await tools.highlight(
-              file.content,
+              file.content ?? '',
               'angular-ts',
               `title="${target}" collapse`,
             ),
@@ -401,40 +364,6 @@ async function pageData(
 }
 
 /**
- * An item and every item it depends on, transitively, each once: what a
- * manual install copies.
- *
- * @param item - The item.
- * @param read - Reads a built registry file.
- * @returns The item first, then its dependencies.
- */
-export function withDependencies(
-  item: BuiltItem,
-  read: <T>(file: string) => T,
-): BuiltItem[] {
-  const seen = new Map<string, BuiltItem>([[item.name, item]]);
-  const queue = [...(item.registryDependencies ?? [])];
-  for (let name = queue.shift(); name !== undefined; name = queue.shift()) {
-    if (seen.has(name)) continue;
-    const dependency = read<BuiltItem>(`${name}.json`);
-    seen.set(name, dependency);
-    queue.push(...(dependency.registryDependencies ?? []));
-  }
-  return [...seen.values()];
-}
-
-/**
- * A file's target with the default `ndop.json` aliases filled in, as a
- * reader copying by hand would place it.
- *
- * @param target - Target with `{ui}` or `{lib}`.
- * @returns The path.
- */
-export function defaultTarget(target: string): string {
-  return target.replace('{ui}', 'src/app/ui').replace('{lib}', 'src/app/lib');
-}
-
-/**
  * One part's API reference.
  *
  * @param part - The part's metadata.
@@ -464,20 +393,6 @@ async function partData(part: Metadata['parts'][number]): Promise<PartData> {
 }
 
 /**
- * Turns TSDoc's inline `{@link Target}` and `{@link Target | text}` into
- * code spans, since the descriptions come from TSDoc comments.
- *
- * @param markdown - Markdown from metadata.
- * @returns The Markdown, without TSDoc tags.
- */
-export function withoutTsdocLinks(markdown: string): string {
-  return markdown.replace(
-    /\{@link\s+([^}|\s]+)\s*(?:\|\s*([^}]+?)\s*)?\}/g,
-    (_match, target: string, text?: string) => `\`${text ?? target}\``,
-  );
-}
-
-/**
  * Renders a Markdown block.
  *
  * @param markdown - Markdown from metadata.
@@ -495,60 +410,6 @@ function block(markdown: string): Promise<string> {
  */
 function inline(markdown: string): Promise<string> {
   return Promise.resolve(marked.parseInline(withoutTsdocLinks(markdown)));
-}
-
-/**
- * The smallest correct usage of an item, taken from its main example: the
- * imports of the item's parts and the component's template.
- *
- * @param source - The main example's source.
- * @returns The imports and the template, ready to highlight.
- */
-export function usageOf(source: string): { imports: string; template: string } {
-  const file = ts.createSourceFile(
-    'example.ts',
-    source,
-    ts.ScriptTarget.Latest,
-    true,
-  );
-  const imports = file.statements
-    .filter(
-      (statement): statement is ts.ImportDeclaration =>
-        ts.isImportDeclaration(statement) &&
-        ts.isStringLiteral(statement.moduleSpecifier) &&
-        statement.moduleSpecifier.text.startsWith('@/ui/'),
-    )
-    .map((statement) => statement.getText(file))
-    .join('\n');
-  let template = '';
-  const visit = (node: ts.Node): void => {
-    if (
-      ts.isPropertyAssignment(node) &&
-      node.name.getText(file) === 'template' &&
-      ts.isNoSubstitutionTemplateLiteral(node.initializer)
-    ) {
-      template = dedent(node.initializer.text);
-    }
-    ts.forEachChild(node, visit);
-  };
-  visit(file);
-  return { imports, template };
-}
-
-/**
- * Removes a block's common indentation and its blank first and last lines.
- *
- * @param text - Indented text.
- * @returns The text, flush left.
- */
-function dedent(text: string): string {
-  const lines = text.replace(/^\n+|\s+$/g, '').split('\n');
-  const indent = Math.min(
-    ...lines
-      .filter((line) => line.trim())
-      .map((line) => /^ */.exec(line)?.[0].length ?? 0),
-  );
-  return lines.map((line) => line.slice(indent)).join('\n');
 }
 
 /**

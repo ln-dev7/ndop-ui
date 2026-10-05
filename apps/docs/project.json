@@ -5,7 +5,7 @@
   "prefix": "docs",
   "sourceRoot": "apps/docs/src",
   "tags": ["type:app"],
-  "implicitDependencies": ["registry"],
+  "implicitDependencies": ["registry", "metadata"],
   "targets": {
     "build": {
       "executor": "@analogjs/platform:vite",
