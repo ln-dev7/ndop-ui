@@ -5,7 +5,12 @@
   "projectType": "library",
   "release": {
     "version": {
-      "manifestRootsToUpdate": ["dist/{projectRoot}"],
+      "manifestRootsToUpdate": [
+        {
+          "path": "dist/{projectRoot}",
+          "preserveLocalDependencyProtocols": false
+        }
+      ],
       "currentVersionResolver": "git-tag",
       "fallbackCurrentVersionResolver": "disk"
     }
@@ -13,13 +18,32 @@
   "tags": ["type:tooling"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/packages/mcp",
         "main": "packages/mcp/src/index.ts",
+        "outputPath": "dist/packages/mcp",
+        "outputFileName": "index.js",
         "tsConfig": "packages/mcp/tsconfig.lib.json",
-        "assets": ["packages/mcp/*.md"]
+        "platform": "node",
+        "format": ["esm"],
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/mcp",
+            "output": "."
+          }
+        ],
+        "thirdParty": false,
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
       }
     },
     "nx-release-publish": {

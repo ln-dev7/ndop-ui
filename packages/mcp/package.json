@@ -1,10 +1,17 @@
 {
   "name": "@ndop/mcp",
   "version": "0.0.1",
-  "type": "commonjs",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
-  "dependencies": {
-    "tslib": "^2.3.0"
+  "description": "MCP server exposing the Ndop registry and component metadata to coding agents.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "index.js.map",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
   }
 }
