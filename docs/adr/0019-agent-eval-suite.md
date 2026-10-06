@@ -111,3 +111,38 @@ verify problems, turns, tokens and duration, and the screenshots.
 - Prompts grow with the catalog: each Phase 6 component adds prompts, as
   RFC-0001's definition of done requires ("covered in the agent eval
   suite").
+
+## Implementation notes (2026-10-06)
+
+Details settled while building it, within the decision above:
+
+- **Claude Code 2.1.289 has no turn limit flag**, so the limit is time
+  only: 15 minutes per prompt by default (`--timeoutMinutes`).
+- **Isolation without `--bare`:** `--bare` only accepts API keys, so the
+  runner keeps the user's settings, memory and MCP servers out another way.
+  It gives Claude Code a fresh `CLAUDE_CONFIG_DIR` and
+  `--setting-sources project`, with `--no-session-persistence`,
+  `--strict-mcp-config`, and `--permission-mode dontAsk`, which denies
+  anything outside the allowed file, search, shell and `mcp__ndop` tools.
+- **Copies share `node_modules`:** each prompt's copy links the template's
+  `node_modules`, and the npm packages items need (`@ndop/primitives` and
+  the matching `@angular/cdk`) are installed in the template up front, so
+  `add_items` never changes what other prompts see.
+- **The fixture is `ndop init --agent claude-code --mcp --verify`**, with
+  `ndop` and `@ndop/mcp` as dev dependencies; the MCP config the agent gets
+  runs the app's own server against the local registry.
+- **The Nx target fails** when a usage limit stops the run, or when accuracy
+  is under `--minAccuracy` (95% by default), so the weekly run flags a
+  regression. In CI, a stopped run resumes with the `resume_run` input,
+  which downloads that run's report.
+
+## Amendment 1 (2026-10-06): manual runs only
+
+Status: Accepted by Valery on 2026-10-06.
+
+A full run takes about four and a half hours and, at prompt 1's 3.3
+million tokens, likely more than one usage window. So the model runs only
+when Valery starts it: locally with `pnpm nx run agent-eval:eval`, or from
+the Agent eval workflow's manual trigger. There's no weekly schedule. This
+replaces the weekly run in "When it runs"; the tests with the scripted
+agent still run on every PR.

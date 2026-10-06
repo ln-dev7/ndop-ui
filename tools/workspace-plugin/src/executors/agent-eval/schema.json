@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Agent eval suite",
+  "description": "Run the agent eval suite (ADR-0019): headless Claude Code, with only the Ndop MCP server and a subscription token in CLAUDE_CODE_OAUTH_TOKEN, carries out each prompt in a copy of a fixture app; ndop verify and the prompt's required components score it.",
+  "type": "object",
+  "properties": {
+    "prompts": {
+      "description": "Prompt ids to run, such as 1,7; every prompt when left out.",
+      "oneOf": [
+        { "type": "array", "items": { "type": "number" } },
+        { "type": "string" },
+        { "type": "number" }
+      ]
+    },
+    "repeat": {
+      "type": "number",
+      "description": "Attempts per prompt, to measure variance.",
+      "default": 1
+    },
+    "resume": {
+      "type": "boolean",
+      "description": "Continue the report in reportDir from the first unfinished prompt.",
+      "default": false
+    },
+    "model": {
+      "type": "string",
+      "description": "Model, by full name.",
+      "default": "claude-sonnet-5"
+    },
+    "timeoutMinutes": {
+      "type": "number",
+      "description": "Time limit per prompt.",
+      "default": 15
+    },
+    "minAccuracy": {
+      "type": "number",
+      "description": "Fail under this share of passing attempts.",
+      "default": 0.95
+    },
+    "angular": {
+      "type": "string",
+      "description": "Angular CLI version for the fixture app.",
+      "default": "22.2.1"
+    },
+    "promptsFile": {
+      "type": "string",
+      "description": "The suite's prompts, relative to the workspace root.",
+      "default": "tools/agent-eval/prompts.json"
+    },
+    "reportDir": {
+      "type": "string",
+      "description": "Report folder, relative to the workspace root.",
+      "default": "dist/agent-eval"
+    },
+    "workDir": {
+      "type": "string",
+      "description": "Scratch folder for the fixture and the copies.",
+      "default": "tmp/agent-eval"
+    }
+  }
+}

@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "prompt": "Add a settings page where users edit their name and email, save, and can delete their account after confirming.",
+    "components": ["input", "label", "button", "dialog"],
+    "category": "page"
+  },
+  {
+    "id": 2,
+    "prompt": "Add a sign-in page with an email and password field and a sign-in button.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 3,
+    "prompt": "Add a sign-up form with name, email and password, and a create account button.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 4,
+    "prompt": "Add a newsletter signup box with an email field and a subscribe button.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 5,
+    "prompt": "Add a contact form with name, email and a message field, and a send button.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 6,
+    "prompt": "Add a password reset form that asks for an email address.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 7,
+    "prompt": "Add a search bar with a search button at the top of the home page.",
+    "components": ["input", "button"],
+    "category": "form"
+  },
+  {
+    "id": 8,
+    "prompt": "Add a form to change the user's password: current password, new password and confirmation.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 9,
+    "prompt": "Add a shipping address form with street, city, postal code and country fields.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 10,
+    "prompt": "Add a team invite form where an admin enters an email address and sends an invitation.",
+    "components": ["input", "label", "button"],
+    "category": "form"
+  },
+  {
+    "id": 11,
+    "prompt": "Add a button that opens a dialog asking the user to confirm deleting a project.",
+    "components": ["button", "dialog"],
+    "category": "overlay"
+  },
+  {
+    "id": 12,
+    "prompt": "Add a dialog for editing a profile's display name, opened from an Edit profile button.",
+    "components": ["button", "dialog", "input", "label"],
+    "category": "overlay"
+  },
+  {
+    "id": 13,
+    "prompt": "Add a sign-out button that asks for confirmation in a dialog first.",
+    "components": ["button", "dialog"],
+    "category": "overlay"
+  },
+  {
+    "id": 14,
+    "prompt": "Add a Share button that opens a popover with a link field and a copy button.",
+    "components": ["button", "popover", "input"],
+    "category": "overlay"
+  },
+  {
+    "id": 15,
+    "prompt": "Add an icon-only help button that shows a tooltip explaining what the page is for.",
+    "components": ["button", "tooltip"],
+    "category": "edge"
+  },
+  {
+    "id": 16,
+    "prompt": "Add a toolbar of icon-only buttons for bold, italic and underline, each with a tooltip.",
+    "components": ["button", "tooltip"],
+    "category": "edge"
+  },
+  {
+    "id": 17,
+    "prompt": "Add a notifications button that opens a popover listing three recent notifications.",
+    "components": ["button", "popover"],
+    "category": "overlay"
+  },
+  {
+    "id": 18,
+    "prompt": "Add a filter popover with a minimum and maximum price field and an apply button.",
+    "components": ["popover", "input", "label", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 19,
+    "prompt": "Add a dialog that shows the terms of service with accept and decline buttons.",
+    "components": ["dialog", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 20,
+    "prompt": "Add an About dialog opened from a link-styled button in the page footer.",
+    "components": ["dialog", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 21,
+    "prompt": "Add a pricing section with three plans, each with a price, a short feature list and a choose plan button, the popular one marked with a badge.",
+    "components": ["button", "badge"],
+    "category": "layout"
+  },
+  {
+    "id": 22,
+    "prompt": "Add a user profile card showing a name, a role badge and a message button.",
+    "components": ["badge", "button"],
+    "category": "layout"
+  },
+  {
+    "id": 23,
+    "prompt": "Add a list of three orders, each with a status badge, separated by dividers.",
+    "components": ["badge", "separator"],
+    "category": "layout"
+  },
+  {
+    "id": 24,
+    "prompt": "Add a page header with a title, a short description, a divider and primary and secondary actions.",
+    "components": ["button", "separator"],
+    "category": "layout"
+  },
+  {
+    "id": 25,
+    "prompt": "Add a sidebar section with grouped links separated by dividers.",
+    "components": ["separator"],
+    "category": "layout"
+  },
+  {
+    "id": 26,
+    "prompt": "Add a feature list where new features are tagged with a New badge.",
+    "components": ["badge"],
+    "category": "layout"
+  },
+  {
+    "id": 27,
+    "prompt": "Add a task list where each task shows a priority badge and a delete button with a tooltip.",
+    "components": ["badge", "button", "tooltip"],
+    "category": "layout"
+  },
+  {
+    "id": 28,
+    "prompt": "Add a footer with three link columns separated from the page by a divider.",
+    "components": ["separator"],
+    "category": "layout"
+  },
+  {
+    "id": 29,
+    "prompt": "Add an empty state for a project list with a message and a create project button.",
+    "components": ["button"],
+    "category": "layout"
+  },
+  {
+    "id": 30,
+    "prompt": "Add a card showing a storage usage summary with an upgrade button.",
+    "components": ["button"],
+    "category": "layout"
+  },
+  {
+    "id": 31,
+    "prompt": "Add a billing page with the current plan, a change plan button and a cancel subscription confirmation dialog.",
+    "components": ["button", "dialog"],
+    "category": "page"
+  },
+  {
+    "id": 32,
+    "prompt": "Add a team members page listing members with role badges and a button to invite a member in a dialog with an email field.",
+    "components": ["badge", "button", "dialog", "input", "label"],
+    "category": "page"
+  },
+  {
+    "id": 33,
+    "prompt": "Add a notification preferences page with an email address field and a save button.",
+    "components": ["input", "label", "button"],
+    "category": "page"
+  },
+  {
+    "id": 34,
+    "prompt": "Add an API keys page that lists two keys with a copy button and a revoke button that confirms in a dialog.",
+    "components": ["button", "dialog"],
+    "category": "page"
+  },
+  {
+    "id": 35,
+    "prompt": "Add a project overview page with a title, a status badge, a divider and an archive button that asks for confirmation.",
+    "components": ["badge", "separator", "button", "dialog"],
+    "category": "page"
+  },
+  {
+    "id": 36,
+    "prompt": "Add a checkout page with contact email, card holder name and a pay button.",
+    "components": ["input", "label", "button"],
+    "category": "page"
+  },
+  {
+    "id": 37,
+    "prompt": "Add a 404 page with a message and a button back to the home page.",
+    "components": ["button"],
+    "category": "page"
+  },
+  {
+    "id": 38,
+    "prompt": "Add a profile page showing the user's details with an edit button that opens a dialog to change their bio.",
+    "components": ["button", "dialog", "input", "label"],
+    "category": "page"
+  },
+  {
+    "id": 39,
+    "prompt": "Add an account security page with a change email form and a delete account button that confirms in a dialog.",
+    "components": ["input", "label", "button", "dialog"],
+    "category": "page"
+  },
+  {
+    "id": 40,
+    "prompt": "Add a dashboard page with three stat cards, each with a label and a trend badge, and a refresh button.",
+    "components": ["badge", "button"],
+    "category": "page"
+  },
+  {
+    "id": 41,
+    "prompt": "Add a delete button that is disabled until the user types the project name to confirm.",
+    "components": ["button", "input", "label"],
+    "category": "edge"
+  },
+  {
+    "id": 42,
+    "prompt": "Add a form field for a username that shows an error message under it when it is empty after submit.",
+    "components": ["input", "label", "button"],
+    "category": "edge"
+  },
+  {
+    "id": 43,
+    "prompt": "Add a copy-to-clipboard icon button with a tooltip that says Copy.",
+    "components": ["button", "tooltip"],
+    "category": "edge"
+  },
+  {
+    "id": 44,
+    "prompt": "Add a right-to-left friendly form with first name and last name side by side and a submit button.",
+    "components": ["input", "label", "button"],
+    "category": "edge"
+  },
+  {
+    "id": 45,
+    "prompt": "Add a dialog with a form inside it that closes after the form is submitted.",
+    "components": ["dialog", "input", "label", "button"],
+    "category": "edge"
+  },
+  {
+    "id": 46,
+    "prompt": "Add a vertical divider between two buttons in a toolbar.",
+    "components": ["separator", "button"],
+    "category": "edge"
+  },
+  {
+    "id": 47,
+    "prompt": "Add a link that looks like a button pointing to the documentation.",
+    "components": ["button"],
+    "category": "edge"
+  },
+  {
+    "id": 48,
+    "prompt": "Add a status badge that is red for failed and neutral for pending builds.",
+    "components": ["badge"],
+    "category": "edge"
+  },
+  {
+    "id": 49,
+    "prompt": "Add a popover on an info icon button that explains a setting in two sentences.",
+    "components": ["button", "popover"],
+    "category": "edge"
+  },
+  {
+    "id": 50,
+    "prompt": "Add a read-only email field with a label and a note that it can't be changed.",
+    "components": ["input", "label"],
+    "category": "edge"
+  }
+]

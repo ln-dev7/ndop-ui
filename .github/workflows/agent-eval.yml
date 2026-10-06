@@ -1,0 +1,76 @@
+name: Agent eval
+
+# ADR-0019: headless Claude Code, with only the Ndop MCP server, carries out
+# the 50 prompts of tools/agent-eval; ndop verify scores them. It runs on a
+# Claude subscription token, never an API key, so it only runs when started
+# by hand (ADR-0019, amendment 1), never on pull requests or a schedule.
+on:
+  workflow_dispatch:
+    inputs:
+      prompts:
+        description: 'Prompt ids to run, such as 1,7; empty for all'
+        required: false
+        default: ''
+      repeat:
+        description: 'Attempts per prompt'
+        required: false
+        default: '1'
+      resume_run:
+        description: 'Run id of an eval stopped at the usage limit, to resume'
+        required: false
+        default: ''
+
+concurrency:
+  group: agent-eval
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  eval:
+    name: Agent eval
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      # Resuming continues the stopped run's report, from its artifact.
+      - if: inputs.resume_run != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download "${{ inputs.resume_run }}" --name agent-eval-report --dir dist/agent-eval
+
+      - name: Run the eval
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          PROMPTS: ${{ inputs.prompts }}
+          REPEAT: ${{ inputs.repeat || '1' }}
+          RESUME: ${{ inputs.resume_run != '' }}
+        run: |
+          args=(--repeat="$REPEAT")
+          if [ -n "$PROMPTS" ]; then args+=(--prompts="$PROMPTS"); fi
+          if [ "$RESUME" = "true" ]; then args+=(--resume); fi
+          pnpm nx run agent-eval:eval "${args[@]}"
+
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-eval-report
+          path: dist/agent-eval
+          if-no-files-found: ignore
+
+      - if: always()
+        run: cat dist/agent-eval/summary.md >> "$GITHUB_STEP_SUMMARY" || true

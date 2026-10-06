@@ -35,6 +35,7 @@
     "@angular/cli": "22.2.1",
     "@angular/compiler-cli": "22.2.1",
     "@angular/language-service": "22.2.1",
+    "@anthropic-ai/claude-code": "2.1.289",
     "@axe-core/playwright": "4.13.0",
     "@changesets/cli": "3.0.3",
     "@eslint/js": "9.39.5",

@@ -19,6 +19,11 @@
       "implementation": "./src/executors/docs-lighthouse/docs-lighthouse",
       "schema": "./src/executors/docs-lighthouse/schema.json",
       "description": "Run Lighthouse on every route of the built docs site and fail under the minimum score (ADR-0016)."
+    },
+    "agent-eval": {
+      "implementation": "./src/executors/agent-eval/agent-eval",
+      "schema": "./src/executors/agent-eval/schema.json",
+      "description": "Run the agent eval suite: headless Claude Code with only the Ndop MCP server builds each prompt in a fixture app, scored by ndop verify (ADR-0019)."
     }
   }
 }

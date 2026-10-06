@@ -1,0 +1,31 @@
+{
+  "name": "agent-eval",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "implicitDependencies": ["cli", "ndop", "mcp", "verify", "registry"],
+  "targets": {
+    "eval": {
+      "executor": "@ndop/workspace-plugin:agent-eval",
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": [
+            "cli",
+            "ndop",
+            "core",
+            "primitives",
+            "schema",
+            "metadata",
+            "mcp",
+            "eslint-plugin",
+            "verify",
+            "registry"
+          ]
+        }
+      ],
+      "cache": false,
+      "options": {}
+    }
+  }
+}
