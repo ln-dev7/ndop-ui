@@ -91,7 +91,7 @@ export function lastJsonObject(output: string): unknown {
 }
 
 /** Folders that tools write into and the no-op check ignores. */
-const IGNORED = new Set(['node_modules', 'dist', '.angular', '.git']);
+const IGNORED = new Set(['node_modules', 'dist', '.angular', '.git', '.ndop']);
 
 /**
  * Hashes every file of a project except installed and built output, so a
@@ -151,6 +151,8 @@ export interface RunOptions {
   env: NodeJS.ProcessEnv;
   /** Log file the output is appended to. */
   log: string;
+  /** Resolve with the output even on a non-zero exit, as for `ndop verify`. */
+  allowFailure?: boolean;
 }
 
 /**
@@ -159,7 +161,8 @@ export interface RunOptions {
  * @param commandLine - Command and arguments.
  * @param options - Where and how to run it.
  * @returns Its standard output.
- * @throws When it exits with a non-zero code, with the end of its output.
+ * @throws When it exits with a non-zero code, unless `allowFailure` is
+ *   set, with the end of its output.
  */
 export function run(
   commandLine: CommandLine,
@@ -192,7 +195,7 @@ export function run(
     });
     child.on('close', (code) => {
       log.end();
-      if (code === 0) {
+      if (code === 0 || options.allowFailure) {
         resolve(stdout);
       } else {
         reject(
@@ -247,6 +250,107 @@ export function agentFileProblems(
   };
   if (!mcp.mcpServers?.['ndop']?.args?.includes('@ndop/mcp')) {
     problems.push(".mcp.json doesn't register the ndop server");
+  }
+  return problems;
+}
+
+/**
+ * The command that adds a dev dependency with a package manager.
+ *
+ * @param packageManager - npm, pnpm or bun.
+ * @param spec - Package, with a version.
+ * @returns Command and arguments.
+ */
+export function addDevCommand(
+  packageManager: PackageManager,
+  spec: string,
+): CommandLine {
+  if (packageManager === 'npm') return ['npm', ['install', '--save-dev', spec]];
+  if (packageManager === 'pnpm') {
+    // Same reason as ndop's own installer: unapproved build scripts from
+    // ng new would otherwise fail the add.
+    return ['pnpm', ['add', '-D', spec, '--config.strict-dep-builds=false']];
+  }
+  return ['bun', ['add', '-d', spec]];
+}
+
+/** A page that uses Dialog correctly, which `ndop verify` must pass. */
+export const GOOD_PAGE = `import { Component } from '@angular/core';
+import {
+  DialogContent,
+  DialogTitle,
+  NdDialog,
+  NdDialogPortal,
+  NdDialogTrigger,
+} from '@/ui/dialog/dialog';
+
+@Component({
+  selector: 'app-good',
+  imports: [NdDialog, NdDialogTrigger, NdDialogPortal, DialogContent, DialogTitle],
+  template: \`
+    <h1>Account</h1>
+    <ng-container ndDialog>
+      <button type="button" ndDialogTrigger>Delete account</button>
+      <ng-template ndDialogPortal>
+        <div ndDialogContent><h2 ndDialogTitle>Delete your account?</h2></div>
+      </ng-template>
+    </ng-container>
+  \`,
+})
+export class Good {}
+`;
+
+/**
+ * A page with a made-up selector and an icon-only button, which
+ * `ndop verify` must report through its usage, lint and axe checks.
+ */
+export const BAD_PAGE = `import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-bad',
+  template: \`
+    <div ndDialogBody>Hello</div>
+    <button type="button"><svg width="16" height="16"></svg></button>
+  \`,
+})
+export class Bad {}
+`;
+
+/** Rules `ndop verify` must report for {@link BAD_PAGE}. */
+export const BAD_PAGE_RULES = [
+  'usage/unknown-selector',
+  'ndop/icon-button-name',
+  'axe/button-name',
+];
+
+/** The parts of `ndop verify --json`'s output the test reads. */
+export interface VerifyJson {
+  /** Whether no error was found. */
+  ok: boolean;
+  /** Each problem's rule and message. */
+  problems: { rule: string; message: string }[];
+}
+
+/**
+ * What's wrong with `ndop verify`'s results for the two pages.
+ *
+ * @param good - The JSON result for {@link GOOD_PAGE}.
+ * @param bad - The JSON result for {@link BAD_PAGE}.
+ * @returns What's wrong; empty when both are as expected.
+ */
+export function verifyProblems(good: VerifyJson, bad: VerifyJson): string[] {
+  const problems: string[] = [];
+  if (!good.ok) {
+    problems.push(
+      `ndop verify failed a correct page: ${good.problems.map((problem) => `${problem.rule}: ${problem.message}`).join('; ')}`,
+    );
+  }
+  const found = new Set(bad.problems.map((problem) => problem.rule));
+  const missing = BAD_PAGE_RULES.filter((rule) => !found.has(rule));
+  if (bad.ok || missing.length) {
+    problems.push(
+      `ndop verify missed ${missing.join(', ') || 'every problem'} on the broken page`,
+    );
   }
   return problems;
 }

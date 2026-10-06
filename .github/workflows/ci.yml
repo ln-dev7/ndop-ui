@@ -110,8 +110,10 @@ jobs:
 
   # ADR-0015: ng new, ndop init, ndop add dialog and ng build with npm, pnpm
   # and bun on Angular 22 and pnpm on Angular 21, against packages published
-  # to a local Verdaccio. Pull requests run it when they affect the CLI, core,
-  # primitives, schema or registry (registry-e2e's implicit dependencies).
+  # to a local Verdaccio, then ndop verify on a correct and a broken page
+  # (ADR-0018), which renders in Chromium. Pull requests run it when they
+  # affect the CLI, verify, core, primitives, schema or registry
+  # (registry-e2e's implicit dependencies).
   registry-e2e:
     name: Registry install test
     runs-on: ubuntu-latest
@@ -132,6 +134,10 @@ jobs:
           bun-version: '1.3.11'
 
       - run: pnpm install --frozen-lockfile
+
+      # ndop verify's playwright-core uses the same browser build as the
+      # workspace's Playwright.
+      - run: pnpm exec playwright install --with-deps chromium
 
       - uses: nrwl/nx-set-shas@v5
         with:

@@ -9,7 +9,10 @@
     "core",
     "primitives",
     "schema",
-    "registry"
+    "registry",
+    "verify",
+    "eslint-plugin",
+    "metadata"
   ],
   "targets": {
     "e2e": {
@@ -33,10 +36,22 @@
       "cache": false,
       "options": {
         "cases": [
-          { "packageManager": "npm", "angular": "22.2.1" },
-          { "packageManager": "pnpm", "angular": "22.2.1" },
-          { "packageManager": "bun", "angular": "22.2.1" },
-          { "packageManager": "pnpm", "angular": "21.2.24" }
+          {
+            "packageManager": "npm",
+            "angular": "22.2.1"
+          },
+          {
+            "packageManager": "pnpm",
+            "angular": "22.2.1"
+          },
+          {
+            "packageManager": "bun",
+            "angular": "22.2.1"
+          },
+          {
+            "packageManager": "pnpm",
+            "angular": "21.2.24"
+          }
         ]
       }
     }

@@ -5,7 +5,12 @@ import { startLocalRegistry } from '@nx/js/plugins/jest/local-registry';
 import { releasePublish, releaseVersion } from 'nx/release';
 import type { RegistryE2eExecutorSchema } from './schema';
 import {
+  addDevCommand,
   agentFileProblems,
+  BAD_PAGE,
+  GOOD_PAGE,
+  verifyProblems,
+  type VerifyJson,
   caseId,
   changedPaths,
   execCommand,
@@ -234,6 +239,27 @@ async function runCase(
         seconds,
         error: `running add again wasn't a no-op: ${JSON.stringify({ plan: again, changed })}`,
       };
+    }
+
+    await run(
+      addDevCommand(packageManager, `@ndop/verify@${settings.version}`),
+      options,
+    );
+    await writeFile(join(app, 'src/app/ndop-good.ts'), GOOD_PAGE);
+    await writeFile(join(app, 'src/app/ndop-bad.ts'), BAD_PAGE);
+    const verified = async (file: string) =>
+      lastJsonObject(
+        await run(ndop(['verify', file, '--json']), {
+          ...options,
+          allowFailure: true,
+        }),
+      ) as VerifyJson;
+    const wrong = verifyProblems(
+      await verified('src/app/ndop-good.ts'),
+      await verified('src/app/ndop-bad.ts'),
+    );
+    if (wrong.length) {
+      return { id, seconds, error: wrong.join('; ') };
     }
     return { id, seconds };
   } catch (error) {

@@ -2,7 +2,9 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
+  addDevCommand,
   agentFileProblems,
+  BAD_PAGE_RULES,
   caseId,
   changedPaths,
   execCommand,
@@ -11,6 +13,7 @@ import {
   run,
   runScriptCommand,
   TEAM_NOTE,
+  verifyProblems,
 } from './scenario';
 
 let folder: string;
@@ -125,5 +128,42 @@ describe('agentFileProblems', () => {
       "CLAUDE.md doesn't carry the same section as AGENTS.md",
       ".mcp.json doesn't register the ndop server",
     ]);
+  });
+});
+
+describe('verifyProblems', () => {
+  const ok = { ok: true, problems: [] };
+  const caught = {
+    ok: false,
+    problems: BAD_PAGE_RULES.map((rule) => ({ rule, message: 'x' })),
+  };
+
+  it('accepts a passing good page and a caught bad one', () => {
+    expect(verifyProblems(ok, caught)).toEqual([]);
+  });
+
+  it('reports a failed good page and missed problems', () => {
+    expect(
+      verifyProblems(
+        { ok: false, problems: [{ rule: 'build/TS2322', message: 'Nope.' }] },
+        {
+          ok: false,
+          problems: [{ rule: 'usage/unknown-selector', message: 'x' }],
+        },
+      ),
+    ).toEqual([
+      'ndop verify failed a correct page: build/TS2322: Nope.',
+      'ndop verify missed ndop/icon-button-name, axe/button-name on the broken page',
+    ]);
+  });
+});
+
+describe('addDevCommand', () => {
+  it('adds a dev dependency with each package manager', () => {
+    expect(addDevCommand('npm', 'a@1')).toEqual([
+      'npm',
+      ['install', '--save-dev', 'a@1'],
+    ]);
+    expect(addDevCommand('bun', 'a@1')).toEqual(['bun', ['add', '-d', 'a@1']]);
   });
 });
