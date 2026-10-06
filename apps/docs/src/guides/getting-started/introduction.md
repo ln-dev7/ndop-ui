@@ -25,6 +25,10 @@ The CLI records the version and a hash of every file it writes in
 `ndop.lock.json`. That record is what lets a later version merge upstream
 fixes into files you changed, instead of overwriting them.
 
+Coding agents get the same components through an MCP server, guidance in
+your project, and `ndop verify`, which checks their work and says what to
+fix.
+
 ## What it's built on
 
 - Angular 21 or 22, standalone, signals-first and zoneless. Apps that still
@@ -39,3 +43,4 @@ fixes into files you changed, instead of overwriting them.
 - Learn how [theming](/docs/getting-started/theming) and
   [dark mode](/docs/getting-started/dark-mode) work.
 - See what the [CLI](/docs/getting-started/cli) can do.
+- Set up your coding agent with [Agents & MCP](/docs/getting-started/agents-mcp).

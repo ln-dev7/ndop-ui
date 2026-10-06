@@ -33,6 +33,8 @@ on every command to know where files go and which registries to use.
 | `iconLibrary`  | The icon set `icons.ts` maps names to.                                             |
 | `registry`     | Another default registry, as a URL containing `{name}`.                            |
 | `registries`   | Namespaced registries, for `ndop add @acme/table`, with optional headers.          |
+| `agents`       | The coding agents whose instructions the CLI writes, or `false` for none.          |
+| `mcp`          | Whether the Ndop MCP server is registered in those agents' settings.               |
 
 ## Private registries
 

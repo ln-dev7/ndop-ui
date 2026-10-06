@@ -10,11 +10,12 @@ diffs, and running a command twice changes nothing the second time.
 
 ## Commands
 
-| Command               | What it does                                                   |
-| --------------------- | -------------------------------------------------------------- |
-| `ndop init`           | Sets up an Angular app for Ndop.                               |
-| `ndop add <items...>` | Adds components and everything they depend on.                 |
-| `ndop build`          | For registry authors: validates items and writes the registry. |
+| Command                  | What it does                                                                           |
+| ------------------------ | -------------------------------------------------------------------------------------- |
+| `ndop init`              | Sets up an Angular app for Ndop.                                                       |
+| `ndop add <items...>`    | Adds components and everything they depend on.                                         |
+| `ndop verify [paths...]` | Checks components and pages that use Ndop; see [Verify](/docs/getting-started/verify). |
+| `ndop build`             | For registry authors: validates items and writes the registry.                         |
 
 ## Options
 
@@ -29,7 +30,8 @@ diffs, and running a command twice changes nothing the second time.
 | `--registry <url>` | Uses another registry; the URL contains `{name}`.         |
 
 `init` also takes `--theme <name>` and `--project <name>`; `add` takes
-`--overwrite`.
+`--overwrite`. For coding agents, `init` takes `--agent`, `--mcp` and
+`--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
 
 ## Your edits are safe
 
@@ -51,3 +53,7 @@ Commands ask for confirmation only in an interactive terminal, and
 ```bash pm
 npx ndop add dialog --yes --json
 ```
+
+`ndop add` also refreshes the Ndop section of your agents' instructions,
+and installs `@angular/cdk` for your Angular version when a component
+needs it.

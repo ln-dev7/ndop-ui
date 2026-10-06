@@ -57,8 +57,10 @@
   & li + li {
     @apply mt-2;
   }
+  /* Always foreground: muted text, as in table headers and quotes, doesn't
+     meet contrast on the muted background. */
   & :not(pre) > code {
-    @apply rounded-md bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[0.85em];
+    @apply rounded-md bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[0.85em] text-foreground;
   }
   & table {
     @apply w-full border-collapse text-sm;
