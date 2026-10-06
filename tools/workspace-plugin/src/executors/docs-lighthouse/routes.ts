@@ -1,5 +1,5 @@
 import { readdir } from 'node:fs/promises';
-import { join, relative, sep } from 'node:path';
+import { relative, sep } from 'node:path';
 
 /** One route's category scores, 0 to 100. */
 export interface RouteScores {
