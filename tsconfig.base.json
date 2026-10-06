@@ -19,7 +19,7 @@
       "@ndop/core": ["./packages/core/src/index.ts"],
       "@ndop/schema": ["./packages/schema/src/index.ts"],
       "@ndop/cli": ["./packages/cli/src/index.ts"],
-      "@ndop/cli/registry": ["./packages/cli/src/lib/registry/client.ts"],
+      "@ndop/cli/api": ["./packages/cli/src/api.ts"],
       "@ndop/mcp": ["./packages/mcp/src/index.ts"],
       "@ndop/metadata": ["./packages/metadata/src/index.ts"],
       "@ndop/eslint-plugin": ["./packages/eslint-plugin/src/index.ts"],
@@ -44,7 +44,8 @@
       "@ndop/primitives/internal": [
         "./packages/primitives/internal/src/index.ts"
       ],
-      "@/*": ["./registry/*"]
+      "@/*": ["./registry/*"],
+      "@ndop/verify": ["./packages/verify/src/index.ts"]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

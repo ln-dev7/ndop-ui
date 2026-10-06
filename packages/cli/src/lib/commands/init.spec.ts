@@ -52,6 +52,7 @@ describe('ndop init', () => {
       { path: 'ndop.lock.json', action: 'create' },
       { path: 'src/app/app.config.ts', action: 'update' },
       { path: 'AGENTS.md', action: 'create' },
+      { path: '.gitignore', action: 'create' },
     ]);
     expect(environment.installs).toEqual([
       {
@@ -106,6 +107,22 @@ describe('ndop init', () => {
     );
     expect(environment.project.files).toEqual(before);
     expect(environment.installs).toHaveLength(1);
+  });
+
+  it('ignores .ndop/ in git, keeping the rest of .gitignore', async () => {
+    const environment = testEnvironment({
+      ...fixture('ng22'),
+      '.gitignore': '/dist\n/node_modules\n',
+    });
+    await init(environment);
+    expect(environment.project.files.get('.gitignore')).toBe(
+      "/dist\n/node_modules\n\n# ndop verify's harness and screenshots\n.ndop/\n",
+    );
+  });
+
+  it('adds @ndop/verify with --verify', async () => {
+    const result = await init(testEnvironment(fixture('ng22')), '--verify');
+    expect(result.devDependencies).toContain('@ndop/verify');
   });
 
   it('sets up Tailwind v4 when the app has none', async () => {

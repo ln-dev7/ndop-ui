@@ -76,6 +76,13 @@ export interface InitOptions {
    * `ndop.json` says; it isn't registered without it.
    */
   chooseMcp?: (agents: Agent[]) => Promise<boolean>;
+  /** Whether `--verify` was passed: add `@ndop/verify` as a dev dependency. */
+  verify?: boolean;
+  /**
+   * Asks whether to add `@ndop/verify`, when `--verify` isn't passed and
+   * agents are set up; it isn't added without it.
+   */
+  chooseVerify?: () => Promise<boolean>;
 }
 
 /**
@@ -320,6 +327,14 @@ export async function planInit(
     await builder.stage(detection.appConfig, edited);
   }
   await planAgentFiles(builder, config, aliasBase);
+  await ignoreVerifyOutput(builder);
+  const agentsChosen = config.agents !== false && config.agents !== undefined;
+  if (
+    options.verify ||
+    (agentsChosen && options.chooseVerify && (await options.chooseVerify()))
+  ) {
+    builder.depend(['@ndop/verify'], true);
+  }
   if (options.mcp && (config.agents === false || !config.agents?.length)) {
     builder.warn(
       'No agent to register the MCP server for; pass --agent claude-code, cursor or copilot.',
@@ -331,6 +346,27 @@ export async function planInit(
     );
   }
   return { detection, items };
+}
+
+/**
+ * Adds `.ndop/`, where `ndop verify` writes its harness and screenshots, to
+ * `.gitignore` (ADR-0018), keeping the rest of the file as it is.
+ *
+ * @param builder - The plan.
+ */
+async function ignoreVerifyOutput(builder: PlanBuilder): Promise<void> {
+  const current = await builder.read('.gitignore');
+  if (
+    current?.split(/\r?\n/).some((line) => /^\/?\.ndop\/?$/.test(line.trim()))
+  ) {
+    return;
+  }
+  const kept = (current ?? '').trimEnd();
+  await builder.stage(
+    '.gitignore',
+    `${kept}${kept ? '\n\n' : ''}# ndop verify's harness and screenshots\n.ndop/\n`,
+    { format: false },
+  );
 }
 
 /**

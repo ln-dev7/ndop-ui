@@ -6,6 +6,7 @@ import {
   type CommandEnvironment,
 } from './commands/environment';
 import { registerInitCommand } from './commands/init';
+import { registerVerifyCommand } from './commands/verify';
 
 /**
  * Builds the `ndop` command-line program with every command registered.
@@ -33,5 +34,6 @@ export function createProgram(
   registerInitCommand(program, environment);
   registerAddCommand(program, environment);
   registerBuildCommand(program);
+  registerVerifyCommand(program);
   return program;
 }

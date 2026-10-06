@@ -69,25 +69,39 @@ export interface PlanningInput {
 }
 
 /**
- * Runs a write command the ADR-0011 way: build a plan, then print it
- * (`--dry-run`) or confirm and apply it, and report the outcome as text or
- * JSON. Expected failures set exit code 1 instead of throwing.
+ * A write command's outcome, with the finished plan when planning
+ * succeeded.
+ */
+export interface WriteOutcome {
+  /** The machine-readable result. */
+  result: CommandResult;
+  /** The plan, for printing diffs or a summary. */
+  plan?: Plan;
+  /** Whether the user declined to apply it. */
+  cancelled?: boolean;
+}
+
+/**
+ * Plans a write command and, unless it's a dry run, applies the plan
+ * (ADR-0011), without printing anything. Expected failures become errors
+ * in the result instead of throwing.
  *
- * @param command - The commander command, for output settings.
- * @param name - Command name, for the JSON result.
+ * @param name - Command name, for the result.
  * @param options - Shared write options.
  * @param environment - Injected outside world.
  * @param plan - Stages the command's changes.
+ * @param approve - Asked before applying a non-empty plan; applies when
+ *   left out.
+ * @returns The result, and the plan.
  */
-export async function runWriteCommand(
-  command: Command,
+export async function executeWriteCommand(
   name: string,
   options: WriteOptions,
   environment: CommandEnvironment,
   plan: (input: PlanningInput) => Promise<ResolvedItem[]>,
-): Promise<void> {
+  approve?: (plan: Plan) => Promise<boolean>,
+): Promise<WriteOutcome> {
   const root = resolve(options.cwd);
-  const output = outputOf(command);
   const result: CommandResult = {
     ok: true,
     command: name,
@@ -131,12 +145,8 @@ export async function runWriteCommand(
     });
 
     if (!options.dryRun && !isEmptyPlan(finished)) {
-      if (!options.yes && !options.json && environment.interactive) {
-        output.out(summary(finished));
-        if (!(await environment.confirm('Apply these changes?'))) {
-          output.out('Cancelled; nothing was written.\n');
-          return;
-        }
+      if (approve && !(await approve(finished))) {
+        return { result, plan: finished, cancelled: true };
       }
       await applyPlan(fs, finished, environment.installer(root));
       result.applied = true;
@@ -150,8 +160,47 @@ export async function runWriteCommand(
       message: error.message,
       ...(error.file ? { file: error.file } : {}),
     });
-    process.exitCode = 1;
   }
+  return { result, ...(finished ? { plan: finished } : {}) };
+}
+
+/**
+ * Runs a write command the ADR-0011 way: build a plan, then print it
+ * (`--dry-run`) or confirm and apply it, and report the outcome as text or
+ * JSON. Expected failures set exit code 1 instead of throwing.
+ *
+ * @param command - The commander command, for output settings.
+ * @param name - Command name, for the JSON result.
+ * @param options - Shared write options.
+ * @param environment - Injected outside world.
+ * @param plan - Stages the command's changes.
+ */
+export async function runWriteCommand(
+  command: Command,
+  name: string,
+  options: WriteOptions,
+  environment: CommandEnvironment,
+  plan: (input: PlanningInput) => Promise<ResolvedItem[]>,
+): Promise<void> {
+  const output = outputOf(command);
+  const outcome = await executeWriteCommand(
+    name,
+    options,
+    environment,
+    plan,
+    !options.yes && !options.json && environment.interactive
+      ? async (planned) => {
+          output.out(summary(planned));
+          return environment.confirm('Apply these changes?');
+        }
+      : undefined,
+  );
+  const { result, plan: finished } = outcome;
+  if (outcome.cancelled) {
+    output.out('Cancelled; nothing was written.\n');
+    return;
+  }
+  if (!result.ok) process.exitCode = 1;
 
   if (options.json) {
     output.out(`${JSON.stringify(result, null, 2)}\n`);

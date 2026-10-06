@@ -24,7 +24,6 @@
       "options": {
         "main": "packages/cli/src/main.ts",
         "outputPath": "dist/packages/cli",
-        "outputFileName": "main.js",
         "tsConfig": "packages/cli/tsconfig.lib.json",
         "platform": "node",
         "format": ["esm"],
@@ -33,17 +32,23 @@
             "glob": "README.md",
             "input": "packages/cli",
             "output": "."
+          },
+          {
+            "glob": "package.json",
+            "input": "packages/cli",
+            "output": "."
           }
         ],
         "thirdParty": false,
-        "external": ["@ndop/schema", "@ndop/metadata"],
-        "generatePackageJson": true,
+        "external": ["@ndop/schema", "@ndop/metadata", "@ndop/verify"],
+        "generatePackageJson": false,
         "esbuildOptions": {
           "banner": {
             "js": "#!/usr/bin/env node"
           },
           "sourcemap": true
-        }
+        },
+        "additionalEntryPoints": ["packages/cli/src/api.ts"]
       },
       "configurations": {
         "development": {},

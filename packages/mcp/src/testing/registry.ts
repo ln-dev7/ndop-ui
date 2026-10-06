@@ -1,4 +1,4 @@
-import type { Fetcher } from '@ndop/cli/registry';
+import type { Fetcher } from '@ndop/cli/api';
 import type { Metadata } from '@ndop/metadata';
 import type { RegistryItem } from '@ndop/schema';
 
@@ -220,4 +220,69 @@ export function registryFetcher(
     return JSON.stringify(files[name]);
   };
   return { fetcher, requests };
+}
+
+/**
+ * A minimal Ndop app on disk, inside the workspace so its TypeScript and
+ * Prettier resolve, installing from the fixture registry written next to
+ * it.
+ *
+ * @param files - Extra project files.
+ * @returns The app's folder, and a function that removes it.
+ */
+export async function projectFixture(
+  files: Record<string, string> = {},
+): Promise<{ root: string; remove: () => Promise<void> }> {
+  const { mkdir, mkdtemp, rm, writeFile } = await import('node:fs/promises');
+  const { dirname, join } = await import('node:path');
+  const scratch = join(import.meta.dirname, '../../../../tmp');
+  await mkdir(scratch, { recursive: true });
+  const root = await mkdtemp(join(scratch, 'mcp-project-'));
+  const all: Record<string, string> = {
+    'angular.json': JSON.stringify({
+      projects: {
+        app: { projectType: 'application', root: '', sourceRoot: 'src' },
+      },
+    }),
+    'package.json': JSON.stringify({ name: 'app', dependencies: {} }),
+    'ndop.json': JSON.stringify({
+      style: 'default',
+      tailwind: { css: 'src/styles.css' },
+      aliases: {
+        ui: 'src/app/ui',
+        lib: 'src/app/lib',
+        blocks: 'src/app/blocks',
+      },
+      importAlias: '@/',
+      registry: join(root, 'r/{name}.json'),
+    }),
+    'ndop.lock.json': JSON.stringify({
+      lockfileVersion: 1,
+      items: {
+        '@ndop/dialog': {
+          name: 'dialog',
+          registry: '@ndop',
+          version: '0.2.0',
+          files: [
+            { path: 'src/app/ui/dialog/dialog.ts', sha256: 'a'.repeat(64) },
+          ],
+        },
+      },
+    }),
+    'src/styles.css':
+      ':root {\n  --primary: oklch(0.2 0 0);\n  --radius: 0.5rem;\n}\n',
+    'src/app/ui/dialog/dialog.ts': '// edited\n',
+    ...Object.fromEntries(
+      Object.entries(REGISTRY_FILES).map(([name, data]) => [
+        `r/${name}.json`,
+        JSON.stringify(data),
+      ]),
+    ),
+    ...files,
+  };
+  for (const [path, content] of Object.entries(all)) {
+    await mkdir(dirname(join(root, path)), { recursive: true });
+    await writeFile(join(root, path), content);
+  }
+  return { root, remove: () => rm(root, { recursive: true, force: true }) };
 }

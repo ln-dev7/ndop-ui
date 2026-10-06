@@ -1,0 +1,47 @@
+{
+  "name": "@ndop/verify",
+  "version": "0.0.1",
+  "description": "Checks Angular code that uses Ndop UI: usage against component metadata, a type-checked build, Ndop's lint rules, and axe and screenshots in a real browser.",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "index.js.map",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@angular-eslint/bundled-angular-compiler": "22.5.0",
+    "@ndop/eslint-plugin": "workspace:*",
+    "@ndop/metadata": "workspace:*",
+    "angular-eslint": "22.5.0",
+    "axe-core": "4.13.0",
+    "eslint": "9.39.5",
+    "playwright-core": "1.63.0",
+    "typescript-eslint": "8.71.0"
+  },
+  "peerDependencies": {
+    "@angular-devkit/architect": ">=0.2100.0 <0.2300.0",
+    "@angular-devkit/core": "^21.0.0 || ^22.0.0",
+    "typescript": ">=5.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular-devkit/architect": {
+      "optional": true
+    },
+    "@angular-devkit/core": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@angular-devkit/architect": "0.2202.1",
+    "@angular-devkit/core": "22.2.1"
+  }
+}

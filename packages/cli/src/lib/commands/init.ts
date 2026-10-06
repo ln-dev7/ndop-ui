@@ -12,6 +12,7 @@ interface InitCommandOptions extends WriteOptions {
   project?: string;
   agent: string[];
   mcp?: boolean;
+  verify?: boolean;
 }
 
 /** How each agent is named in the prompt. */
@@ -59,7 +60,8 @@ export function registerInitCommand(
         (value: string, previous: string[]) => [...previous, value],
         [],
       )
-      .option('--mcp', "register the Ndop MCP server in the agents' settings"),
+      .option('--mcp', "register the Ndop MCP server in the agents' settings")
+      .option('--verify', 'add @ndop/verify, which ndop verify runs'),
   ).action(async function (this: Command, options: InitCommandOptions) {
     const ask =
       environment.interactive && !options.yes && !options.json
@@ -73,6 +75,11 @@ export function registerInitCommand(
                 })),
                 detected,
               )) ?? detected,
+            chooseVerify: () =>
+              environment.confirm(
+                'Add @ndop/verify, so agents can check their work with ndop verify? It installs a linter and a browser driver.',
+                true,
+              ),
             chooseMcp: (agents: Agent[]) =>
               environment.confirm(
                 `Register the Ndop MCP server for ${agents.map((agent) => AGENT_LABELS[agent]).join(', ')}?`,
@@ -94,6 +101,7 @@ export function registerInitCommand(
             ? { agents: parseAgents(options.agent) }
             : {}),
           ...(options.mcp ? { mcp: true } : {}),
+          ...(options.verify ? { verify: true } : {}),
           ...ask,
         });
         return items;

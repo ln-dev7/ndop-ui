@@ -147,3 +147,33 @@ Template rules use the Angular template parser; TypeScript rules use
   to generate a temporary build target in a copy of `angular.json` under
   `.ndop/verify/`. Either way the user's own files are never changed.
 - `.ndop/` is added to `.gitignore` by `init`.
+
+## Implementation notes (2026-10-05)
+
+Details settled while building it, within the decision above:
+
+- **The Architect spike worked**, so the fallback isn't needed. The harness
+  builds through the app's `build` target with a workspace host that drops
+  the SSR options (`server`, `ssr`, `prerender`, `outputMode`), since
+  overrides can't remove them; the app's `angular.json` isn't touched.
+- **Templates are parsed with angular-eslint's bundled Angular compiler**,
+  the one the ESLint plugin uses, rather than the project's: usage checks
+  read only the template's structure, which doesn't change between the
+  supported majors.
+- **`usage/unknown-input` only reports near misses** of a part's inputs
+  (`varient` for `variant`). Other attributes may belong to other
+  directives, such as `formControlName`, which verify can't see; real
+  unknown bindings fail the build as `NG8002` anyway.
+- **Lint** uses the project's ESLint config with Ndop's rules on top. If the
+  project has no config, or its config can't load alongside them, Ndop's
+  rules run alone, and the step says so.
+- **No import cycle:** the CLI loads `@ndop/verify` on demand, so verify
+  doesn't import the CLI. The CLI and the MCP server each pass it a
+  metadata source built on their own registry access. The CLI resolves
+  `@ndop/verify` from the project first, since `npx` and `pnpm dlx` run it
+  from a cache folder.
+- **`ndop init --verify`** adds `@ndop/verify` without a prompt, for
+  scripts and the eval fixture; interactively, `init` asks when agents are
+  set up.
+- **Build warnings** are reported only for the checked files; the app's own
+  warnings, such as its stylesheet's, aren't the checked code's problem.

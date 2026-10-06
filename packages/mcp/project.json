@@ -48,7 +48,12 @@
           "sourcemap": true
         },
         "additionalEntryPoints": ["packages/mcp/src/index.ts"],
-        "external": ["@ndop/schema", "@ndop/metadata"]
+        "external": [
+          "@ndop/schema",
+          "@ndop/metadata",
+          "@ndop/cli",
+          "@ndop/verify"
+        ]
       },
       "configurations": {
         "development": {},

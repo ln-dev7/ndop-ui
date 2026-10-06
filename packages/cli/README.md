@@ -1,7 +1,7 @@
 # @ndop/cli
 
-The ndop CLI: `init`, `add` and `build` today; `list`, `view`, `diff`,
-`update`, `doctor` and `verify` come in later phases of
+The ndop CLI: `init`, `add`, `verify` and `build` today; `list`, `view`,
+`diff`, `update` and `doctor` come in later phases of
 [RFC-0001](../../rfcs/0001-ndop-ui.md).
 
 > Not released yet.
@@ -100,3 +100,26 @@ bumping its version fails the build.
 ## Docs
 
 https://ndop.dev
+
+## `ndop verify [paths...]`
+
+```bash
+npx ndop verify src/app/settings --json
+```
+
+Checks components and pages that use Ndop UI, for people and for agents
+(ADR-0018): their templates against the components' metadata, a
+type-checked build through the app's own build target, Ndop's lint rules,
+and axe and light and dark screenshots in Chromium, saved to
+`.ndop/verify/`. Every problem has a file, a line, a rule and, when known,
+a fix; the exit code is 1 while any error remains. Paths default to
+`src/app`.
+
+| Option             | Effect                                                                    |
+| ------------------ | ------------------------------------------------------------------------- |
+| `--skip <steps>`   | Skip `usage`, `build`, `lint` or `render`; repeatable or comma-separated. |
+| `--json`           | Print one JSON result.                                                    |
+| `--project <name>` | Angular project, when `angular.json` has several.                         |
+
+The checks are in `@ndop/verify`, a dev dependency of the app; `ndop verify`
+prints the command to install it when it's missing.

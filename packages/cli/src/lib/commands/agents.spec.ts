@@ -40,7 +40,9 @@ describe('agent context files', () => {
     expect(
       result.files
         .map((file: { path: string }) => file.path)
-        .filter((path: string) => !/^(src|ndop|tsconfig)/.test(path)),
+        .filter(
+          (path: string) => !/^(src|ndop|tsconfig|\.gitignore)/.test(path),
+        ),
     ).toEqual([
       'AGENTS.md',
       'CLAUDE.md',

@@ -336,7 +336,7 @@ function guidance(facts: Facts, heading: string): string[] {
       `2. Before using a component, ${docs}. Use its selectors, inputs and nesting exactly; never guess an API.`,
       '3. Style with theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`), never palette colors such as `bg-zinc-900`, and with logical utilities (`ms-`, `pe-`, `start-`, `text-start`), never `ml-`, `pr-`, `left-` or `text-left`.',
       `4. Change how a component looks in its own file under \`${config.aliases.ui}\`. Don't edit \`@ndop/primitives\` or import its private paths.`,
-      '5. Run `npx ndop verify <files> --json` on the files you changed, fix every problem it reports, and repeat until it passes.',
+      '5. Run `npx ndop verify <files> --json` on the files you changed, fix every problem it reports, and repeat until it passes. If it says `@ndop/verify` is missing, install it as a dev dependency first.',
     ].join('\n'),
     `${heading} Installed`,
     installed.length
@@ -360,7 +360,7 @@ function guidance(facts: Facts, heading: string): string[] {
       : `The theme's tokens are in \`${config.tailwind.css}\`.`,
     `${heading} MCP server`,
     config.mcp
-      ? 'The `ndop` MCP server is set up for this project: `search_components` finds components, `get_component` documents one, and `list_blocks` and `get_block` offer whole sections.'
+      ? 'The `ndop` MCP server is set up for this project: `get_project_context` describes it, `search_components` finds components, `get_component` documents one, `list_blocks` and `get_block` offer whole sections, `add_items` installs them, and `verify` checks your files.'
       : 'To let your agent search and read the Ndop docs directly, run `npx ndop init --mcp`.',
   ];
 }

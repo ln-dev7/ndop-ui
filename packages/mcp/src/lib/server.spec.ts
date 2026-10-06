@@ -2,6 +2,7 @@ import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import {
+  projectFixture,
   REGISTRY_FILES,
   REGISTRY_URL,
   registryFetcher,
@@ -60,19 +61,27 @@ afterEach(async () => {
 describe('the Ndop MCP server', () => {
   beforeEach(() => connect());
 
-  it('lists the read-only tools, with output schemas', async () => {
+  it('lists every tool, with output schemas, and marks the writing ones', async () => {
     const { tools } = await client.listTools();
-    expect(tools.map((tool) => tool.name).sort()).toEqual([
-      'get_block',
-      'get_component',
-      'get_example',
-      'list_blocks',
-      'search_components',
-    ]);
-    for (const tool of tools) {
-      expect(tool.outputSchema).toBeDefined();
-      expect(tool.annotations?.readOnlyHint).toBe(true);
-    }
+    expect(
+      Object.fromEntries(
+        tools.map((tool) => [
+          tool.name,
+          tool.annotations?.readOnlyHint ?? false,
+        ]),
+      ),
+    ).toEqual({
+      add_items: false,
+      get_block: true,
+      get_component: true,
+      get_example: true,
+      get_project_context: true,
+      list_blocks: true,
+      search_components: true,
+      validate_usage: true,
+      verify: false,
+    });
+    for (const tool of tools) expect(tool.outputSchema).toBeDefined();
   });
 
   it('tells clients how to use it', () => {
@@ -215,5 +224,80 @@ describe('without blocks', () => {
     expect(result.text).toBe(
       'The registry has no blocks. Compose the screen from components (search_components).',
     );
+  });
+});
+
+describe('the project tools', { timeout: 30_000 }, () => {
+  let project: { root: string; remove: () => Promise<void> };
+
+  beforeEach(async () => {
+    project = await projectFixture({
+      'src/app/page.ts': `import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-page',
+  template: \`<h2 ndDialogContent>Lost</h2><div ndCard></div>\`,
+})
+export class Page {}
+`,
+    });
+    await connect();
+  });
+
+  afterEach(() => project.remove());
+
+  it('describes the project, with edited files and tokens', async () => {
+    const context = await call('get_project_context', { cwd: project.root });
+    expect(context.structured).toEqual(
+      expect.objectContaining({
+        items: [
+          {
+            name: 'dialog',
+            registry: '@ndop',
+            version: '0.2.0',
+            files: [{ path: 'src/app/ui/dialog/dialog.ts', state: 'edited' }],
+          },
+        ],
+        tokens: { colors: ['primary'], other: ['radius'] },
+      }),
+    );
+    expect(context.text).toContain(
+      'Edited since installed: src/app/ui/dialog/dialog.ts (edited).',
+    );
+  });
+
+  it("validates a file's usage against the installed metadata", async () => {
+    const result = await call('validate_usage', {
+      file: 'src/app/page.ts',
+      cwd: project.root,
+    });
+    expect(result.structured['ok']).toBe(false);
+    expect(
+      (result.structured['problems'] as { rule: string }[]).map(
+        (problem) => problem.rule,
+      ),
+    ).toEqual(['usage/wrong-nesting', 'usage/unknown-selector']);
+    expect(result.text).toContain('DialogContent must be inside [ndDialog].');
+  });
+
+  it('refuses paths outside the project', async () => {
+    const result = await call('verify', {
+      paths: ['../../etc'],
+      cwd: project.root,
+    });
+    expect(result.isError).toBe(true);
+    expect(result.text).toMatch(/is outside the project/);
+  });
+
+  it('plans an install with diffs on a dry run', async () => {
+    const result = await call('add_items', {
+      names: ['separator'],
+      cwd: project.root,
+      dryRun: true,
+    });
+    expect(result.isError).toBe(false);
+    expect(result.structured['applied']).toBe(false);
+    expect(result.text).toContain('Dry run; nothing was written.');
+    expect(result.text).toContain('+++ b/src/app/ui/separator/separator.ts');
   });
 });

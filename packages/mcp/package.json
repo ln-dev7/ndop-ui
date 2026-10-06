@@ -22,8 +22,10 @@
   "dependencies": {
     "@modelcontextprotocol/node": "2.1.1",
     "@modelcontextprotocol/server": "2.3.0",
+    "@ndop/cli": "workspace:*",
     "@ndop/metadata": "workspace:*",
     "@ndop/schema": "workspace:*",
+    "@ndop/verify": "workspace:*",
     "zod": "4.6.5"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@ import {
   defaultFetcher,
   registrySources,
   type Fetcher,
-} from '@ndop/cli/registry';
+} from '@ndop/cli/api';
 import type { NdopConfig } from '@ndop/schema';
 import { Catalog } from './catalog';
 

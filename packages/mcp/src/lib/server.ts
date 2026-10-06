@@ -3,12 +3,79 @@ import {
   ResourceTemplate,
   type CallToolResult,
 } from '@modelcontextprotocol/server';
+import {
+  addItems,
+  projectContext,
+  projectRoot,
+  registryMetadata,
+} from '@ndop/cli/api';
 import type { Metadata } from '@ndop/metadata';
+import { verify, type StepName, type VerifyResult } from '@ndop/verify';
+import { isAbsolute, relative, resolve } from 'node:path';
 import type { RegistryItem } from '@ndop/schema';
 import * as z from 'zod';
 import type { Catalog, IndexEntry } from './catalog';
 import { searchComponents, type SearchDocument } from './search';
 import { themeTokens, tokensMarkdown } from './tokens';
+
+/** Steps the `verify` tool can skip. */
+const STEPS = ['usage', 'build', 'lint', 'render'] as const;
+
+const cwdInput = z
+  .string()
+  .min(1)
+  .describe("The app's folder, holding ndop.json, or a folder inside it.");
+
+/**
+ * Resolves paths inside a project, refusing any outside it.
+ *
+ * @param cwd - The project folder the tool was given.
+ * @param paths - Paths relative to it.
+ * @returns The project root, and the paths relative to `cwd`.
+ * @throws When a path leaves the project.
+ */
+async function insideProject(
+  cwd: string,
+  paths: readonly string[],
+): Promise<string> {
+  const root = await projectRoot(cwd);
+  for (const path of paths) {
+    const inside = relative(root, resolve(cwd, path));
+    if (inside.startsWith('..') || isAbsolute(inside)) {
+      throw new Error(`${path} is outside the project at ${root}.`);
+    }
+  }
+  return root;
+}
+
+/**
+ * Verify's result as text: problems, then the steps.
+ *
+ * @param result - The result.
+ * @returns The text.
+ */
+function verifyText(result: VerifyResult): string {
+  return [
+    result.ok
+      ? 'Verified: no errors.'
+      : `${result.problems.filter((problem) => problem.severity === 'error').length} errors. Fix them, then run verify again.`,
+    ...result.problems.map(
+      (problem) =>
+        `- ${problem.severity} ${problem.file}:${problem.line}:${problem.column} ${problem.rule}: ${problem.message}${problem.fix ? ` Fix: ${problem.fix}` : ''}`,
+    ),
+    `Steps: ${result.steps.map((step) => `${step.name} ${step.skipped ? `skipped (${step.skipped})` : step.ok ? 'ok' : 'failed'}`).join('; ')}.`,
+    ...(result.screenshots.length
+      ? [`Screenshots: ${result.screenshots.join(', ')}.`]
+      : []),
+  ].join('\n');
+}
+
+const verifyOutput = z.object({
+  ok: z.boolean(),
+  steps: z.array(z.record(z.string(), z.unknown())),
+  problems: z.array(z.record(z.string(), z.unknown())),
+  screenshots: z.array(z.string()),
+});
 
 /** Options of {@link createNdopServer}. */
 export interface NdopServerOptions {
@@ -20,7 +87,7 @@ export interface NdopServerOptions {
 
 /** What every client is told about using the server. */
 const INSTRUCTIONS = `Ndop UI: accessible Angular components installed as source files into the user's app.
-Before writing UI, find components with search_components, then read get_component for each one you use: it has the exact selectors, inputs, required nesting, keyboard behavior and a minimal correct usage. Never guess an Ndop API. Use theme tokens (ndop://tokens), never palette colors. The build-screen prompt walks through a whole screen.`;
+Start with get_project_context. Before writing UI, find components with search_components, then read get_component for each one you use: it has the exact selectors, inputs, required nesting, keyboard behavior and a minimal correct usage. Never guess an Ndop API. Install what's missing with add_items. Use theme tokens (ndop://tokens), never palette colors. After writing, run verify on your files and fix every problem until it passes. The build-screen prompt walks through a whole screen.`;
 
 const fileShape = z.object({
   target: z
@@ -39,7 +106,8 @@ const nameInput = (what: string) =>
 /**
  * Creates the Ndop MCP server (ADR-0009) over a registry: its read-only
  * tools (`search_components`, `get_component`, `get_example`,
- * `list_blocks`, `get_block`), the `ndop://components/{name}` and
+ * `list_blocks`, `get_block`), its project tools (`get_project_context`,
+ * `add_items`, `validate_usage`, `verify`), the `ndop://components/{name}` and
  * `ndop://tokens` resources, and the `build-screen` prompt. Errors a
  * caller can fix, such as an unknown name, come back as tool errors that
  * say how.
@@ -288,6 +356,152 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
             dependencies,
           },
         };
+      }),
+  );
+
+  server.registerTool(
+    'get_project_context',
+    {
+      title: 'Get project context',
+      description:
+        "What's set up in the user's app: ndop.json (aliases, registry), the installed items and versions, which of their files the user edited, and the theme's token names. Call it first.",
+      inputSchema: z.object({ cwd: cwdInput }),
+      outputSchema: z.looseObject({ root: z.string() }),
+      annotations: readOnly,
+    },
+    ({ cwd }) =>
+      result(async () => {
+        const context = await projectContext(cwd);
+        const edited = context.items.flatMap((item) =>
+          item.files
+            .filter((file) => file.state !== 'unchanged')
+            .map((file) => `${file.path} (${file.state})`),
+        );
+        return {
+          text: [
+            `Project at ${context.root}.`,
+            `Components go in ${context.config.aliases.ui}, helpers in ${context.config.aliases.lib}, blocks in ${context.config.aliases.blocks}; import them through ${context.config.importAlias ?? '@/'}.`,
+            `Installed: ${context.items.map((item) => `${item.name} ${item.version}`).join(', ') || 'nothing yet'}.`,
+            edited.length
+              ? `Edited since installed: ${edited.join(', ')}.`
+              : '',
+            `Color tokens: ${context.tokens.colors.join(', ')}.`,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+          structured: { ...context },
+        };
+      }),
+  );
+
+  server.registerTool(
+    'add_items',
+    {
+      title: 'Add items',
+      description:
+        "Installs components or blocks into the user's app, with everything they depend on, as `ndop add` does: writes their files, installs npm packages and updates the lockfile. Never overwrites a file the user edited. With dryRun, returns the diffs and writes nothing.",
+      inputSchema: z.object({
+        names: z.array(z.string().min(1)).min(1).describe('Item names.'),
+        cwd: cwdInput,
+        dryRun: z.boolean().optional(),
+      }),
+      outputSchema: z.looseObject({ ok: z.boolean() }),
+      annotations: {
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    ({ names, cwd, dryRun }) =>
+      result(async () => {
+        const added = await addItems({
+          cwd,
+          names,
+          ...(dryRun ? { dryRun } : {}),
+        });
+        if (!added.ok) {
+          throw new Error(added.errors.map((error) => error.message).join(' '));
+        }
+        return {
+          text: [
+            dryRun
+              ? 'Dry run; nothing was written.'
+              : added.applied
+                ? 'Installed.'
+                : 'Already installed; nothing changed.',
+            ...added.files.map((file) => `- ${file.action} ${file.path}`),
+            ...added.skipped.map(
+              (file) => `- kept ${file.path}: ${file.reason}`,
+            ),
+            ...(added.dependencies.length
+              ? [`npm packages: ${added.dependencies.join(', ')}.`]
+              : []),
+            ...added.warnings,
+            ...(added.diffs ?? []).map((diff) => diff.patch),
+          ].join('\n'),
+          structured: { ...added },
+        };
+      }),
+  );
+
+  server.registerTool(
+    'validate_usage',
+    {
+      title: 'Validate usage',
+      description:
+        "Checks a file's templates against the components' metadata, in a second: unknown selectors and inputs, invalid values, missing required inputs, wrong nesting, components that aren't installed. verify runs this and more.",
+      inputSchema: z.object({
+        file: z.string().min(1).describe('The file, relative to cwd.'),
+        cwd: cwdInput,
+      }),
+      outputSchema: verifyOutput,
+      annotations: readOnly,
+    },
+    ({ file, cwd }) =>
+      result(async () => {
+        await insideProject(cwd, [file]);
+        const checked = await verify({
+          cwd,
+          paths: [file],
+          metadata: await registryMetadata(cwd),
+          skip: ['build', 'lint', 'render'],
+        });
+        return { text: verifyText(checked), structured: { ...checked } };
+      }),
+  );
+
+  server.registerTool(
+    'verify',
+    {
+      title: 'Verify',
+      description:
+        "Runs ndop verify on files or folders: checks usage against the metadata, builds them with the app's build (type errors), lints them with Ndop's rules, and renders them in Chromium for axe accessibility checks and light and dark screenshots. Returns every problem with its file, line, rule and fix. Run it after every change until it passes.",
+      inputSchema: z.object({
+        paths: z
+          .array(z.string().min(1))
+          .min(1)
+          .describe('Files or folders, relative to cwd.'),
+        cwd: cwdInput,
+        skip: z.array(z.enum(STEPS)).optional().describe('Steps to skip.'),
+      }),
+      outputSchema: verifyOutput,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    ({ paths, cwd, skip }) =>
+      result(async () => {
+        await insideProject(cwd, paths);
+        const checked = await verify({
+          cwd,
+          paths,
+          metadata: await registryMetadata(cwd),
+          ...(skip ? { skip: skip as StepName[] } : {}),
+        });
+        return { text: verifyText(checked), structured: { ...checked } };
       }),
   );
 

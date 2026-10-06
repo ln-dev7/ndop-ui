@@ -3,7 +3,7 @@ import {
   RegistryClient,
   type Fetcher,
   type RegistrySource,
-} from '@ndop/cli/registry';
+} from '@ndop/cli/api';
 import {
   componentMarkdown,
   withDependencies,
