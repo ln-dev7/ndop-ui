@@ -3,7 +3,7 @@ import type { NdopLock } from '@ndop/schema';
 import { applyCss, applyCssVars } from '../edit/stylesheet';
 import { rewriteSpecifiers } from '../edit/typescript';
 import { CliError } from '../errors';
-import { sha256, type PlanBuilder } from '../plan/plan';
+import { dependencyName, sha256, type PlanBuilder } from '../plan/plan';
 import type { ResolvedItem } from '../registry/client';
 import {
   LOCK_FILE,
@@ -98,6 +98,13 @@ export async function planItems(
 
     builder.depend(item.dependencies ?? []);
     builder.depend(item.devDependencies ?? [], true);
+    if (
+      item.dependencies?.some(
+        (spec) => dependencyName(spec) === '@ndop/primitives',
+      )
+    ) {
+      builder.depend(await angularPeers(builder));
+    }
     lock.items[key] = {
       name: ref.name,
       registry: ref.registry,
@@ -110,6 +117,26 @@ export async function planItems(
   if (after !== before || (await builder.read(LOCK_FILE)) === undefined) {
     await builder.stage(LOCK_FILE, after);
   }
+}
+
+/**
+ * The Angular packages `@ndop/primitives` needs as peers, pinned to the
+ * app's Angular major. Left to the package manager, a missing peer is
+ * installed at its newest version, such as CDK 22 in an Angular 21 app,
+ * whose compiler can't link it.
+ *
+ * @param builder - Project reader.
+ * @returns Specs such as `@angular/cdk@^21.0.0`; none when the Angular
+ *   version can't be read.
+ */
+async function angularPeers(builder: PlanBuilder): Promise<string[]> {
+  const manifest = JSON.parse((await builder.read('package.json')) ?? '{}') as {
+    dependencies?: Record<string, string>;
+  };
+  const major = /(\d+)\./.exec(
+    manifest.dependencies?.['@angular/core'] ?? '',
+  )?.[1];
+  return major ? [`@angular/cdk@^${major}.0.0`] : [];
 }
 
 /**

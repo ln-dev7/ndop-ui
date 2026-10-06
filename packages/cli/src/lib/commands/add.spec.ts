@@ -65,7 +65,10 @@ describe('ndop add', () => {
       { path: 'ndop.lock.json', action: 'update' },
       { path: 'AGENTS.md', action: 'update' },
     ]);
-    expect(result.dependencies).toEqual(['@ndop/primitives']);
+    expect(result.dependencies).toEqual([
+      '@angular/cdk@^22.0.0',
+      '@ndop/primitives',
+    ]);
     expect(environment.project.files.get('src/app/ui/dialog/dialog.ts')).toBe(
       environment.registry['dialog']?.files?.[0]?.content,
     );
@@ -110,6 +113,16 @@ describe('ndop add', () => {
     expect(environment.installs).toHaveLength(installs);
     const { out } = await runNdop(environment, 'add', 'dialog', '--yes');
     expect(out).toBe('Already up to date; nothing changed.\n');
+  });
+
+  it("pins @angular/cdk to the app's Angular major", async () => {
+    const environment = testEnvironment(fixture('ng21'));
+    await runNdop(environment, 'init', '--yes');
+    const result = await add(environment, 'tooltip');
+    expect(result.dependencies).toContain('@angular/cdk@^21.0.0');
+    expect((await add(environment, 'popover')).dependencies).not.toContain(
+      '@angular/cdk@^21.0.0',
+    );
   });
 
   it('installs examples under {blocks}/examples with the items they use', async () => {
