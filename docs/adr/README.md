@@ -24,6 +24,6 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0016](0016-docs-site.md)                       | Docs site architecture and quality gates                  | Accepted, with amendments 1–7 |
 | [0017](0017-agent-context-files.md)             | Agent context files                                       | Accepted                      |
 | [0018](0018-verify-and-eslint-plugin.md)        | `ndop verify` and the ESLint plugin                       | Accepted                      |
-| [0019](0019-agent-eval-suite.md)                | Agent eval suite                                          | Accepted                      |
+| [0019](0019-agent-eval-suite.md)                | Agent eval suite                                          | Accepted, with amendment 1    |
 
 Number 0010 is reserved for the ADR RFC-0001 schedules in Phase 5.
