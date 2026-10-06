@@ -1,8 +1,6 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { logger, type PromiseExecutor } from '@nx/devkit';
-import { startLocalRegistry } from '@nx/js/plugins/jest/local-registry';
-import { releasePublish, releaseVersion } from 'nx/release';
 import type { RegistryE2eExecutorSchema } from './schema';
 import {
   addDevCommand,
@@ -21,7 +19,7 @@ import {
   runScriptCommand,
   type InstallCase,
 } from './scenario';
-import { serveSite } from '../../utils/serve-site';
+import { withLocalPackages } from '../../utils/local-packages';
 
 /**
  * Outcome of one case.
@@ -36,18 +34,13 @@ interface CaseResult {
 }
 
 /**
- * The registry install test (ADR-0015). It versions every `@ndop/*` dist
- * package with a unique prerelease (so no package-manager cache can serve
- * an older build), publishes them to a local Verdaccio, and serves the
- * built registry over HTTP. Then, for each case, it creates an app with
+ * The registry install test (ADR-0015). Against unpublished Ndop, from
+ * {@link withLocalPackages}, it creates, for each case, an app with
  * `ng new` and times `ndop init`, `ndop add <item>` and the app's build
  * against the budget. It checks the agent context files (ADR-0017), init
  * having run with `--agent claude-code --mcp` over a team note in
  * `AGENTS.md`. Finally it runs `ndop add <item> --json` again and checks
  * that the plan is empty and no file changed.
- *
- * Dist manifests keep the test version afterwards; the next build restores
- * them.
  *
  * @param options - Cases, budget and paths.
  * @param context - Nx executor context.
@@ -67,51 +60,25 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
   await rm(workDir, { recursive: true, force: true });
   await mkdir(workDir, { recursive: true });
 
-  const version = `0.0.0-e2e.${Date.now()}`;
-  // Before the registry starts: the configured pre-version build would
-  // otherwise resolve its tools through Verdaccio.
-  await releaseVersion({
-    specifier: version,
-    stageChanges: false,
-    gitCommit: false,
-    gitTag: false,
-    firstRelease: true,
-    versionActionsOptionsOverrides: { skipLockFileUpdate: true },
-  });
-
-  const stopRegistry = await startLocalRegistry({
-    localRegistryTarget:
-      options.localRegistryTarget ?? '@ndop/source:local-registry',
-    storage: join(context.root, 'tmp/local-registry/storage'),
-    clearStorage: true,
-  });
-  const server = await serveSite(
-    join(context.root, options.registryPath ?? 'dist/registry'),
+  const results = await withLocalPackages(
+    {
+      root: context.root,
+      tag: 'e2e',
+      ...(options.localRegistryTarget
+        ? { localRegistryTarget: options.localRegistryTarget }
+        : {}),
+      ...(options.registryPath ? { registryPath: options.registryPath } : {}),
+    },
+    async ({ env, version }) => {
+      const done: CaseResult[] = [];
+      for (const installCase of cases) {
+        done.push(
+          await runCase(installCase, { workDir, env, version, item, budget }),
+        );
+      }
+      return done;
+    },
   );
-  const results: CaseResult[] = [];
-  try {
-    await releasePublish({ firstRelease: true, outputStyle: 'static' });
-    const env: NodeJS.ProcessEnv = {
-      ...process.env,
-      NDOP_REGISTRY: `${server.url}/r/{name}.json`,
-      NG_CLI_ANALYTICS: 'false',
-      npm_config_update_notifier: 'false',
-      // pnpm holds back releases younger than a day by default; the test
-      // packages were published seconds ago.
-      pnpm_config_minimum_release_age: '0',
-    };
-    // Run the apps as on a developer's machine: package managers change
-    // install behavior when CI is set, and users don't run ng new in CI.
-    delete env['CI'];
-    for (const installCase of cases) {
-      results.push(
-        await runCase(installCase, { workDir, env, version, item, budget }),
-      );
-    }
-  } finally {
-    await server.close();
-    stopRegistry();
-  }
 
   for (const result of results) {
     if (result.error) {

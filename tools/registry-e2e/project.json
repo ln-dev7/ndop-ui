@@ -29,7 +29,8 @@
             "metadata",
             "mcp",
             "eslint-plugin",
-            "registry"
+            "registry",
+            "verify"
           ]
         }
       ],
