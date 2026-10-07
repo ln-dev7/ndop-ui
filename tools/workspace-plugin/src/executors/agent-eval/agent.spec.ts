@@ -53,3 +53,40 @@ describe('parseClaudeResult', () => {
     );
   });
 });
+
+describe('ClaudeCodeAgent', () => {
+  it('runs again once when Claude Code printed nothing, recording how it ended', async () => {
+    const { mkdtemp, rm, writeFile, chmod } = await import('node:fs/promises');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { ClaudeCodeAgent } = await import('./agent');
+    const dir = await mkdtemp(join(tmpdir(), 'agent-eval-'));
+    const binary = join(dir, 'claude');
+    // Silent and failing the first time, a normal result the second.
+    await writeFile(
+      binary,
+      `#!/bin/sh\nif [ -f "${dir}/ran" ]; then echo '{"is_error":false,"num_turns":3,"result":"Done."}'; else touch "${dir}/ran"; exit 1; fi\n`,
+    );
+    await chmod(binary, 0o755);
+    const agent = new ClaudeCodeAgent({
+      binary,
+      model: 'claude-sonnet-5',
+      mcpConfig: join(dir, 'mcp.json'),
+      timeoutMs: 10_000,
+      env: process.env,
+    });
+    const run = await agent.run('Hi', dir);
+    expect(run).toEqual(
+      expect.objectContaining({
+        ok: true,
+        turns: 3,
+        result: 'Done.',
+        exit: 'exit 0',
+      }),
+    );
+    expect(run.transcript).toMatch(
+      /^First attempt printed nothing \(exit 1\)\./,
+    );
+    await rm(dir, { recursive: true, force: true });
+  });
+});

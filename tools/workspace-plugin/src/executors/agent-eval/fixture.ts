@@ -40,7 +40,8 @@ export interface FixtureOptions {
  * Builds the fixture app once per run: `ng new` with pnpm (Angular,
  * zoneless, Tailwind), then `ndop init --agent claude-code --mcp --verify`,
  * whose agent files describe the MCP server the agent is given, with the
- * Ndop CLI and MCP server as dev dependencies. The npm packages items
+ * Ndop CLI and MCP server as dev dependencies. The root component's
+ * template is just `<router-outlet />`, as in a real app. The npm packages items
  * need are installed up front, so prompts, which share `node_modules`,
  * never change it. The MCP config runs the app's own server against the
  * local registry.
@@ -85,6 +86,10 @@ export async function prepareFixture(
     ]),
     at,
   );
+  // ng new's welcome page says it "can be replaced"; a real app has. Left
+  // in, verify would check Angular's placeholder whenever an agent touches
+  // the root component.
+  await writeFile(join(template, 'src/app/app.html'), '<router-outlet />\n');
   for (const spec of [
     `ndop@${options.version}`,
     `@ndop/mcp@${options.version}`,

@@ -18,6 +18,8 @@ export interface AgentRun {
   result: string;
   /** Everything it printed, for the transcript. */
   transcript: string;
+  /** How the process ended, such as `exit 1` or `signal SIGKILL`. */
+  exit?: string;
 }
 
 /** Something that carries out a prompt in an app. */
@@ -116,14 +118,32 @@ export class ClaudeCodeAgent implements Agent {
   constructor(private readonly options: ClaudeCodeOptions) {}
 
   /**
-   * Runs `claude -p` on the prompt in the app's folder, stopping it at the
-   * time limit.
+   * Runs `claude -p` on the prompt in the app's folder. A run that ends
+   * without printing anything, which is Claude Code being killed or
+   * crashing rather than the agent failing, is tried once more.
    *
    * @param prompt - The request.
    * @param cwd - The app's folder.
    * @returns How it went.
    */
-  run(prompt: string, cwd: string): Promise<AgentRun> {
+  async run(prompt: string, cwd: string): Promise<AgentRun> {
+    const first = await this.once(prompt, cwd);
+    if (first.timedOut || first.transcript.trim()) return first;
+    const second = await this.once(prompt, cwd);
+    return {
+      ...second,
+      transcript: `First attempt printed nothing (${first.exit ?? 'unknown exit'}).\n${second.transcript}`,
+    };
+  }
+
+  /**
+   * Runs `claude -p` once, stopping it at the time limit.
+   *
+   * @param prompt - The request.
+   * @param cwd - The app's folder.
+   * @returns How it went.
+   */
+  private once(prompt: string, cwd: string): Promise<AgentRun> {
     const started = Date.now();
     const args = [
       '-p',
@@ -164,8 +184,9 @@ export class ClaudeCodeAgent implements Agent {
       }, this.options.timeoutMs);
       child.stdout.on('data', (chunk: Buffer) => (stdout += chunk.toString()));
       child.stderr.on('data', (chunk: Buffer) => (stderr += chunk.toString()));
-      child.on('close', (code) => {
+      child.on('close', (code, signal) => {
         clearTimeout(timer);
+        const exit = signal ? `signal ${signal}` : `exit ${code}`;
         const parsed = parseClaudeResult(
           stdout || stderr,
           code,
@@ -175,11 +196,14 @@ export class ClaudeCodeAgent implements Agent {
           ...parsed,
           ok: parsed.ok && !timedOut,
           timedOut,
+          exit,
           ...(timedOut
             ? {
                 result: `Stopped after ${this.options.timeoutMs / 60_000} minutes.`,
               }
-            : {}),
+            : !parsed.result
+              ? { result: `Claude Code printed nothing (${exit}).` }
+              : {}),
           transcript: `${stdout}\n${stderr}`.trim(),
         });
       });
