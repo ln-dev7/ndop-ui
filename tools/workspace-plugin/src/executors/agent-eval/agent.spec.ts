@@ -89,4 +89,34 @@ describe('ClaudeCodeAgent', () => {
     );
     await rm(dir, { recursive: true, force: true });
   });
+
+  it('tells the agent it runs unattended', async () => {
+    const { mkdtemp, readFile, rm, writeFile, chmod } = await import(
+      'node:fs/promises'
+    );
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { ClaudeCodeAgent, UNATTENDED_PROMPT } = await import('./agent');
+    const dir = await mkdtemp(join(tmpdir(), 'agent-eval-'));
+    const binary = join(dir, 'claude');
+    // Writes its arguments one per line, so the test can read them back.
+    await writeFile(
+      binary,
+      `#!/bin/sh\nprintf '%s\\n' "$@" > "${dir}/args"\necho '{"is_error":false,"num_turns":1,"result":"Done."}'\n`,
+    );
+    await chmod(binary, 0o755);
+    const agent = new ClaudeCodeAgent({
+      binary,
+      model: 'claude-sonnet-5',
+      mcpConfig: join(dir, 'mcp.json'),
+      timeoutMs: 10_000,
+      env: process.env,
+    });
+    await agent.run('Hi', dir);
+    const args = (await readFile(join(dir, 'args'), 'utf-8')).split('\n');
+    expect(args[args.indexOf('--append-system-prompt') + 1]).toBe(
+      UNATTENDED_PROMPT,
+    );
+    await rm(dir, { recursive: true, force: true });
+  });
 });

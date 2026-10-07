@@ -88,6 +88,14 @@ export function parseClaudeResult(
   };
 }
 
+/**
+ * Told to the agent on top of Claude Code's own system prompt. Nobody
+ * answers in an eval, and the app starts empty, so a run that stops to ask
+ * where the UI goes scores nothing even when a user would simply reply.
+ */
+export const UNATTENDED_PROMPT =
+  'You are running unattended: nobody will answer questions. Make reasonable assumptions and finish the task. If the app has no page where the UI belongs, create one and route to it.';
+
 /** Options of {@link ClaudeCodeAgent}. */
 export interface ClaudeCodeOptions {
   /** The pinned `claude` binary. */
@@ -105,8 +113,9 @@ export interface ClaudeCodeOptions {
 /**
  * Claude Code in headless mode (ADR-0019): `claude -p` with only the Ndop
  * MCP server (`--strict-mcp-config`), the project's settings only, no
- * saved session, and file, search and shell tools allowed without asking.
- * Anything else is denied. Its config folder is the one `env` sets, so the
+ * saved session, file, search and shell tools allowed without asking, and
+ * {@link UNATTENDED_PROMPT} appended to the system prompt. Anything else is
+ * denied. Its config folder is the one `env` sets, so the
  * user's own settings and memory stay out of the run.
  */
 export class ClaudeCodeAgent implements Agent {
@@ -148,6 +157,8 @@ export class ClaudeCodeAgent implements Agent {
     const args = [
       '-p',
       prompt,
+      '--append-system-prompt',
+      UNATTENDED_PROMPT,
       '--model',
       this.options.model,
       '--output-format',

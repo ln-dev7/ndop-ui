@@ -124,6 +124,10 @@ Details settled while building it, within the decision above:
   `--setting-sources project`, with `--no-session-persistence`,
   `--strict-mcp-config`, and `--permission-mode dontAsk`, which denies
   anything outside the allowed file, search, shell and `mcp__ndop` tools.
+- **The agent is told it runs unattended** (`--append-system-prompt`): make
+  reasonable assumptions, and create and route a page when the app has
+  none. Without it, the first full run lost two prompts to the agent
+  stopping to ask where the UI should go, a question a user would answer.
 - **Copies share `node_modules`:** each prompt's copy links the template's
   `node_modules`, and the npm packages items need (`@ndop/primitives` and
   the matching `@angular/cdk`) are installed in the template up front, so
