@@ -21,7 +21,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0013](0013-icons-adapter.md)                   | Icons adapter on `@lucide/angular`                        | Accepted                      |
 | [0014](0014-styled-items-and-examples.md)       | Styled items and examples                                 | Accepted, with amendment 1    |
 | [0015](0015-registry-install-test.md)           | Registry install test                                     | Accepted                      |
-| [0016](0016-docs-site.md)                       | Docs site architecture and quality gates                  | Accepted, with amendments 1–8 |
+| [0016](0016-docs-site.md)                       | Docs site architecture and quality gates                  | Accepted, with amendments 1–9 |
 | [0017](0017-agent-context-files.md)             | Agent context files                                       | Accepted                      |
 | [0018](0018-verify-and-eslint-plugin.md)        | `ndop verify` and the ESLint plugin                       | Accepted                      |
 | [0019](0019-agent-eval-suite.md)                | Agent eval suite                                          | Accepted, with amendment 1    |

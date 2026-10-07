@@ -3,8 +3,11 @@ import { Component, input, type Type } from '@angular/core';
 import { StaticHtml } from '../site/static-html';
 
 /**
- * A live example on a component page: rendered inline and hydrated when it
- * scrolls into view (ADR-0016, "Previews"), with its code attached below.
+ * A live example on a component page: rendered inline, with its code
+ * attached below, and hydrated when someone hovers, focuses or clicks it
+ * (ADR-0016, "Previews"). An earlier click or key press is replayed once
+ * it has. Hydrating previews as soon as they were visible was the biggest
+ * task after startup on pages whose examples use overlays.
  * The site header's theme and direction toggles apply to it like to the
  * rest of the page (amendment 5).
  */
@@ -21,7 +24,7 @@ import { StaticHtml } from '../site/static-html';
         class="preview-backdrop flex min-h-[350px] items-center justify-center bg-background p-10 text-foreground"
       >
         @if (component(); as type) {
-          @defer (on immediate; hydrate on viewport) {
+          @defer (on immediate; hydrate on hover; hydrate on interaction) {
             <ng-container *ngComponentOutlet="type" />
           }
         }

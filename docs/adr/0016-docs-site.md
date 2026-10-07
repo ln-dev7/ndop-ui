@@ -322,3 +322,30 @@ regression still does, since it costs more CPU on any machine. A runner
 far slower than any seen so far is measured with less slowdown, down to
 none; the 1× floor keeps a very slow machine from being measured faster
 than it is.
+
+## Amendment 9 (2026-10-07): previews hydrate on hover or interaction
+
+Status: Accepted; approved by Valery on 2026-10-07.
+
+**Deviation:** RFC-0001 mitigates live previews' cost by "lazy-hydrate
+previews on visibility", and "Previews" above hydrates each one when it
+scrolls into view. On the component pages, the main preview is in view at
+load, so it hydrated just after startup, in its own long task. On the CI
+runners that task was 114 ms for Popover and 120 ms for Dialog, whose
+examples set up the CDK overlay, against 65 ms for Label, and it left
+those two pages at 93–94 with the calibrated slowdown (amendment 8).
+
+- Previews now hydrate on hover or interaction (`@defer (on immediate;
+hydrate on hover; hydrate on interaction)`): the first pointer over a
+  preview, focus into it, a click or a key press. Angular replays a click
+  or key press that hydrates one, so the popover still opens on the first
+  click; hover covers examples like Tooltip that respond to it.
+- Server rendering is unchanged, so previews look the same at once; only
+  their behavior attaches later.
+- This is lazier than the RFC's visibility, for the same reason the RFC
+  gives: keeping previews' cost off the page's load.
+
+Consequences: the post-startup task is gone on every component page, so
+Popover's blocking time on a slow runner drops by about 64 ms, below
+Label's, which scores 96. A preview responds a moment later the first
+time it's used, while its code is fetched.
