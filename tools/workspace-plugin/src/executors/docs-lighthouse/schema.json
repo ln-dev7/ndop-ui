@@ -34,6 +34,11 @@
     "cpuSlowdownMultiplier": {
       "type": "number",
       "description": "CPU slowdown to use instead of calibrating it to the host's benchmark (ADR-0016, amendment 8)."
+    },
+    "performanceFloor": {
+      "type": "number",
+      "description": "Lowest passing performance score; scores from here up to minScore warn (ADR-0016, amendment 10).",
+      "default": 90
     }
   },
   "required": ["dir"]

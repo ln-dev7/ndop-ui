@@ -9,6 +9,8 @@ import {
   prerenderedRoutes,
   REFERENCE_BENCHMARK,
   reportName,
+  warnings,
+  type RouteScores,
 } from './routes';
 
 describe('prerenderedRoutes', () => {
@@ -39,6 +41,34 @@ describe('failures', () => {
         95,
       ),
     ).toEqual(['/ Performance 94', '/docs SEO 90']);
+  });
+
+  it('fails performance only under its floor', () => {
+    const results: RouteScores[] = [
+      { route: '/', scores: { Performance: 94, Accessibility: 94 } },
+      { route: '/docs', scores: { Performance: 89, SEO: 100 } },
+    ];
+    expect(failures(results, 95, 90)).toEqual([
+      '/ Accessibility 94',
+      '/docs Performance 89',
+    ]);
+  });
+});
+
+describe('warnings', () => {
+  it('lists performance between the floor and the target', () => {
+    expect(
+      warnings(
+        [
+          { route: '/', scores: { Performance: 94 } },
+          { route: '/a', scores: { Performance: 90 } },
+          { route: '/b', scores: { Performance: 95 } },
+          { route: '/c', scores: { Performance: 89 } },
+        ],
+        95,
+        90,
+      ),
+    ).toEqual(['/ Performance 94', '/a Performance 90']);
   });
 });
 

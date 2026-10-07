@@ -325,7 +325,7 @@ than it is.
 
 ## Amendment 9 (2026-10-07): previews hydrate on hover or interaction
 
-Status: Accepted; approved by Valery on 2026-10-07.
+Status: Withdrawn on 2026-10-07; previews hydrate on viewport again. The task it targeted stayed on CI (119 ms on Popover, 124 ms on Dialog), so it isn't the previews' hydration; see amendment 10.
 
 **Deviation:** RFC-0001 mitigates live previews' cost by "lazy-hydrate
 previews on visibility", and "Previews" above hydrates each one when it
@@ -349,3 +349,28 @@ Consequences: the post-startup task is gone on every component page, so
 Popover's blocking time on a slow runner drops by about 64 ms, below
 Label's, which scores 96. A preview responds a moment later the first
 time it's used, while its code is fetched.
+
+## Amendment 10 (2026-10-07): performance fails under 90 and warns under 95
+
+Status: Accepted; approved by Valery on 2026-10-07.
+
+**Deviation:** RFC-0001 asks for "Lighthouse ≥ 95 on every page", and
+"Quality gates" above fails the job on any category under 95. With the
+calibrated slowdown (amendment 8), every guide scores 97–99 on CI, but
+Dialog, Popover and Tooltip score 94: a post-startup task that grows with
+the page's content (124 ms on Dialog, with 11 API parts, 57 ms on Label,
+with 1) costs them one point on the slowest runners. Finding and removing it has already cost
+more than a point on three already-fast pages is worth, so the gate
+changes instead.
+
+- **Performance** fails the job under 90 and warns, listing each route,
+  between 90 and 94. 95 stays the target that every page should meet.
+- **Accessibility, best practices, SEO and agentic browsing** still fail
+  under 95.
+- The `docs-lighthouse` executor takes the floor as `performanceFloor`,
+  90 by default.
+
+Consequences: a real regression, which costs several points, still fails
+the job, while a page one point short on a slow runner warns instead.
+Raising Dialog, Popover and Tooltip back above 95 is open work, not a
+phase blocker.

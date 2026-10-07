@@ -2,8 +2,13 @@
 export interface DocsLighthouseExecutorSchema {
   /** The built site, relative to the workspace root. */
   dir: string;
-  /** Lowest passing score, 0 to 100, in every category. */
+  /** Lowest passing score, 0 to 100, in every category but performance. */
   minScore?: number;
+  /**
+   * Lowest passing performance score; scores from here up to `minScore`
+   * warn (ADR-0016, amendment 10).
+   */
+  performanceFloor?: number;
   /** Where the HTML reports go, relative to the workspace root. */
   outputDir?: string;
   /**

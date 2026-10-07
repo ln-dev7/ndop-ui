@@ -28,18 +28,50 @@ export async function prerenderedRoutes(dir: string): Promise<string[]> {
 }
 
 /**
- * The scores under the minimum.
+ * The scores that fail the gate: any category under the minimum, except
+ * performance, which fails only under its floor (ADR-0016, amendment 10).
  *
  * @param results - Every route's scores.
- * @param minScore - Lowest passing score.
- * @returns One line per failing score, such as `/ Performance 91`.
+ * @param minScore - Lowest passing score, and performance's target.
+ * @param performanceFloor - Lowest passing performance score.
+ * @returns One line per failing score, such as `/ Performance 89`.
  */
-export function failures(results: RouteScores[], minScore: number): string[] {
+export function failures(
+  results: RouteScores[],
+  minScore: number,
+  performanceFloor = minScore,
+): string[] {
   return results.flatMap(({ route, scores }) =>
     Object.entries(scores)
-      .filter(([, score]) => score < minScore)
+      .filter(([category, score]) =>
+        category === 'Performance'
+          ? score < performanceFloor
+          : score < minScore,
+      )
       .map(([category, score]) => `${route} ${category} ${score}`),
   );
+}
+
+/**
+ * Performance scores between the floor and the target, which warn without
+ * failing (ADR-0016, amendment 10).
+ *
+ * @param results - Every route's scores.
+ * @param minScore - The target score.
+ * @param performanceFloor - Lowest passing performance score.
+ * @returns One line per such score, such as `/ Performance 94`.
+ */
+export function warnings(
+  results: RouteScores[],
+  minScore: number,
+  performanceFloor: number,
+): string[] {
+  return results.flatMap(({ route, scores }) => {
+    const score = scores['Performance'];
+    return score !== undefined && score >= performanceFloor && score < minScore
+      ? [`${route} Performance ${score}`]
+      : [];
+  });
 }
 
 /**

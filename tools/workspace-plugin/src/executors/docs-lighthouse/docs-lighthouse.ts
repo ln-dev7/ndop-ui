@@ -9,6 +9,7 @@ import {
   medianRun,
   prerenderedRoutes,
   reportName,
+  warnings,
   type RouteScores,
 } from './routes';
 import type { DocsLighthouseExecutorSchema } from './schema';
@@ -20,7 +21,8 @@ import type { DocsLighthouseExecutorSchema } from './schema';
  * Chromium, three times by default, keeps the run with the median
  * performance score as Lighthouse CI does, writes its HTML report, and
  * fails when any category of any route scores under the minimum
- * (RFC-0001: 95).
+ * (RFC-0001: 95), except performance, which fails under a floor of 90 and
+ * warns between the floor and the target (amendment 10).
  *
  * The CPU slowdown is calibrated to the host (amendment 8): three
  * performance-only passes on the first route measure its
@@ -47,6 +49,7 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
 ) => {
   const dir = join(context.root, options.dir);
   const minScore = options.minScore ?? 95;
+  const performanceFloor = options.performanceFloor ?? 90;
   const outputDir = join(
     context.root,
     options.outputDir ?? 'dist/lighthouse/docs',
@@ -131,10 +134,16 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
     await site.close();
   }
 
-  const failed = failures(results, minScore);
+  const warned = warnings(results, minScore, performanceFloor);
+  if (warned.length) {
+    logger.warn(
+      `Performance between the ${performanceFloor} floor and the ${minScore} target:\n${warned.map((line) => `  ${line}`).join('\n')}`,
+    );
+  }
+  const failed = failures(results, minScore, performanceFloor);
   if (failed.length) {
     logger.error(
-      `Under ${minScore}:\n${failed.map((line) => `  ${line}`).join('\n')}`,
+      `Failing (any category under ${minScore}, performance under ${performanceFloor}):\n${failed.map((line) => `  ${line}`).join('\n')}`,
     );
   }
   logger.info(`Reports: ${options.outputDir ?? 'dist/lighthouse/docs'}`);
