@@ -14,8 +14,8 @@ it, an MCP server with the components' real documentation, and
 `ndop init` writes an Ndop section into `AGENTS.md`, which most agents read.
 It lists the installed components, the theme's tokens, where files go, and
 the workflow: use an installed component first, read its documentation,
-style with tokens and logical utilities, then verify. `ndop add` refreshes
-it every time you install something.
+give every field a visible label, style with tokens and logical utilities,
+then verify. `ndop add` refreshes it every time you install something.
 
 Pick the agents you use with `--agent`, or let `init` detect them:
 
