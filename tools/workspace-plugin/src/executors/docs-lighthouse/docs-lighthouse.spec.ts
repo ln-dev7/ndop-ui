@@ -1,7 +1,15 @@
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { failures, medianRun, prerenderedRoutes, reportName } from './routes';
+import {
+  cpuMultiplier,
+  failures,
+  median,
+  medianRun,
+  prerenderedRoutes,
+  REFERENCE_BENCHMARK,
+  reportName,
+} from './routes';
 
 describe('prerenderedRoutes', () => {
   it('lists every folder with an index.html', async () => {
@@ -48,5 +56,25 @@ describe('medianRun', () => {
     expect(medianRun([0.9, 0.7, 0.95])).toBe(0);
     expect(medianRun([0.8])).toBe(0);
     expect(medianRun([0.6, 0.9])).toBe(0);
+  });
+});
+
+describe('cpuMultiplier', () => {
+  it('keeps 4x at the reference benchmark and scales with the host', () => {
+    expect(cpuMultiplier(REFERENCE_BENCHMARK)).toBe(4);
+    expect(cpuMultiplier(2348)).toBe(2.9);
+    expect(cpuMultiplier(3860)).toBe(4.8);
+  });
+
+  it('stays between 1x and 8x', () => {
+    expect(cpuMultiplier(100)).toBe(1);
+    expect(cpuMultiplier(20_000)).toBe(8);
+  });
+});
+
+describe('median', () => {
+  it('takes the middle value, or the lower middle one', () => {
+    expect(median([3300, 2900, 3100])).toBe(3100);
+    expect(median([4, 1, 3, 2])).toBe(2);
   });
 });

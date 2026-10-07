@@ -65,3 +65,34 @@ export function medianRun(runs: number[]): number {
     .sort((a, b) => a.score - b.score);
   return order[Math.floor((order.length - 1) / 2)]?.index ?? 0;
 }
+
+/**
+ * The benchmark of the CI run that accepted Phase 3 with Lighthouse's
+ * default 4× CPU slowdown (ADR-0016, amendment 8): the device every run
+ * emulates.
+ */
+export const REFERENCE_BENCHMARK = 3200;
+
+/**
+ * The CPU slowdown that makes a host emulate the reference device
+ * (ADR-0016, amendment 8): 4 × benchmark ÷ {@link REFERENCE_BENCHMARK},
+ * rounded to one decimal, between 1 and 8.
+ *
+ * @param benchmark - The host's median `benchmarkIndex`.
+ * @returns The `cpuSlowdownMultiplier`.
+ */
+export function cpuMultiplier(benchmark: number): number {
+  const multiplier = Math.round((40 * benchmark) / REFERENCE_BENCHMARK) / 10;
+  return Math.min(8, Math.max(1, multiplier));
+}
+
+/**
+ * The median of some numbers.
+ *
+ * @param values - At least one number.
+ * @returns The middle value, or the lower of the two middle ones.
+ */
+export function median(values: readonly number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor((sorted.length - 1) / 2)] ?? 0;
+}

@@ -13,4 +13,9 @@ export interface DocsLighthouseExecutorSchema {
   runs?: number;
   /** Routes to audit; every prerendered route by default. */
   routes?: string[];
+  /**
+   * CPU slowdown to use instead of calibrating it to the host's benchmark
+   * (ADR-0016, amendment 8).
+   */
+  cpuSlowdownMultiplier?: number;
 }

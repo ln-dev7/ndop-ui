@@ -26,8 +26,14 @@
     },
     "routes": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Routes to audit; every prerendered route by default."
+    },
+    "cpuSlowdownMultiplier": {
+      "type": "number",
+      "description": "CPU slowdown to use instead of calibrating it to the host's benchmark (ADR-0016, amendment 8)."
     }
   },
   "required": ["dir"]

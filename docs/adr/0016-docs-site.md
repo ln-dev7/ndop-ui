@@ -277,3 +277,48 @@ The registry has no Dropdown Menu until phase 6 (ADR-0004 plans it on
 `@angular/cdk/menu`, which implements the WAI-ARIA menu button pattern,
 with shadcn's dropdown classes. It lives in `apps/docs` only and is
 replaced by the registry's Dropdown Menu when that exists.
+
+## Amendment 8 (2026-10-07): CPU throttling calibrated to the runner
+
+Status: Accepted; approved by Valery on 2026-10-07.
+
+The Lighthouse gate fails or passes depending on which machine GitHub
+assigns. Lighthouse slows the CPU by "a constant 4x CPU multiplier"
+(Lighthouse's `docs/throttling.md`), so the same page scores lower on a
+slower host. Phase 4's first CI run sent the same bytes as Phase 3's
+passing run, but on a runner whose `benchmarkIndex` was 27% lower:
+
+| Run                         | Median benchmark | Theming page TBT | Dialog page TBT | Lowest performance |
+| --------------------------- | ---------------- | ---------------- | --------------- | ------------------ |
+| Phase 3 (37257777361), pass | 3,200            | 107 ms           | 216 ms          | 95                 |
+| Phase 4 (37463011601), fail | 2,348            | 266 ms           | 337 ms          | 90                 |
+
+Every route dropped by about the same amount, including guides Phase 4
+didn't change. Lighthouse's documentation recommends choosing
+`cpuSlowdownMultiplier` from the host's `benchmarkIndex` for exactly this.
+
+- **Calibration:** before scoring, the `docs-lighthouse` executor runs a
+  performance-only Lighthouse pass on `/` three times and takes the
+  median `benchmarkIndex`. Every route is then measured with
+  `cpuSlowdownMultiplier` = 4 × benchmark ÷ 3,200, rounded to one decimal
+  and kept between 1 and 8. On a runner like Phase 4's that's 2.9×; on
+  the development machine (about 3,860) it's 4.8×, stricter than before.
+- **Reference:** 3,200 is the median benchmark of the CI run that accepted
+  Phase 3, where 4× was used. So every run emulates the device that run
+  emulated; what Phase 3 accepted stays the bar. Lighthouse's own
+  device-class table predates Lighthouse 10's change to the benchmark
+  scale, so it isn't used.
+- **Unchanged:** the median of three runs per route, the mobile profile,
+  simulated network throttling, and the bar: any category under 95 fails.
+  Only the CPU multiplier moves.
+- **Reported:** the log and each report record the benchmark and the
+  multiplier used, so a score can be compared across runs.
+- **When Lighthouse or Chrome changes its benchmark** (as Lighthouse 6.3
+  and 10 did), the reference is re-measured from a CI run with 4× and this
+  amendment is updated.
+
+Consequences: a slow runner no longer fails the gate, and a real
+regression still does, since it costs more CPU on any machine. A runner
+far slower than any seen so far is measured with less slowdown, down to
+none; the 1× floor keeps a very slow machine from being measured faster
+than it is.
