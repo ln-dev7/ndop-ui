@@ -1,6 +1,7 @@
 # ADR-0014: Styled items and examples
 
-- Status: Accepted (approved by Valery on 2026-10-02)
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1
+  and 2
 - Date: 2026-10-02
 - Phase: 2
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Styled layer, variants and
@@ -82,3 +83,22 @@ projects, where the comments are noise. Instead:
 
 Behavior that users need to know, such as writing the dialog's portal and
 overlay themselves, stays in each item's TSDoc and `docs.md`, which ship.
+
+## Amendment 2 (2026-10-08): notices before the first public deploy
+
+Status: Accepted (approved by Valery on 2026-10-08).
+
+The docs site goes public at ndop.dev before Ndop is announced, so before
+Phase 7, and it serves the registry. Amendment 1's release blocker
+therefore applies to the first public deploy, not to the 1.0.0 release:
+
+- `/r/LICENSE.txt` (or similar) served with the registry, with Ndop's MIT
+  license and shadcn/ui's MIT notice, plus any other third-party terms
+  (Geist's OFL for the default theme's fonts);
+- acknowledgements in the README;
+- a shadcn/ui credit on the docs site, in the footer and on the
+  Introduction page.
+
+They move from RFC-0001's Phase 7 checklist to the first step of Phase 6.
+The changelogs' 0.1.1 notes ("the credit … is on the docs site instead")
+are true from then on.

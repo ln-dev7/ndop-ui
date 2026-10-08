@@ -92,7 +92,7 @@ shadcn won on three ideas, and Ndop keeps all three:
 Ndop adds four things on top:
 
 - **Safe updates for owned code.** A lockfile records the version each file was installed from, and `ndop update` does a three-way merge between that base, the user's edits and upstream.
-- **Angular done properly.** Directive-first APIs, signals, zoneless, SSR and hydration safe, Signal Forms integration, behavior built on `@angular/aria` and the CDK.
+- **Angular done properly.** Directive-first APIs, signals, zoneless, SSR and hydration safe, Signal Forms integration, behavior built on the CDK.
 - **Agent-native from day one.** One compiler-extracted metadata source feeds the docs, an MCP server, `llms.txt`, per-project agent context files and a `verify` loop agents can run on their own output.
 - **A documentation site that is a product.** Live, tested examples, a generated props playground, a theme studio, keyboard and ARIA tables, and copy-for-agent on every page.
 
@@ -134,13 +134,13 @@ The bar: a developer goes from `ng new` to a themed, accessible, production-qual
 
 Angular already has shadcn-inspired projects, so Ndop wins on the update story, agent tooling and docs quality, not on component count. The table is a positioning summary from general knowledge; verify each project's current state before publishing comparisons.
 
-| Project                | Model                                                    | Where Ndop differs                                                                                    |
-| ---------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| shadcn/ui (React)      | Copy-in styled components on Radix, registry + CLI + MCP | Ndop is Angular-native and adds three-way-merge updates                                               |
-| spartan/ui             | Headless "brain" package + copy-in "helm" styles         | Ndop builds on `@angular/aria`, is signals- and zoneless-first, ships agent tooling and merge updates |
-| ng-primitives          | Headless primitives library                              | Ndop adds the styled copy-in layer, registry, CLI and blocks                                          |
-| Angular Material / CDK | Installed, opinionated Material design                   | Ndop is unstyled-by-default ownership; it uses the CDK rather than competing with it                  |
-| PrimeNG and similar    | Large installed suites with theming                      | Ndop favors ownership and small surface over breadth                                                  |
+| Project                | Model                                                    | Where Ndop differs                                                                            |
+| ---------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| shadcn/ui (React)      | Copy-in styled components on Radix, registry + CLI + MCP | Ndop is Angular-native and adds three-way-merge updates                                       |
+| spartan/ui             | Headless "brain" package + copy-in "helm" styles         | Ndop builds on the CDK, is signals- and zoneless-first, ships agent tooling and merge updates |
+| ng-primitives          | Headless primitives library                              | Ndop adds the styled copy-in layer, registry, CLI and blocks                                  |
+| Angular Material / CDK | Installed, opinionated Material design                   | Ndop is unstyled-by-default ownership; it uses the CDK rather than competing with it          |
+| PrimeNG and similar    | Large installed suites with theming                      | Ndop favors ownership and small surface over breadth                                          |
 
 **Positioning line:** "Own your components. Update them anyway. Built for you and your agent."
 
@@ -167,7 +167,7 @@ The two top layers are copied into the user's repo; the two bottom layers update
 **Dependency rules (MUST, enforced by Nx module boundaries)**
 
 - Styled registry items may import `@ndop/primitives`, `@ndop/core`, `@angular/*` and other registry items by alias. Nothing else.
-- Primitives may import `@angular/core`, `@angular/aria`, `@angular/cdk`. Never Tailwind, never registry code.
+- Primitives may import `@angular/core`, `@angular/cdk` and `@angular/forms` (and `@angular/aria` once ADR-0004 allows it). Never Tailwind, never registry code.
 - The CLI, MCP server and docs read the registry through the built `registry.json` and `metadata.json` only, never by importing component source.
 
 ## Primitives layer (`@ndop/primitives`)
@@ -181,7 +181,7 @@ Primitives are headless, directive-first and signal-driven; they own behavior an
 - **Signals everywhere.** `input()`, `input.required()`, `model()` for two-way state (`open`, `value`, `checked`), `output()` for events, `computed()` for derived state. No `@Input()` decorators, no `EventEmitter`, no RxJS in public APIs.
 - **Zoneless and OnPush safe.** Every primitive works in an app using `provideZonelessChangeDetection()`. No `setTimeout`-based change detection hacks.
 - **SSR and hydration safe.** No direct `window`/`document` access outside `afterNextRender` or injected `DOCUMENT`; no layout reads during SSR.
-- **Build on `@angular/aria` and the CDK.** Use Angular Aria patterns (listbox, menu, tabs, combobox, etc.) and CDK overlay, a11y and focus-trap utilities where they exist. Write custom behavior only where neither covers the pattern, and record it in an ADR.
+- **Build on the CDK.** Use CDK overlay, menu, listbox, accordion, a11y, key-manager and focus-trap utilities where they exist. Write custom behavior only where the CDK doesn't cover the pattern, and record it in an ADR. `@angular/aria` was the original plan; ADR-0004, amendment 3, defers it until its API holds steady across two majors.
 - **State exposed as data attributes.** `data-state="open|closed"`, `data-disabled`, `data-highlighted`, `data-orientation`, so styles never reach into private APIs.
 - **Context via DI.** Compound parts (Dialog, Trigger, Content, Title) communicate through an injection token that provides a signal-based context, never through `@ContentChild` chains.
 - **Controlled and uncontrolled.** Every stateful primitive works with `[(open)]` binding or with no binding (internal default from a `defaultOpen` input).
@@ -553,7 +553,7 @@ ndop/
 | --------- | --------------------------------------------------------------------------- |
 | Language  | TypeScript strict, `noUncheckedIndexedAccess` on                            |
 | Framework | Angular 21+ standalone, signals, zoneless                                   |
-| Behavior  | `@angular/aria`, `@angular/cdk`                                             |
+| Behavior  | `@angular/cdk` (`@angular/aria` deferred, ADR-0004 amendment 3)             |
 | Styling   | Tailwind CSS v4, CSS variables, OKLCH colors                                |
 | Utilities | clsx, tailwind-merge                                                        |
 | Icons     | `@lucide/angular` by default via an adapter (swappable, ADR-0013)           |
@@ -633,6 +633,7 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 - [ ] At least 12 blocks across auth, dashboard, settings, data table, sidebar and marketing.
 - [ ] Theme studio with export to CSS, theme URL and JSON; community theme gallery.
 - [ ] `ndop doctor`; namespaced and private registries; a "build your own registry" guide and template repo; shadcn-compat output via ndop build --compat shadcn, with an e2e that installs a compat item through the shadcn CLI.
+- [ ] Third-party notices, before the docs site's first public deploy: a license notice served with the registry (shadcn/ui's MIT terms and any others), acknowledgements in the README, and a shadcn/ui credit on the docs site (ADR-0014, amendments 1 and 2). Registry files carry no notices of their own.
 
 * **Accept when:** an external sample registry installs via `ndop add @sample/widget`, and every block builds in the registry e2e.
 
@@ -640,7 +641,6 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 - [ ] Migration guides, landing page with live hero demo, OG images, Changelog.
 - [ ] Launch write-up: "Updating code you own: three-way merges in a component registry."
-- [ ] Third-party notices: a license notice served with the registry (shadcn/ui's MIT terms and any others), acknowledgements in the README, and a shadcn/ui credit on the docs site (ADR-0014, amendment 1). Registry files carry no notices of their own.
 - [ ] Public roadmap and contribution guide; 1.0.0 release.
 
 * **Accept when:** every success metric with a CI measurement is met and the launch checklist is complete.
@@ -658,7 +658,11 @@ The v1 catalog covers what a real SaaS app needs; nothing ships until it meets t
 | Feedback     | Alert, Toast (Sonner-style), Progress, Skeleton, Spinner, Empty State                                                                 | 6                               |
 | Layout       | Separator, Aspect Ratio, Scroll Area, Resizable, Form Field                                                                           | 1 (Separator), 6                |
 
+Phase 6 ships no third-party runtime dependency: charts and the data table are Ndop's own copy-in code (ADR-0021).
+
 **Definition of done (every component)**
+
+Items with no behavior beyond native HTML (Card, Table, Alert and the like) have no primitive or `spec.md` of their own; ADR-0021 lists them.
 
 - [ ] `spec.md` with ARIA pattern, roles, keyboard map, focus rules, RTL notes
 - [ ] Primitive with signals API, controlled and uncontrolled modes, forms integration where it bears a value
@@ -676,7 +680,7 @@ The biggest risk is the update promise: if merges conflict often, Ndop's main di
 | Risk                                            | Mitigation                                                                                                                                        |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Merge conflicts too frequent                    | Keep files small and structured; structural merge for `variants()` and host bindings; codemods for breaking changes; publish the clean-merge rate |
-| `@angular/aria` gaps or API churn               | Wrap it behind Ndop primitives so churn is absorbed in one package; ADR for each custom fallback                                                  |
+| `@angular/aria` gaps or API churn               | Primitives build on the CDK; aria waits until stable across two majors (ADR-0004, amendment 3)                                                    |
 | Angular major upgrades                          | Support only two majors; run the matrix in CI; ship `ndop update` codemods per major                                                              |
 | Scope creep in the catalog                      | Definition of done gates every item; ship fewer, finished components                                                                              |
 | Docs performance regressions from live previews | Lazy-hydrate previews on visibility; Lighthouse CI budget fails the PR                                                                            |

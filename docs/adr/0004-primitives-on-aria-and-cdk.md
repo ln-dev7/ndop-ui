@@ -1,6 +1,6 @@
 # ADR-0004: Primitives on `@angular/aria` + CDK, and custom fallbacks
 
-- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1 and 2
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–3
 - Date: 2026-10-02
 - Phase: 1
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Primitives layer (`@ndop/primitives`)"
@@ -94,7 +94,8 @@ Nx generator.
 
 `@ndop/primitives` peers on `@angular/core`, `@angular/cdk` and
 `@angular/forms`, each `^21.0.0 || ^22.0.0`. `@angular/aria` is added when
-the first aria-backed primitive lands (Phase 6).
+the first aria-backed primitive lands (Phase 6). Amendment 3 decides
+against it for now.
 
 ### Phase 6 intent (recorded now, confirmed then)
 
@@ -153,3 +154,65 @@ in the CDK's overlay container (the default) and with `usePopover: true`
 WebKit scrolled the page behind an open dialog, so the block scroll strategy
 no longer held. Ndop overlays keep the default overlay container. Revisit
 when a stacking problem appears that only the top layer solves.
+
+## Amendment 3 (2026-10-08): Phase 6 builds on the CDK, not `@angular/aria`
+
+Status: Accepted (approved by Valery on 2026-10-08). **Deviation** from
+RFC-0001's "Build on `@angular/aria` and the CDK".
+
+The Phase 6 intent above was checked against `@angular/aria` 22.2.1 and
+21.2.14, read from their published type definitions:
+
+- **The API changes between majors.** `combobox` was rewritten in 22
+  (`ngComboboxInput` and an attribute `ngComboboxPopup` in 21;
+  `ngComboboxWidget`, an `ng-template` popup and `value`/`expanded` models
+  in 22). `toolbar` lost its `values` selection model in 22. One
+  `@ndop/primitives` build can't serve both.
+- `@angular/aria` 22 peers on the exact same `@angular/cdk` version, so
+  apps must keep the two in lockstep or installs fail.
+- aria has no positioning: popups still need the CDK overlay.
+- A new Angular major comes about every six months, and each can change
+  aria again.
+
+### Decision
+
+- `@ndop/primitives` doesn't use or peer on `@angular/aria`. Primitives
+  build on the CDK and on Ndop-owned code, as the Phase 1 primitives do,
+  each guarded by its `spec.md` and its keyboard and axe tests. Users see
+  the same API on every supported major and install nothing extra.
+- **When to revisit:** once aria's API is unchanged across two consecutive
+  majors, an amendment can move primitives onto it. Users import only
+  `@ndop/primitives`, so the move doesn't change their code.
+
+| Primitive                 | Built on                                                      | Custom behavior Ndop owns                                                                                       |
+| ------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Tabs                      | CDK `FocusKeyManager`                                         | Tabs pattern: roles, roving focus, automatic or manual activation, orientation, RTL, `data-state`.              |
+| Accordion                 | `@angular/cdk/accordion`                                      | Heading and button markup, `aria-expanded`/`aria-controls`, single or multiple mode, `data-state`.              |
+| Collapsible               | Native `button`                                               | `aria-expanded`/`aria-controls` disclosure, open state.                                                         |
+| Dropdown Menu, Menubar    | `@angular/cdk/menu`                                           | Placement through Ndop's `NdPlacement`, `data-state`/`data-highlighted`, checkbox and radio item styling hooks. |
+| Context Menu              | `@angular/cdk/menu` (`CdkContextMenuTrigger`)                 | As Dropdown Menu.                                                                                               |
+| Select                    | `@angular/cdk/listbox` + CDK overlay                          | The trigger (`role="combobox"`, select-only pattern), value display, typeahead on the closed trigger.           |
+| Combobox, Command         | CDK `ActiveDescendantKeyManager` (+ CDK overlay for Combobox) | Editable combobox pattern: filtering, `aria-activedescendant`, empty state. Command is the same list, inline.   |
+| Calendar                  | CDK `FocusKeyManager`                                         | Date grid pattern, date math on `Date` and `Intl`, month paging, range selection, `aria-current="date"`.        |
+| Checkbox, Switch, Toggle  | Native `button`                                               | `role="checkbox"` (with `mixed`) / `role="switch"` / `aria-pressed`; value and forms integration.               |
+| Radio Group, Toggle Group | CDK `FocusKeyManager`                                         | Roving tabindex with arrow keys, RTL-aware; single or multiple selection; forms integration.                    |
+| Slider                    | Plain elements                                                | `role="slider"` thumbs, pointer and keyboard (arrows, Page Up/Down, Home/End), ranges, RTL.                     |
+| Input OTP                 | Native `input`                                                | One real input with visual slots, paste, pattern filtering, forms integration.                                  |
+| Alert Dialog              | The Dialog primitive's internals                              | `role="alertdialog"`, no outside dismissal, initial focus on the cancel action.                                 |
+| Drawer                    | The Dialog primitive's internals                              | Drag to dismiss with pointer events, honoring reduced motion.                                                   |
+| Hover Card                | The Tooltip primitive's internals                             | Open and close delays for hover and focus; content stays open while hovered.                                    |
+| Navigation Menu           | Native `button` and `a` + CDK overlay                         | Disclosure navigation pattern (not menu roles), one panel at a time, Escape returns focus.                      |
+| Toast                     | CDK overlay (global) + a polite live region                   | Queue, stacking, timers paused on hover and focus, swipe to dismiss, F8 to focus the region.                    |
+| Avatar                    | Native `img`                                                  | Load status (`loading`, `loaded`, `error`) to show the fallback.                                                |
+| Progress                  | Plain element                                                 | `role="progressbar"` with `aria-valuenow`/`min`/`max`, indeterminate state.                                     |
+| Resizable                 | Plain elements                                                | Window splitter pattern: focusable `role="separator"` handles, arrow keys, pointer drag, sizes as a `model()`.  |
+| Sidebar                   | CDK `BreakpointObserver`; the Dialog primitive on mobile      | Expanded or collapsed state, keyboard shortcut, mobile sheet.                                                   |
+| Form Field                | `@angular/forms` state                                        | Ids and `aria-describedby` for the description and error, shown when the control is invalid and touched.        |
+
+Each CDK class is checked against the installed version before its
+primitive is written. Where a CDK directive puts roles or structure on
+elements in a way the primitive's `spec.md` can't accept, the primitive
+uses a key manager and its own bindings instead, and its `spec.md` says so.
+
+Value-bearing primitives here implement both `ControlValueAccessor` and
+Signal Forms' `FormValueControl`, as amendment 1 requires.

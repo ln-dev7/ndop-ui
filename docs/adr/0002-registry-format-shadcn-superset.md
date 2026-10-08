@@ -1,6 +1,6 @@
 # ADR-0002: Registry format as a shadcn superset
 
-- Status: Accepted, with Amendment 1
+- Status: Accepted, with Amendments 1 and 2
 - Date: 2026-10-01
 - Phase: 0
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Registry spec"
@@ -171,3 +171,14 @@ Status: Accepted by Valery on 2026-10-02.
 5. **Ajv runs in strict mode except `strictRequired`.** That check flags
    `required` inside conditional `then`/`else` blocks even when the parent
    schema declares the property.
+
+## Amendment 2 (2026-10-08): compat output as universal items
+
+Status: Accepted (approved by Valery on 2026-10-08).
+
+The shadcn CLI (4.21.4) can't create a `components.json` in an Angular CLI
+project, and installs `registry:ui` items only with one. It installs
+"universal" items (type `registry:item`, files `registry:file` with `~/`
+targets) anywhere. So `ndop build --compat shadcn` emits universal items
+with relative imports, as ADR-0025 decides, and replaces
+`toShadcnCompat`'s type mapping and `@ui/` placeholders.

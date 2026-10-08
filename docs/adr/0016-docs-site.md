@@ -383,3 +383,27 @@ Phase 5 ships each component's changelog page, version diffs and the update
 preview (ADR-0020). The site-wide version switcher waits until Phase 7:
 until 1.0 there is one docs version, and it covers both supported Angular
 majors, so there is nothing to switch between yet.
+
+## Amendment 12 (2026-10-08): Phase 6 sections
+
+Status: Accepted (approved by Valery on 2026-10-08).
+
+- **Components** are grouped in the nav by the catalog's groups (Inputs,
+  Overlays, Navigation, Data display, Feedback, Layout), from each item's
+  first category (ADR-0021).
+- **Blocks:** `/blocks` and `/blocks/<category>`, with iframes of
+  prerendered `/blocks/<name>/preview` pages and a viewport switcher
+  (ADR-0022). This is where amendment 4's device frames come back.
+- **Themes:** `/themes` (gallery) and `/themes/studio` (ADR-0023). The
+  studio's theme URLs are served by one Cloudflare Pages Function,
+  `/r/themes/custom.json`, the site's only server code; `serve-site` runs
+  it too.
+- **Primitives:** `/docs/primitives/<name>`, the headless API reference
+  for each primitive, generated from the same metadata, with its
+  `spec.md`.
+- **Patterns:** a new guide section. Phase 6 adds "Build your own
+  registry" (ADR-0025); the RFC's other patterns (forms, data fetching,
+  layouts, i18n and RTL) follow as their components land.
+- Migration guides stay in Phase 7, as RFC-0001 lists them there; this
+  ADR's Routes section had them in Phase 6.
+- Every new page meets the same Lighthouse and axe gates.
