@@ -24,7 +24,7 @@ All tasks run through Nx.
 | Docs dev server               | `pnpm nx serve docs`                                                     |
 | Format check / fix            | `pnpm nx format:check` / `pnpm nx format:write`                          |
 | New primitive                 | `pnpm nx g @ndop/workspace-plugin:primitive <name> --pattern=<apg-slug>` |
-| Merge spike report            | `pnpm nx test merge-spike`                                               |
+| Merge tests (Button fixtures) | `pnpm nx test merge`                                                     |
 
 ## Rules
 

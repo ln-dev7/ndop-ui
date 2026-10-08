@@ -14,6 +14,5 @@ tooling built for both humans and coding agents.
 | `registry/`              | Source of the copy-in registry items             |
 | `tools/workspace-plugin` | Nx generators and inferred targets for this repo |
 | `tools/update-fixtures`  | Fixtures for `ndop update` merges                |
-| `tools/merge-spike`      | Phase 0 merge spike (temporary)                  |
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to build and test. MIT licensed.

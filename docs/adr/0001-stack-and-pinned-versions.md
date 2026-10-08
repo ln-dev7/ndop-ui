@@ -141,17 +141,18 @@ project-references layout. Ndop keeps path aliases because Angular libraries
 and ng-packagr expect them. Nx generators accept an explicit `--directory`, so
 the RFC tree maps one-to-one, with these additions:
 
-| RFC location                                                 | Nx project         | Generator                           | Notes                                                                            |
-| ------------------------------------------------------------ | ------------------ | ----------------------------------- | -------------------------------------------------------------------------------- |
-| `apps/docs`                                                  | `docs`             | `@analogjs/platform:application`    |                                                                                  |
-| (not in RFC) `apps/docs-e2e`                                 | `docs-e2e`         | `@nx/playwright:configuration`      | Nx's convention puts e2e tests in a sibling project.                             |
-| `apps/harness`                                               | `harness`          | `@nx/angular:application`           | Phase 1.                                                                         |
-| `packages/primitives`, `packages/core`                       | unprefixed         | `@nx/angular:library --publishable` | ng-packagr; `importPath` `@ndop/<name>`.                                         |
-| `packages/schema`, `cli`, `mcp`, `metadata`, `eslint-plugin` | unprefixed         | `@nx/js:library --publishable`      | `importPath` `@ndop/<name>`.                                                     |
-| `tools/workspace-plugin`                                     | `workspace-plugin` | `@nx/plugin:plugin`                 | `@ndop/workspace-plugin`, `private: true`.                                       |
-| `tools/update-fixtures`                                      | (data only)        | none                                | Fixture data read by the merge spike now and the update e2e executor in Phase 5. |
-| (not in RFC) `tools/merge-spike`                             | `merge-spike`      | `@nx/js:library`                    | Phase 0 spike, private; absorbed into `@ndop/cli` in Phase 5 (see ADR-0003).     |
-| `registry/`                                                  | (Phase 2)          | workspace-plugin generators         | Phase 0 adds only `registry/registry.json`, validated against the schema.        |
+| RFC location                                                 | Nx project         | Generator                           | Notes                                                                                  |
+| ------------------------------------------------------------ | ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------- |
+| `apps/docs`                                                  | `docs`             | `@analogjs/platform:application`    |                                                                                        |
+| (not in RFC) `apps/docs-e2e`                                 | `docs-e2e`         | `@nx/playwright:configuration`      | Nx's convention puts e2e tests in a sibling project.                                   |
+| `apps/harness`                                               | `harness`          | `@nx/angular:application`           | Phase 1.                                                                               |
+| `packages/primitives`, `packages/core`                       | unprefixed         | `@nx/angular:library --publishable` | ng-packagr; `importPath` `@ndop/<name>`.                                               |
+| `packages/schema`, `cli`, `mcp`, `metadata`, `eslint-plugin` | unprefixed         | `@nx/js:library --publishable`      | `importPath` `@ndop/<name>`.                                                           |
+| `tools/workspace-plugin`                                     | `workspace-plugin` | `@nx/plugin:plugin`                 | `@ndop/workspace-plugin`, `private: true`.                                             |
+| `tools/update-fixtures`                                      | (data only)        | none                                | Fixture data read by `@ndop/merge`'s tests and the update e2e executor.                |
+| (not in RFC) `tools/merge-spike`                             | `merge-spike`      | `@nx/js:library`                    | Phase 0 spike, private; deleted in Phase 5; its merge is now `@ndop/merge` (ADR-0020). |
+| (not in RFC) `packages/merge`                                | `merge`            | `@nx/js:library --publishable`      | `@ndop/merge`, Phase 5 (ADR-0020).                                                     |
+| `registry/`                                                  | (Phase 2)          | workspace-plugin generators         | Phase 0 adds only `registry/registry.json`, validated against the schema.              |
 
 ## Consequences
 

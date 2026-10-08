@@ -57,12 +57,23 @@ const dependencyRules = (primitiveImports) => [
         onlyDependOnLibsWithTags: [],
       },
       {
+        // The merge runs in the CLI and in the docs' update preview
+        // (ADR-0020), so it depends on nothing of ours.
+        sourceTag: 'type:merge',
+        onlyDependOnLibsWithTags: [],
+      },
+      {
         sourceTag: 'type:tooling',
-        onlyDependOnLibsWithTags: ['type:schema', 'type:tooling'],
+        onlyDependOnLibsWithTags: ['type:schema', 'type:merge', 'type:tooling'],
       },
       {
         sourceTag: 'type:tool',
-        onlyDependOnLibsWithTags: ['type:schema', 'type:tooling', 'type:tool'],
+        onlyDependOnLibsWithTags: [
+          'type:schema',
+          'type:merge',
+          'type:tooling',
+          'type:tool',
+        ],
       },
       {
         // The harness renders registry examples; the docs site reads the
@@ -72,6 +83,7 @@ const dependencyRules = (primitiveImports) => [
           'type:primitives',
           'type:core',
           'type:schema',
+          'type:merge',
           'type:registry',
         ],
       },

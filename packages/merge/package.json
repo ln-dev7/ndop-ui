@@ -1,0 +1,22 @@
+{
+  "name": "@ndop/merge",
+  "version": "0.0.1",
+  "description": "The three-way merge behind ndop update and the docs' update preview: diff3 line merge, conflict markers and partial upstream changes, with no Node APIs.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.js.map",
+    "src/**/*.d.ts",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "node-diff3": "3.2.1"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "name": "merge",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/merge/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "manifestRootsToUpdate": [
+        {
+          "path": "dist/{projectRoot}",
+          "preserveLocalDependencyProtocols": false
+        }
+      ],
+      "currentVersionResolver": "git-tag",
+      "fallbackCurrentVersionResolver": "disk"
+    }
+  },
+  "tags": ["type:merge"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "main": "packages/merge/src/index.ts",
+        "outputPath": "dist/packages/merge",
+        "tsConfig": "packages/merge/tsconfig.lib.json",
+        "platform": "neutral",
+        "format": ["esm"],
+        "assets": [
+          {
+            "glob": "README.md",
+            "input": "packages/merge",
+            "output": "."
+          },
+          {
+            "glob": "package.json",
+            "input": "packages/merge",
+            "output": "."
+          }
+        ],
+        "thirdParty": false,
+        "generatePackageJson": false,
+        "esbuildOptions": {
+          "sourcemap": true
+        },
+        "outputFileName": "index.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/packages/merge"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/packages/merge"
+      },
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "fileset": "{projectRoot}/tsconfig.spec.json",
+          "dependencies": true
+        },
+        {
+          "externalDependencies": ["vitest", "node-diff3", "prettier"]
+        },
+        {
+          "env": "CI"
+        },
+        "{workspaceRoot}/tools/update-fixtures/**/*",
+        "{workspaceRoot}/.prettierrc"
+      ]
+    }
+  }
+}

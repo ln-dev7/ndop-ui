@@ -27,4 +27,4 @@ Node from `.nvmrc`, pnpm from `packageManager` in package.json. Everything runs 
 - Format: `pnpm nx format:check` / `pnpm nx format:write`
 - Docs dev server: `pnpm nx serve docs`
 - New primitive: `pnpm nx g @ndop/workspace-plugin:primitive <name> --pattern=<apg-slug> --dry-run`
-- Merge spike report: `pnpm nx test merge-spike`
+- Merge tests, with the Button update fixtures: `pnpm nx test merge`
