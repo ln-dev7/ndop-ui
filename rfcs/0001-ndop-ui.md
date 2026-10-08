@@ -621,10 +621,11 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 5 — Diff and update (weeks 11–12)
 
-- [ ] `ndop diff` and `ndop update` per the algorithm, including `--interactive`, migrations and codemods.
-- [ ] Update e2e fixture suite; changelog pages with version diffs; in-browser "update preview".
+- [x] `ndop diff` and `ndop update` per the algorithm, including `--interactive`, migrations and codemods.
+- [x] Update e2e fixture suite; changelog pages with version diffs; in-browser "update preview".
 
 * **Accept when:** ≥ 90% clean merges on the fixture suite, conflicts produce valid markers and non-zero exit, and the lockfile is correct after every run.
+* **Accepted 2026-10-08:** CI green (run 37802879082); the fixture suite merged 36 of 39 cases cleanly (92.3%) with the structural pass of ADR-0003 amendment 2, the three misses being its true conflicts, and the registry install test updated an edited Button in a real app.
 
 ### Phase 6 — Catalog, blocks and theme studio (weeks 13–16)
 
