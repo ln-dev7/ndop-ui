@@ -60,7 +60,8 @@ export async function applyPlan(
   install: Installer,
 ): Promise<void> {
   for (const file of plan.files) {
-    await fs.write(file.path, file.after);
+    if (file.action === 'delete') await fs.remove(file.path);
+    else await fs.write(file.path, file.after);
   }
   if (plan.dependencies.length > 0) {
     await install(plan.dependencies, false);

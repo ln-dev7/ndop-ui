@@ -8,11 +8,11 @@ import type { Formatter } from '../project/format';
 export interface PlannedFile {
   /** Project-relative path. */
   path: string;
-  /** Whether the file is new. */
-  action: 'create' | 'update';
-  /** Current text, for updates. */
+  /** Whether the file is new, changed or deleted. */
+  action: 'create' | 'update' | 'delete';
+  /** Current text, for updates and deletions. */
   before?: string;
-  /** Full text to write, already formatted. */
+  /** Full text to write, already formatted; empty for deletions. */
   after: string;
 }
 
@@ -82,7 +82,8 @@ export interface StageOptions {
  * what would be written with what is on disk.
  */
 export class PlanBuilder {
-  private readonly staged = new Map<string, string>();
+  // null marks a file to delete.
+  private readonly staged = new Map<string, string | null>();
   private readonly dependencies = new Set<string>();
   private readonly devDependencies = new Set<string>();
   private readonly skipped: SkippedFile[] = [];
@@ -106,7 +107,18 @@ export class PlanBuilder {
    * @returns The text, or `undefined` when it doesn't exist.
    */
   async read(path: string): Promise<string | undefined> {
-    return this.staged.has(path) ? this.staged.get(path) : this.fs.read(path);
+    return this.staged.has(path)
+      ? (this.staged.get(path) ?? undefined)
+      : this.fs.read(path);
+  }
+
+  /**
+   * Stages a file's deletion.
+   *
+   * @param path - Project-relative path.
+   */
+  remove(path: string): void {
+    this.staged.set(path, null);
   }
 
   /**
@@ -180,7 +192,11 @@ export class PlanBuilder {
     const files: PlannedFile[] = [];
     for (const [path, after] of this.staged) {
       const before = await this.fs.read(path);
-      if (before === undefined) {
+      if (after === null) {
+        if (before !== undefined) {
+          files.push({ path, action: 'delete', before, after: '' });
+        }
+      } else if (before === undefined) {
         files.push({ path, action: 'create', after });
       } else if (before !== after) {
         files.push({ path, action: 'update', before, after });

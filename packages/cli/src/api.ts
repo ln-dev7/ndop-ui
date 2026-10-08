@@ -102,7 +102,7 @@ export async function addItems(
           path: file.path,
           patch: createTwoFilesPatch(
             file.action === 'create' ? '/dev/null' : `a/${file.path}`,
-            `b/${file.path}`,
+            file.action === 'delete' ? '/dev/null' : `b/${file.path}`,
             file.before ?? '',
             file.after,
           ),

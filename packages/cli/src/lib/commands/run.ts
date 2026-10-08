@@ -45,8 +45,8 @@ export interface CommandResult {
   applied: boolean;
   /** Items installed or planned, dependencies first. */
   items: { registry: string; name: string; version: string }[];
-  /** Files created or updated. */
-  files: { path: string; action: 'create' | 'update' }[];
+  /** Files created, updated or deleted. */
+  files: { path: string; action: 'create' | 'update' | 'delete' }[];
   /** npm packages added. */
   dependencies: string[];
   /** npm dev packages added. */
@@ -258,7 +258,7 @@ export function summary(plan: Plan): string {
   const lines = [
     ...plan.files.map(
       (file) =>
-        `${file.action === 'create' ? pc.green('create') : pc.yellow('update')} ${file.path}`,
+        `${{ create: pc.green('create'), update: pc.yellow('update'), delete: pc.red('delete') }[file.action]} ${file.path}`,
     ),
     ...plan.dependencies.map((spec) => `${pc.cyan('install')} ${spec}`),
     ...plan.devDependencies.map(
@@ -285,7 +285,7 @@ export function dryRunReport(plan: Plan): string {
   const diffs = plan.files.map((file) =>
     createTwoFilesPatch(
       file.action === 'create' ? '/dev/null' : `a/${file.path}`,
-      `b/${file.path}`,
+      file.action === 'delete' ? '/dev/null' : `b/${file.path}`,
       file.before ?? '',
       file.after,
     ),
