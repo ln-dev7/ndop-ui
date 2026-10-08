@@ -1,4 +1,13 @@
 {
-  "description": "Round the button and add a shadow in the base class string.",
-  "overlap": "Upstream changes the focus ring in the same line: a true conflict."
+  "description": "Round the button and add a shadow in the base class string. Upstream changes the focus ring in the same line: a true conflict.",
+  "kind": "merge",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "expect": {
+    "conflict": true,
+    "statuses": {
+      "src/app/ui/button/button.ts": "conflict"
+    }
+  }
 }

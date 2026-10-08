@@ -1,4 +1,12 @@
 {
   "description": "Make sm the default size, in the variants defaults and the input.",
-  "overlap": "None."
+  "kind": "merge",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "expect": {
+    "statuses": {
+      "src/app/ui/button/button.ts": "merged"
+    }
+  }
 }

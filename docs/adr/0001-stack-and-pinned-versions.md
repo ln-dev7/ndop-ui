@@ -149,7 +149,7 @@ the RFC tree maps one-to-one, with these additions:
 | `packages/primitives`, `packages/core`                       | unprefixed         | `@nx/angular:library --publishable` | ng-packagr; `importPath` `@ndop/<name>`.                                               |
 | `packages/schema`, `cli`, `mcp`, `metadata`, `eslint-plugin` | unprefixed         | `@nx/js:library --publishable`      | `importPath` `@ndop/<name>`.                                                           |
 | `tools/workspace-plugin`                                     | `workspace-plugin` | `@nx/plugin:plugin`                 | `@ndop/workspace-plugin`, `private: true`.                                             |
-| `tools/update-fixtures`                                      | (data only)        | none                                | Fixture data read by `@ndop/merge`'s tests and the update e2e executor.                |
+| `tools/update-fixtures`                                      | `update-fixtures`  | none (data, plus an `e2e` target)   | Fixtures and cases of the update suite, run by the `update-e2e` executor (ADR-0020).   |
 | (not in RFC) `tools/merge-spike`                             | `merge-spike`      | `@nx/js:library`                    | Phase 0 spike, private; deleted in Phase 5; its merge is now `@ndop/merge` (ADR-0020). |
 | (not in RFC) `packages/merge`                                | `merge`            | `@nx/js:library --publishable`      | `@ndop/merge`, Phase 5 (ADR-0020).                                                     |
 | `registry/`                                                  | (Phase 2)          | workspace-plugin generators         | Phase 0 adds only `registry/registry.json`, validated against the schema.              |

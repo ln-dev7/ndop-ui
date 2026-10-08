@@ -1,7 +1,15 @@
 {
-  "description": "Reformat the whole file with the project's Prettier config (printWidth 100).",
-  "overlap": "Every line Prettier rewraps.",
+  "description": "Reformat the whole file with the project's Prettier config (printWidth 100). Every line Prettier rewraps.",
+  "kind": "merge",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
   "prettier": {
     "printWidth": 100
+  },
+  "expect": {
+    "statuses": {
+      "src/app/ui/button/button.ts": "replaced"
+    }
   }
 }

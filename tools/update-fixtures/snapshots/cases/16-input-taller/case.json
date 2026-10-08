@@ -1,0 +1,12 @@
+{
+  "description": "Make the input taller with more padding.",
+  "kind": "merge",
+  "item": "input",
+  "from": "0.1.0",
+  "to": "0.1.2",
+  "expect": {
+    "statuses": {
+      "src/app/ui/input/input.ts": "merged"
+    }
+  }
+}

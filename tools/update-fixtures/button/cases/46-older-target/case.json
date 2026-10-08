@@ -1,0 +1,11 @@
+{
+  "kind": "behavior",
+  "item": "button",
+  "from": "1.1.0",
+  "to": "1.0.0",
+  "description": "Asking for an older version than the installed one is refused.",
+  "expect": {
+    "exit": 1,
+    "error": "only goes forward"
+  }
+}

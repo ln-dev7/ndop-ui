@@ -1,0 +1,56 @@
+{
+  "description": "Ndop's Dialog at 1.0.0 without DialogFooter and without DialogTitle's TSDoc; 1.1.0 adds both: a new declaration, and a comment on an existing one.",
+  "items": [
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal window.",
+      "dependencies": [
+        "@ndop/primitives"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "ui/dialog/dialog.ts",
+          "type": "registry:ui",
+          "target": "{ui}/dialog/dialog.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "DialogOverlay",
+          "DialogContent",
+          "DialogCloseButton",
+          "DialogHeader",
+          "DialogTitle",
+          "DialogDescription"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "1.1.0": {
+          "angular": {
+            "minVersion": "21.0.0",
+            "exports": [
+              "DialogOverlay",
+              "DialogContent",
+              "DialogCloseButton",
+              "DialogHeader",
+              "DialogFooter",
+              "DialogTitle",
+              "DialogDescription"
+            ],
+            "zoneless": true,
+            "ssr": true
+          }
+        }
+      }
+    }
+  ]
+}

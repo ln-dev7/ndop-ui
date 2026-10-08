@@ -11,8 +11,8 @@ import { join } from 'node:path';
 import { format, type Options } from 'prettier';
 import { conflictMarkers, threeWayMerge, type MergeOutcome } from './merge';
 
-// ADR-0003's ten Button cases, kept as the merge's regression suite until the
-// update fixture suite (ADR-0020) runs them through the CLI.
+// ADR-0003's ten Button cases, at the merge level; the update fixture suite
+// (ADR-0020) runs them, and the rest, through the CLI.
 const workspaceRoot = join(import.meta.dirname, '../../../..');
 const fixtures = join(workspaceRoot, 'tools/update-fixtures/button');
 const projectPrettier = JSON.parse(
@@ -20,6 +20,8 @@ const projectPrettier = JSON.parse(
 ) as Options;
 const read = (...path: string[]) =>
   readFileSync(join(fixtures, ...path), 'utf-8');
+const FILE = 'ui/button/button.ts';
+const INSTALLED = 'src/app/ui/button/button.ts';
 
 interface Case {
   id: string;
@@ -74,7 +76,10 @@ describe('Button update fixtures (ADR-0003)', () => {
   const cases: Case[] = [];
 
   beforeAll(async () => {
-    for (const id of readdirSync(join(fixtures, 'cases')).sort()) {
+    const ids = readdirSync(join(fixtures, 'cases'))
+      .filter((id) => /^(0[1-9]|10)-/.test(id))
+      .sort();
+    for (const id of ids) {
       const meta = JSON.parse(read('cases', id, 'case.json')) as {
         prettier?: Options;
       };
@@ -85,17 +90,17 @@ describe('Button update fixtures (ADR-0003)', () => {
         ...projectPrettier,
         ...meta.prettier,
       };
-      const base = await format(read('base.ts'), options);
-      const remote = await format(read('remote.ts'), options);
-      const local = read('cases', id, 'local.ts');
+      const base = await format(read('versions/1.0.0', FILE), options);
+      const remote = await format(read('versions/1.1.0', FILE), options);
+      const local = read('cases', id, 'local', INSTALLED);
       const files = readdirSync(join(fixtures, 'cases', id));
       const merge = (union: boolean) =>
         threeWayMerge({ base, local, remote, remoteVersion: '1.1.0', union });
       cases.push({
         id,
         local,
-        ...(files.includes('expected.ts')
-          ? { expected: read('cases', id, 'expected.ts') }
+        ...(files.includes('expected')
+          ? { expected: read('cases', id, 'expected', INSTALLED) }
           : {}),
         outcome: merge(true),
         plain: merge(false),

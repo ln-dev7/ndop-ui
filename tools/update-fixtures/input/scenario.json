@@ -1,0 +1,36 @@
+{
+  "description": "A styled Input with a variant map; 1.1.0 adds a size map, moves height and padding out of the base classes, and adds a size input.",
+  "items": [
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "A styled text input.",
+      "dependencies": [
+        "@ndop/primitives"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "ui/input/input.ts",
+          "type": "registry:ui",
+          "target": "{ui}/input/input.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Input"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "1.1.0": {}
+      }
+    }
+  ]
+}

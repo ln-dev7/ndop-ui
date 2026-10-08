@@ -1,0 +1,42 @@
+{
+  "description": "Brand color tokens; 2.0.0 changes --brand in both modes and adds --brand-muted.",
+  "items": [
+    {
+      "name": "brand",
+      "type": "registry:lib",
+      "title": "Brand",
+      "description": "Brand color tokens.",
+      "files": [
+        {
+          "path": "lib/brand.ts",
+          "type": "registry:lib",
+          "target": "{lib}/brand.ts"
+        }
+      ],
+      "cssVars": {
+        "light": {
+          "brand": "oklch(0.55 0.2 260)",
+          "brand-foreground": "oklch(0.98 0 0)"
+        },
+        "dark": {
+          "brand": "oklch(0.7 0.18 260)"
+        }
+      },
+      "versions": {
+        "1.0.0": {},
+        "2.0.0": {
+          "cssVars": {
+            "light": {
+              "brand": "oklch(0.5 0.22 265)",
+              "brand-foreground": "oklch(0.98 0 0)",
+              "brand-muted": "oklch(0.95 0.03 260)"
+            },
+            "dark": {
+              "brand": "oklch(0.65 0.2 265)"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

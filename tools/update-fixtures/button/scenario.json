@@ -1,0 +1,34 @@
+{
+  "description": "A styled Button written for the merge spike (ADR-0003): 1.1.0 adds an xs size, a link variant and a loading input, and changes the focus ring; 1.2.0 adds an xl size.",
+  "items": [
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A styled button.",
+      "dependencies": [
+        "@ndop/core"
+      ],
+      "files": [
+        {
+          "path": "ui/button/button.ts",
+          "type": "registry:ui",
+          "target": "{ui}/button/button.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Button"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "1.1.0": {},
+        "1.2.0": {}
+      }
+    }
+  ]
+}

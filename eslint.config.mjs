@@ -101,7 +101,13 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/out-tsc', '**/vitest.config.*.timestamp*'],
+    ignores: [
+      '**/dist',
+      '**/out-tsc',
+      '**/vitest.config.*.timestamp*',
+      // Users' files for the update suite: data, written as an app's code.
+      'tools/update-fixtures/**',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],

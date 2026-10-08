@@ -1,0 +1,57 @@
+{
+  "description": "A Stat directive; 2.0.0 renames its class to StatCard and its size input to scale, with codemods for both.",
+  "items": [
+    {
+      "name": "stat",
+      "type": "registry:ui",
+      "title": "Stat",
+      "description": "A number with a label.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "ui/stat/stat.ts",
+          "type": "registry:ui",
+          "target": "{ui}/stat/stat.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Stat"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "2.0.0": {
+          "angular": {
+            "minVersion": "21.0.0",
+            "exports": [
+              "StatCard"
+            ],
+            "zoneless": true,
+            "ssr": true
+          },
+          "codemods": [
+            {
+              "since": "2.0.0",
+              "kind": "rename-export",
+              "from": "Stat",
+              "to": "StatCard"
+            },
+            {
+              "since": "2.0.0",
+              "kind": "rename-input",
+              "selector": "[ndStat]",
+              "from": "size",
+              "to": "scale"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

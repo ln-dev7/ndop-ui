@@ -1,0 +1,13 @@
+{
+  "description": "Round the input more in the base classes. Upstream rewrites the same line: a true conflict.",
+  "kind": "merge",
+  "item": "input",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "expect": {
+    "conflict": true,
+    "statuses": {
+      "src/app/ui/input/input.ts": "conflict"
+    }
+  }
+}

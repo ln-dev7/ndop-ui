@@ -1,0 +1,12 @@
+{
+  "description": "2.0.0 renames Stat to StatCard: a page that imports it is renamed too.",
+  "kind": "merge",
+  "item": "stat",
+  "from": "1.0.0",
+  "to": "2.0.0",
+  "expect": {
+    "statuses": {
+      "src/app/ui/stat/stat.ts": "replaced"
+    }
+  }
+}

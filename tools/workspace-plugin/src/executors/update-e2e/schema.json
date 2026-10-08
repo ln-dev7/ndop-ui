@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Update e2e",
+  "description": "Runs the update fixture suite (ADR-0020): per case, ndop init and ndop add at an old version in a copy of a template app, the user's edits, then ndop update, checked against the case and the rules every update keeps. Fails when merge cases are under the minimum clean rate, or any rule or behavior case fails.",
+  "type": "object",
+  "properties": {
+    "fixtures": {
+      "type": "string",
+      "description": "The fixture scenarios, relative to the workspace root.",
+      "default": "tools/update-fixtures"
+    },
+    "template": {
+      "type": "string",
+      "description": "The app each case starts from, relative to the workspace root.",
+      "default": "packages/cli/fixtures/ng22"
+    },
+    "workDir": {
+      "type": "string",
+      "description": "Scratch folder inside the workspace, so cases find its Prettier and Angular compiler.",
+      "default": "tmp/update-e2e"
+    },
+    "minCleanRate": {
+      "type": "number",
+      "description": "Lowest share of merge cases that must merge cleanly, 0 to 1.",
+      "default": 0.9
+    },
+    "cases": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Run only cases whose id contains one of these."
+    },
+    "report": {
+      "type": "string",
+      "description": "Where to write the Markdown results table, relative to the workspace root.",
+      "default": "dist/update-e2e/report.md"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,27 @@
+{
+  "description": "Change --brand-foreground, which upstream keeps: upstream changes --brand and adds --brand-muted around it.",
+  "kind": "merge",
+  "item": "brand",
+  "from": "1.0.0",
+  "to": "2.0.0",
+  "replace": [
+    {
+      "path": "src/styles.css",
+      "find": "--brand-foreground: oklch(0.98 0 0)",
+      "with": "--brand-foreground: oklch(1 0 0)"
+    }
+  ],
+  "expect": {
+    "statuses": {
+      "src/app/lib/brand.ts": "unchanged"
+    },
+    "contains": {
+      "src/styles.css": [
+        "--brand: oklch(0.5 0.22 265)",
+        "--brand-foreground: oklch(1 0 0)",
+        "--brand-muted: oklch(0.95 0.03 260)",
+        "--brand: oklch(0.65 0.2 265)"
+      ]
+    }
+  }
+}

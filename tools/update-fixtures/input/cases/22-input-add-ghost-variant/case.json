@@ -1,0 +1,12 @@
+{
+  "description": "Add a ghost variant at the end of the variant map. Upstream adds the size map right after that map.",
+  "kind": "merge",
+  "item": "input",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "expect": {
+    "statuses": {
+      "src/app/ui/input/input.ts": "merged"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "update-fixtures",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "implicitDependencies": ["cli", "merge", "schema"],
+  "targets": {
+    "e2e": {
+      "executor": "@ndop/workspace-plugin:update-e2e",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/registry/snapshots/**/*",
+        "{workspaceRoot}/packages/cli/fixtures/ng22/**/*"
+      ],
+      "outputs": ["{workspaceRoot}/dist/update-e2e"]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "behavior",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "description": "The user deleted the file: update doesn't bring it back.",
+  "remove": [
+    "src/app/ui/button/button.ts"
+  ],
+  "expect": {
+    "statuses": {
+      "src/app/ui/button/button.ts": "missing"
+    },
+    "absent": [
+      "src/app/ui/button/button.ts"
+    ]
+  }
+}

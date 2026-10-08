@@ -1,0 +1,18 @@
+{
+  "kind": "behavior",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "description": "--interactive needs a terminal to ask in.",
+  "runs": [
+    {
+      "args": [
+        "--interactive"
+      ],
+      "expect": {
+        "exit": 1,
+        "error": "needs a terminal"
+      }
+    }
+  ]
+}

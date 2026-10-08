@@ -1,0 +1,12 @@
+{
+  "description": "Add an xl size at the end of the size map, two versions behind.",
+  "kind": "merge",
+  "item": "button",
+  "from": "0.1.0",
+  "to": "0.1.2",
+  "expect": {
+    "statuses": {
+      "src/app/ui/button/button.ts": "merged"
+    }
+  }
+}

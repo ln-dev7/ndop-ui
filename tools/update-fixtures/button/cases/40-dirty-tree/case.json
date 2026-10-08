@@ -1,0 +1,12 @@
+{
+  "kind": "behavior",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "description": "The edit isn't committed, so update refuses and writes nothing.",
+  "dirty": true,
+  "expect": {
+    "exit": 1,
+    "error": "uncommitted changes"
+  }
+}

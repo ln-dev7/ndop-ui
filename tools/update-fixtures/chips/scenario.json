@@ -1,0 +1,61 @@
+{
+  "description": "A ChipGroup; 2.0.0 starts using a separate Chip item and the clsx package.",
+  "items": [
+    {
+      "name": "chip-group",
+      "type": "registry:ui",
+      "title": "Chip group",
+      "description": "A row of chips.",
+      "files": [
+        {
+          "path": "ui/chip-group/chip-group.ts",
+          "type": "registry:ui",
+          "target": "{ui}/chip-group/chip-group.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "ChipGroup"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "2.0.0": {
+          "registryDependencies": [
+            "chip"
+          ],
+          "dependencies": [
+            "clsx@^2.1.1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "chip",
+      "type": "registry:ui",
+      "title": "Chip",
+      "description": "One chip.",
+      "files": [
+        {
+          "path": "ui/chip/chip.ts",
+          "type": "registry:ui",
+          "target": "{ui}/chip/chip.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Chip"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {}
+      }
+    }
+  ]
+}

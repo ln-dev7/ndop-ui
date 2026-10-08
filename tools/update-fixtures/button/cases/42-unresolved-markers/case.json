@@ -1,0 +1,28 @@
+{
+  "kind": "behavior",
+  "item": "button",
+  "from": "1.0.0",
+  "to": "1.1.0",
+  "description": "Run update again over a conflict nobody resolved: the file is left alone.",
+  "runs": [
+    {
+      "expect": {
+        "conflict": true,
+        "statuses": {
+          "src/app/ui/button/button.ts": "conflict"
+        }
+      }
+    },
+    {
+      "args": [
+        "--force"
+      ],
+      "expect": {
+        "exit": 2,
+        "statuses": {
+          "src/app/ui/button/button.ts": "unresolved"
+        }
+      }
+    }
+  ]
+}

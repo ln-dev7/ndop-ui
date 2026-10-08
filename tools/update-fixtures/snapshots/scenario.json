@@ -1,0 +1,12 @@
+{
+  "description": "Ndop's own items, from their committed snapshots: 0.1.1 points items at their metadata, 0.1.2 removes the source notice at the top of each file, and Dialog 0.1.3 mirrors its close button and header in RTL.",
+  "snapshots": [
+    "button",
+    "dialog",
+    "input",
+    "label",
+    "popover",
+    "separator",
+    "tooltip"
+  ]
+}

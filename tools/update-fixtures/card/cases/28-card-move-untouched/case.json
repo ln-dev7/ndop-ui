@@ -1,0 +1,17 @@
+{
+  "description": "No edits: 2.0.0 moves card.ts to card-root.ts and deletes card-header.ts.",
+  "kind": "merge",
+  "item": "card",
+  "from": "1.0.0",
+  "to": "2.0.0",
+  "expect": {
+    "statuses": {
+      "src/app/ui/card/card-root.ts": "renamed",
+      "src/app/ui/card/card-header.ts": "deleted"
+    },
+    "absent": [
+      "src/app/ui/card/card.ts",
+      "src/app/ui/card/card-header.ts"
+    ]
+  }
+}

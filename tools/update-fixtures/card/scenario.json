@@ -1,0 +1,94 @@
+{
+  "description": "A Card in two files at 1.0.0. 2.0.0 moves card.ts to card-root.ts and deletes card-header.ts, through migrations; 3.0.0 moves it again, to card-base.ts.",
+  "items": [
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A bordered surface.",
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "ui/card/card.ts",
+          "type": "registry:ui",
+          "target": "{ui}/card/card.ts"
+        },
+        {
+          "path": "ui/card/card-header.ts",
+          "type": "registry:ui",
+          "target": "{ui}/card/card-header.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Card",
+          "CardHeader"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "2.0.0": {
+          "files": [
+            {
+              "path": "ui/card/card-root.ts",
+              "type": "registry:ui",
+              "target": "{ui}/card/card-root.ts"
+            }
+          ],
+          "angular": {
+            "minVersion": "21.0.0",
+            "exports": [
+              "Card"
+            ],
+            "zoneless": true,
+            "ssr": true
+          },
+          "migrations": [
+            {
+              "from": "ui/card/card.ts",
+              "to": "ui/card/card-root.ts"
+            },
+            {
+              "from": "ui/card/card-header.ts"
+            }
+          ]
+        },
+        "3.0.0": {
+          "files": [
+            {
+              "path": "ui/card/card-base.ts",
+              "type": "registry:ui",
+              "target": "{ui}/card/card-base.ts"
+            }
+          ],
+          "angular": {
+            "minVersion": "21.0.0",
+            "exports": [
+              "Card"
+            ],
+            "zoneless": true,
+            "ssr": true
+          },
+          "migrations": [
+            {
+              "from": "ui/card/card.ts",
+              "to": "ui/card/card-root.ts"
+            },
+            {
+              "from": "ui/card/card-header.ts"
+            },
+            {
+              "from": "ui/card/card-root.ts",
+              "to": "ui/card/card-base.ts"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

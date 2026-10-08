@@ -1,0 +1,56 @@
+{
+  "description": "Ndop's Dialog without its footer at 1.0.0; 1.1.0 adds DialogFooter after DialogHeader.",
+  "items": [
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal window.",
+      "dependencies": [
+        "@ndop/primitives"
+      ],
+      "registryDependencies": [
+        "utils"
+      ],
+      "files": [
+        {
+          "path": "ui/dialog/dialog.ts",
+          "type": "registry:ui",
+          "target": "{ui}/dialog/dialog.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "DialogOverlay",
+          "DialogContent",
+          "DialogCloseButton",
+          "DialogHeader",
+          "DialogTitle",
+          "DialogDescription"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "versions": {
+        "1.0.0": {},
+        "1.1.0": {
+          "angular": {
+            "minVersion": "21.0.0",
+            "exports": [
+              "DialogOverlay",
+              "DialogContent",
+              "DialogCloseButton",
+              "DialogHeader",
+              "DialogFooter",
+              "DialogTitle",
+              "DialogDescription"
+            ],
+            "zoneless": true,
+            "ssr": true
+          }
+        }
+      }
+    }
+  ]
+}

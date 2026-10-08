@@ -24,6 +24,11 @@
       "implementation": "./src/executors/agent-eval/agent-eval",
       "schema": "./src/executors/agent-eval/schema.json",
       "description": "Run the agent eval suite: headless Claude Code with only the Ndop MCP server builds each prompt in a fixture app, scored by ndop verify (ADR-0019)."
+    },
+    "update-e2e": {
+      "implementation": "./src/executors/update-e2e/update-e2e",
+      "schema": "./src/executors/update-e2e/schema.json",
+      "description": "Run the update fixture suite: ndop add an old version, apply local edits, ndop update, and check files, statuses, exit codes and the lockfile (ADR-0020)."
     }
   }
 }
