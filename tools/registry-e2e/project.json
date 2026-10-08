@@ -12,7 +12,8 @@
     "registry",
     "verify",
     "eslint-plugin",
-    "metadata"
+    "metadata",
+    "merge"
   ],
   "targets": {
     "e2e": {
@@ -30,7 +31,8 @@
             "mcp",
             "eslint-plugin",
             "registry",
-            "verify"
+            "verify",
+            "merge"
           ]
         }
       ],
@@ -43,7 +45,8 @@
           },
           {
             "packageManager": "pnpm",
-            "angular": "22.2.1"
+            "angular": "22.2.1",
+            "update": true
           },
           {
             "packageManager": "bun",

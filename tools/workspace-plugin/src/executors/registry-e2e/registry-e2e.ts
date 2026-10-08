@@ -6,7 +6,10 @@ import {
   addDevCommand,
   agentFileProblems,
   BAD_PAGE,
+  BUTTON_EDIT,
   GOOD_PAGE,
+  updateProblems,
+  type UpdateJson,
   verifyProblems,
   type VerifyJson,
   caseId,
@@ -39,8 +42,10 @@ interface CaseResult {
  * `ng new` and times `ndop init`, `ndop add <item>` and the app's build
  * against the budget. It checks the agent context files (ADR-0017), init
  * having run with `--agent claude-code --mcp` over a team note in
- * `AGENTS.md`. Finally it runs `ndop add <item> --json` again and checks
- * that the plan is empty and no file changed.
+ * `AGENTS.md`. Then it runs `ndop add <item> --json` again and checks
+ * that the plan is empty and no file changed. A case with `update` also
+ * installs `button@0.1.0`, edits it, runs `ndop update` and builds the app
+ * again (ADR-0020).
  *
  * @param options - Cases, budget and paths.
  * @param context - Nx executor context.
@@ -227,6 +232,24 @@ async function runCase(
     );
     if (wrong.length) {
       return { id, seconds, error: wrong.join('; ') };
+    }
+
+    if (installCase.update) {
+      await run(ndop(['add', 'button@0.1.0', '--yes']), options);
+      const path = join(app, BUTTON_EDIT.path);
+      const installed = await readFile(path, 'utf-8');
+      await writeFile(
+        path,
+        installed.replace(BUTTON_EDIT.find, BUTTON_EDIT.replace),
+      );
+      const updated = lastJsonObject(
+        await run(ndop(['update', 'button', '--yes', '--json']), options),
+      ) as UpdateJson;
+      const problems = updateProblems(updated, await readFile(path, 'utf-8'));
+      if (problems.length) {
+        return { id, seconds, error: problems.join('; ') };
+      }
+      await run(runScriptCommand(packageManager, 'build'), options);
     }
     return { id, seconds };
   } catch (error) {

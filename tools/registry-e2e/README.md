@@ -19,7 +19,10 @@ and serves `dist/registry` over HTTP. Then, for each case in
 2. `ndop init --yes`, `ndop add dialog --yes` and the app's `build` script,
    timed together against the 2-minute budget;
 3. `ndop add dialog --yes --json` again, which must plan nothing and change
-   no file.
+   no file;
+4. for the case marked `update`: `ndop add button@0.1.0`, an edit to the
+   Button file, `ndop update button`, which must merge the edit with
+   upstream's changes, and the build again (ADR-0020).
 
 Apps and one log per case end up in `tmp/registry-e2e`. bun must be on the
 `PATH` for the bun case.

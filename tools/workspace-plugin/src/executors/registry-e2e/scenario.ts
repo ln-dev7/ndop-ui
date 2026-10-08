@@ -18,6 +18,64 @@ export interface InstallCase {
   packageManager: PackageManager;
   /** Exact `@angular/cli` version for `ng new`. */
   angular: string;
+  /**
+   * Also install `button@0.1.0`, edit it, run `ndop update` and build
+   * again (ADR-0020).
+   */
+  update?: boolean;
+}
+
+/** The parts of `ndop update --json` the real-app update case reads. */
+export interface UpdateJson {
+  /** Whether it succeeded. */
+  ok?: boolean;
+  /** What happened to each item's files. */
+  updates?: {
+    name: string;
+    from: string;
+    to: string;
+    files: { path: string; status: string }[];
+  }[];
+}
+
+/** The Button edit the real-app update case makes and keeps. */
+export const BUTTON_EDIT = {
+  path: 'src/app/ui/button/button.ts',
+  find: "'border bg-background shadow-xs hover:bg-accent",
+  replace: "'border-2 bg-background shadow-xs hover:bg-accent",
+};
+
+/**
+ * What's wrong with a real-app `ndop update button` run: it must merge the
+ * user's edit with upstream's changes, cleanly, and move the item on.
+ *
+ * @param result - Its `--json` output.
+ * @param merged - The Button file afterwards.
+ * @returns Problems; none when it worked.
+ */
+export function updateProblems(result: UpdateJson, merged: string): string[] {
+  const problems: string[] = [];
+  const button = result.updates?.find((update) => update.name === 'button');
+  if (!result.ok || !button) {
+    problems.push(
+      `ndop update didn't update button: ${JSON.stringify(result)}`,
+    );
+    return problems;
+  }
+  if (button.from !== '0.1.0' || button.to === '0.1.0') {
+    problems.push(`button went from ${button.from} to ${button.to}`);
+  }
+  const status = button.files.find(
+    (file) => file.path === BUTTON_EDIT.path,
+  )?.status;
+  if (status !== 'merged') problems.push(`button.ts was ${status}, not merged`);
+  if (!merged.includes(BUTTON_EDIT.replace)) {
+    problems.push("the update lost the user's edit");
+  }
+  if (merged.includes('Styles from shadcn/ui')) {
+    problems.push("the update didn't apply upstream's changes");
+  }
+  return problems;
 }
 
 /**

@@ -18,6 +18,10 @@
           "angular": {
             "type": "string",
             "description": "Exact @angular/cli version for ng new."
+          },
+          "update": {
+            "type": "boolean",
+            "description": "Also add button@0.1.0, edit it, run ndop update and build again (ADR-0020)."
           }
         },
         "required": ["packageManager", "angular"]
