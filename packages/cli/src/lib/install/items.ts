@@ -1,16 +1,13 @@
-import { posix } from 'node:path';
 import type { NdopLock } from '@ndop/schema';
 import { applyCss, applyCssVars } from '../edit/stylesheet';
-import { rewriteSpecifiers } from '../edit/typescript';
 import { CliError } from '../errors';
 import { dependencyName, sha256, type PlanBuilder } from '../plan/plan';
 import type { ResolvedItem } from '../registry/client';
+import { pristineFile } from './pristine';
 import {
   LOCK_FILE,
-  projectSpecifier,
   readLock,
   serializeLock,
-  targetPath,
   type InstallContext,
 } from './project-files';
 
@@ -30,8 +27,8 @@ export interface PlanItemsOptions {
  *
  * A file that exists with other content is kept, and reported as skipped,
  * unless it still matches the hash the lockfile recorded (the user never
- * edited it) or `overwrite` is set. `ndop update` (Phase 5) is the tool for
- * merging upstream changes into edited files.
+ * edited it) or `overwrite` is set. `ndop update` is the tool for merging
+ * upstream changes into edited files (ADR-0020).
  *
  * @param builder - The plan being built.
  * @param context - Where files go and how they import each other.
@@ -53,11 +50,11 @@ export async function planItems(
     const files: NdopLock['items'][string]['files'] = [];
 
     for (const file of item.files ?? []) {
-      const path = targetPath(context.config, file.target);
-      const content = file.path.endsWith('.ts')
-        ? rewriteRegistryImports(context, path, file.content ?? '')
-        : (file.content ?? '');
-      const formatted = await builder.formatted(path, content);
+      const { path, content: formatted } = await pristineFile(
+        context,
+        (target, text) => builder.formatted(target, text),
+        file,
+      );
       const current = await builder.read(path);
       const recorded = previous?.files.find((entry) => entry.path === path);
       const untouched =
@@ -137,36 +134,4 @@ async function angularPeers(builder: PlanBuilder): Promise<string[]> {
     manifest.dependencies?.['@angular/core'] ?? '',
   )?.[1];
   return major ? [`@angular/cdk@^${major}.0.0`] : [];
-}
-
-/**
- * Points an item file's `@/ui/…`, `@/lib/…` and `@/blocks/…` imports at
- * where the project's aliases put those files (ADR-0012). With the default
- * aliases nothing changes.
- *
- * @param context - Install context.
- * @param path - Project path the file is installed to.
- * @param content - File text from the registry.
- * @returns The text with specifiers rewritten.
- */
-function rewriteRegistryImports(
-  context: InstallContext,
-  path: string,
-  content: string,
-): string {
-  return rewriteSpecifiers(path, content, (specifier) => {
-    const match = /^@\/(ui|lib|blocks)\/(.+)$/.exec(specifier);
-    if (!match) {
-      return undefined;
-    }
-    const [, alias = 'ui', rest = ''] = match;
-    return projectSpecifier(
-      context,
-      path,
-      posix.join(
-        context.config.aliases[alias as 'ui' | 'lib' | 'blocks'],
-        rest,
-      ),
-    );
-  });
 }
