@@ -111,11 +111,11 @@ version history from the registry snapshots.
 These RFC items need things that don't exist yet; their UI stays out until
 then, and this ADR is amended when each lands:
 
-| Item                              | Waits for                           | Phase |
-| --------------------------------- | ----------------------------------- | ----- |
-| Open in StackBlitz                | `@ndop/*` published to npm          | 7     |
-| Generated OG images               | The launch design pass              | 7     |
-| Version switcher, changelog diffs | `ndop update` and released versions | 5     |
+| Item                              | Waits for                           | Phase                         |
+| --------------------------------- | ----------------------------------- | ----------------------------- |
+| Open in StackBlitz                | `@ndop/*` published to npm          | 7                             |
+| Generated OG images               | The launch design pass              | 7                             |
+| Version switcher, changelog diffs | `ndop update` and released versions | 5 (switcher: 7, amendment 11) |
 
 ### Hosting
 
@@ -374,3 +374,12 @@ Consequences: a real regression, which costs several points, still fails
 the job, while a page one point short on a slow runner warns instead.
 Raising Dialog, Popover and Tooltip back above 95 is open work, not a
 phase blocker.
+
+## Amendment 11 (2026-10-08): changelog in Phase 5, version switcher in Phase 7
+
+Status: Accepted; approved by Valery on 2026-10-08, with ADR-0020.
+
+Phase 5 ships each component's changelog page, version diffs and the update
+preview (ADR-0020). The site-wide version switcher waits until Phase 7:
+until 1.0 there is one docs version, and it covers both supported Angular
+majors, so there is nothing to switch between yet.
