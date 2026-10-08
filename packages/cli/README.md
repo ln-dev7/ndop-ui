@@ -101,6 +101,12 @@ It then exits with code 2. Resolve the markers and run
 created, theme variables you changed keep your values, and new
 dependencies are installed.
 
+When a new version moves or deletes a file, the file moves with your edits
+in it, or is deleted if you never edited it. When it renames an export or
+an input, `update` renames it in your own code and templates too.
+`--interactive` (`-i`) shows each of upstream's changes to a file you
+edited and applies only the ones you accept.
+
 The files it writes must have no uncommitted changes, so `git checkout`
 undoes an update; `--force` skips that check. It takes the same options
 as `add`, and `--json` reports what happened to every file.

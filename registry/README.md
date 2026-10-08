@@ -37,6 +37,22 @@ and themes also fail without a changelog section for every version; the
 build adds what changed in the files, migrations, codemods and dependencies
 to `r/changelog/<name>.json`.
 
+When a version moves or deletes a file, list it in the item's
+`migrations`, such as `{ "from": "ui/card/card.ts", "to": "ui/card/card-root.ts" }`
+(no `to` for a deletion). When it renames an export or an input, add a
+`codemods` entry with the version it starts in, so `ndop update` fixes
+users' code:
+
+```json
+"codemods": [
+  { "since": "0.3.0", "kind": "rename-export", "from": "ButtonSize", "to": "ButtonScale" },
+  { "since": "0.3.0", "kind": "rename-input", "selector": "button[ndButton], a[ndButton]", "from": "size", "to": "scale" }
+]
+```
+
+Keep every migration and codemod in later versions too: users may update
+from any older version.
+
 ## Test
 
 ```bash

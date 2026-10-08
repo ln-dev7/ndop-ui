@@ -33,8 +33,8 @@ diffs, and running a command twice changes nothing the second time.
 
 `init` also takes `--theme <name>` and `--project <name>`; `add` takes
 `--overwrite`, and installs a specific version when you write one after
-the name, as in `ndop add button@0.1.0`; `update` takes `--force` and
-`--continue`. For coding agents, `init` takes `--agent`, `--mcp` and
+the name, as in `ndop add button@0.1.0`; `update` takes `--force`,
+`--continue` and `--interactive`. For coding agents, `init` takes `--agent`, `--mcp` and
 `--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
 
 ## Your edits are safe
@@ -77,6 +77,11 @@ The files an update writes must be committed first, so `git checkout`
 undoes it; `--force` skips that check. Theme variables you changed keep
 your values, new files and dependencies are added, and files a new version
 drops stay in your project as yours.
+
+When a new version moves a file, your edited copy moves with it. When it
+renames something you use, such as an input, `update` renames it in your
+own components and templates as well. To pick which of upstream's changes
+to take, file by file, add `--interactive`.
 
 ## Package managers
 

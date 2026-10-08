@@ -4,6 +4,7 @@ import { stripVTControlCharacters } from 'node:util';
 import type { RegistryItem } from '@ndop/schema';
 import type { CommandEnvironment } from '../lib/commands/environment';
 import type { Installer } from '../lib/plan/apply';
+import type { AngularCompiler } from '../lib/update/codemods';
 import { createProgram } from '../lib/program';
 import { memoryFs, type ProjectFs } from '../lib/project/fs';
 import { noFormat, type Formatter } from '../lib/project/format';
@@ -160,6 +161,8 @@ export function testEnvironment(
       return JSON.stringify(item);
     },
     installer: () => fakeInstaller(project, installs),
+    angularCompiler: async () =>
+      (await import('@angular/compiler')) as unknown as AngularCompiler,
     dirtyFiles: async (_root, paths) => {
       const dirty = options.dirty;
       return dirty === false

@@ -422,4 +422,226 @@ describe('ndop update', () => {
     expect(out).toContain('Dry run: nothing was written.');
     expect(read(environment, BUTTON)).toBe(original);
   });
+
+  describe('migrations', () => {
+    const v2 = (extra: Partial<RegistryItem> = {}) =>
+      sizes(
+        '2.0.0',
+        { 'scale.ts': V1.replace("lg: 'h-10'", "lg: 'h-11'") },
+        {
+          migrations: [{ from: 'lib/sizes.ts', to: 'lib/scale.ts' }],
+          ...extra,
+        },
+      );
+
+    it('moves a file nobody edited to its new path', async () => {
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        v2(),
+      );
+      const result = await update(environment);
+      expect(result.updates[0].files).toEqual([
+        { path: 'src/app/lib/scale.ts', from: SIZES, status: 'renamed' },
+      ]);
+      expect(environment.project.files.has(SIZES)).toBe(false);
+      expect(read(environment, 'src/app/lib/scale.ts')).toContain("'h-11'");
+      expect(result.files).toEqual(
+        expect.arrayContaining([{ path: SIZES, action: 'delete' }]),
+      );
+      expect(result.warnings).toContain(
+        `${SIZES} moved to src/app/lib/scale.ts; update the imports of it.`,
+      );
+      expect(
+        locked(environment, 'sizes').files.map(
+          (file: { path: string }) => file.path,
+        ),
+      ).toEqual(['src/app/lib/scale.ts']);
+    });
+
+    it('moves your edits with the file and merges them', async () => {
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        v2(),
+      );
+      edit(environment, SIZES, (text) => `// Mine.\n${text}`);
+      const result = await update(environment);
+      expect(result.updates[0].files[0]).toEqual({
+        path: 'src/app/lib/scale.ts',
+        from: SIZES,
+        status: 'renamed',
+      });
+      expect(read(environment, 'src/app/lib/scale.ts')).toBe(
+        `// Mine.\n${V1.replace("'h-10'", "'h-11'")}`,
+      );
+    });
+
+    it('deletes an unedited file upstream deleted, and keeps an edited one', async () => {
+      const deleting = sizes(
+        '2.0.0',
+        { 'sizes.ts': V1 },
+        { migrations: [{ from: 'lib/old.ts' }, { from: 'lib/older.ts' }] },
+      );
+      const environment = await sizesProject(
+        sizes('1.0.0', {
+          'sizes.ts': V1,
+          'old.ts': 'export const old = 1;\n',
+          'older.ts': 'export const older = 1;\n',
+        }),
+        deleting,
+      );
+      edit(environment, 'src/app/lib/older.ts', (text) => `${text}// Mine.\n`);
+      const result = await update(environment);
+      expect(result.updates[0].files).toEqual([
+        { path: SIZES, status: 'unchanged' },
+        { path: 'src/app/lib/old.ts', status: 'deleted' },
+        {
+          path: 'src/app/lib/older.ts',
+          status: 'kept',
+          note: "sizes 2.0.0 deletes it; kept because you edited it. It's yours now.",
+        },
+      ]);
+      expect(environment.project.files.has('src/app/lib/old.ts')).toBe(false);
+      expect(read(environment, 'src/app/lib/older.ts')).toContain('// Mine.');
+      expect(
+        locked(environment, 'sizes').files.map(
+          (file: { path: string }) => file.path,
+        ),
+      ).toEqual([SIZES]);
+    });
+  });
+
+  describe('codemods', () => {
+    const page = `import { Component } from '@angular/core';
+import { sizes } from '@/lib/sizes';
+
+@Component({
+  selector: 'app-page',
+  template: \`<span ndSize size="sm"></span>\`,
+})
+export class Page {
+  protected readonly all = sizes;
+}
+`;
+
+    it('renames exports and inputs in your files when the update crosses them', async () => {
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        sizes(
+          '2.0.0',
+          { 'sizes.ts': V1.replace('sizes', 'scales') },
+          {
+            codemods: [
+              { since: '1.0.0', kind: 'rename-export', from: 'x', to: 'y' },
+              {
+                since: '2.0.0',
+                kind: 'rename-export',
+                from: 'sizes',
+                to: 'scales',
+              },
+              {
+                since: '2.0.0',
+                kind: 'rename-input',
+                selector: '[ndSize]',
+                from: 'size',
+                to: 'scale',
+              },
+            ],
+          },
+        ),
+      );
+      environment.project.files.set('src/app/page.ts', page);
+      environment.project.files.set(
+        'src/app/other.html',
+        '<p ndSize [size]="s"></p><p size="untouched"></p>\n',
+      );
+      const result = await update(environment);
+
+      expect(read(environment, 'src/app/page.ts')).toBe(
+        page
+          .replace('import { sizes }', 'import { scales }')
+          .replace('= sizes;', '= scales;')
+          .replace('size="sm"', 'scale="sm"'),
+      );
+      expect(read(environment, 'src/app/other.html')).toBe(
+        '<p ndSize [scale]="s"></p><p size="untouched"></p>\n',
+      );
+      expect(result.updates[0].codemods).toEqual([
+        expect.objectContaining({
+          kind: 'rename-export',
+          files: ['src/app/page.ts'],
+        }),
+        expect.objectContaining({
+          kind: 'rename-input',
+          files: ['src/app/other.html', 'src/app/page.ts'],
+        }),
+      ]);
+    });
+
+    it('asks you to rename inputs yourself without an Angular compiler', async () => {
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        sizes(
+          '2.0.0',
+          { 'sizes.ts': V1 },
+          {
+            codemods: [
+              {
+                since: '2.0.0',
+                kind: 'rename-input',
+                selector: '[ndSize]',
+                from: 'size',
+                to: 'scale',
+              },
+            ],
+          },
+        ),
+      );
+      environment.angularCompiler = async () => undefined;
+      const result = await update(environment);
+      expect(result.warnings).toContain(
+        "Couldn't load @angular/compiler, so rename the size input to scale on [ndSize] in your templates yourself.",
+      );
+    });
+  });
+
+  describe('--interactive', () => {
+    it('applies only the upstream changes you accept', async () => {
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        sizes('2.0.0', {
+          'sizes.ts': `// Sizes.\n${V1.replace("'h-10'", "'h-11'")}`,
+        }),
+      );
+      edit(environment, SIZES, (text) => `${text}// Mine.\n`);
+      const answers = [false, true];
+      environment.interactive = true;
+      environment.confirm = async () => answers.shift() ?? true;
+      const { out } = await runNdop(
+        environment,
+        'update',
+        '--yes',
+        '--interactive',
+      );
+
+      expect(out).toContain(`${SIZES} change 1 of 2, at line 1`);
+      expect(out).toContain('+// Sizes.');
+      expect(read(environment, SIZES)).toBe(
+        `${V1.replace("'h-10'", "'h-11'")}// Mine.\n`,
+      );
+      expect(out).toContain('Skipped 1 of 2 upstream changes.');
+      const latest = environment.registry['sizes']?.files?.[0]?.content ?? '';
+      expect(locked(environment, 'sizes').files).toEqual([
+        { path: SIZES, sha256: hash(latest) },
+      ]);
+    });
+
+    it('needs a terminal', async () => {
+      const environment = await installed(['button@0.1.0']);
+      const { err } = await runNdop(environment, 'update', '--interactive');
+      expect(err).toContain(
+        '--interactive asks questions, so it needs a terminal.',
+      );
+      expect(process.exitCode).toBe(1);
+    });
+  });
 });

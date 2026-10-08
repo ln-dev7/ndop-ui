@@ -1,6 +1,7 @@
 import type { Command } from 'commander';
 import { pc } from '../colors';
 import { CliError } from '../errors';
+import type { UpstreamHunk } from '@ndop/merge';
 import type { Plan } from '../plan/plan';
 import {
   NEEDS_ATTENTION,
@@ -22,6 +23,7 @@ import {
 interface UpdateCommandOptions extends WriteOptions {
   force?: boolean;
   continue?: boolean;
+  interactive?: boolean;
 }
 
 /**
@@ -61,13 +63,24 @@ export function registerUpdateCommand(
         'installed items, with @<version> for a specific version; all of them when left out',
       )
       .option('--force', 'update files with uncommitted changes')
-      .option('--continue', 'record conflicts you resolved by hand'),
+      .option('--continue', 'record conflicts you resolved by hand')
+      .option(
+        '-i, --interactive',
+        "pick which of upstream's changes to apply, one at a time",
+      ),
   ).action(async function (
     this: Command,
     names: string[],
     options: UpdateCommandOptions,
   ) {
     const output = outputOf(this);
+    if (options.interactive && !environment.interactive) {
+      process.exitCode = 1;
+      output.err(
+        `${pc.red('✗')} --interactive asks questions, so it needs a terminal.\n`,
+      );
+      return;
+    }
     let updates: ItemUpdate[] = [];
     const outcome = await executeWriteCommand(
       'update',
@@ -76,6 +89,13 @@ export function registerUpdateCommand(
       async ({ builder, client }) => {
         const planned = await planUpdate(builder, client, names, {
           continue: Boolean(options.continue),
+          angularCompiler: () => environment.angularCompiler(builder.fs.root),
+          ...(options.interactive
+            ? {
+                chooseHunks: (path, hunks) =>
+                  chooseHunks(environment, output.out, path, hunks),
+              }
+            : {}),
         });
         updates = planned.updates;
         return planned.items;
@@ -118,6 +138,34 @@ export function registerUpdateCommand(
     }
   });
   return program;
+}
+
+/**
+ * Asks, hunk by hunk, which of upstream's changes to a file to apply.
+ *
+ * @param environment - Injected outside world, for the prompt.
+ * @param out - Prints the hunks.
+ * @param path - Project path of the file.
+ * @param hunks - Upstream's changes to it.
+ * @returns Indexes of the accepted hunks.
+ */
+async function chooseHunks(
+  environment: CommandEnvironment,
+  out: (text: string) => void,
+  path: string,
+  hunks: readonly UpstreamHunk[],
+): Promise<number[]> {
+  const accepted: number[] = [];
+  for (const [index, hunk] of hunks.entries()) {
+    out(
+      `${pc.bold(path)} ${pc.dim(`change ${index + 1} of ${hunks.length}, at line ${hunk.baseLine}`)}\n${[
+        ...hunk.removed.map((line) => pc.red(`-${line}`)),
+        ...hunk.added.map((line) => pc.green(`+${line}`)),
+      ].join('\n')}\n`,
+    );
+    if (await environment.confirm('Apply this change?')) accepted.push(index);
+  }
+  return accepted;
 }
 
 /**
@@ -217,7 +265,14 @@ function table(updates: readonly ItemUpdate[]): string {
       `${update.registry}/${update.name}`,
       update.from,
       update.to,
-      count(update, ['replaced', 'unchanged', 'created', 'resolved']),
+      count(update, [
+        'replaced',
+        'unchanged',
+        'created',
+        'resolved',
+        'renamed',
+        'deleted',
+      ]),
       count(update, ['merged']),
       count(update, NEEDS_ATTENTION),
     ]),
@@ -251,8 +306,10 @@ function details(updates: readonly ItemUpdate[]): string {
     missing: pc.yellow('missing'),
     merged: pc.green('merged'),
     resolved: pc.green('resolved'),
+    renamed: pc.green('renamed'),
+    deleted: pc.red('deleted'),
   };
-  return updates
+  const files = updates
     .flatMap((update) => update.files)
     .filter((file) => label[file.status])
     .map((file) => {
@@ -260,7 +317,16 @@ function details(updates: readonly ItemUpdate[]): string {
         ? `:${file.conflictLines.join(',')}`
         : '';
       const note = file.note ? ` ${pc.dim(file.note)}` : '';
-      return `${label[file.status]} ${file.path}${lines}${note}\n`;
+      const from = file.from ? `${file.from} → ` : '';
+      return `${label[file.status]} ${from}${file.path}${lines}${note}\n`;
     })
     .join('');
+  const codemods = updates
+    .flatMap((update) => update.codemods ?? [])
+    .map(
+      (codemod) =>
+        `${pc.cyan('codemod')} ${codemod.kind} ${codemod.from} → ${codemod.to}: ${codemod.files.length ? codemod.files.join(', ') : 'nothing to change'}\n`,
+    )
+    .join('');
+  return files + codemods;
 }

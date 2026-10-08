@@ -1,8 +1,11 @@
 import {
   conflictMarkers,
   normalizeText,
+  partialRemote,
   threeWayMerge,
+  upstreamHunks,
   type MergeOutcome,
+  type UpstreamHunk,
 } from '@ndop/merge';
 import type { NdopLock, RegistryItem } from '@ndop/schema';
 import { applyCss, updateCssVars } from '../edit/stylesheet';
@@ -31,7 +34,16 @@ import {
   type ResolvedItem,
 } from '../registry/client';
 import { compareVersions } from '../registry/version';
+import { followMigrations } from './diff';
 import { newTypeErrors } from './typecheck';
+import {
+  codemodsBetween,
+  renameExports,
+  renameInlineInputs,
+  renameInputs,
+  type AngularCompiler,
+  type Codemod,
+} from './codemods';
 
 /**
  * What `ndop update` did to one file (ADR-0020).
@@ -47,6 +59,10 @@ import { newTypeErrors } from './typecheck';
  *   `ndop update --continue` records it.
  * - `resolved`: recorded by `--continue`.
  * - `missing`: it was deleted, and isn't restored (ADR-0010, rule 7).
+ * - `renamed`: upstream moved it, through a migration; your edits moved
+ *   with it.
+ * - `deleted`: upstream deleted it, through a migration, and you hadn't
+ *   edited it.
  */
 export type FileStatus =
   | 'replaced'
@@ -58,7 +74,9 @@ export type FileStatus =
   | 'unresolved'
   | 'pending'
   | 'resolved'
-  | 'missing';
+  | 'missing'
+  | 'renamed'
+  | 'deleted';
 
 /** Statuses that leave work for the user and exit with code 2. */
 export const NEEDS_ATTENTION: readonly FileStatus[] = [
@@ -69,8 +87,10 @@ export const NEEDS_ATTENTION: readonly FileStatus[] = [
 
 /** One file in an {@link ItemUpdate}. */
 export interface FileUpdate {
-  /** Project-relative path. */
+  /** Project-relative path, after any move. */
   path: string;
+  /** Where it was, when upstream moved it. */
+  from?: string;
   /** What happened to it. */
   status: FileStatus;
   /** 1-based lines of each conflict, for `conflict`. */
@@ -91,10 +111,33 @@ export interface ItemUpdate {
   to: string;
   /** Each file. */
   files: FileUpdate[];
+  /** Codemods run on the project's own files, with the files each changed. */
+  codemods?: (Codemod & { files: string[] })[];
 }
+
+/**
+ * Asks which of upstream's hunks to apply to a file, for `--interactive`.
+ *
+ * @param path - Project path of the file.
+ * @param hunks - Upstream's changes to it, in file order.
+ * @returns Indexes of the accepted hunks.
+ */
+export type ChooseHunks = (
+  path: string,
+  hunks: readonly UpstreamHunk[],
+) => Promise<number[]>;
 
 /** Options for {@link planUpdate}. */
 export interface UpdateOptions {
+  /**
+   * Asks which upstream hunks to apply to each file that needs a merge
+   * (ADR-0020, `--interactive`); all of them when left out.
+   */
+  chooseHunks?: ChooseHunks;
+  /**
+   * Loads the project's `@angular/compiler`, for `rename-input` codemods.
+   */
+  angularCompiler?: () => Promise<AngularCompiler | undefined>;
   /**
    * Record files whose conflicts were resolved by hand, instead of
    * updating (ADR-0010, rule 6).
@@ -187,15 +230,35 @@ export async function planUpdate(
   const before = serializeLock(lock);
   const updates: ItemUpdate[] = [];
   const updated: ResolvedItem[] = [];
+  let loaded: Promise<AngularCompiler | undefined> | undefined;
+  const compiler = () =>
+    (loaded ??= options.angularCompiler?.() ?? Promise.resolve(undefined));
   for (const target of ordered(targets)) {
     const key = keyOf(target.ref);
     const entry = lock.items[key];
     if (!entry) continue;
     const pending = entry.files.some((file) => file.version !== undefined);
     if (target.item.version === entry.version && !pending) continue;
-    const update = await planItem(builder, context, pristine, entry, target);
+    const codemods = codemodsBetween(target.item, entry.version);
+    const ran =
+      codemods.length > 0
+        ? await planCodemods(builder, context, pristine, entry, target, {
+            codemods,
+            compiler,
+          })
+        : [];
+    const update = await planItem(
+      builder,
+      context,
+      pristine,
+      entry,
+      target,
+      options,
+    );
     lock.items[key] = update.entry;
-    updates.push(update.report);
+    updates.push(
+      ran.length > 0 ? { ...update.report, codemods: ran } : update.report,
+    );
     if (update.report.from !== update.report.to) updated.push(target);
   }
 
@@ -254,6 +317,7 @@ function pristineCache(
  * @param pristine - Pristine files by version.
  * @param entry - The item's lockfile entry.
  * @param target - The version to update to.
+ * @param options - Hunk choices.
  * @returns The new lockfile entry and what happened.
  */
 async function planItem(
@@ -262,6 +326,7 @@ async function planItem(
   pristine: PristineCache,
   entry: NdopLock['items'][string],
   target: ResolvedItem,
+  options: UpdateOptions,
 ): Promise<{ entry: NdopLock['items'][string]; report: ItemUpdate }> {
   const ref = { registry: entry.registry, name: entry.name };
   const version = target.item.version;
@@ -310,7 +375,22 @@ async function planItem(
       );
       continue;
     }
-    const next = byRegistryPath.get(base.source.path);
+    const unedited = sha256(local) === installed.sha256;
+    const moved = followMigrations(target.item, base.source.path);
+    if (moved.deleted) {
+      if (unedited) {
+        builder.remove(installed.path);
+        report.push({ path: installed.path, status: 'deleted' });
+      } else {
+        report.push({
+          path: installed.path,
+          status: 'kept',
+          note: `${entry.name} ${version} deletes it; kept because you edited it. It's yours now.`,
+        });
+      }
+      continue;
+    }
+    const next = byRegistryPath.get(moved.path);
     if (!next) {
       report.push({
         path: installed.path,
@@ -320,63 +400,75 @@ async function planItem(
       continue;
     }
     reached.add(next.path);
-    if (next.path !== installed.path) {
-      keep('kept', `${entry.name} ${version} moves it to ${next.path}.`);
-      continue;
-    }
-
-    const record = () =>
-      files.push({ path: installed.path, sha256: sha256(next.content) });
-    if (sha256(local) === installed.sha256) {
-      if (local === next.content) {
-        report.push({ path: installed.path, status: 'unchanged' });
-      } else {
-        await builder.stage(installed.path, next.content, { format: false });
-        report.push({ path: installed.path, status: 'replaced' });
+    const path = next.path;
+    const from = path === installed.path ? undefined : installed.path;
+    if (from) {
+      const taken =
+        (await builder.read(path)) !== undefined &&
+        !entry.files.some((file) => file.path === path);
+      if (taken) {
+        keep(
+          'kept',
+          `${entry.name} ${version} moves it to ${path}, but a file is already there.`,
+        );
+        continue;
       }
-      record();
-      continue;
+      builder.remove(from);
+      builder.warn(`${from} moved to ${path}; update the imports of it.`);
     }
+    const moveNote = from ? { from } : {};
 
-    const merge = (union: boolean): MergeOutcome =>
-      threeWayMerge({
-        base: base.content,
-        local,
-        remote: next.content,
-        remoteVersion: version,
-        union,
+    if (unedited) {
+      if (from || local !== next.content) {
+        await builder.stage(path, next.content, { format: false });
+      }
+      files.push({ path, sha256: sha256(next.content) });
+      report.push({
+        path,
+        status: from
+          ? 'renamed'
+          : local === next.content
+            ? 'unchanged'
+            : 'replaced',
+        ...moveNote,
       });
-    let outcome = merge(true);
-    let note: string | undefined;
-    if (outcome.unioned && installed.path.endsWith('.ts')) {
-      const errors = newTypeErrors(installed.path, local, outcome.content);
-      if (errors.length > 0) {
-        outcome = merge(false);
-        note = `Keeping both sides' additions didn't type-check (${errors[0]}).`;
-      }
+      continue;
     }
-    if (outcome.content !== local) {
-      await builder.stage(installed.path, outcome.content, { format: false });
+
+    const { outcome, note } = await mergeFile(
+      path,
+      base.content,
+      local,
+      next.content,
+      version,
+      options.chooseHunks,
+    );
+    if (from || outcome.content !== local) {
+      await builder.stage(path, outcome.content, { format: false });
     }
     if (outcome.status === 'conflict') {
-      files.push({ ...installed, version: baseVersion });
+      files.push({ path, sha256: installed.sha256, version: baseVersion });
       report.push({
-        path: installed.path,
+        path,
         status: 'conflict',
         conflictLines: outcome.conflictLines,
+        ...moveNote,
         ...(note ? { note } : {}),
       });
       continue;
     }
-    record();
+    files.push({ path, sha256: sha256(next.content) });
     report.push({
-      path: installed.path,
-      status:
-        outcome.status === 'merged'
+      path,
+      status: from
+        ? 'renamed'
+        : outcome.status === 'merged'
           ? 'merged'
           : outcome.status === 'replaced'
             ? 'replaced'
             : 'unchanged',
+      ...moveNote,
+      ...(note ? { note } : {}),
     });
   }
 
@@ -430,6 +522,139 @@ async function planItem(
       files: report,
     },
   };
+}
+
+/** The codemods {@link planCodemods} runs, and what it runs them with. */
+interface CodemodRun {
+  /** The codemods the update crosses. */
+  codemods: readonly Codemod[];
+  /** Loads the project's Angular compiler, once. */
+  compiler: () => Promise<AngularCompiler | undefined>;
+}
+
+/**
+ * Runs an update's codemods on the project's own files under `src/`:
+ * everything but the item's files, which the merge updates (ADR-0020).
+ *
+ * @param builder - The plan.
+ * @param context - Install context.
+ * @param pristine - Pristine files by version.
+ * @param entry - The item's lockfile entry.
+ * @param target - The version updated to.
+ * @param run - The codemods and the compiler.
+ * @returns Each codemod with the files it changed.
+ */
+async function planCodemods(
+  builder: PlanBuilder,
+  context: InstallContext,
+  pristine: PristineCache,
+  entry: NdopLock['items'][string],
+  target: ResolvedItem,
+  run: CodemodRun,
+): Promise<(Codemod & { files: string[] })[]> {
+  const targetFiles = await pristine({
+    registry: entry.registry,
+    name: entry.name,
+    version: target.item.version,
+  });
+  const itemFiles = new Set([
+    ...entry.files.map((file) => file.path),
+    ...targetFiles.files.keys(),
+  ]);
+  const modules = [...itemFiles].map((path) => path.replace(/\.ts$/, ''));
+  const sources = (await builder.fs.list('src')).filter(
+    (path) =>
+      !itemFiles.has(path) && (path.endsWith('.ts') || path.endsWith('.html')),
+  );
+  const ran: (Codemod & { files: string[] })[] = [];
+  for (const codemod of run.codemods) {
+    const compiler =
+      codemod.kind === 'rename-input' ? await run.compiler() : undefined;
+    if (codemod.kind === 'rename-input' && !compiler) {
+      builder.warn(
+        `Couldn't load @angular/compiler, so rename the ${codemod.from} input to ${codemod.to} on ${codemod.selector} in your templates yourself.`,
+      );
+      continue;
+    }
+    const changed: string[] = [];
+    for (const path of sources) {
+      const text = await builder.read(path);
+      if (text === undefined) continue;
+      const next =
+        codemod.kind === 'rename-export'
+          ? path.endsWith('.ts')
+            ? renameExports(context, path, text, modules, [codemod])
+            : text
+          : compiler && path.endsWith('.ts')
+            ? renameInlineInputs(compiler, path, text, [codemod])
+            : compiler
+              ? renameInputs(compiler, text, [codemod])
+              : text;
+      if (next !== text) {
+        await builder.stage(path, next, { format: false });
+        changed.push(path);
+      }
+    }
+    ran.push({ ...codemod, files: changed });
+  }
+  return ran;
+}
+
+/**
+ * Merges one edited file (ADR-0003): with `chooseHunks`, only the upstream
+ * hunks the user accepts are merged; a union of insertions that adds type
+ * errors to a `.ts` file is merged again without it.
+ *
+ * @param path - Project path, for the type check and the prompt.
+ * @param base - Pristine file at its base version.
+ * @param local - The file on disk.
+ * @param remote - Pristine file at the target version.
+ * @param version - Target version, for the conflict markers.
+ * @param chooseHunks - Asks which upstream hunks to apply.
+ * @returns The outcome, and a note when it needs explaining.
+ */
+async function mergeFile(
+  path: string,
+  base: string,
+  local: string,
+  remote: string,
+  version: string,
+  chooseHunks: ChooseHunks | undefined,
+): Promise<{ outcome: MergeOutcome; note?: string }> {
+  let applied = remote;
+  let note: string | undefined;
+  if (chooseHunks) {
+    const hunks = upstreamHunks(base, remote);
+    if (hunks.length > 0) {
+      const accepted = await chooseHunks(path, hunks);
+      if (accepted.length < hunks.length) {
+        applied = partialRemote(base, remote, accepted);
+        note = `Skipped ${hunks.length - accepted.length} of ${hunks.length} upstream changes.`;
+      }
+    }
+  }
+  const merge = (union: boolean): MergeOutcome =>
+    threeWayMerge({
+      base,
+      local,
+      remote: applied,
+      remoteVersion: version,
+      union,
+    });
+  let outcome = merge(true);
+  if (outcome.unioned && path.endsWith('.ts')) {
+    const errors = newTypeErrors(path, local, outcome.content);
+    if (errors.length > 0) {
+      outcome = merge(false);
+      note = [
+        note,
+        `Keeping both sides' additions didn't type-check (${errors[0]}).`,
+      ]
+        .filter(Boolean)
+        .join(' ');
+    }
+  }
+  return note ? { outcome, note } : { outcome };
 }
 
 /**

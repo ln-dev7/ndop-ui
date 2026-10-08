@@ -1,9 +1,13 @@
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { confirm, isCancel, multiselect } from '@clack/prompts';
 import { packageManagerInstaller, type Installer } from '../plan/apply';
 import { nodeFs, type ProjectFs } from '../project/fs';
 import { gitDirtyFiles, type DirtyFiles } from '../project/git';
 import { projectFormatter, type Formatter } from '../project/format';
 import { defaultFetcher, type Fetcher } from '../registry/client';
+import type { AngularCompiler } from '../update/codemods';
 
 /**
  * Everything a write command needs from the outside world. Commands get it
@@ -66,6 +70,14 @@ export interface CommandEnvironment {
    * check (ADR-0010).
    */
   dirtyFiles: DirtyFiles;
+  /**
+   * Loads the project's own `@angular/compiler`, which `rename-input`
+   * codemods parse templates with.
+   *
+   * @param root - Absolute project root.
+   * @returns The compiler, or `undefined` when the project has none.
+   */
+  angularCompiler(root: string): Promise<AngularCompiler | undefined>;
   /** Whether the user can answer prompts. */
   interactive: boolean;
   /** Environment variables. */
@@ -98,6 +110,16 @@ export function nodeEnvironment(): CommandEnvironment {
       return isCancel(answer) ? undefined : (answer as typeof initial);
     },
     dirtyFiles: gitDirtyFiles,
+    async angularCompiler(root) {
+      try {
+        const entry = createRequire(join(root, 'package.json')).resolve(
+          '@angular/compiler',
+        );
+        return (await import(pathToFileURL(entry).href)) as AngularCompiler;
+      } catch {
+        return undefined;
+      }
+    },
     interactive: Boolean(process.stdin.isTTY && process.stdout.isTTY),
     env: process.env,
   };

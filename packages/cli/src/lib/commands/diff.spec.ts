@@ -129,10 +129,11 @@ describe('ndop diff', () => {
       environment.registry['dialog'],
     ) as RegistryItem;
     const [file] = dialog.files ?? [];
+    if (!file || !dialog.angular) throw new Error('Dialog has no file.');
     dialog.version = '9.0.0';
     dialog.files = [
       {
-        ...file!,
+        ...file,
         path: 'ui/dialog/dialog-root.ts',
         target: '{ui}/dialog/dialog-root.ts',
       },
@@ -154,7 +155,7 @@ describe('ndop diff', () => {
         to: 'DialogRoot',
       },
     ];
-    dialog.angular = { ...dialog.angular!, exports: ['DialogRoot'] };
+    dialog.angular = { ...dialog.angular, exports: ['DialogRoot'] };
     environment.registry['dialog'] = dialog;
 
     const [result] = (await diff(environment, 'dialog')).items;
