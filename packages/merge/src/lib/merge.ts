@@ -1,20 +1,15 @@
-import { diff3Merge, diffPatch, patch } from 'node-diff3';
+import { diffPatch, patch } from 'node-diff3';
+import {
+  CONFLICT_SEPARATOR,
+  CONFLICT_START,
+  conflictEnd,
+  mergeLines,
+  normalizeText,
+  toLines,
+} from './lines';
+import { structuralMerge } from './structure';
 
-/** Opening line of a conflict, above the user's side. */
-export const CONFLICT_START = '<<<<<<< local';
-
-/** Line between the user's side and upstream's in a conflict. */
-export const CONFLICT_SEPARATOR = '=======';
-
-/**
- * Closing line of a conflict, below upstream's side.
- *
- * @param version - The version being merged in.
- * @returns The marker, `>>>>>>> ndop@<version>`.
- */
-export function conflictEnd(version: string): string {
-  return `>>>>>>> ndop@${version}`;
-}
+export { CONFLICT_SEPARATOR, CONFLICT_START, conflictEnd, normalizeText };
 
 /** Inputs to {@link threeWayMerge}. */
 export interface MergeInput {
@@ -29,6 +24,12 @@ export interface MergeInput {
   remote: string;
   /** The target version, written in the closing conflict marker. */
   remoteVersion: string;
+  /**
+   * Whether to merge by top-level declaration first, for TypeScript
+   * (ADR-0003, amendment 2). Off by default; line merge alone runs when
+   * it's off or a side can't be split.
+   */
+  structural?: boolean;
   /**
    * Whether a conflict where both sides only inserted lines at the same
    * point keeps both, upstream's first (ADR-0003, amendment 1). On by
@@ -99,36 +100,29 @@ export function threeWayMerge(input: MergeInput): MergeOutcome {
   if (local === base) return done('replaced', remote);
   if (base === remote || local === remote) return done('unchanged', local);
 
-  const lines: string[] = [];
-  const conflictLines: number[] = [];
-  let unioned = false;
-  const regions = diff3Merge(toLines(local), toLines(base), toLines(remote), {
-    excludeFalseConflicts: true,
-  });
-  for (const region of regions) {
-    if (region.ok) {
-      lines.push(...region.ok);
-    } else if (region.conflict) {
-      const { a: ours, o: original, b: theirs } = region.conflict;
-      if (input.union !== false && original.length === 0) {
-        lines.push(...theirs, ...ours);
-        unioned = true;
-      } else {
-        conflictLines.push(lines.length + 1);
-        lines.push(
-          CONFLICT_START,
-          ...ours,
-          CONFLICT_SEPARATOR,
-          ...theirs,
-          conflictEnd(input.remoteVersion),
-        );
-      }
-    }
-  }
-  const merged = `${lines.join('\n')}\n`;
-  return conflictLines.length > 0
-    ? done('conflict', merged, conflictLines, unioned)
-    : done('merged', merged, [], unioned);
+  const union = input.union !== false;
+  const structured = input.structural
+    ? structuralMerge(base, local, remote, input.remoteVersion, union)
+    : undefined;
+  const merged =
+    structured ??
+    (() => {
+      const result = mergeLines(
+        toLines(base),
+        toLines(local),
+        toLines(remote),
+        input.remoteVersion,
+        union,
+      );
+      return { ...result, text: `${result.lines.join('\n')}\n` };
+    })();
+  if (merged.text === local) return done('unchanged', local);
+  const conflictLines = merged.conflicted
+    ? conflictMarkers(merged.text).lines
+    : [];
+  return merged.conflicted
+    ? done('conflict', merged.text, conflictLines, merged.unioned)
+    : done('merged', merged.text, [], merged.unioned);
 }
 
 /** What {@link conflictMarkers} found in a file. */
@@ -245,31 +239,4 @@ export function partialRemote(
     (_, index) => accepted.includes(index),
   );
   return normalizeText(patch(lines, hunks).join('\n'));
-}
-
-/**
- * Converts CRLF to LF and ends the text with exactly one newline, so line
- * endings and a missing final newline never show up as changes.
- *
- * @param text - File content.
- * @returns The normalized content.
- *
- * @example
- * ```ts
- * normalizeText('a\r\nb'); // 'a\nb\n'
- * ```
- */
-export function normalizeText(text: string): string {
-  return `${text.replace(/\r\n/g, '\n').replace(/\n+$/, '')}\n`;
-}
-
-/**
- * Splits normalized text into lines, without the empty string after the
- * final newline.
- *
- * @param text - Normalized content.
- * @returns The lines.
- */
-function toLines(text: string): string[] {
-  return text.slice(0, -1).split('\n');
 }

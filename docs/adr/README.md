@@ -9,7 +9,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | ----------------------------------------------- | --------------------------------------------------------- | ------------------------------ |
 | [0001](0001-stack-and-pinned-versions.md)       | Stack and pinned versions                                 | Accepted                       |
 | [0002](0002-registry-format-shadcn-superset.md) | Registry format as a shadcn superset                      | Accepted, with amendment 1     |
-| [0003](0003-three-way-merge-strategy.md)        | Three-way merge strategy and structural merge scope       | Accepted, with amendment 1     |
+| [0003](0003-three-way-merge-strategy.md)        | Three-way merge strategy and structural merge scope       | Accepted, with amendments 1–2  |
 | [0004](0004-primitives-on-aria-and-cdk.md)      | Primitives on `@angular/aria` + CDK, and custom fallbacks | Accepted, with amendments 1–7  |
 | [0005](0005-directive-only-styled-api.md)       | Directive-only styled API                                 | Accepted, with amendment 1     |
 | [0006](0006-shadcn-compatible-tokens.md)        | Token naming compatible with shadcn                       | Accepted, with amendment 1     |

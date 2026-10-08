@@ -34,6 +34,12 @@ Conflicts are written as `<<<<<<< local`, `=======` and
 point, both are kept, upstream's first; pass `union: false` to get a
 conflict there instead.
 
+Pass `structural: true` for TypeScript, as `ndop update` does: the file is
+merged declaration by declaration first, so two similar declarations
+added at one spot don't get mixed, and comments stay on their own
+declaration. Upstream's new declarations come before yours at the same
+spot. When a file can't be split safely, line merge runs instead.
+
 `upstreamHunks()` and `partialRemote()` apply only some of upstream's
 changes, as `ndop update --interactive` does, and `conflictMarkers()` finds
 conflicts left in a file.

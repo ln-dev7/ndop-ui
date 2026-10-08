@@ -1,6 +1,6 @@
 # ADR-0003: Three-way merge strategy and structural merge scope
 
-- Status: Accepted, with Amendment 1
+- Status: Accepted, with Amendments 1 and 2
 - Date: 2026-10-01
 - Phase: 0
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Three-way merge update algorithm"
@@ -159,3 +159,67 @@ lines is still a conflict.
   what the user received, at the cost of loading Prettier during `update`.
 - If the spike lands below 8 of 10, Phase 0 is not accepted. The next step is
   to bring the structural pass forward, decided in an amendment to this ADR.
+
+## Amendment 2 (2026-10-08): structural pass for top-level declarations
+
+Status: Accepted by Valery on 2026-10-08.
+
+**Why now:** step 6 of the Decision builds the structural pass if the
+Phase 5 fixture suite (ADR-0020) lands under 90%. It lands at 34/38
+(89.5%). Three of the four misses are true conflicts. The fourth, and a
+new case 39, show what line merge can't do:
+
+- **Case 24:** upstream adds `DialogFooter` after `DialogHeader`, and the
+  user adds `DialogBody` at the same point. diff3 aligns the boilerplate
+  both directives share with each other, so the two additions aren't one
+  conflict region and the union rule (amendment 1) never applies. The
+  result is valid code in an order the rule doesn't give.
+- **Case 39:** the same, but upstream also documents an existing
+  declaration. Line merge, ours and `git merge-file` alike, merges
+  "cleanly" with TSDoc comments on the wrong declarations. That compiles,
+  so the type check doesn't catch it. It's a silent wrong merge.
+
+**Decision:** for `.ts` files, `@ndop/merge` merges top-level declarations
+by name before falling back to line merge.
+
+1. **Split.** Each of base, local and remote is split into top-level
+   chunks: a declaration with its leading comments and decorators (a
+   class, function, interface, type, enum, variable statement, re-export),
+   the import block, and anything else as an unnamed chunk. The splitter
+   is a small TypeScript tokenizer in `@ndop/merge`: strings, template
+   literals, comments, regular expressions and bracket depth. No parser is
+   needed, so it still runs in the browser for the update preview.
+2. **Key.** A chunk is keyed by kind and name, such as `class DialogBody`
+   or `const buttonVariants`. The import block has one key. Unnamed chunks
+   are keyed by their position between named ones.
+3. **Fall back.** If any side can't be split (unbalanced brackets, an
+   unterminated string) or has two chunks with one key, the file goes
+   through line merge as today.
+4. **Merge by key:**
+   - in all three: the chunk's text is line-merged on its own, with
+     amendment 1's union rule and the type check;
+   - added on one side: kept;
+   - added on both sides: kept once if identical, otherwise a conflict
+     around the two;
+   - deleted on one side: deleted if the other side didn't change it,
+     otherwise a conflict.
+5. **Order.** Remote's order, with local-only chunks placed after the
+   chunk that precedes them in the local file. When upstream also added
+   chunks after that same anchor, upstream's come first, as amendment 1
+   does for lines.
+6. **Layout.** Each chunk keeps the whitespace that followed it in the
+   file it came from, so untouched parts of the file stay byte-identical.
+
+**Not in scope:** class members, and keys inside `variants()` and `host`.
+Within a declaration, line merge with the union rule passes every case in
+the suite. They come later, by amendment, if a fixture shows the need.
+
+**Measure:** the suite gains case 39 (39 merge cases, 3 true conflicts).
+The pass is accepted if the suite reaches ≥ 90% clean with no case
+breaking a rule, and if ADR-0003's ten Button cases still agree with
+`git merge-file` when the structural pass is off.
+
+Result (2026-10-08): the suite reaches 36/39 (92.3%) with the three true
+conflicts as the only misses; cases 24 and 39 merge as expected. The ten
+Button cases still agree with `git merge-file` with the structural pass
+off. See ADR-0020, "Results".
