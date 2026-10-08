@@ -15,8 +15,8 @@ import { executeWriteCommand, type CommandResult } from './lib/commands/run';
 import { tokenNames } from './lib/install/agents';
 import { planAdd } from './lib/install/add';
 import { CONFIG_FILE, readConfig, readLock } from './lib/install/project-files';
-import { sha256 } from './lib/plan/plan';
 import { nodeFs } from './lib/project/fs';
+import { localState, type LocalState } from './lib/update/diff';
 import {
   DEFAULT_NAMESPACE,
   defaultFetcher,
@@ -117,12 +117,15 @@ export interface ProjectContext {
   root: string;
   /** Its `ndop.json`. */
   config: NdopConfig;
-  /** Installed items, with each file and whether it was edited. */
+  /**
+   * Installed items, with each file and whether it was edited, or still
+   * has conflict markers from `ndop update`.
+   */
   items: {
     name: string;
     registry: string;
     version: string;
-    files: { path: string; state: 'unchanged' | 'edited' | 'missing' }[];
+    files: { path: string; state: LocalState }[];
   }[];
   /** The theme's tokens, from the Tailwind stylesheet. */
   tokens: { colors: string[]; other: string[] };
@@ -152,13 +155,7 @@ export async function projectContext(cwd: string): Promise<ProjectContext> {
         version: item.version,
         files: await Promise.all(
           item.files.map(async (file) => {
-            const text = await fs.read(file.path);
-            const state: 'unchanged' | 'edited' | 'missing' =
-              text === undefined
-                ? 'missing'
-                : sha256(text) === file.sha256
-                  ? 'unchanged'
-                  : 'edited';
+            const state = localState(await fs.read(file.path), file.sha256);
             return { path: file.path, state };
           }),
         ),

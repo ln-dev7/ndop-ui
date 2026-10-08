@@ -364,7 +364,7 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
     {
       title: 'Get project context',
       description:
-        "What's set up in the user's app: ndop.json (aliases, registry), the installed items and versions, which of their files the user edited, and the theme's token names. Call it first.",
+        "What's set up in the user's app: ndop.json (aliases, registry), the installed items and versions, which of their files the user edited or still have conflicts from ndop update, and the theme's token names. Call it first.",
       inputSchema: z.object({ cwd: cwdInput }),
       outputSchema: z.looseObject({ root: z.string() }),
       annotations: readOnly,
@@ -377,6 +377,11 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
             .filter((file) => file.state !== 'unchanged')
             .map((file) => `${file.path} (${file.state})`),
         );
+        const conflicted = context.items.flatMap((item) =>
+          item.files
+            .filter((file) => file.state === 'conflicted')
+            .map((file) => file.path),
+        );
         return {
           text: [
             `Project at ${context.root}.`,
@@ -384,6 +389,9 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
             `Installed: ${context.items.map((item) => `${item.name} ${item.version}`).join(', ') || 'nothing yet'}.`,
             edited.length
               ? `Edited since installed: ${edited.join(', ')}.`
+              : '',
+            conflicted.length
+              ? `ndop update left conflict markers in ${conflicted.join(', ')}: resolve them, then run npx ndop update --continue.`
               : '',
             `Color tokens: ${context.tokens.colors.join(', ')}.`,
           ]

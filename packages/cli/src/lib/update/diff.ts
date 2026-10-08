@@ -163,14 +163,7 @@ export async function diffItems(input: DiffInput): Promise<ItemDiff[]> {
         installed.path,
       );
       const text = await input.reader.read(installed.path);
-      const local: LocalState =
-        text === undefined
-          ? 'missing'
-          : hasMarkers(text)
-            ? 'conflicted'
-            : sha256(text) === installed.sha256
-              ? 'unchanged'
-              : 'edited';
+      const local = localState(text, installed.sha256);
       if (!base) {
         warnings.push(
           `${installed.path} isn't in ${entry.name} ${baseVersion} as this project installs it; its aliases may have changed since.`,
@@ -279,6 +272,31 @@ export function followMigrations(
     current = migration.to;
   }
   return { path: current, deleted: false };
+}
+
+/**
+ * How an installed file compares with what was installed (ADR-0010).
+ *
+ * @param text - The file on disk, or `undefined` when it's gone.
+ * @param recorded - Its `sha256` in the lockfile.
+ * @returns Its state.
+ *
+ * @example
+ * ```ts
+ * localState(await fs.read(file.path), file.sha256); // 'edited'
+ * ```
+ */
+export function localState(
+  text: string | undefined,
+  recorded: string,
+): LocalState {
+  return text === undefined
+    ? 'missing'
+    : hasMarkers(text)
+      ? 'conflicted'
+      : sha256(text) === recorded
+        ? 'unchanged'
+        : 'edited';
 }
 
 /**

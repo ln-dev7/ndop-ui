@@ -1,3 +1,5 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
@@ -264,6 +266,23 @@ export class Page {}
     expect(context.text).toContain(
       'Edited since installed: src/app/ui/dialog/dialog.ts (edited).',
     );
+  });
+
+  it('points out conflicts an update left', async () => {
+    const path = join(project.root, 'src/app/ui/dialog/dialog.ts');
+    const original = await readFile(path, 'utf-8');
+    await writeFile(
+      path,
+      `<<<<<<< local\na\n=======\nb\n>>>>>>> ndop@0.3.0\n${original}`,
+    );
+    try {
+      const context = await call('get_project_context', { cwd: project.root });
+      expect(context.text).toContain(
+        'ndop update left conflict markers in src/app/ui/dialog/dialog.ts: resolve them, then run npx ndop update --continue.',
+      );
+    } finally {
+      await writeFile(path, original);
+    }
   });
 
   it("validates a file's usage against the installed metadata", async () => {
