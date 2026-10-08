@@ -13,6 +13,7 @@ into the static JSON served at `https://ndop.dev/r/` (ADR-0012).
 | `examples/<item>-<case>.ts`       | Examples, installed to `{blocks}/examples/`.                                                                              |
 | `themes/<name>/theme.css`         | Theme tokens; `ndop build` turns them into the theme item's `cssVars`.                                                    |
 | `snapshots/<name>@<version>.json` | Built items, one per released version, committed. They are the merge bases of `ndop update`.                              |
+| `changelog/<name>.md`             | Release notes, a `## <version>` section per version ([ADR-0020](../docs/adr/0020-diff-and-update.md)).                    |
 | `vendor/shadcn/`                  | shadcn's sources, for the parity tests.                                                                                   |
 
 Items import each other through `@/`, exactly as they do once installed:
@@ -28,9 +29,13 @@ Runs `ndop build` through the `registry-build` executor and writes
 `dist/registry/r/`. It fails on schema errors, imports that break the
 dependency rules, type errors, and items changed without a version bump.
 
-When you change an item, bump its `version` in `registry.json`, build, and
-commit the new snapshot with the change. In CI, a version without a committed
-snapshot fails the build.
+When you change an item, bump its `version` in `registry.json`, add a
+`## <version>` section to `changelog/<name>.md` saying what changed for
+someone updating, build, and commit the new snapshot with the change. In CI,
+a version without a committed snapshot fails the build. Components, blocks
+and themes also fail without a changelog section for every version; the
+build adds what changed in the files, migrations, codemods and dependencies
+to `r/changelog/<name>.json`.
 
 ## Test
 

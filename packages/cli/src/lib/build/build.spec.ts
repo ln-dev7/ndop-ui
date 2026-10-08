@@ -112,6 +112,8 @@ async function fixture(
     'lib/utils.ts': UTILS,
     'ui/badge/badge.ts': BADGE,
     'themes/plain/theme.css': THEME,
+    'changelog/badge.md': '# Badge\n\n## 1.0.0\n\nFirst release.\n',
+    'changelog/plain.md': '## 1.0.0\n\nFirst release.\n',
     ...files,
     'registry.json': JSON.stringify({
       name: 'acme',
@@ -230,6 +232,100 @@ describe('buildRegistry', () => {
     expect(result.files).toEqual(
       expect.arrayContaining(['r/utils@1.0.0.json', 'r/utils@1.1.0.json']),
     );
+  });
+
+  it("writes each item's changelog, newest version first", async () => {
+    await fixture({});
+    await build();
+    const bumped = items();
+    (bumped[1] as { version: string }).version = '1.1.0';
+    (bumped[1] as { dependencies: string[] }).dependencies = ['clsx@^2.1.0'];
+    await fixture(
+      {
+        'ui/badge/badge.ts': BADGE.replace("'rounded'", "'rounded-full'"),
+        'changelog/badge.md':
+          '# Badge\n\n## 1.1.0\n\nRounder.\n\n## 1.0.0\n\nFirst release.\n',
+      },
+      bumped,
+    );
+
+    const result = await build();
+    expect(result.issues).toEqual([]);
+    expect(result.files).toEqual(
+      expect.arrayContaining([
+        'r/changelog/badge.json',
+        'r/changelog/utils.json',
+        'r/changelog/plain.json',
+      ]),
+    );
+    const none = { added: [], changed: [], removed: [] };
+    expect(await readJson('dist/r/changelog/badge.json')).toEqual({
+      $schema: 'https://ndop.dev/schema/changelog.json',
+      name: 'badge',
+      versions: [
+        {
+          version: '1.1.0',
+          notes: 'Rounder.\n',
+          changes: {
+            files: { ...none, changed: ['{ui}/badge/badge.ts'] },
+            migrations: [],
+            codemods: [],
+            dependencies: { ...none, added: ['clsx@^2.1.0'] },
+            registryDependencies: { added: [], removed: [] },
+          },
+        },
+        {
+          version: '1.0.0',
+          notes: 'First release.\n',
+          changes: {
+            files: { ...none, added: ['{ui}/badge/badge.ts'] },
+            migrations: [],
+            codemods: [],
+            dependencies: none,
+            registryDependencies: { added: ['utils'], removed: [] },
+          },
+        },
+      ],
+    });
+    expect((await readJson('dist/r/changelog/utils.json'))['versions']).toEqual(
+      [expect.objectContaining({ version: '1.0.0', notes: '' })],
+    );
+  });
+
+  it('requires release notes for every version of a documented item', async () => {
+    const bumped = items();
+    (bumped[1] as { version: string }).version = '1.1.0';
+    await fixture({}, items());
+    await build();
+    await fixture(
+      {
+        'ui/badge/badge.ts': `${BADGE}\n`,
+        'changelog/badge.md': '## 1.0.0\n\nFirst.\n\n## 2.0.0\n\nLater.\n',
+      },
+      bumped,
+    );
+    await rm(join(root, 'changelog/plain.md'));
+
+    const result = await build();
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([
+      {
+        item: 'badge',
+        file: 'changelog/badge.md',
+        message: "There's no version 2.0.0 of badge.",
+      },
+      {
+        item: 'badge',
+        file: 'changelog/badge.md',
+        message: 'No section for 1.1.0. Add "## 1.1.0" with what changed.',
+      },
+      {
+        item: 'plain',
+        file: 'changelog/plain.md',
+        message:
+          'No changelog. Write one with a "## <version>" section for each version.',
+      },
+    ]);
   });
 
   it('fails on a missing snapshot with frozen snapshots', async () => {

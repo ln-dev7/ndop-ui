@@ -7,6 +7,7 @@ import {
   type Registry,
   type RegistryItem,
 } from '@ndop/schema';
+import { DOCUMENTED_TYPES, itemChangelog, parseChangelog } from './changelog';
 import { compileFiles, writeScratchTsconfig } from './compile';
 import { checkExports, checkImports, sourceProject } from './sources';
 import { themeFromCss } from './theme';
@@ -28,7 +29,12 @@ import type {
  *   immutable merge bases `ndop update` reads;
  * - `<output>/r/metadata/<name>.json`: each `registry:ui` item's API,
  *   accessibility contract and docs notes (ADR-0007), which fail the build
- *   when incomplete.
+ *   when incomplete;
+ * - `<output>/r/changelog/<name>.json`: each item's versions, newest first,
+ *   with the notes from `<root>/changelog/<name>.md` and what changed since
+ *   the version before (ADR-0020). Items with docs pages (`registry:ui`,
+ *   `registry:block`, `registry:theme`) fail the build without a section
+ *   for every version.
  *
  * A snapshot is written to `<root>/snapshots/<name>@<version>.json` the
  * first time a version is built, and must be committed. If one already
@@ -130,6 +136,7 @@ export async function buildRegistry(
   }
 
   const snapshots = await checkSnapshots(built, root, frozen, issues);
+  const changelogs = await checkChangelogs(built, root, snapshots.all, issues);
   const reports = built.map((item) => ({
     name: item.name,
     version: item.version,
@@ -165,6 +172,9 @@ export async function buildRegistry(
   }
   for (const [file, content] of snapshots.all) {
     outputs.set(`r/${file}`, content);
+  }
+  for (const [name, content] of changelogs) {
+    outputs.set(`r/changelog/${name}.json`, content);
   }
 
   if (!options.dryRun) {
@@ -391,6 +401,78 @@ async function checkSnapshots(
     }
   }
   return { status, created, all };
+}
+
+/**
+ * Builds every item's changelog from its snapshots and
+ * `<root>/changelog/<name>.md`, and checks the notes: a section per
+ * version for items with docs pages, and no section for a version that
+ * doesn't exist.
+ *
+ * @param built - Built items.
+ * @param root - Registry root.
+ * @param snapshots - Every snapshot, existing and new, by file name.
+ * @param issues - Receives problems.
+ * @returns Each changelog's JSON, by item name.
+ */
+async function checkChangelogs(
+  built: readonly RegistryItem[],
+  root: string,
+  snapshots: ReadonlyMap<string, string>,
+  issues: BuildIssue[],
+): Promise<Map<string, string>> {
+  const versions = new Map<string, RegistryItem[]>();
+  for (const [file, content] of snapshots) {
+    const name = file.slice(0, file.indexOf('@'));
+    versions.set(name, [
+      ...(versions.get(name) ?? []),
+      JSON.parse(content) as RegistryItem,
+    ]);
+  }
+  const changelogs = new Map<string, string>();
+  for (const item of built) {
+    const file = `changelog/${item.name}.md`;
+    const report = (message: string) =>
+      issues.push({ item: item.name, file, message });
+    const documented = DOCUMENTED_TYPES.includes(item.type);
+    let markdown: string | undefined;
+    try {
+      markdown = await readFile(join(root, file), 'utf-8');
+    } catch {
+      if (documented) {
+        report(
+          'No changelog. Write one with a "## <version>" section for each version.',
+        );
+      }
+    }
+    const { sections, problems } = parseChangelog(markdown ?? '');
+    problems.forEach(report);
+    const itemVersions = versions.get(item.name) ?? [];
+    const known = new Set(itemVersions.map((version) => version.version));
+    for (const version of sections.keys()) {
+      if (!known.has(version)) {
+        report(`There's no version ${version} of ${item.name}.`);
+      }
+    }
+    if (documented && markdown !== undefined) {
+      for (const version of known) {
+        if (!sections.has(version)) {
+          report(
+            `No section for ${version}. Add "## ${version}" with what changed.`,
+          );
+        }
+      }
+    }
+    const changelog = itemChangelog(item.name, itemVersions, sections);
+    const checked = validate('changelog', changelog);
+    if (!checked.valid) {
+      checked.issues.forEach((issue) =>
+        report(`${issue.path || '/'} ${issue.message}`),
+      );
+    }
+    changelogs.set(item.name, json(changelog));
+  }
+  return changelogs;
 }
 
 /**

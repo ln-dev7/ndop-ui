@@ -73,7 +73,12 @@ describe('ndop build', () => {
       expect.objectContaining({
         ok: true,
         items: [{ name: 'utils', version: '1.0.0', snapshot: 'created' }],
-        files: ['r/index.json', 'r/utils.json', 'r/utils@1.0.0.json'],
+        files: [
+          'r/index.json',
+          'r/utils.json',
+          'r/utils@1.0.0.json',
+          'r/changelog/utils.json',
+        ],
       }),
     );
     expect(process.exitCode).toBeUndefined();
