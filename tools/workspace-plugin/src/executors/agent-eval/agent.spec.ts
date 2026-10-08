@@ -43,6 +43,21 @@ describe('parseClaudeResult', () => {
     );
   });
 
+  it('recognizes the session limit by its 429 status', () => {
+    const run = parseClaudeResult(
+      JSON.stringify({
+        is_error: true,
+        api_error_status: 429,
+        result: "You've hit your session limit · resets 5:10am",
+      }),
+      1,
+      10,
+    );
+    expect(run).toEqual(
+      expect.objectContaining({ ok: false, usageLimited: true }),
+    );
+  });
+
   it('treats output that is not JSON as a failure', () => {
     expect(parseClaudeResult('Invalid API key', 1, 10)).toEqual(
       expect.objectContaining({

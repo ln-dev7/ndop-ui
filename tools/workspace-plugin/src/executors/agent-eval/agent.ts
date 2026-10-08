@@ -36,7 +36,18 @@ export interface Agent {
 
 /** Messages Claude Code gives when a subscription's usage limit is hit. */
 const USAGE_LIMIT =
-  /usage limit|limit reached|hit your limit|rate.?limit|\b429\b/i;
+  /usage limit|session limit|limit reached|hit your (?:\w+ )?limit|rate.?limit|\b429\b/i;
+
+/**
+ * Whether an agent's error is a subscription usage limit rather than the
+ * agent failing.
+ *
+ * @param error - The agent's result text.
+ * @returns Whether it reads as a usage limit.
+ */
+export function isUsageLimit(error: string): boolean {
+  return USAGE_LIMIT.test(error);
+}
 
 /**
  * Reads `claude -p --output-format json`'s result, defensively, since only
@@ -67,7 +78,8 @@ export function parseClaudeResult(
   const failed = exitCode !== 0 || data?.['is_error'] === true || !data;
   return {
     ok: !failed,
-    usageLimited: failed && USAGE_LIMIT.test(result),
+    usageLimited:
+      failed && (data?.['api_error_status'] === 429 || isUsageLimit(result)),
     ...(typeof data?.['num_turns'] === 'number'
       ? { turns: data['num_turns'] }
       : {}),

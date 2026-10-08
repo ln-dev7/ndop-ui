@@ -152,6 +152,38 @@ describe('runEval', () => {
     expect(resumed.results.map((result) => result.id)).toEqual([1, 2]);
   });
 
+  it('runs again, on resume, attempts scored while the limit went unnoticed', async () => {
+    const first = fakes([
+      { files: { 'src/app/settings.ts': GOOD } },
+      {
+        files: {},
+        run: {
+          ok: false,
+          usageLimited: false,
+          result: "You've hit your session limit · resets 5:10am",
+        },
+      },
+    ]);
+    const scored = await runEval(options(), first.agent, first.workspace);
+    expect(scored.results).toHaveLength(2);
+
+    const second = fakes([
+      {
+        files: {
+          'src/app/sign-in.ts': "import { Input } from '@/ui/input/input';",
+        },
+      },
+    ]);
+    const resumed = await runEval(
+      { ...options(), resume: true },
+      second.agent,
+      second.workspace,
+    );
+    expect(second.seen).toEqual(['Sign-in form']);
+    expect(resumed.results.map((result) => result.id)).toEqual([1, 2]);
+    expect(resumed.results[1]?.error).toBeUndefined();
+  });
+
   it('runs each prompt several times with repeat', async () => {
     const { agent, workspace, seen } = fakes([]);
     const report = await runEval(

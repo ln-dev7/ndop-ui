@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { Agent, AgentRun } from './agent';
+import { isUsageLimit, type Agent, type AgentRun } from './agent';
 import type { EvalPrompt } from './prompts';
 import { authoredFiles, score, type Check, type VerifyOutput } from './score';
 
@@ -127,7 +127,8 @@ export interface EvalOptions {
  * Runs the eval suite (ADR-0019): each prompt, one at a time, in a fresh
  * copy of the fixture app, scored on what the agent changed. The report is
  * written after every prompt; a usage-limit error stops the run with the
- * report marked, and `resume` continues from the first unfinished prompt.
+ * report marked, and `resume` continues from the first unfinished prompt,
+ * running again any attempt that ended on a usage limit.
  *
  * @param options - Prompts, attempts, model and report folder.
  * @param agent - The agent.
@@ -155,6 +156,11 @@ export async function runEval(
         results: [],
       };
   delete report.stopped;
+  // A limit the runner failed to recognise was scored as a failure; those
+  // attempts never really ran, so resuming runs them again.
+  report.results = report.results.filter(
+    (result) => !result.error || !isUsageLimit(result.error),
+  );
 
   for (const prompt of options.prompts) {
     for (let attempt = 1; attempt <= report.repeat; attempt++) {
