@@ -16,6 +16,7 @@ import {
   executeWriteCommand,
   outputOf,
   summary,
+  type CommandResult,
   type WriteOptions,
 } from './run';
 
@@ -76,9 +77,30 @@ export function registerUpdateCommand(
     const output = outputOf(this);
     if (options.interactive && !environment.interactive) {
       process.exitCode = 1;
-      output.err(
-        `${pc.red('✗')} --interactive asks questions, so it needs a terminal.\n`,
-      );
+      const message = '--interactive asks questions, so it needs a terminal.';
+      if (options.json) {
+        output.out(
+          `${JSON.stringify(
+            {
+              ok: false,
+              command: 'update',
+              dryRun: Boolean(options.dryRun),
+              applied: false,
+              items: [],
+              files: [],
+              dependencies: [],
+              devDependencies: [],
+              skipped: [],
+              warnings: [],
+              errors: [{ message }],
+            } satisfies CommandResult,
+            null,
+            2,
+          )}\n`,
+        );
+      } else {
+        output.err(`${pc.red('✗')} ${message}\n`);
+      }
       return;
     }
     let updates: ItemUpdate[] = [];
