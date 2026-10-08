@@ -19,6 +19,20 @@ declare module 'virtual:ndop/components' {
     string,
     () => Promise<{ default: ComponentPageData }>
   >;
+  /** Loads one component's changelog page data, by name (ADR-0020). */
+  export const changelogs: Record<
+    string,
+    () => Promise<{
+      default: import('./app/components/changelog-data').ChangelogPageData;
+    }>
+  >;
+  /** Loads the files the update preview merges, by component name. */
+  export const snapshots: Record<
+    string,
+    () => Promise<{
+      default: import('./app/components/changelog-data').PreviewSnapshots;
+    }>
+  >;
   /** Loads one example's component, by example name. */
   export const examples: Record<
     string,

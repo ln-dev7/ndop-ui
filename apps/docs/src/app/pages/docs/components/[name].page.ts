@@ -410,7 +410,12 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                   <time [attr.datetime]="date">{{ date }}</time></span
                 >
               }
-              <span>Versions: {{ item.versions.join(', ') }}</span>
+              <a
+                [routerLink]="'/docs/components/' + item.name + '/changelog'"
+                class="hover:text-foreground"
+                >Changelog · {{ item.versions.length }}
+                {{ item.versions.length === 1 ? 'version' : 'versions' }}</a
+              >
             </div>
           </footer>
         } @else if (page.status() === 'resolved') {

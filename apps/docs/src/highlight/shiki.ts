@@ -344,6 +344,34 @@ export function transformerMetaTitle(): ShikiTransformer {
 }
 
 /**
+ * Marks lines as added or removed by their number, for diffs built from
+ * two texts (ADR-0020). Unlike `// [!code ++]` notation, it works on any
+ * line, a line inside a block comment included.
+ *
+ * @param marks - 1-based line numbers and what happened to each.
+ * @returns The transformer.
+ *
+ * @example
+ * ```ts
+ * highlighter.codeToHtml(code, { lang: 'ts', transformers: [transformerLineDiff(new Map([[2, 'add']]))] });
+ * ```
+ */
+export function transformerLineDiff(
+  marks: ReadonlyMap<number, 'add' | 'remove'>,
+): ShikiTransformer {
+  return {
+    name: 'ndop:line-diff',
+    pre(node) {
+      if (marks.size > 0) this.addClassToHast(node, 'has-diff');
+    },
+    line(node, line) {
+      const kind = marks.get(line);
+      if (kind) this.addClassToHast(node, ['diff', kind]);
+    },
+  };
+}
+
+/**
  * Wraps each block in the docs' code frame, chosen per block by the
  * fence's meta string:
  *

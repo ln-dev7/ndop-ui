@@ -2,7 +2,11 @@ import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { marked } from 'marked';
-import { createHighlighter, type Highlighter } from 'shiki';
+import {
+  createHighlighter,
+  type Highlighter,
+  type ShikiTransformer,
+} from 'shiki';
 import type { Plugin } from 'vite';
 import type {
   ComponentPageData,
@@ -37,11 +41,18 @@ import {
   llmsTxt,
   readGuides,
 } from './markdown-twins';
+import {
+  changelogMarkdown,
+  changelogPage,
+  previewSnapshots,
+} from './changelog';
 import { searchIndex, type IndexedComponent } from './search-index';
 
 const INDEX_ID = 'virtual:ndop/components';
 const PAGE_PREFIX = 'virtual:ndop/component/';
 const SEARCH_ID = 'virtual:ndop/search-index';
+const CHANGELOG_PREFIX = 'virtual:ndop/changelog/';
+const SNAPSHOTS_PREFIX = 'virtual:ndop/snapshots/';
 const REPOSITORY = 'https://github.com/valerymelou/ndop';
 
 /** Options of {@link componentDocs}. */
@@ -66,8 +77,11 @@ interface PageTools {
  * Generates the docs' data from the built registry, at build time
  * (ADR-0016): `virtual:ndop/components` lists the components and loads
  * each page's data from `virtual:ndop/component/<name>`, with Markdown
- * rendered and code highlighted here; `virtual:ndop/search-index` holds
- * the palette's index (ADR-0008); and `/llms.txt`, `/llms-full.txt` and
+ * rendered and code highlighted here, each changelog page's from
+ * `virtual:ndop/changelog/<name>` and the files the update preview merges
+ * from `virtual:ndop/snapshots/<name>` (ADR-0020);
+ * `virtual:ndop/search-index` holds the palette's index (ADR-0008); and
+ * `/llms.txt`, `/llms-full.txt` and
  * every page's `.md` twin are served in development and emitted with the
  * build (amendment 6). The registry must be built first
  * (`registry:build`), which the docs' targets depend on.
@@ -78,7 +92,12 @@ interface PageTools {
 export function componentDocs(options: ComponentDocsOptions): Plugin {
   const registry = join(options.workspace, 'dist/registry/r');
   let highlighter: Promise<Highlighter> | undefined;
-  const highlight = async (code: string, lang: string, meta = '') => {
+  const highlight = async (
+    code: string,
+    lang: string,
+    meta = '',
+    extra: ShikiTransformer[] = [],
+  ) => {
     highlighter ??= createHighlighter({
       langs: LANGUAGES,
       themes: Object.values(THEMES),
@@ -89,7 +108,7 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       colorReplacements: COLOR_REPLACEMENTS,
       defaultColor: false,
       meta: { __raw: meta },
-      transformers: transformers(),
+      transformers: [...extra, ...transformers()],
     });
   };
   const read = <T>(file: string): T =>
@@ -114,10 +133,21 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
           ] as const,
       ),
     ];
+    // Changelogs have twins too, but stay out of llms-full.txt, which is
+    // for using the components, not their history.
+    const changelogs = components.map(
+      (item) =>
+        [
+          `/docs/components/${item.name}/changelog.md`,
+          changelogMarkdown(item.name, read),
+        ] as const,
+    );
     const markdown = 'text/markdown; charset=utf-8';
     const text = 'text/plain; charset=utf-8';
     return new Map([
-      ...twins.map(([path, body]) => [path, { type: markdown, body }] as const),
+      ...[...twins, ...changelogs].map(
+        ([path, body]) => [path, { type: markdown, body }] as const,
+      ),
       [
         '/llms.txt',
         {
@@ -164,7 +194,11 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       }
     },
     resolveId(id) {
-      return id === INDEX_ID || id === SEARCH_ID || id.startsWith(PAGE_PREFIX)
+      return id === INDEX_ID ||
+        id === SEARCH_ID ||
+        id.startsWith(PAGE_PREFIX) ||
+        id.startsWith(CHANGELOG_PREFIX) ||
+        id.startsWith(SNAPSHOTS_PREFIX)
         ? `\0${id}`
         : undefined;
     },
@@ -214,7 +248,27 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
                 `${JSON.stringify(component.name)}: () => import(${JSON.stringify(PAGE_PREFIX + component.name)})`,
             )
             .join(',')}};`,
+          `export const changelogs = {${components
+            .map(
+              (component) =>
+                `${JSON.stringify(component.name)}: () => import(${JSON.stringify(CHANGELOG_PREFIX + component.name)})`,
+            )
+            .join(',')}};`,
+          `export const snapshots = {${components
+            .map(
+              (component) =>
+                `${JSON.stringify(component.name)}: () => import(${JSON.stringify(SNAPSHOTS_PREFIX + component.name)})`,
+            )
+            .join(',')}};`,
         ].join('\n');
+      }
+      if (id.startsWith(`\0${CHANGELOG_PREFIX}`)) {
+        const name = id.slice(CHANGELOG_PREFIX.length + 1);
+        return `export default ${JSON.stringify(await changelogPage(name, { read, highlight }))};`;
+      }
+      if (id.startsWith(`\0${SNAPSHOTS_PREFIX}`)) {
+        const name = id.slice(SNAPSHOTS_PREFIX.length + 1);
+        return `export default ${JSON.stringify(previewSnapshots(name, read))};`;
       }
       if (id.startsWith(`\0${PAGE_PREFIX}`)) {
         const name = id.slice(PAGE_PREFIX.length + 1);

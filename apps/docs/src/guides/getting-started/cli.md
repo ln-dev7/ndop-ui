@@ -83,6 +83,11 @@ renames something you use, such as an input, `update` renames it in your
 own components and templates as well. To pick which of upstream's changes
 to take, file by file, add `--interactive`.
 
+Every component's page links its changelog: what changed in each version,
+what `ndop update` does for it, and the diffs. Its update preview merges
+your copy of a file in the browser, so you can see the result before
+running anything.
+
 ## Package managers
 
 The CLI installs dependencies with the package manager your project uses,
