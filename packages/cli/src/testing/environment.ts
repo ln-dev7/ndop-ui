@@ -122,6 +122,11 @@ export interface TestEnvironmentOptions {
   format?: Formatter;
   /** Extra environment variables. */
   env?: Record<string, string | undefined>;
+  /**
+   * Files git reports as changed, or `false` for a project outside a git
+   * repository; a clean repository by default.
+   */
+  dirty?: string[] | false;
 }
 
 /**
@@ -155,6 +160,12 @@ export function testEnvironment(
       return JSON.stringify(item);
     },
     installer: () => fakeInstaller(project, installs),
+    dirtyFiles: async (_root, paths) => {
+      const dirty = options.dirty;
+      return dirty === false
+        ? undefined
+        : paths.filter((path) => (dirty ?? []).includes(path));
+    },
     confirm: async () => true,
     multiselect: async (_message, _options, initial) => initial,
     interactive: false,

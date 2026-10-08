@@ -7,6 +7,7 @@ import {
   type CommandEnvironment,
 } from './commands/environment';
 import { registerInitCommand } from './commands/init';
+import { registerUpdateCommand } from './commands/update';
 import { registerVerifyCommand } from './commands/verify';
 
 /**
@@ -35,6 +36,7 @@ export function createProgram(
   registerInitCommand(program, environment);
   registerAddCommand(program, environment);
   registerDiffCommand(program, environment);
+  registerUpdateCommand(program, environment);
   registerBuildCommand(program);
   registerVerifyCommand(program);
   return program;

@@ -12,6 +12,7 @@ import {
 } from '../registry/client';
 import type { NdopConfig } from '@ndop/schema';
 import { readConfig } from '../install/project-files';
+import type { ItemUpdate } from '../update/update';
 import type { CommandEnvironment } from './environment';
 
 /**
@@ -56,6 +57,8 @@ export interface CommandResult {
   warnings: string[];
   /** What went wrong, when `ok` is false. */
   errors: { message: string; file?: string }[];
+  /** For `ndop update`: what happened to each item's files. */
+  updates?: ItemUpdate[];
 }
 
 /**
@@ -92,6 +95,8 @@ export interface WriteOutcome {
  * @param plan - Stages the command's changes.
  * @param approve - Asked before applying a non-empty plan; applies when
  *   left out.
+ * @param guard - Checks a non-empty plan before it is applied, not in a
+ *   dry run: it throws a {@link CliError} to stop, or returns warnings.
  * @returns The result, and the plan.
  */
 export async function executeWriteCommand(
@@ -100,6 +105,7 @@ export async function executeWriteCommand(
   environment: CommandEnvironment,
   plan: (input: PlanningInput) => Promise<ResolvedItem[]>,
   approve?: (plan: Plan) => Promise<boolean>,
+  guard?: (plan: Plan, root: string) => Promise<string[]>,
 ): Promise<WriteOutcome> {
   const root = resolve(options.cwd);
   const result: CommandResult = {
@@ -145,6 +151,7 @@ export async function executeWriteCommand(
     });
 
     if (!options.dryRun && !isEmptyPlan(finished)) {
+      if (guard) result.warnings.push(...(await guard(finished, root)));
       if (approve && !(await approve(finished))) {
         return { result, plan: finished, cancelled: true };
       }
@@ -247,7 +254,7 @@ export function outputOf(command: Command): {
  * @param plan - A finished plan.
  * @returns Text to print.
  */
-function summary(plan: Plan): string {
+export function summary(plan: Plan): string {
   const lines = [
     ...plan.files.map(
       (file) =>
@@ -271,7 +278,7 @@ function summary(plan: Plan): string {
  * @param plan - A finished plan.
  * @returns Text to print.
  */
-function dryRunReport(plan: Plan): string {
+export function dryRunReport(plan: Plan): string {
   if (isEmptyPlan(plan) && plan.skipped.length === 0) {
     return 'Already up to date; nothing would change.\n';
   }

@@ -1,0 +1,425 @@
+import { createHash } from 'node:crypto';
+import type { RegistryItem } from '@ndop/schema';
+import {
+  fixture,
+  runNdop,
+  testEnvironment,
+  type TestEnvironmentOptions,
+} from '../../testing/environment';
+
+const BUTTON = 'src/app/ui/button/button.ts';
+const SIZES = 'src/app/lib/sizes.ts';
+
+type Environment = ReturnType<typeof testEnvironment>;
+
+/**
+ * A project with `ndop init` run and the given items added.
+ *
+ * @param items - Items to add, with versions where wanted.
+ * @param options - Test environment options.
+ * @returns The test environment.
+ */
+async function installed(
+  items: string[],
+  options: TestEnvironmentOptions = {},
+): Promise<Environment> {
+  const environment = testEnvironment(fixture('ng22'), options);
+  await runNdop(environment, 'init', '--yes');
+  await runNdop(environment, 'add', '--yes', ...items);
+  return environment;
+}
+
+/**
+ * Runs `ndop update --yes --json` and parses the result.
+ *
+ * @param environment - Test environment.
+ * @param args - Items and options.
+ * @returns The JSON result.
+ */
+async function update(environment: Environment, ...args: string[]) {
+  const { out } = await runNdop(
+    environment,
+    'update',
+    '--yes',
+    '--json',
+    ...args,
+  );
+  return JSON.parse(out);
+}
+
+/**
+ * Reads a project file.
+ *
+ * @param environment - Test environment.
+ * @param path - Project path.
+ * @returns Its text.
+ */
+function read(environment: Environment, path: string): string {
+  return environment.project.files.get(path) ?? '';
+}
+
+/**
+ * Edits a project file in place.
+ *
+ * @param environment - Test environment.
+ * @param path - Project path.
+ * @param edit - Returns the new text.
+ */
+function edit(
+  environment: Environment,
+  path: string,
+  edit: (text: string) => string,
+): void {
+  environment.project.files.set(path, edit(read(environment, path)));
+}
+
+/**
+ * The lockfile entry of an item.
+ *
+ * @param environment - Test environment.
+ * @param name - Item name.
+ * @returns The entry.
+ */
+function locked(environment: Environment, name: string) {
+  return JSON.parse(read(environment, 'ndop.lock.json')).items[`@ndop/${name}`];
+}
+
+/**
+ * SHA-256 of a text, as the lockfile records it.
+ *
+ * @param text - File text.
+ * @returns Hex digest.
+ */
+function hash(text: string): string {
+  return createHash('sha256').update(text).digest('hex');
+}
+
+/**
+ * A `registry:lib` item.
+ *
+ * @param version - Its version.
+ * @param files - Registry paths under `lib/` to contents.
+ * @param extra - Other fields.
+ * @returns The item.
+ */
+function sizes(
+  version: string,
+  files: Record<string, string>,
+  extra: Partial<RegistryItem> = {},
+): RegistryItem {
+  return {
+    name: 'sizes',
+    type: 'registry:lib',
+    version,
+    title: 'Sizes',
+    description: 'Size classes.',
+    files: Object.entries(files).map(([path, content]) => ({
+      path: `lib/${path}`,
+      type: 'registry:lib' as const,
+      target: `{lib}/${path}`,
+      content,
+    })),
+    ...extra,
+  };
+}
+
+/**
+ * Serves `sizes` at version 1.0.0, installs it, then publishes 2.0.0.
+ *
+ * @param before - Version 1.0.0.
+ * @param after - Version 2.0.0.
+ * @returns The environment, with 1.0.0 installed.
+ */
+async function sizesProject(
+  before: RegistryItem,
+  after: RegistryItem,
+): Promise<Environment> {
+  const environment = await installed(['sizes'], {
+    registry: { ...testEnvironment({}).registry, sizes: before },
+  });
+  environment.registry['sizes@1.0.0'] = before;
+  environment.registry['sizes'] = after;
+  return environment;
+}
+
+const V1 = "export const sizes = {\n  sm: 'h-8',\n  lg: 'h-10',\n};\n";
+
+describe('ndop update', () => {
+  afterEach(() => {
+    process.exitCode = undefined;
+  });
+
+  it('replaces files nobody edited and moves the lockfile on', async () => {
+    const environment = await installed(['button@0.1.0']);
+    const latest = environment.registry['button'] as RegistryItem;
+    const result = await update(environment);
+
+    expect(result.ok).toBe(true);
+    expect(result.updates).toEqual([
+      {
+        registry: '@ndop',
+        name: 'button',
+        from: '0.1.0',
+        to: latest.version,
+        files: [{ path: BUTTON, status: 'replaced' }],
+      },
+    ]);
+    expect(read(environment, BUTTON)).toBe(latest.files?.[0]?.content);
+    expect(locked(environment, 'button')).toEqual({
+      name: 'button',
+      registry: '@ndop',
+      version: latest.version,
+      files: [{ path: BUTTON, sha256: hash(read(environment, BUTTON)) }],
+    });
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it('merges upstream changes into your edits, and a rerun changes nothing', async () => {
+    const environment = await installed(['button@0.1.0']);
+    edit(environment, BUTTON, (text) => text.replace("'default'", "'outline'"));
+    const result = await update(environment);
+
+    expect(result.updates[0].files).toEqual([
+      { path: BUTTON, status: 'merged' },
+    ]);
+    const merged = read(environment, BUTTON);
+    expect(merged).toContain("'outline'");
+    expect(merged).not.toContain('Styles from shadcn/ui');
+    const latest = environment.registry['button']?.files?.[0]?.content ?? '';
+    // The pristine new version's hash, not the merged file's: the next
+    // update must merge again, not replace the user's edits.
+    expect(locked(environment, 'button').files).toEqual([
+      { path: BUTTON, sha256: hash(latest) },
+    ]);
+
+    const again = await update(environment);
+    expect(again.updates).toEqual([]);
+    expect(again.files).toEqual([]);
+  });
+
+  it('writes conflicts with markers, exits 2 and keeps the old base', async () => {
+    const environment = await installed(['button@0.1.0']);
+    edit(environment, BUTTON, (text) =>
+      text.replace('Styles from shadcn/ui', 'Styles adapted from shadcn/ui'),
+    );
+    const before = locked(environment, 'button').files[0];
+    const result = await update(environment);
+
+    expect(result.updates[0].files).toEqual([
+      { path: BUTTON, status: 'conflict', conflictLines: [1] },
+    ]);
+    expect(read(environment, BUTTON)).toMatch(
+      /^<<<<<<< local\n[\s\S]*=======\n[\s\S]*>>>>>>> ndop@0\.1\.2\n/,
+    );
+    expect(locked(environment, 'button')).toEqual(
+      expect.objectContaining({
+        version: '0.1.2',
+        files: [{ ...before, version: '0.1.0' }],
+      }),
+    );
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('leaves unresolved conflicts alone, then records them with --continue', async () => {
+    const environment = await installed(['button@0.1.0']);
+    edit(environment, BUTTON, (text) =>
+      text.replace('Styles from shadcn/ui', 'Styles adapted from shadcn/ui'),
+    );
+    await update(environment);
+    const conflicted = read(environment, BUTTON);
+
+    const unresolved = await update(environment);
+    expect(unresolved.updates[0].files[0].status).toBe('unresolved');
+    expect(read(environment, BUTTON)).toBe(conflicted);
+    expect(process.exitCode).toBe(2);
+
+    // Keep the user's side of the conflict.
+    edit(environment, BUTTON, (text) =>
+      text.replace(
+        /^<<<<<<< local\n([\s\S]*?)=======\n[\s\S]*?>>>>>>> .*\n/,
+        '$1',
+      ),
+    );
+    process.exitCode = undefined;
+    const pending = await update(environment);
+    expect(pending.updates[0].files[0].status).toBe('pending');
+    expect(process.exitCode).toBe(2);
+
+    process.exitCode = undefined;
+    const recorded = await update(environment, '--continue');
+    expect(recorded.updates[0].files).toEqual([
+      { path: BUTTON, status: 'resolved' },
+    ]);
+    const latest = environment.registry['button']?.files?.[0]?.content ?? '';
+    expect(locked(environment, 'button').files).toEqual([
+      { path: BUTTON, sha256: hash(latest) },
+    ]);
+    expect(read(environment, BUTTON)).toContain('Styles adapted from');
+    expect(process.exitCode).toBeUndefined();
+    expect((await update(environment)).updates).toEqual([]);
+  });
+
+  it('keeps both additions at one spot when the result type-checks', async () => {
+    const environment = await sizesProject(
+      sizes('1.0.0', { 'sizes.ts': V1 }),
+      sizes('2.0.0', {
+        'sizes.ts': V1.replace("lg: 'h-10',", "lg: 'h-10',\n  xl: 'h-12',"),
+      }),
+    );
+    edit(environment, SIZES, (text) =>
+      text.replace("lg: 'h-10',", "lg: 'h-10',\n  xs: 'h-6',"),
+    );
+    const result = await update(environment);
+    expect(result.updates[0].files[0].status).toBe('merged');
+    expect(read(environment, SIZES)).toBe(
+      "export const sizes = {\n  sm: 'h-8',\n  lg: 'h-10',\n  xl: 'h-12',\n  xs: 'h-6',\n};\n",
+    );
+  });
+
+  it('turns additions that clash into a conflict', async () => {
+    const environment = await sizesProject(
+      sizes('1.0.0', { 'sizes.ts': V1 }),
+      sizes('2.0.0', {
+        'sizes.ts': V1.replace("lg: 'h-10',", "lg: 'h-10',\n  xs: 'h-6',"),
+      }),
+    );
+    edit(environment, SIZES, (text) =>
+      text.replace("lg: 'h-10',", "lg: 'h-10',\n  xs: 'h-7',"),
+    );
+    const result = await update(environment);
+    expect(result.updates[0].files[0]).toEqual({
+      path: SIZES,
+      status: 'conflict',
+      conflictLines: [4],
+      note: expect.stringMatching(/didn't type-check \(TS1117: /),
+    });
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('creates new upstream files and lets go of dropped ones', async () => {
+    const environment = await sizesProject(
+      sizes('1.0.0', { 'sizes.ts': V1, 'old.ts': 'export const old = 1;\n' }),
+      sizes('2.0.0', { 'sizes.ts': V1, 'new.ts': 'export const n = 1;\n' }),
+    );
+    const result = await update(environment);
+    expect(result.updates[0].files).toEqual([
+      { path: SIZES, status: 'unchanged' },
+      {
+        path: 'src/app/lib/old.ts',
+        status: 'kept',
+        note: "sizes 2.0.0 no longer has it; it's yours now.",
+      },
+      { path: 'src/app/lib/new.ts', status: 'created' },
+    ]);
+    expect(read(environment, 'src/app/lib/old.ts')).toBe(
+      'export const old = 1;\n',
+    );
+    expect(
+      locked(environment, 'sizes').files.map(
+        (file: { path: string }) => file.path,
+      ),
+    ).toEqual([SIZES, 'src/app/lib/new.ts']);
+  });
+
+  it('updates theme variables one by one and keeps yours', async () => {
+    const environment = await sizesProject(
+      sizes(
+        '1.0.0',
+        { 'sizes.ts': V1 },
+        {
+          cssVars: { light: { brand: 'red', ring: 'gray' } },
+        },
+      ),
+      sizes(
+        '2.0.0',
+        { 'sizes.ts': V1 },
+        {
+          cssVars: {
+            light: { brand: 'blue', ring: 'black', 'brand-muted': 'green' },
+          },
+        },
+      ),
+    );
+    edit(environment, 'src/styles.css', (text) =>
+      text.replace('--brand: red', '--brand: pink'),
+    );
+    const result = await update(environment);
+    const css = read(environment, 'src/styles.css');
+    expect(css).toContain('--brand: pink');
+    expect(css).toContain('--ring: black');
+    expect(css).toContain('--brand-muted: green');
+    expect(result.warnings).toContain(
+      'Kept your value of --brand in :root; sizes 2.0.0 changed it too.',
+    );
+  });
+
+  it('installs new dependencies and reports dropped ones', async () => {
+    const environment = await sizesProject(
+      sizes('1.0.0', { 'sizes.ts': V1 }, { dependencies: ['clsx'] }),
+      sizes(
+        '2.0.0',
+        { 'sizes.ts': V1 },
+        {
+          dependencies: ['tailwind-merge'],
+          registryDependencies: ['badge'],
+        },
+      ),
+    );
+    const result = await update(environment);
+    expect(result.items.map((item: { name: string }) => item.name)).toEqual(
+      expect.arrayContaining(['badge', 'sizes']),
+    );
+    expect(result.dependencies).toContain('tailwind-merge');
+    expect(result.warnings).toContain(
+      'sizes 2.0.0 no longer needs clsx; remove it yourself if nothing else uses it.',
+    );
+    expect(locked(environment, 'badge')).toBeDefined();
+  });
+
+  it('refuses uncommitted files unless forced', async () => {
+    const environment = await installed(['button@0.1.0'], {
+      dirty: [BUTTON],
+    });
+    const original = read(environment, BUTTON);
+    const refused = await update(environment);
+    expect(refused.ok).toBe(false);
+    expect(refused.errors[0].message).toMatch(
+      /^These files have uncommitted changes: src\/app\/ui\/button\/button\.ts\./,
+    );
+    expect(read(environment, BUTTON)).toBe(original);
+    expect(process.exitCode).toBe(1);
+
+    process.exitCode = undefined;
+    const forced = await update(environment, '--force');
+    expect(forced.ok).toBe(true);
+    expect(read(environment, BUTTON)).not.toBe(original);
+  });
+
+  it('warns outside a git repository', async () => {
+    const environment = await installed(['button@0.1.0'], { dirty: false });
+    const result = await update(environment);
+    expect(result.warnings).toContain(
+      "This project isn't in a git repository, so nothing can undo this update. Keep a copy, or use git.",
+    );
+  });
+
+  it('refuses items that are not installed and older versions', async () => {
+    const environment = await installed(['button']);
+    expect((await update(environment, 'tooltip')).errors[0].message).toBe(
+      "@ndop/tooltip isn't installed. Run ndop add tooltip instead.",
+    );
+    expect(
+      (await update(environment, 'button@0.1.0')).errors[0].message,
+    ).toMatch(/0\.1\.0 is older than the installed .*only goes forward\.$/);
+  });
+
+  it('prints the table and writes nothing in a dry run', async () => {
+    const environment = await installed(['button@0.1.0']);
+    const original = read(environment, BUTTON);
+    const { out } = await runNdop(environment, 'update', '--dry-run');
+    expect(out).toMatch(/^Item\s+From\s+To\s+Clean\s+Merged\s+Conflicts\n/);
+    expect(out).toMatch(/@ndop\/button\s+0\.1\.0\s+0\.1\.2\s+1\s+0\s+0/);
+    expect(out).toContain('Dry run: nothing was written.');
+    expect(read(environment, BUTTON)).toBe(original);
+  });
+});

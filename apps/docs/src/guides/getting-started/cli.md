@@ -15,12 +15,13 @@ diffs, and running a command twice changes nothing the second time.
 | `ndop init`              | Sets up an Angular app for Ndop.                                                       |
 | `ndop add <items...>`    | Adds components and everything they depend on.                                         |
 | `ndop diff [items...]`   | Shows your changes to installed components, and what changed upstream since.           |
+| `ndop update [items...]` | Updates installed components, merging upstream's changes into your edits.              |
 | `ndop verify [paths...]` | Checks components and pages that use Ndop; see [Verify](/docs/getting-started/verify). |
 | `ndop build`             | For registry authors: validates items and writes the registry.                         |
 
 ## Options
 
-`init` and `add` accept:
+`init`, `add` and `update` accept:
 
 | Option             | Effect                                                    |
 | ------------------ | --------------------------------------------------------- |
@@ -32,14 +33,16 @@ diffs, and running a command twice changes nothing the second time.
 
 `init` also takes `--theme <name>` and `--project <name>`; `add` takes
 `--overwrite`, and installs a specific version when you write one after
-the name, as in `ndop add button@0.1.0`. For coding agents, `init` takes `--agent`, `--mcp` and
+the name, as in `ndop add button@0.1.0`; `update` takes `--force` and
+`--continue`. For coding agents, `init` takes `--agent`, `--mcp` and
 `--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
 
 ## Your edits are safe
 
 `ndop add` records a hash of every file it writes in `ndop.lock.json`. If
 you edit a file and run `add` again, the file is kept and reported as
-skipped, unless you pass `--overwrite`.
+skipped, unless you pass `--overwrite`. To bring a new version's changes
+into a file you edited, use `ndop update`.
 
 ## What changed
 
@@ -50,6 +53,30 @@ version. It writes nothing.
 ```bash pm
 npx ndop diff button
 ```
+
+## Updating
+
+`ndop update` brings components to their latest version without losing
+your edits. A file you never changed is replaced. A file you changed is
+merged with upstream's changes, the way `git merge` does, using the
+version you installed as the common base:
+
+```bash pm
+npx ndop update
+```
+
+When you and upstream changed the same lines, the file gets conflict
+markers, with your lines first, and the command exits with code 2. Edit
+the file to keep what you want, then record it:
+
+```bash pm
+npx ndop update --continue
+```
+
+The files an update writes must be committed first, so `git checkout`
+undoes it; `--force` skips that check. Theme variables you changed keep
+your values, new files and dependencies are added, and files a new version
+drops stay in your project as yours.
 
 ## Package managers
 

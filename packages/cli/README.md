@@ -76,7 +76,36 @@ one item with another version. It also lists files upstream added, moved
 or removed, and the codemods an update would run. It writes nothing, and
 takes `--cwd`, `--registry` and `--json`.
 
-## Options for `init` and `add`
+## `ndop update [items...]`
+
+```bash
+npx ndop update
+```
+
+Brings installed items (all of them by default) to their latest version,
+or `name@version`, keeping your edits. Files you never edited are
+replaced. Edited ones are three-way merged, with the version you installed
+as the base; where you and upstream changed the same lines, the file gets
+conflict markers:
+
+```text
+<<<<<<< local
+your lines
+=======
+upstream's lines
+>>>>>>> ndop@0.2.0
+```
+
+It then exits with code 2. Resolve the markers and run
+`npx ndop update --continue` to record them. New upstream files are
+created, theme variables you changed keep your values, and new
+dependencies are installed.
+
+The files it writes must have no uncommitted changes, so `git checkout`
+undoes an update; `--force` skips that check. It takes the same options
+as `add`, and `--json` reports what happened to every file.
+
+## Options for `init`, `add` and `update`
 
 | Option             | Effect                                                 |
 | ------------------ | ------------------------------------------------------ |

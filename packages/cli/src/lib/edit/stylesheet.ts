@@ -179,6 +179,113 @@ export function applyCssVars(
 }
 
 /**
+ * Updates a theme's tokens from one version of an item to another, one
+ * variable at a time (ADR-0020): a variable upstream changed is updated
+ * when the stylesheet still has the old value, a new one is added, and one
+ * the user changed keeps the user's value and is reported. Variables
+ * upstream removed, or the user removed, are left as they are. Nothing is
+ * ever written as a conflict marker.
+ *
+ * @param css - Stylesheet text.
+ * @param base - The installed version's `cssVars`.
+ * @param remote - The target version's `cssVars`.
+ * @returns The edited text, and each variable kept with the user's value,
+ *   as `--name in selector`.
+ *
+ * @example
+ * ```ts
+ * const { css: next, kept } = updateCssVars(css, installed.cssVars, latest.cssVars);
+ * ```
+ */
+export function updateCssVars(
+  css: string,
+  base: RegistryItem['cssVars'] | undefined,
+  remote: NonNullable<RegistryItem['cssVars']>,
+): { css: string; kept: string[] } {
+  const root = postcss.parse(css);
+  const kept: string[] = [];
+  let changed = false;
+  const blocks: [
+    () => Container | undefined,
+    () => Container,
+    string,
+    'theme' | 'light' | 'dark',
+  ][] = [
+    [
+      () =>
+        root.nodes.find(
+          (node): node is AtRule =>
+            node.type === 'atrule' && node.name === 'theme' && !node.params,
+        ),
+      () => themeBlock(root),
+      '@theme',
+      'theme',
+    ],
+    [
+      () => findRule(root, ':root'),
+      () => topRule(root, ':root'),
+      ':root',
+      'light',
+    ],
+    [
+      () => findRule(root, '.dark'),
+      () => topRule(root, '.dark'),
+      '.dark',
+      'dark',
+    ],
+    [
+      () =>
+        root.nodes
+          .filter(
+            (node): node is AtRule =>
+              node.type === 'atrule' &&
+              node.name === 'media' &&
+              node.params === '(prefers-color-scheme: dark)',
+          )
+          .flatMap((media) => media.nodes ?? [])
+          .find(isSystemRule) as Container | undefined,
+      () => systemDark(root),
+      SYSTEM_DARK,
+      'dark',
+    ],
+  ];
+  for (const [find, create, selector, mode] of blocks) {
+    for (const [name, value] of Object.entries(remote[mode] ?? {})) {
+      const before = base?.[mode]?.[name];
+      if (before === value) continue;
+      const prop = `--${name}`;
+      const local = find()?.nodes?.find(
+        (node): node is Declaration =>
+          node.type === 'decl' && node.prop === prop,
+      )?.value;
+      if (local === value) continue;
+      if (local === before) {
+        if (local !== undefined || before === undefined) {
+          setDeclaration(create(), prop, value);
+          changed = true;
+        }
+      } else if (local !== undefined) {
+        kept.push(`${prop} in ${selector}`);
+      }
+    }
+  }
+  return { css: changed ? stringify(root) : css, kept };
+}
+
+/**
+ * Finds a top-level rule without adding one.
+ *
+ * @param root - Stylesheet.
+ * @param selector - Its selector.
+ * @returns The rule, or `undefined`.
+ */
+function findRule(root: Root, selector: string): Rule | undefined {
+  return root.nodes.find(
+    (node): node is Rule => node.type === 'rule' && node.selector === selector,
+  );
+}
+
+/**
  * Finds or appends a top-level rule.
  *
  * @param root - Stylesheet.
