@@ -30,21 +30,39 @@ interface PrettierApi {
 }
 
 /**
+ * Loads a module the project has installed, by its resolved path.
+ */
+export type ImportModule = (path: string) => Promise<unknown>;
+
+/**
+ * Loads a module with `import()`, as the published, ESM CLI does.
+ *
+ * @param path - Absolute path to the module's entry.
+ * @returns The module namespace.
+ */
+export const importModule: ImportModule = (path) =>
+  import(pathToFileURL(path).href);
+
+/**
  * A formatter using the project's own Prettier and configuration
  * (RFC-0001: "Format written files with the project's Prettier config if
  * one exists"). Files Prettier ignores or can't parse are left unchanged.
  *
  * @param root - Absolute project root.
+ * @param load - Loads Prettier once it's found; `import()` by default.
  * @returns The formatter, or {@link noFormat} when Prettier isn't
  *   installed in the project.
  */
-export async function projectFormatter(root: string): Promise<Formatter> {
+export async function projectFormatter(
+  root: string,
+  load: ImportModule = importModule,
+): Promise<Formatter> {
   let prettier: PrettierApi;
   try {
     const entry = createRequire(join(root, 'package.json')).resolve('prettier');
     // require.resolve finds Prettier's CommonJS entry, whose API an ESM
     // import exposes only as the default export.
-    const loaded = (await import(pathToFileURL(entry).href)) as PrettierApi & {
+    const loaded = (await load(entry)) as PrettierApi & {
       default?: PrettierApi;
     };
     prettier = loaded.default ?? loaded;

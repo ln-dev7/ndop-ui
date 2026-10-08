@@ -1,11 +1,15 @@
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { confirm, isCancel, multiselect } from '@clack/prompts';
 import { packageManagerInstaller, type Installer } from '../plan/apply';
 import { nodeFs, type ProjectFs } from '../project/fs';
 import { gitDirtyFiles, type DirtyFiles } from '../project/git';
-import { projectFormatter, type Formatter } from '../project/format';
+import {
+  importModule,
+  projectFormatter,
+  type Formatter,
+  type ImportModule,
+} from '../project/format';
 import { defaultFetcher, type Fetcher } from '../registry/client';
 import type { AngularCompiler } from '../update/codemods';
 
@@ -88,12 +92,18 @@ export interface CommandEnvironment {
  * The real environment: disk, the project's Prettier, `fetch`, the
  * project's package manager and terminal prompts.
  *
+ * @param load - Loads the project's Prettier and Angular compiler once
+ *   resolved; `import()` by default. Tooling that runs as CommonJS, such
+ *   as Nx executors, passes `require`, since there `import()` is compiled
+ *   to `require()` of a URL.
  * @returns The environment.
  */
-export function nodeEnvironment(): CommandEnvironment {
+export function nodeEnvironment(
+  load: ImportModule = importModule,
+): CommandEnvironment {
   return {
     fs: nodeFs,
-    formatter: projectFormatter,
+    formatter: (root) => projectFormatter(root, load),
     fetcher: defaultFetcher,
     installer: packageManagerInstaller,
     async confirm(message, initial = true) {
@@ -115,7 +125,7 @@ export function nodeEnvironment(): CommandEnvironment {
         const entry = createRequire(join(root, 'package.json')).resolve(
           '@angular/compiler',
         );
-        return (await import(pathToFileURL(entry).href)) as AngularCompiler;
+        return (await load(entry)) as AngularCompiler;
       } catch {
         return undefined;
       }

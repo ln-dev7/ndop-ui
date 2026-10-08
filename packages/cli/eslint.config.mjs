@@ -18,6 +18,8 @@ export default [
             '{projectRoot}/src/**/*.spec.ts',
             '{projectRoot}/src/testing/**',
           ],
+          // Loaded by name at run time, from the project when it has it.
+          ignoredDependencies: ['@ndop/verify'],
         },
       ],
     },

@@ -67,8 +67,13 @@ async function loadVerify(cwd: string): Promise<VerifyModule> {
   }
   return (await (entry
     ? import(pathToFileURL(entry).href)
-    : import('@ndop/verify'))) as unknown as VerifyModule;
+    : import(VERIFY_PACKAGE))) as unknown as VerifyModule;
 }
+
+// A constant rather than a literal, so type-checking tools that import the
+// CLI's source, such as the workspace's CommonJS executors, doesn't pull
+// in @ndop/verify's ESM sources; VerifyModule types what's used.
+const VERIFY_PACKAGE = '@ndop/verify' as string;
 
 /**
  * The command that adds a dev dependency with the project's package
