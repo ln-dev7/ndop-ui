@@ -1,0 +1,62 @@
+{
+  "$schema": "https://ndop.dev/schema/changelog.json",
+  "name": "button",
+  "versions": [
+    {
+      "version": "0.2.0",
+      "notes": "Adds an `xs` size.\n",
+      "changes": {
+        "files": {
+          "added": [],
+          "changed": ["{ui}/button/button.ts"],
+          "removed": []
+        },
+        "migrations": [
+          {
+            "from": "{ui}/button/button-old.ts",
+            "to": "{ui}/button/button.ts"
+          }
+        ],
+        "codemods": [
+          {
+            "since": "0.2.0",
+            "kind": "rename-export",
+            "from": "ButtonSize",
+            "to": "ButtonScale"
+          }
+        ],
+        "dependencies": {
+          "added": [],
+          "changed": ["@ndop/primitives@^0.2.0"],
+          "removed": []
+        },
+        "registryDependencies": {
+          "added": [],
+          "removed": []
+        }
+      }
+    },
+    {
+      "version": "0.1.0",
+      "notes": "",
+      "changes": {
+        "files": {
+          "added": ["{ui}/button/button.ts"],
+          "changed": [],
+          "removed": []
+        },
+        "migrations": [],
+        "codemods": [],
+        "dependencies": {
+          "added": ["@ndop/primitives@^0.1.0"],
+          "changed": [],
+          "removed": []
+        },
+        "registryDependencies": {
+          "added": ["utils"],
+          "removed": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "dialog-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Dialog demo",
+  "description": "A dialog.",
+  "files": [
+    {
+      "path": "examples/dialog-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dialog-demo.ts"
+    }
+  ],
+  "codemods": [
+    {
+      "since": "0.2.0",
+      "kind": "rename-input",
+      "from": "heading",
+      "to": "title"
+    }
+  ]
+}

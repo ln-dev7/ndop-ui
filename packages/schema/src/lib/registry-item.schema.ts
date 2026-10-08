@@ -1,5 +1,9 @@
 import type { FromSchema } from 'json-schema-to-ts';
-import { ITEM_NAME_PATTERN, SEMVER_PATTERN } from './patterns';
+import {
+  IDENTIFIER_PATTERN,
+  ITEM_NAME_PATTERN,
+  SEMVER_PATTERN,
+} from './patterns';
 
 /**
  * Item types Ndop accepts. All but `registry:primitive-usage` keep shadcn's
@@ -23,10 +27,46 @@ const stringMap = {
 } as const;
 
 /**
+ * One codemod: an edit to the project's own code that `ndop update`
+ * applies when an update crosses `since` (ADR-0020).
+ */
+export const codemodSchema = {
+  oneOf: [
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['since', 'kind', 'from', 'to'],
+      description:
+        "Renames an export of the item where the project imports it, and the name's uses in those files.",
+      properties: {
+        since: { type: 'string', pattern: SEMVER_PATTERN },
+        kind: { const: 'rename-export' },
+        from: { type: 'string', pattern: IDENTIFIER_PATTERN },
+        to: { type: 'string', pattern: IDENTIFIER_PATTERN },
+      },
+    },
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['since', 'kind', 'selector', 'from', 'to'],
+      description:
+        'Renames an input in templates, on elements matching `selector`: the attribute and its `[from]`, `(fromChange)` and `[(from)]` bindings.',
+      properties: {
+        since: { type: 'string', pattern: SEMVER_PATTERN },
+        kind: { const: 'rename-input' },
+        selector: { type: 'string', minLength: 1 },
+        from: { type: 'string', pattern: IDENTIFIER_PATTERN },
+        to: { type: 'string', pattern: IDENTIFIER_PATTERN },
+      },
+    },
+  ],
+} as const;
+
+/**
  * JSON Schema (draft-07) for one registry item, served at
  * `https://ndop.dev/schema/registry-item.json`. A superset of shadcn's
  * `registry-item.json`: shared fields keep shadcn's names and types, and
- * Ndop adds `version`, `angular`, `migrations` and `ndop`.
+ * Ndop adds `version`, `angular`, `migrations`, `codemods` and `ndop`.
  *
  * @see {@link https://ndop.dev/schema/registry-item.json}
  */
@@ -155,6 +195,12 @@ export const registryItemSchema = {
           to: { type: 'string', minLength: 1 },
         },
       },
+    },
+    codemods: {
+      type: 'array',
+      description:
+        "Edits to the project's own code for breaking changes, applied by `ndop update` when it crosses `since` (ADR-0020). Declarative only: registries never ship code to run. Keep every entry once published.",
+      items: codemodSchema,
     },
     ndop: {
       type: 'object',

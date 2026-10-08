@@ -21,5 +21,20 @@
   },
   "migrations": [
     { "from": "examples/dialog-basic.ts", "to": "examples/dialog-demo.ts" }
+  ],
+  "codemods": [
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "DialogBasic",
+      "to": "DialogDemo"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-input",
+      "selector": "[ndDialogDemo]",
+      "from": "heading",
+      "to": "title"
+    }
   ]
 }

@@ -63,7 +63,13 @@ describe('toShadcnItem', () => {
 
   it('drops Ndop-only fields', () => {
     const compat = toShadcnItem(dialogDemo);
-    for (const key of ['version', 'angular', 'migrations', 'ndop']) {
+    for (const key of [
+      'version',
+      'angular',
+      'migrations',
+      'codemods',
+      'ndop',
+    ]) {
       expect(compat).not.toHaveProperty(key);
     }
   });

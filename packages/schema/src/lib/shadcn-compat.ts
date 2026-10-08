@@ -8,6 +8,7 @@ const NDOP_ONLY_FIELDS = [
   'version',
   'angular',
   'migrations',
+  'codemods',
   'ndop',
 ] as const;
 

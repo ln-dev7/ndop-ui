@@ -1,5 +1,6 @@
 import Ajv, { type ValidateFunction } from 'ajv';
 import addFormats from 'ajv-formats';
+import { changelogSchema, type Changelog } from './changelog.schema';
 import { configSchema, type NdopConfig } from './config.schema';
 import { lockSchema, type NdopLock } from './lock.schema';
 import { metadataSchema, type ComponentMetadata } from './metadata.schema';
@@ -16,6 +17,7 @@ export const schemas = {
   config: configSchema,
   lock: lockSchema,
   metadata: metadataSchema,
+  changelog: changelogSchema,
 } as const;
 
 /**
@@ -37,6 +39,8 @@ export interface SchemaTypes {
   lock: NdopLock;
   /** `metadata/<name>.json`. */
   metadata: ComponentMetadata;
+  /** `changelog/<name>.json`. */
+  changelog: Changelog;
 }
 
 /**
