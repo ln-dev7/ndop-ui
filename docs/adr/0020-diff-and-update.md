@@ -1,9 +1,8 @@
 # ADR-0020: `ndop diff`, `ndop update` and the update preview
 
-- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1;
-  deviates from
-  RFC-0001 with a new package, `@ndop/merge`, and moves the site-wide docs
-  version switcher to Phase 7
+- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1.
+  Deviates from RFC-0001 with a new package, `@ndop/merge`, and moves the
+  site-wide docs version switcher to Phase 7
 - Date: 2026-10-08
 - Phase: 5
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "CLI", "Three-way merge

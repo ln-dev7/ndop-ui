@@ -26,4 +26,4 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0017](0017-agent-context-files.md)             | Agent context files                                       | Accepted                       |
 | [0018](0018-verify-and-eslint-plugin.md)        | `ndop verify` and the ESLint plugin                       | Accepted                       |
 | [0019](0019-agent-eval-suite.md)                | Agent eval suite                                          | Accepted, with amendment 1     |
-| [0020](0020-diff-and-update.md)                 | `ndop diff`, `ndop update` and the update preview         | Accepted                       |
+| [0020](0020-diff-and-update.md)                 | `ndop diff`, `ndop update` and the update preview         | Accepted, with amendment 1     |
