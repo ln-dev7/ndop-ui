@@ -607,15 +607,17 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 - [x] `llms.txt`, `llms-full.txt` and `.md` twins.
 
 * **Accept when:** every Phase 1 component has a complete page generated from metadata, and Lighthouse ≥ 95 and zero axe violations hold on all routes.
+* **Accepted 2026-10-05:** CI green (run 37257777361). ADR-0016 amendment 10 later lowered the Lighthouse performance floor to 90, with 90–94 a warning.
 
 ### Phase 4 — Agent tooling (weeks 9–10)
 
-- [ ] MCP server with all tools in the Agent-native DX table, stdio and HTTP.
-- [ ] Agent context files written by `init` and refreshed by `add`.
-- [ ] `ndop verify` and the ESLint plugin.
-- [ ] Agent eval suite (50 prompts) in `tools/`.
+- [x] MCP server with all tools in the Agent-native DX table, stdio and HTTP.
+- [x] Agent context files written by `init` and refreshed by `add`.
+- [x] `ndop verify` and the ESLint plugin.
+- [x] Agent eval suite (50 prompts) in `tools/`.
 
 * **Accept when:** Claude Code, given only the MCP server and a fresh app, builds a settings page from a one-line prompt and `ndop verify` passes; eval accuracy ≥ 95%.
+* **Accepted 2026-10-08:** CI green (run 37665162215); the eval scored 49/50 (98%) on `claude-sonnet-5`, settings page included, run by hand as ADR-0019 amendment 1 allows.
 
 ### Phase 5 — Diff and update (weeks 11–12)
 
