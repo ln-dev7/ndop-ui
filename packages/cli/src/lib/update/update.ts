@@ -640,6 +640,9 @@ async function mergeFile(
       remote: applied,
       remoteVersion: version,
       union,
+      // TypeScript merges declaration by declaration first (ADR-0003,
+      // amendment 2).
+      structural: path.endsWith('.ts'),
     });
   let outcome = merge(true);
   if (outcome.unioned && path.endsWith('.ts')) {

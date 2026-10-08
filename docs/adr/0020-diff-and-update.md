@@ -1,6 +1,7 @@
 # ADR-0020: `ndop diff`, `ndop update` and the update preview
 
-- Status: Accepted (approved by Valery on 2026-10-08); deviates from
+- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1;
+  deviates from
   RFC-0001 with a new package, `@ndop/merge`, and moves the site-wide docs
   version switcher to Phase 7
 - Date: 2026-10-08
@@ -295,3 +296,100 @@ button@0.1.0`, a local edit, `ndop update`, then `ng build`.
 - Every release of a documented registry item now needs a changelog
   section, which the build enforces.
 - The fixture suite, not the spike, becomes the CI gate for merge quality.
+
+## Amendment 1 (2026-10-08): the update preview doesn't format by default
+
+Status: Accepted by Valery on 2026-10-08.
+
+"Docs: changelog and update preview" says the preview formats base and
+remote with Prettier's default options. Those defaults use double quotes,
+while Ndop's files and most Angular projects use single quotes, so a
+typical pasted file would differ on almost every line and merge as one
+large conflict.
+
+- **No formatting by default.** The preview merges against the
+  registry's text as it is. It is already formatted the way `ndop add`
+  writes it in a project without a Prettier config of its own.
+- **"My project formats differently"** is an opt-in setting with the two
+  options that change most lines: quotes and print width. Only when it's
+  on does the page load Prettier's standalone build, to format base and
+  remote with those options.
+- **A note on import aliases:** a project whose `ndop.json` aliases differ
+  from the registry's `@/` gets other import paths. Those lines can show
+  up as changes.
+
+## Results
+
+Measured on 2026-10-08 by `pnpm nx e2e update-fixtures`, on Node 22 and 24,
+with ADR-0003's structural pass (amendment 2). The suite has 39 merge
+cases, case 39 added with that amendment, and 8 behavior cases.
+
+| Case                                        | Result   |
+| ------------------------------------------- | -------- |
+| brand/33-brand-new-tokens                   | clean    |
+| brand/34-brand-keep-your-token              | clean    |
+| button/01-restyle-variant                   | clean    |
+| button/02-add-variant                       | clean    |
+| button/03-add-size                          | clean    |
+| button/04-default-size                      | clean    |
+| button/05-rename-class                      | clean    |
+| button/06-add-input                         | clean    |
+| button/07-add-host-binding                  | clean    |
+| button/08-extend-selector                   | clean    |
+| button/09-reformat                          | clean    |
+| button/10-edit-base-classes                 | conflict |
+| button/26-button-xl-clash                   | conflict |
+| button/37-button-crlf                       | clean    |
+| button/38-button-wide-prettier              | clean    |
+| card/27-card-move-edited                    | clean    |
+| card/28-card-move-untouched                 | clean    |
+| card/29-card-move-twice                     | clean    |
+| card/30-card-keep-edited-deleted            | clean    |
+| chips/35-chips-new-item                     | clean    |
+| chips/36-chips-new-package                  | clean    |
+| dialog/24-dialog-add-body                   | clean    |
+| dialog/25-dialog-remove-description         | clean    |
+| dialog-docs/39-dialog-body-next-to-new-docs | clean    |
+| input/22-input-add-ghost-variant            | clean    |
+| input/23-input-rounder-base                 | conflict |
+| snapshots/11-button-restyle-outline         | clean    |
+| snapshots/12-button-add-xl-size             | clean    |
+| snapshots/13-dialog-darker-overlay          | clean    |
+| snapshots/14-dialog-wider-content           | clean    |
+| snapshots/15-dialog-add-body                | clean    |
+| snapshots/16-input-taller                   | clean    |
+| snapshots/17-label-larger-text              | clean    |
+| snapshots/18-popover-wider                  | clean    |
+| snapshots/19-separator-muted                | clean    |
+| snapshots/20-tooltip-primary-colors         | clean    |
+| snapshots/21-tooltip-add-arrow              | clean    |
+| stat/31-stat-rename-export                  | clean    |
+| stat/32-stat-rename-input                   | clean    |
+| button/40-dirty-tree                        | passed   |
+| button/41-dirty-tree-forced                 | passed   |
+| button/42-unresolved-markers                | passed   |
+| button/43-continue                          | passed   |
+| button/44-deleted-locally                   | passed   |
+| button/45-interactive-without-terminal      | passed   |
+| button/46-older-target                      | passed   |
+| button/47-outside-git                       | passed   |
+
+- **Clean merges: 36/39 (92.3%).** The three that aren't clean are the
+  true conflicts, each with well-formed markers and exit code 2. In 26,
+  keeping both sides' additions would duplicate the `xl` key; the type
+  check turns it into a conflict.
+- **Every behavior case passes**, and no case breaks a rule: exit codes
+  match the statuses, markers are well formed, every lockfile hash is what
+  a fresh install of its version records, and a second run plans nothing.
+- **Line merge alone scored 34/38** before case 39, and 34/39 with it.
+  Case 24 merged in a different order from the expected file. Case 39
+  merged "cleanly" with TSDoc comments on the wrong declarations, as
+  `git merge-file` does too. Both pass with the structural pass.
+- **The registry install test** adds `button@0.1.0` to a real Angular 22
+  app, edits it, runs `ndop update` and builds again; it passes.
+- **Fixture bugs fixed during the run:** the one-off script that wrote the
+  cases produced three inconsistent fixtures: a blank line at the end of
+  case 25, an anchor that moved between versions in case 24, and DialogTitle's
+  TSDoc dropped from Dialog 1.0.0. Each was fixed to match its description,
+  with the expected file written before rerunning; none was copied from merge
+  output.
