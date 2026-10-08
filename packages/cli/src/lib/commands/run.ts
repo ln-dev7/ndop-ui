@@ -226,7 +226,7 @@ export async function runWriteCommand(
  * @param command - Any command of the program.
  * @returns Writers for standard output and error.
  */
-function outputOf(command: Command): {
+export function outputOf(command: Command): {
   out: (text: string) => void;
   err: (text: string) => void;
 } {

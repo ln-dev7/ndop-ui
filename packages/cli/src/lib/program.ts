@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import { registerBuildCommand } from './build/command';
 import { registerAddCommand } from './commands/add';
+import { registerDiffCommand } from './commands/diff';
 import {
   nodeEnvironment,
   type CommandEnvironment,
@@ -33,6 +34,7 @@ export function createProgram(
     .version(version);
   registerInitCommand(program, environment);
   registerAddCommand(program, environment);
+  registerDiffCommand(program, environment);
   registerBuildCommand(program);
   registerVerifyCommand(program);
   return program;

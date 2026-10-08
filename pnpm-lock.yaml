@@ -459,6 +459,9 @@ importers:
       '@clack/prompts':
         specifier: 1.8.1
         version: 1.8.1
+      '@ndop/merge':
+        specifier: workspace:*
+        version: link:../merge
       '@ndop/metadata':
         specifier: workspace:*
         version: link:../metadata

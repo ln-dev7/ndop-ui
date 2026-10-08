@@ -14,6 +14,7 @@ diffs, and running a command twice changes nothing the second time.
 | ------------------------ | -------------------------------------------------------------------------------------- |
 | `ndop init`              | Sets up an Angular app for Ndop.                                                       |
 | `ndop add <items...>`    | Adds components and everything they depend on.                                         |
+| `ndop diff [items...]`   | Shows your changes to installed components, and what changed upstream since.           |
 | `ndop verify [paths...]` | Checks components and pages that use Ndop; see [Verify](/docs/getting-started/verify). |
 | `ndop build`             | For registry authors: validates items and writes the registry.                         |
 
@@ -39,6 +40,16 @@ the name, as in `ndop add button@0.1.0`. For coding agents, `init` takes `--agen
 `ndop add` records a hash of every file it writes in `ndop.lock.json`. If
 you edit a file and run `add` again, the file is kept and reported as
 skipped, unless you pass `--overwrite`.
+
+## What changed
+
+`ndop diff` shows, for each installed component, two diffs per file: your
+changes since you installed it, and what changed upstream since that
+version. It writes nothing.
+
+```bash pm
+npx ndop diff button
+```
 
 ## Package managers
 

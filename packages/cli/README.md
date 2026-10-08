@@ -63,6 +63,19 @@ Add `@<version>` to install a specific version, such as
 `npx ndop add button@0.1.0`. Registries serve each version at their URL
 template with `<name>@<version>` in place of `{name}`.
 
+## `ndop diff [items...]`
+
+```bash
+npx ndop diff button
+```
+
+For each installed item (all of them by default), shows two diffs per
+file: your changes, from the version you installed to the file on disk,
+and upstream's, from that version to the latest. `--to <version>` compares
+one item with another version. It also lists files upstream added, moved
+or removed, and the codemods an update would run. It writes nothing, and
+takes `--cwd`, `--registry` and `--json`.
+
 ## Options for `init` and `add`
 
 | Option             | Effect                                                 |

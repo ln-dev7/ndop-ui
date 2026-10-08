@@ -40,7 +40,12 @@
           }
         ],
         "thirdParty": false,
-        "external": ["@ndop/schema", "@ndop/metadata", "@ndop/verify"],
+        "external": [
+          "@ndop/schema",
+          "@ndop/metadata",
+          "@ndop/merge",
+          "@ndop/verify"
+        ],
         "generatePackageJson": false,
         "esbuildOptions": {
           "banner": {

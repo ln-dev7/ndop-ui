@@ -70,6 +70,33 @@ function byVersion(a: string, b: string): number {
 }
 
 /**
+ * Serves `<name>@<version>`: the registry's item when it is at that
+ * version, or else the committed snapshot.
+ *
+ * @param registry - The test registry.
+ * @param key - `<name>@<version>`.
+ * @returns The item, or `undefined`.
+ */
+function versionOf(
+  registry: Record<string, RegistryItem>,
+  key: string,
+): RegistryItem | undefined {
+  const [name = '', version] = key.split('@');
+  if (version === undefined) return undefined;
+  if (registry[name]?.version === version) return registry[name];
+  try {
+    return JSON.parse(
+      readFileSync(
+        join(workspace, 'registry/snapshots', `${key}.json`),
+        'utf-8',
+      ),
+    ) as RegistryItem;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * A test double for the write commands' outside world.
  */
 export interface TestEnvironment extends CommandEnvironment {
@@ -77,7 +104,11 @@ export interface TestEnvironment extends CommandEnvironment {
   project: ProjectFs & { files: Map<string, string> };
   /** Every install call, in order. */
   installs: { specs: string[]; dev: boolean }[];
-  /** Registry items served at `mem://{name}`, mutable between runs. */
+  /**
+   * Registry items served at `mem://{name}`, mutable between runs. Keys
+   * may be `<name>@<version>`; other versions come from the committed
+   * snapshots.
+   */
   registry: Record<string, RegistryItem>;
 }
 
@@ -117,7 +148,7 @@ export function testEnvironment(
     formatter: async () => options.format ?? noFormat,
     fetcher: () => async (location) => {
       const name = location.replace('mem://', '');
-      const item = registry[name];
+      const item = registry[name] ?? versionOf(registry, name);
       if (!item) {
         throw new Error(`No item ${name} in the test registry.`);
       }

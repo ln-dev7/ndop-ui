@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@clack/prompts": "1.8.1",
+    "@ndop/merge": "workspace:*",
     "@ndop/metadata": "workspace:*",
     "@ndop/schema": "workspace:*",
     "commander": "15.0.0",
