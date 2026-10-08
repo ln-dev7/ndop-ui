@@ -12,6 +12,17 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["nx", "serve", "docs"],
       "port": 4200
+    },
+    {
+      "name": "docs-static",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "nx",
+        "run",
+        "docs:serve-static",
+        "--excludeTaskDependencies"
+      ],
+      "port": 4400
     }
   ]
 }
