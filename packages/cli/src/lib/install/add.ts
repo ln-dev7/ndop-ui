@@ -17,7 +17,8 @@ import { readAliasBase, readConfig } from './project-files';
  *
  * @param builder - The plan being built.
  * @param client - Registry client.
- * @param names - Item names, bare or `@namespace/name`.
+ * @param names - Item names, bare or `@namespace/name`, optionally
+ *   `@<version>`.
  * @param options - Overwrite behavior.
  * @returns The items that will be installed, dependencies first.
  * @throws {@link CliError} when the project has no `ndop.json`.

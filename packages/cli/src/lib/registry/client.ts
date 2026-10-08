@@ -1,7 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validate, type NdopConfig, type RegistryItem } from '@ndop/schema';
+import {
+  SEMVER_PATTERN,
+  validate,
+  type NdopConfig,
+  type RegistryItem,
+} from '@ndop/schema';
 import { CliError } from '../errors';
 
 /**
@@ -23,6 +28,11 @@ export interface ItemRef {
   registry: string;
   /** Item name. */
   name: string;
+  /**
+   * A specific version, fetched from `<name>@<version>` (ADR-0010); the
+   * latest when absent.
+   */
+  version?: string;
 }
 
 /**
@@ -48,14 +58,43 @@ export type Fetcher = (
  * Parses an item reference from the command line or a
  * `registryDependencies` entry.
  *
- * @param text - `name` or `@namespace/name`.
+ * @param text - `name` or `@namespace/name`, optionally followed by
+ *   `@<version>`.
  * @param registry - Namespace of the item that depends on it, which bare
  *   names resolve in.
  * @returns The reference.
- * @throws {@link CliError} for URLs, which aren't supported yet, and
- *   anything else that isn't a name.
+ * @throws {@link CliError} for URLs, which aren't supported yet, invalid
+ *   versions, and anything else that isn't a name.
+ *
+ * @example
+ * ```ts
+ * parseRef('@acme/data-table@1.2.0');
+ * // { registry: '@acme', name: 'data-table', version: '1.2.0' }
+ * ```
  */
 export function parseRef(text: string, registry = DEFAULT_NAMESPACE): ItemRef {
+  const versioned = /^(@?[^@]+)@([^@/]+)$/.exec(text);
+  if (versioned) {
+    const [, item = '', version = ''] = versioned;
+    if (!new RegExp(SEMVER_PATTERN).test(version)) {
+      throw new CliError(
+        `"${version}" in "${text}" isn't a version. Use a semantic version, such as ${item}@1.2.0.`,
+      );
+    }
+    return { ...parseName(item, registry), version };
+  }
+  return parseName(text, registry);
+}
+
+/**
+ * Parses an item reference without a version.
+ *
+ * @param text - `name` or `@namespace/name`.
+ * @param registry - Namespace bare names resolve in.
+ * @returns The reference.
+ * @throws {@link CliError} for URLs and anything else that isn't a name.
+ */
+function parseName(text: string, registry: string): ItemRef {
   const scoped =
     /^(@[a-z0-9]+(?:-[a-z0-9]+)*)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(text);
   if (scoped) {
@@ -175,15 +214,18 @@ export class RegistryClient {
   ) {}
 
   /**
-   * Fetches one item.
+   * Fetches one item, at its latest version or the one `ref` names. A
+   * version is fetched from the registry's URL template with
+   * `<name>@<version>` in place of `{name}`, which is where `ndop build`
+   * writes it (ADR-0010).
    *
-   * @param ref - Which item.
+   * @param ref - Which item, and optionally which version.
    * @returns The item, with every file's content.
    * @throws {@link CliError} for unknown registries, failed requests and
    *   invalid items.
    */
   get(ref: ItemRef): Promise<RegistryItem> {
-    const key = `${ref.registry}/${ref.name}`;
+    const key = `${ref.registry}/${ref.name}@${ref.version ?? 'latest'}`;
     let item = this.cache.get(key);
     if (!item) {
       item = this.load(ref);
@@ -206,7 +248,10 @@ export class RegistryClient {
         'ndop.json',
       );
     }
-    const location = source.url.replaceAll('{name}', ref.name);
+    const location = source.url.replaceAll(
+      '{name}',
+      ref.version ? `${ref.name}@${ref.version}` : ref.name,
+    );
     let text: string;
     try {
       text = await this.fetcher(location, source.headers ?? {});
@@ -233,6 +278,11 @@ export class RegistryClient {
         `${location} holds "${checked.value.name}", not "${ref.name}".`,
       );
     }
+    if (ref.version && checked.value.version !== ref.version) {
+      throw new CliError(
+        `${location} holds version ${checked.value.version}, not ${ref.version}.`,
+      );
+    }
     if (
       (checked.value.files ?? []).some((file) => file.content === undefined)
     ) {
@@ -255,24 +305,44 @@ export interface ResolvedItem {
 }
 
 /**
- * Fetches items and, recursively, their `registryDependencies`.
+ * Fetches items and, recursively, their `registryDependencies`. An item
+ * asked for at a version gets that version even when another item depends
+ * on it; dependencies are otherwise fetched at their latest version.
  *
  * @param client - Registry client.
  * @param refs - Items asked for.
  * @returns Every item once, each after the items it depends on.
+ * @throws {@link CliError} when the same item is asked for at two versions.
  */
 export async function resolveItems(
   client: RegistryClient,
   refs: readonly ItemRef[],
 ): Promise<ResolvedItem[]> {
+  const pinned = new Map<string, string>();
+  for (const ref of refs) {
+    const key = `${ref.registry}/${ref.name}`;
+    const version = pinned.get(key);
+    if (ref.version && version && version !== ref.version) {
+      throw new CliError(
+        `${key} is asked for at ${version} and ${ref.version}; pick one.`,
+      );
+    }
+    if (ref.version) pinned.set(key, ref.version);
+  }
   const ordered: ResolvedItem[] = [];
   const seen = new Set<string>();
-  const visit = async (ref: ItemRef): Promise<void> => {
-    const key = `${ref.registry}/${ref.name}`;
+  const visit = async (asked: ItemRef): Promise<void> => {
+    const key = `${asked.registry}/${asked.name}`;
     if (seen.has(key)) {
       return;
     }
     seen.add(key);
+    const version = asked.version ?? pinned.get(key);
+    const ref: ItemRef = {
+      registry: asked.registry,
+      name: asked.name,
+      ...(version ? { version } : {}),
+    };
     const item = await client.get(ref);
     for (const dependency of item.registryDependencies ?? []) {
       await visit(parseRef(dependency, ref.registry));

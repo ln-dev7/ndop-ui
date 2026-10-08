@@ -30,7 +30,8 @@ diffs, and running a command twice changes nothing the second time.
 | `--registry <url>` | Uses another registry; the URL contains `{name}`.         |
 
 `init` also takes `--theme <name>` and `--project <name>`; `add` takes
-`--overwrite`. For coding agents, `init` takes `--agent`, `--mcp` and
+`--overwrite`, and installs a specific version when you write one after
+the name, as in `ndop add button@0.1.0`. For coding agents, `init` takes `--agent`, `--mcp` and
 `--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
 
 ## Your edits are safe

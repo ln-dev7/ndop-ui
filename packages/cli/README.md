@@ -59,6 +59,10 @@ each file's version and hash go into `ndop.lock.json`. Files you changed
 since they were installed are kept unless you pass `--overwrite`. Running it
 again changes nothing.
 
+Add `@<version>` to install a specific version, such as
+`npx ndop add button@0.1.0`. Registries serve each version at their URL
+template with `<name>@<version>` in place of `{name}`.
+
 ## Options for `init` and `add`
 
 | Option             | Effect                                                 |

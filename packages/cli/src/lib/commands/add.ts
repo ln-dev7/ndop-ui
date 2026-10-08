@@ -16,7 +16,8 @@ interface AddCommandOptions extends WriteOptions {
  * registry dependencies (RFC-0001). It writes their files through the
  * project's aliases, rewrites their `@/` imports when the aliases differ,
  * adds their styles and npm dependencies, and records versions and hashes
- * in `ndop.lock.json`. Running it again changes nothing.
+ * in `ndop.lock.json`. Running it again changes nothing. `name@version`
+ * installs that version instead of the latest (ADR-0010).
  *
  * @param program - The root `ndop` program.
  * @param environment - Injected outside world.
@@ -26,6 +27,7 @@ interface AddCommandOptions extends WriteOptions {
  * ```sh
  * npx ndop add dialog --yes
  * npx ndop add @acme/data-table --dry-run
+ * npx ndop add button@0.1.0
  * ```
  */
 export function registerAddCommand(
@@ -36,7 +38,10 @@ export function registerAddCommand(
     program
       .command('add')
       .description('Add registry items to the project.')
-      .argument('<items...>', 'item names, bare or @namespace/name')
+      .argument(
+        '<items...>',
+        'item names, bare or @namespace/name, with @<version> for a specific version',
+      )
       .option(
         '--overwrite',
         'replace files you changed since they were installed',

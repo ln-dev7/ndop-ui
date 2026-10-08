@@ -1,5 +1,10 @@
 import { CliError } from '../errors';
-import { parseRef, registrySources } from './client';
+import {
+  parseRef,
+  registrySources,
+  RegistryClient,
+  resolveItems,
+} from './client';
 
 describe('parseRef', () => {
   it('reads bare and namespaced names', () => {
@@ -12,6 +17,20 @@ describe('parseRef', () => {
       registry: '@acme',
       name: 'data-table',
     });
+  });
+
+  it('reads a version after the name', () => {
+    expect(parseRef('dialog@0.1.2')).toEqual({
+      registry: '@ndop',
+      name: 'dialog',
+      version: '0.1.2',
+    });
+    expect(parseRef('@acme/data-table@1.0.0-rc.1')).toEqual({
+      registry: '@acme',
+      name: 'data-table',
+      version: '1.0.0-rc.1',
+    });
+    expect(() => parseRef('dialog@latest')).toThrow(/isn't a version/);
   });
 
   it('rejects URLs and other text', () => {
@@ -64,5 +83,87 @@ describe('registrySources', () => {
     expect(() => registrySources({ registries }, undefined, {})).toThrow(
       'Registry @acme needs the ACME_TOKEN environment variable.',
     );
+  });
+});
+
+/**
+ * A registry:lib item, the smallest valid one.
+ *
+ * @param name - Item name.
+ * @param version - Its version.
+ * @param registryDependencies - Items it needs.
+ * @returns The item as JSON.
+ */
+function libItem(
+  name: string,
+  version: string,
+  registryDependencies: string[] = [],
+): string {
+  return JSON.stringify({
+    name,
+    type: 'registry:lib',
+    version,
+    title: name,
+    description: `Item ${name}.`,
+    registryDependencies,
+    files: [
+      {
+        path: `lib/${name}.ts`,
+        type: 'registry:lib',
+        target: `{lib}/${name}.ts`,
+        content: `export const version = '${version}';\n`,
+      },
+    ],
+  });
+}
+
+describe('RegistryClient versions', () => {
+  const served: Record<string, string> = {
+    'r/a.json': libItem('a', '0.2.0'),
+    'r/a@0.1.0.json': libItem('a', '0.1.0'),
+    'r/a@0.3.0.json': libItem('a', '0.2.0'),
+    'r/b.json': libItem('b', '1.0.0', ['a']),
+  };
+  const fetched: string[] = [];
+  const client = new RegistryClient(
+    { '@ndop': { url: 'r/{name}.json' } },
+    async (location) => {
+      fetched.push(location);
+      const text = served[location];
+      if (text === undefined) throw new CliError(`No ${location}.`);
+      return text;
+    },
+  );
+
+  it('fetches a version from <name>@<version> in the URL template', async () => {
+    const item = await client.get({
+      registry: '@ndop',
+      name: 'a',
+      version: '0.1.0',
+    });
+    expect(item.version).toBe('0.1.0');
+    expect(fetched).toContain('r/a@0.1.0.json');
+  });
+
+  it('rejects a file that holds another version', async () => {
+    await expect(
+      client.get({ registry: '@ndop', name: 'a', version: '0.3.0' }),
+    ).rejects.toThrow('r/a@0.3.0.json holds version 0.2.0, not 0.3.0.');
+  });
+
+  it('keeps an asked-for version when another item depends on it', async () => {
+    const items = await resolveItems(client, [
+      parseRef('b'),
+      parseRef('a@0.1.0'),
+    ]);
+    expect(items.map(({ ref, item }) => `${ref.name}@${item.version}`)).toEqual(
+      ['a@0.1.0', 'b@1.0.0'],
+    );
+  });
+
+  it('refuses two versions of one item', async () => {
+    await expect(
+      resolveItems(client, [parseRef('a@0.1.0'), parseRef('a@0.2.0')]),
+    ).rejects.toThrow('@ndop/a is asked for at 0.1.0 and 0.2.0; pick one.');
   });
 });
