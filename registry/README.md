@@ -5,16 +5,18 @@ into the static JSON served at `https://ndop.dev/r/` (ADR-0012).
 
 ## Layout
 
-| Path                              | Holds                                                                                                                     |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `registry.json`                   | The source manifest: every item, without file contents ([ADR-0002](../docs/adr/0002-registry-format-shadcn-superset.md)). |
-| `ui/<name>/<name>.ts`             | Styled items, installed to `{ui}/<name>/<name>.ts` ([ADR-0014](../docs/adr/0014-styled-items-and-examples.md)).           |
-| `lib/`                            | `utils` and `icons`, installed to `{lib}/`.                                                                               |
-| `examples/<item>-<case>.ts`       | Examples, installed to `{blocks}/examples/`.                                                                              |
-| `themes/<name>/theme.css`         | Theme tokens; `ndop build` turns them into the theme item's `cssVars`.                                                    |
-| `snapshots/<name>@<version>.json` | Built items, one per released version, committed. They are the merge bases of `ndop update`.                              |
-| `changelog/<name>.md`             | Release notes, a `## <version>` section per version ([ADR-0020](../docs/adr/0020-diff-and-update.md)).                    |
-| `vendor/shadcn/`                  | shadcn's sources, for the parity tests.                                                                                   |
+| Path                              | Holds                                                                                                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `registry.json`                   | The source manifest: every item, without file contents ([ADR-0002](../docs/adr/0002-registry-format-shadcn-superset.md)).                                               |
+| `ui/<name>/<name>.ts`             | Styled items, installed to `{ui}/<name>/<name>.ts` ([ADR-0014](../docs/adr/0014-styled-items-and-examples.md)).                                                         |
+| `lib/`                            | `utils` and `icons`, installed to `{lib}/`.                                                                                                                             |
+| `examples/<item>-<case>.ts`       | Examples, installed to `{blocks}/examples/`.                                                                                                                            |
+| `themes/<name>/theme.css`         | Theme tokens; `ndop build` turns them into the theme item's `cssVars`.                                                                                                  |
+| `snapshots/<name>@<version>.json` | Built items, one per released version, committed. They are the merge bases of `ndop update`.                                                                            |
+| `changelog/<name>.md`             | Release notes, a `## <version>` section per version ([ADR-0020](../docs/adr/0020-diff-and-update.md)).                                                                  |
+| `vendor/shadcn/`                  | shadcn's sources, for the parity tests.                                                                                                                                 |
+| `categories.ts`                   | The docs groups of components and the blocks gallery's categories; an item's first `categories` entry must be one ([ADR-0021](../docs/adr/0021-catalog-completion.md)). |
+| `LICENSE.txt`                     | The license and third-party notices, served at `/r/LICENSE.txt` ([ADR-0014](../docs/adr/0014-styled-items-and-examples.md), amendment 2).                               |
 
 Items import each other through `@/`, exactly as they do once installed:
 `import { cn } from '@/lib/utils'`.

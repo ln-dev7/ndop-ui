@@ -203,17 +203,20 @@ describe('ndop update', () => {
       text.replace('Styles from shadcn/ui', 'Styles adapted from shadcn/ui'),
     );
     const before = locked(environment, 'button').files[0];
+    const latest = environment.registry['button']?.version ?? '';
     const result = await update(environment);
 
     expect(result.updates[0].files).toEqual([
       { path: BUTTON, status: 'conflict', conflictLines: [1] },
     ]);
     expect(read(environment, BUTTON)).toMatch(
-      /^<<<<<<< local\n[\s\S]*=======\n[\s\S]*>>>>>>> ndop@0\.1\.2\n/,
+      new RegExp(
+        `^<<<<<<< local\n[\\s\\S]*=======\n[\\s\\S]*>>>>>>> ndop@${latest}\n`,
+      ),
     );
     expect(locked(environment, 'button')).toEqual(
       expect.objectContaining({
-        version: '0.1.2',
+        version: latest,
         files: [{ ...before, version: '0.1.0' }],
       }),
     );
@@ -416,9 +419,12 @@ describe('ndop update', () => {
   it('prints the table and writes nothing in a dry run', async () => {
     const environment = await installed(['button@0.1.0']);
     const original = read(environment, BUTTON);
+    const latest = environment.registry['button']?.version ?? '';
     const { out } = await runNdop(environment, 'update', '--dry-run');
     expect(out).toMatch(/^Item\s+From\s+To\s+Clean\s+Merged\s+Conflicts\n/);
-    expect(out).toMatch(/@ndop\/button\s+0\.1\.0\s+0\.1\.2\s+1\s+0\s+0/);
+    expect(out).toMatch(
+      new RegExp(`@ndop/button\\s+0\\.1\\.0\\s+${latest}\\s+1\\s+0\\s+0`),
+    );
     expect(out).toContain('Dry run: nothing was written.');
     expect(read(environment, BUTTON)).toBe(original);
   });

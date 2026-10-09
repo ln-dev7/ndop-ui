@@ -1,5 +1,9 @@
 # Tooltip
 
+## 0.1.3
+
+Lists the item under Overlays in the docs. The files are unchanged.
+
 ## 0.1.2
 
 Removes the source notice at the top of `tooltip.ts`. The credit for the shadcn/ui styles it was based on is on the docs site instead.

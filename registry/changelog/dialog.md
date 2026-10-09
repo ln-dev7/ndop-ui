@@ -1,5 +1,9 @@
 # Dialog
 
+## 0.1.4
+
+Lists the item under Overlays in the docs. The files are unchanged.
+
 ## 0.1.3
 
 Mirrors the close button and the header in right-to-left layouts: the close button sits at `end-4` instead of `right-4`, and the header aligns with `sm:text-start` instead of `sm:text-left`.
