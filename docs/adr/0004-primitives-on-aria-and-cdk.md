@@ -1,6 +1,7 @@
 # ADR-0004: Primitives on `@angular/aria` + CDK, and custom fallbacks
 
-- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–3
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–3;
+  amendment 4 proposed
 - Date: 2026-10-02
 - Phase: 1
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Primitives layer (`@ndop/primitives`)"
@@ -245,3 +246,53 @@ accessibility requirement. What the primitives must do:
 
 Axe and keyboard tests aren't screen-reader tests; neither the spike nor
 the Phase 1 primitives were checked with one.
+
+## Amendment 4 (2026-10-09): value-owning primitives bind forms through their value accessor
+
+Status: Proposed. Refines how amendment 1's "implement both contracts" is
+done; the RFC's "Forms" bullet is unchanged.
+
+Context, read from `@angular/forms` 21.2.24 and 22.2.1:
+
+- Signal Forms' `FormField` (`[formField]`) picks how to bind a host the
+  same way in both majors: a `ControlValueAccessor` if the element provides
+  one, else a custom control (a directive with a `value` or `checked`
+  model), else a native form element.
+- The custom-control path differs between them. Angular 21 marks the field
+  touched from a `touchedChange` output (a `touched` model); Angular 22 from
+  a `touch` output, with `touched` an input. One `@ndop/primitives` build
+  would need both.
+- Reactive and template-driven forms in Angular 22 can bind a custom
+  control without a value accessor; Angular 21 can't.
+- A directive that provides `NG_VALUE_ACCESSOR` can't inject `FormField` or
+  `NgControl` in its constructor: they inject the element's value
+  accessors, so it would be circular.
+
+### Decision
+
+- Every primitive that owns its value (Checkbox, Switch, Toggle, Radio
+  Group, Toggle Group, Slider thumbs, Input OTP; Select, Combobox and Date
+  Picker later) provides `NG_VALUE_ACCESSOR`. Signal Forms, reactive and
+  template-driven forms all bind it through that accessor, the same way on
+  Angular 21 and 22.
+- They also implement Signal Forms' `FormCheckboxControl` (a `checked`
+  model: Checkbox, Switch) or `FormValueControl` (a `value` model: Radio
+  Group, Toggle Group, Slider thumbs, Input OTP), so their types follow
+  the contract. Toggle's model is `pressed`, as in WAI-ARIA, which neither
+  contract has, so it's a value accessor only.
+- Disabled state comes from `setDisabledState`, which every forms library
+  calls. Invalid and touched state is read from `FormField.state()` or
+  `NgControl`, looked up through the element injector in
+  `ngAfterContentInit`, when `formControlName` has resolved its control
+  too, and before the first host bindings are checked.
+- Ndop's controls join a Form Field (`@ndop/primitives/form-field`)
+  through a private token, so its description and error ids reach their
+  `aria-describedby`.
+
+### Consequences
+
+- Signal Forms still sets the `FormUiControl` inputs a primitive declares
+  (`disabled`, `required`, `invalid` and the rest) on the value accessor
+  path, so a `required` field marks a Checkbox `aria-required`.
+- Primitives don't depend on either major's custom-control details. When
+  amendment 3's revisit happens, this one is revisited with it.
