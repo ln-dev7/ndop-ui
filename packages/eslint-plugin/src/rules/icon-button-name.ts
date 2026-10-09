@@ -116,7 +116,8 @@ function describe(
  * Flags buttons and button links whose only content is icons, or nothing,
  * with no `aria-label` or `aria-labelledby`: screen readers announce them
  * as just "button" (RFC-0001, ADR-0018). Text inside the button, visually
- * hidden (`sr-only`) or not, names it.
+ * hidden (`sr-only`) or not, names it. Form controls on buttons, such as
+ * `button[ndCheckbox]`, are left to `form-control-label`.
  */
 export const iconButtonName = createRule({
   name: 'icon-button-name',
@@ -138,8 +139,11 @@ export const iconButtonName = createRule({
     return {
       Element(element: TmplAstElement) {
         if (
-          tagName(element) !== 'button' &&
-          !matches(element, CATALOG.buttons)
+          (tagName(element) !== 'button' &&
+            !matches(element, CATALOG.buttons)) ||
+          // Controls on buttons, such as a checkbox, take their name from a
+          // label; form-control-label checks that they have one.
+          matches(element, CATALOG.controls)
         ) {
           return;
         }

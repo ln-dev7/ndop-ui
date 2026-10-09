@@ -13,6 +13,7 @@ templateTester().run('icon-button-name', iconButtonName as never, {
     '<button ndButton><ng-content /></button>',
     '<a href="/"><svg></svg></a>',
     '<button ndButton>@if (saving) { Saving } @else { <svg ndIcon="save"></svg> Save }</button>',
+    '<button ndCheckbox id="terms"><span ndCheckboxIndicator><svg ndIcon="check"></svg></span></button>',
   ],
   invalid: [
     {
