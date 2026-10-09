@@ -165,6 +165,11 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
                 @if (item.bundleSize; as size) {
                   <li ndBadge variant="outline">{{ kilobytes(size) }} gzip</li>
                 }
+                @if (item.cdkSize; as size) {
+                  <li ndBadge variant="outline">
+                    +{{ kilobytes(size) }} Angular CDK, shared
+                  </li>
+                }
               </ul>
             </header>
 

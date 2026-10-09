@@ -37,6 +37,15 @@ fix.
 - The Angular CDK for overlays, focus management and directionality.
 - Server-side rendering and hydration, tested on every component.
 
+## Credits
+
+Ndop's styled items and its default theme start from
+[shadcn/ui](https://ui.shadcn.com): the classes of its new-york-v4 style
+and its neutral palette, MIT licensed, copyright (c) 2023 shadcn. The
+behavior underneath is Ndop's own, on the Angular CDK. The registry
+serves its [license and third-party notices](/r/LICENSE.txt) with the
+items.
+
 ## Next steps
 
 - [Install Ndop](/docs/getting-started/installation) in an Angular app.

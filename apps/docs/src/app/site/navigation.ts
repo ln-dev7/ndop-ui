@@ -1,5 +1,7 @@
 import { computed, Injectable } from '@angular/core';
+import { COMPONENT_GROUPS } from '@/categories';
 import { components } from 'virtual:ndop/components';
+import { primitives } from 'virtual:ndop/primitives';
 import { guideEntries } from './guides';
 
 /**
@@ -32,7 +34,9 @@ const SECTIONS: [folder: string, title: string][] = [
 /**
  * The docs navigation, built from the front matter of the guides in
  * `src/guides/<section>/<page>.md`, then the components from the built
- * registry. Every page is reachable from it, which
+ * registry, a section per catalog group, then the headless primitives.
+ * Every page is reachable from it,
+ * which
  * is how prerendering discovers the whole site.
  */
 @Injectable({ providedIn: 'root' })
@@ -52,12 +56,23 @@ export class Navigation {
           url: `/docs/${folder}/${guide.page}`,
         })),
     })),
+    // Components by the catalog's groups (ADR-0021), each group a section.
+    ...COMPONENT_GROUPS.map((group) => ({
+      title: group.title,
+      links: components
+        .filter((component) => component.group === group.slug)
+        .map((component) => ({
+          title: component.title,
+          description: component.description,
+          url: `/docs/components/${component.name}`,
+        })),
+    })).filter((section) => section.links.length > 0),
     {
-      title: 'Components',
-      links: components.map((component) => ({
-        title: component.title,
-        description: component.description,
-        url: `/docs/components/${component.name}`,
+      title: 'Primitives',
+      links: primitives.map((primitive) => ({
+        title: primitive.title,
+        description: primitive.description,
+        url: `/docs/primitives/${primitive.name}`,
       })),
     },
   ]);

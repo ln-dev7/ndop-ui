@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { injectCurrentPath } from './site/current-path';
+import { SiteFooter } from './site/site-footer';
 import { SiteHeader } from './site/site-header';
 
 /**
- * Root component of the docs site: the header on every page, then the
- * file-based routes from `src/app/pages`.
+ * Root component of the docs site: the header on every page, the
+ * file-based routes from `src/app/pages`, then the footer.
  */
 @Component({
   selector: 'docs-root',
-  imports: [RouterOutlet, SiteHeader],
+  imports: [RouterOutlet, SiteHeader, SiteFooter],
   template: `
     <a
       [href]="path() + '#main'"
@@ -18,6 +19,7 @@ import { SiteHeader } from './site/site-header';
     >
     <docs-site-header />
     <router-outlet />
+    <docs-site-footer />
   `,
 })
 export class AppComponent {

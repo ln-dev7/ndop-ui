@@ -127,9 +127,14 @@ export interface LlmsLink {
  *
  * @param guides - The guides, in order.
  * @param components - The components, in order.
+ * @param primitives - Headless primitives' reference pages, if any.
  * @returns The file.
  */
-export function llmsTxt(guides: LlmsLink[], components: LlmsLink[]): string {
+export function llmsTxt(
+  guides: LlmsLink[],
+  components: LlmsLink[],
+  primitives: LlmsLink[] = [],
+): string {
   const list = (links: LlmsLink[]) =>
     links
       .map(
@@ -146,6 +151,7 @@ export function llmsTxt(guides: LlmsLink[], components: LlmsLink[]): string {
       list(guides),
       '## Components',
       list(components),
+      ...(primitives.length ? ['## Primitives', list(primitives)] : []),
     ].join('\n\n') + '\n'
   );
 }

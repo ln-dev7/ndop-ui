@@ -26,7 +26,17 @@
           "mode": "production"
         }
       },
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build",
+        {
+          "projects": ["primitives"],
+          "target": "api"
+        },
+        {
+          "projects": ["size"],
+          "target": "check"
+        }
+      ]
     },
     "serve": {
       "executor": "@analogjs/platform:vite-dev-server",
@@ -45,7 +55,17 @@
           "buildTarget": "docs:build:production"
         }
       },
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build",
+        {
+          "projects": ["primitives"],
+          "target": "api"
+        },
+        {
+          "projects": ["size"],
+          "target": "check"
+        }
+      ]
     },
     "lint": {
       "inputs": [

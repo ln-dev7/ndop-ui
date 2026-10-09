@@ -1,7 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { marked } from 'marked';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, relative, sep } from 'node:path';
 import {
   createHighlighter,
   type Highlighter,
@@ -12,8 +11,6 @@ import type {
   ComponentPageData,
   ComponentSummary,
   ExampleData,
-  MemberData,
-  PartData,
   TemplatePalette,
 } from '../src/app/components/component-data';
 import {
@@ -30,9 +27,7 @@ import {
   componentMarkdown,
   defaultTarget,
   withDependencies,
-  withoutTsdocLinks,
   type BuiltItem,
-  type Member,
   type Metadata,
 } from '../../../packages/metadata/src/lib/markdown';
 import {
@@ -46,6 +41,12 @@ import {
   changelogPage,
   previewSnapshots,
 } from './changelog';
+import { block, inline, partData } from './part-data';
+import {
+  primitiveMarkdown,
+  primitivePage,
+  readPrimitives,
+} from './primitive-docs';
 import { searchIndex, type IndexedComponent } from './search-index';
 
 const INDEX_ID = 'virtual:ndop/components';
@@ -53,7 +54,9 @@ const PAGE_PREFIX = 'virtual:ndop/component/';
 const SEARCH_ID = 'virtual:ndop/search-index';
 const CHANGELOG_PREFIX = 'virtual:ndop/changelog/';
 const SNAPSHOTS_PREFIX = 'virtual:ndop/snapshots/';
-const REPOSITORY = 'https://github.com/valerymelou/ndop';
+const PRIMITIVES_ID = 'virtual:ndop/primitives';
+const PRIMITIVE_PREFIX = 'virtual:ndop/primitive/';
+const REPOSITORY = 'https://github.com/ndop-ui/ui';
 
 /** Options of {@link componentDocs}. */
 export interface ComponentDocsOptions {
@@ -71,6 +74,8 @@ interface PageTools {
   highlight: (code: string, lang: string, meta?: string) => Promise<string>;
   /** Absolute workspace root. */
   workspace: string;
+  /** Gzipped bytes the Angular CDK adds to an item, when it pulls any in. */
+  cdkSize?: (name: string) => number | undefined;
 }
 
 /**
@@ -83,7 +88,11 @@ interface PageTools {
  * `virtual:ndop/search-index` holds the palette's index (ADR-0008); and
  * `/llms.txt`, `/llms-full.txt` and
  * every page's `.md` twin are served in development and emitted with the
- * build (amendment 6). The registry must be built first
+ * build (amendment 6), as is the built registry itself, at `/r/`;
+ * `virtual:ndop/primitives` lists the headless primitives and loads each
+ * reference page's data from `virtual:ndop/primitive/<name>`, from what
+ * `primitives:api` extracted (amendment 12). The
+ * registry must be built first
  * (`registry:build`), which the docs' targets depend on.
  *
  * @param options - Where the workspace and the guides are.
@@ -111,8 +120,29 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       transformers: [...extra, ...transformers()],
     });
   };
-  const read = <T>(file: string): T =>
-    JSON.parse(readFileSync(join(registry, file), 'utf-8')) as T;
+  // What each item adds to an app, from `size:check` (ADR-0021): its own
+  // code, and with the Angular CDK it pulls in.
+  // Unit tests load this plugin without having measured anything.
+  const report = join(options.workspace, 'dist/size/report.json');
+  const sizes = new Map(
+    (existsSync(report)
+      ? (JSON.parse(readFileSync(report, 'utf-8')) as {
+          name: string;
+          gzip: number;
+          withCdk: number;
+        }[])
+      : []
+    ).map((row) => [row.name, row]),
+  );
+  // Metadata's own bundle size is a quicker estimate that `ndop build`
+  // makes for any registry; the docs, their twins included, show the
+  // measured one instead.
+  const read = <T>(file: string): T => {
+    const data = JSON.parse(readFileSync(join(registry, file), 'utf-8')) as T;
+    const measured = file.match(/^metadata\/(.+)\.json$/)?.[1];
+    const size = measured === undefined ? undefined : sizes.get(measured);
+    return size ? ({ ...data, bundleSize: { gzip: size.gzip } } as T) : data;
+  };
 
   // Paths of the machine-readable docs (ADR-0016, amendment 6) and their
   // content, generated from the same data as the pages.
@@ -133,6 +163,16 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
           ] as const,
       ),
     ];
+    const primitives = readPrimitives(options.workspace);
+    twins.push(
+      ...primitives.map(
+        (primitive) =>
+          [
+            `/docs/primitives/${primitive.name}.md`,
+            primitiveMarkdown(primitive.name, options.workspace),
+          ] as const,
+      ),
+    );
     // Changelogs have twins too, but stay out of llms-full.txt, which is
     // for using the components, not their history.
     const changelogs = components.map(
@@ -159,6 +199,11 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
               url: `/docs/components/${item.name}`,
               description: item.description,
             })),
+            primitives.map((primitive) => ({
+              title: primitive.title,
+              url: `/docs/primitives/${primitive.name}`,
+              description: primitive.description,
+            })),
           ),
         },
       ],
@@ -169,13 +214,38 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
     ]);
   };
 
+  // The built registry, served at /r/ with the site (ADR-0012), including
+  // its license and third-party notices (ADR-0014, amendment 2).
+  const registryFiles = (): Map<string, { type: string; body: string }> =>
+    new Map(
+      readdirSync(registry, { recursive: true, withFileTypes: true })
+        .filter((entry) => entry.isFile())
+        .map((entry) => {
+          const file = join(entry.parentPath, entry.name);
+          const path = `/r/${relative(registry, file).split(sep).join('/')}`;
+          return [
+            path,
+            {
+              type: path.endsWith('.json')
+                ? 'application/json'
+                : 'text/plain; charset=utf-8',
+              body: readFileSync(file, 'utf-8'),
+            },
+          ] as const;
+        }),
+    );
+
   return {
     name: 'ndop:component-docs',
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const path = request.url?.split(/[?#]/)[0] ?? '';
-        if (!path.endsWith('.md') && !path.startsWith('/llms')) return next();
-        const file = machineReadable().get(path);
+        const served = path.startsWith('/r/')
+          ? registryFiles()
+          : path.endsWith('.md') || path.startsWith('/llms')
+            ? machineReadable()
+            : undefined;
+        const file = served?.get(path);
         if (!file) return next();
         response.setHeader('Content-Type', file.type);
         response.end(file.body);
@@ -185,7 +255,7 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       // Once, with the browser build, whose output is the site's static
       // files; the server build has no use for them.
       if (this.environment.config.consumer !== 'client') return;
-      for (const [path, file] of machineReadable()) {
+      for (const [path, file] of [...machineReadable(), ...registryFiles()]) {
         this.emitFile({
           type: 'asset',
           fileName: path.slice(1),
@@ -197,6 +267,8 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       return id === INDEX_ID ||
         id === SEARCH_ID ||
         id.startsWith(PAGE_PREFIX) ||
+        id === PRIMITIVES_ID ||
+        id.startsWith(PRIMITIVE_PREFIX) ||
         id.startsWith(CHANGELOG_PREFIX) ||
         id.startsWith(SNAPSHOTS_PREFIX)
         ? `\0${id}`
@@ -222,6 +294,7 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             title: item.title,
             description: item.description,
             examples: item.ndop?.examples ?? [],
+            group: item.categories?.[0] ?? '',
           }))
           .sort((a, b) => a.title.localeCompare(b.title));
         const loaders = components.flatMap((component) =>
@@ -262,6 +335,33 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             .join(',')}};`,
         ].join('\n');
       }
+      if (id === `\0${PRIMITIVES_ID}`) {
+        const primitives = readPrimitives(options.workspace);
+        return [
+          `export const primitives = ${JSON.stringify(primitives)};`,
+          `export const primitivePages = {${primitives
+            .map(
+              (primitive) =>
+                `${JSON.stringify(primitive.name)}: () => import(${JSON.stringify(PRIMITIVE_PREFIX + primitive.name)})`,
+            )
+            .join(',')}};`,
+        ].join('\n');
+      }
+      if (id.startsWith(`\0${PRIMITIVE_PREFIX}`)) {
+        const name = id.slice(PRIMITIVE_PREFIX.length + 1);
+        const index = read<{ items: BuiltItem[] }>('index.json');
+        const page = await primitivePage(name, {
+          workspace: options.workspace,
+          highlight: (code, lang) => highlight(code, lang),
+          components: new Map(
+            index.items
+              .filter((item) => item.type === 'registry:ui')
+              .map((item) => [item.name, { title: item.title }]),
+          ),
+          repository: REPOSITORY,
+        });
+        return `export default ${JSON.stringify(page)};`;
+      }
       if (id.startsWith(`\0${CHANGELOG_PREFIX}`)) {
         const name = id.slice(CHANGELOG_PREFIX.length + 1);
         return `export default ${JSON.stringify(await changelogPage(name, { read, highlight }))};`;
@@ -276,6 +376,12 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
           read,
           highlight,
           workspace: options.workspace,
+          cdkSize: (item) => {
+            const size = sizes.get(item);
+            return size && size.withCdk > size.gzip
+              ? size.withCdk - size.gzip
+              : undefined;
+          },
         });
         return `export default ${JSON.stringify(page)};`;
       }
@@ -326,6 +432,7 @@ async function pageData(
   tools: PageTools,
 ): Promise<ComponentPageData> {
   const item = tools.read<BuiltItem>(`${name}.json`);
+  const cdkSize = tools.cdkSize?.(name);
   const metadata = tools.read<Metadata>(`metadata/${name}.json`);
   const exampleNames = item.ndop?.examples ?? [];
   const examples = exampleNames.map((example) =>
@@ -349,6 +456,7 @@ async function pageData(
     ssr: item.angular?.ssr ?? false,
     zoneless: item.angular?.zoneless ?? false,
     ...(metadata.bundleSize ? { bundleSize: metadata.bundleSize.gzip } : {}),
+    ...(cdkSize ? { cdkSize } : {}),
     introHtml: await block(metadata.intro),
     install: {
       cliHtml: await tools.highlight(`npx ndop add ${name}`, 'bash', 'pm'),
@@ -415,55 +523,6 @@ async function pageData(
     },
     ...lastUpdated(tools.workspace, itemFile),
   };
-}
-
-/**
- * One part's API reference.
- *
- * @param part - The part's metadata.
- * @returns Its page data.
- */
-async function partData(part: Metadata['parts'][number]): Promise<PartData> {
-  const member = async (entry: Member): Promise<MemberData> => ({
-    name: entry.name,
-    type: entry.type,
-    ...(entry.default === undefined ? {} : { default: entry.default }),
-    ...(entry.values ? { values: entry.values } : {}),
-    ...(entry.required ? { required: true } : {}),
-    descriptionHtml: await inline(entry.description),
-  });
-  return {
-    name: part.name,
-    selector: part.selector,
-    descriptionHtml: await inline(part.description),
-    source: part.source ?? 'item',
-    ...(part.role ? { role: part.role } : {}),
-    ariaAttributes: part.ariaAttributes ?? [],
-    inputs: await Promise.all(part.inputs.map(member)),
-    models: await Promise.all(part.models.map(member)),
-    outputs: await Promise.all(part.outputs.map(member)),
-    dataAttributes: part.dataAttributes ?? [],
-  };
-}
-
-/**
- * Renders a Markdown block.
- *
- * @param markdown - Markdown from metadata.
- * @returns HTML.
- */
-function block(markdown: string): Promise<string> {
-  return Promise.resolve(marked.parse(withoutTsdocLinks(markdown)));
-}
-
-/**
- * Renders inline Markdown.
- *
- * @param markdown - Markdown from metadata.
- * @returns HTML.
- */
-function inline(markdown: string): Promise<string> {
-  return Promise.resolve(marked.parseInline(withoutTsdocLinks(markdown)));
 }
 
 /**

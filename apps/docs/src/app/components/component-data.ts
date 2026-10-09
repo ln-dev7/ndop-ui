@@ -20,8 +20,10 @@ export interface ComponentPageData {
   ssr: boolean;
   /** Whether the item works without zone.js. */
   zoneless: boolean;
-  /** The item's own code, minified and gzipped, in bytes. */
+  /** The item's own code, minified and gzipped, in bytes (ADR-0021). */
   bundleSize?: number;
+  /** What the Angular CDK code it pulls in adds, gzipped, in bytes. */
+  cdkSize?: number;
   /** Introduction, from `docs.md`. */
   introHtml: string;
   /** How to install it. */
@@ -139,4 +141,39 @@ export interface ComponentSummary {
   description: string;
   /** Its examples, the main one first. */
   examples: string[];
+  /** Its docs group, such as `inputs` (ADR-0021). */
+  group: string;
+}
+
+/**
+ * A headless primitive in the navigation (ADR-0016, amendment 12).
+ */
+export interface PrimitiveSummary {
+  /** Entry point name, such as `dialog`. */
+  name: string;
+  /** Display name. */
+  title: string;
+  /** One sentence. */
+  description: string;
+}
+
+/**
+ * A primitive's reference page: its import, its `spec.md` contract and
+ * every part's API.
+ */
+export interface PrimitivePageData extends PrimitiveSummary {
+  /** Import path, such as `@ndop/primitives/dialog`. */
+  importPath: string;
+  /** The import of every part, highlighted. */
+  importHtml: string;
+  /** The WAI-ARIA pattern implemented. */
+  pattern?: { name: string; url: string };
+  /** Keyboard map, focus rules and RTL notes, from `spec.md`. */
+  accessibility: ComponentPageData['accessibility'];
+  /** API reference, the root part first. */
+  parts: PartData[];
+  /** The styled item built on it, when there is one. */
+  component?: { name: string; title: string };
+  /** Where its source is. */
+  source: string;
 }

@@ -16,3 +16,16 @@ tooling built for both humans and coding agents.
 | `tools/update-fixtures`  | Fixtures for `ndop update` merges                |
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to build and test. MIT licensed.
+
+## Acknowledgements
+
+- [shadcn/ui](https://ui.shadcn.com) (MIT, copyright (c) 2023 shadcn): the
+  styled items' classes and the default theme's palette are adapted from
+  its new-york-v4 style. [`registry/vendor/shadcn`](registry/vendor/shadcn/new-york-v4/README.md)
+  records what was copied and every difference. The registry serves the
+  full notices at `/r/LICENSE.txt` ([`registry/LICENSE.txt`](registry/LICENSE.txt)).
+- [Angular CDK](https://material.angular.dev/cdk) for overlays, focus
+  management and keyboard handling.
+- [Geist](https://vercel.com/font) (SIL Open Font License 1.1), the default
+  theme's fonts, and [Lucide](https://lucide.dev) (ISC), the default icons,
+  both installed from npm with their own licenses.

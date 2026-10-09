@@ -35,10 +35,7 @@ test('the navigation lists every component', async ({ page }) => {
   await open(page, '/docs/components/dialog');
   const links = page
     .getByRole('navigation', { name: 'Docs' })
-    .getByRole('link')
-    .filter({
-      hasText: /^(Badge|Button|Dialog|Input|Label|Popover|Separator|Tooltip)$/,
-    });
+    .locator('a[href^="/docs/components/"]');
   await expect(links).toHaveCount(COMPONENTS.length);
 });
 

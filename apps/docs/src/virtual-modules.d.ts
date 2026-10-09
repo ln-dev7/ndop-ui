@@ -49,3 +49,15 @@ declare module 'virtual:ndop/search-index' {
   /** Every entry. */
   export const entries: import('./app/search/search-entry').SearchEntry[];
 }
+
+declare module 'virtual:ndop/primitives' {
+  /** Every headless primitive, by title (ADR-0016, amendment 12). */
+  export const primitives: import('./app/components/component-data').PrimitiveSummary[];
+  /** Loads one primitive's reference page data, by name. */
+  export const primitivePages: Record<
+    string,
+    () => Promise<{
+      default: import('./app/components/component-data').PrimitivePageData;
+    }>
+  >;
+}

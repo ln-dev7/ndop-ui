@@ -66,7 +66,7 @@ const SYSTEM = {
   ],
   template: `
     <header
-      class="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70"
+      class="sticky top-0 z-40 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70"
     >
       <div
         class="mx-auto flex h-14 max-w-[1440px] items-center gap-2 px-4 lg:px-6"
@@ -133,7 +133,7 @@ const SYSTEM = {
             ndButton
             variant="ghost"
             size="sm"
-            href="https://github.com/valerymelou/ndop"
+            href="https://github.com/ndop-ui/ui"
             >GitHub</a
           >
           <!-- Soon after load, so the icon and label follow a saved
