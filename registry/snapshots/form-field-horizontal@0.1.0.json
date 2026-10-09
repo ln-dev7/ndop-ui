@@ -1,0 +1,33 @@
+{
+  "name": "form-field-horizontal",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Form Field horizontal",
+  "description": "Checkbox and switch fields with their labels and descriptions beside the control.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "checkbox",
+    "form-field",
+    "switch",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/form-field-horizontal.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/form-field-horizontal.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Checkbox, CheckboxIndicator } from '@/ui/checkbox/checkbox';\nimport {\n  Field,\n  FieldContent,\n  FieldDescription,\n  FieldGroup,\n  FieldLabel,\n} from '@/ui/form-field/form-field';\nimport { Switch, SwitchThumb } from '@/ui/switch/switch';\n\n/**\n * Checkbox and switch fields with their labels and descriptions beside\n * the control, which each control's description lists.\n */\n@Component({\n  selector: 'example-form-field-horizontal',\n  imports: [\n    Checkbox,\n    CheckboxIndicator,\n    Field,\n    FieldContent,\n    FieldDescription,\n    FieldGroup,\n    FieldLabel,\n    NdIcon,\n    Switch,\n    SwitchThumb,\n  ],\n  template: `\n    <div ndFieldGroup class=\"w-full max-w-md\">\n      <div ndField orientation=\"horizontal\">\n        <button\n          ndCheckbox\n          id=\"form-field-horizontal-sync\"\n          [defaultChecked]=\"true\"\n        >\n          <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n        </button>\n        <div ndFieldContent>\n          <label ndFieldLabel for=\"form-field-horizontal-sync\">\n            Sync across devices\n          </label>\n          <p ndFieldDescription>\n            Your settings follow you to every device you sign in on.\n          </p>\n        </div>\n      </div>\n      <div ndField orientation=\"horizontal\">\n        <div ndFieldContent>\n          <label ndFieldLabel for=\"form-field-horizontal-2fa\">\n            Two-factor authentication\n          </label>\n          <p ndFieldDescription>\n            Ask for a code from your phone when you sign in.\n          </p>\n        </div>\n        <button ndSwitch id=\"form-field-horizontal-2fa\">\n          <span ndSwitchThumb></span>\n        </button>\n      </div>\n    </div>\n  `,\n})\nexport class FormFieldHorizontalExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "FormFieldHorizontalExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

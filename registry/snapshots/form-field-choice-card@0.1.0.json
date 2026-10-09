@@ -1,0 +1,32 @@
+{
+  "name": "form-field-choice-card",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Form Field choice card",
+  "description": "Options as cards: each whole field is the label of its radio.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "checkbox",
+    "form-field",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/form-field-choice-card.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/form-field-choice-card.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Checkbox, CheckboxIndicator } from '@/ui/checkbox/checkbox';\nimport {\n  Field,\n  FieldContent,\n  FieldDescription,\n  FieldLabel,\n  FieldLegend,\n  FieldSet,\n  FieldTitle,\n} from '@/ui/form-field/form-field';\n\n/**\n * Add-ons as cards: each whole field is the label of its checkbox, and a\n * checked card is highlighted.\n */\n@Component({\n  selector: 'example-form-field-choice-card',\n  imports: [\n    Checkbox,\n    CheckboxIndicator,\n    Field,\n    FieldContent,\n    FieldDescription,\n    FieldLabel,\n    FieldLegend,\n    FieldSet,\n    FieldTitle,\n    NdIcon,\n  ],\n  template: `\n    <fieldset ndFieldSet class=\"w-full max-w-sm\">\n      <legend ndFieldLegend variant=\"label\">Add-ons</legend>\n      @for (addOn of addOns; track addOn.id) {\n        <label ndFieldLabel [for]=\"'form-field-choice-card-' + addOn.id\">\n          <div ndField orientation=\"horizontal\">\n            <button\n              ndCheckbox\n              [id]=\"'form-field-choice-card-' + addOn.id\"\n              [attr.aria-label]=\"addOn.title\"\n              [defaultChecked]=\"addOn.checked\"\n            >\n              <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n            </button>\n            <div ndFieldContent>\n              <div ndFieldTitle>{{ addOn.title }}</div>\n              <p ndFieldDescription>{{ addOn.description }}</p>\n            </div>\n          </div>\n        </label>\n      }\n    </fieldset>\n  `,\n})\nexport class FormFieldChoiceCardExample {\n  protected readonly addOns = [\n    {\n      id: 'backups',\n      title: 'Daily backups',\n      description: 'Restore any day from the last 30.',\n      checked: true,\n    },\n    {\n      id: 'domain',\n      title: 'Custom domain',\n      description: 'Serve your site from your own address.',\n      checked: false,\n    },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "FormFieldChoiceCardExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

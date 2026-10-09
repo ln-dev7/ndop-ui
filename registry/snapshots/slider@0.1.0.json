@@ -1,0 +1,46 @@
+{
+  "name": "slider",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Slider",
+  "description": "Picks a number, or a range with two thumbs, by dragging along a track or with the arrow keys.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/slider/slider.ts",
+      "type": "registry:ui",
+      "target": "{ui}/slider/slider.ts",
+      "content": "import { computed, Directive, inject, input } from '@angular/core';\nimport {\n  ND_SLIDER,\n  NdSlider,\n  NdSliderRange,\n  NdSliderThumb,\n  NdSliderTrack,\n} from '@ndop/primitives/slider';\nimport { cn } from '@/lib/utils';\n\n/**\n * A slider (`@ndop/primitives/slider`): pick a number, or a range with two\n * thumbs, by dragging or with the arrow keys. The root sets `min`, `max`\n * and `step`; each `ndSliderThumb` holds one value, so bind each thumb\n * with `[(value)]` or a forms library, and name it with `aria-label`.\n *\n * @example\n * ```html\n * <div ndSlider [max]=\"100\" [step]=\"1\">\n *   <div ndSliderTrack><div ndSliderRange></div></div>\n *   <span ndSliderThumb aria-label=\"Volume\" [(value)]=\"volume\"></span>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndSlider]',\n  hostDirectives: [\n    {\n      directive: NdSlider,\n      inputs: ['min', 'max', 'step', 'orientation', 'disabled'],\n    },\n  ],\n  host: { 'data-slot': 'slider', '[class]': 'classes()' },\n})\nexport class Slider {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The track of a {@link Slider}, with a `ndSliderRange` inside.\n *\n * @example\n * ```html\n * <div ndSliderTrack><div ndSliderRange></div></div>\n * ```\n */\n@Directive({\n  selector: '[ndSliderTrack]',\n  hostDirectives: [NdSliderTrack],\n  host: { 'data-slot': 'slider-track', '[class]': 'classes()' },\n})\nexport class SliderTrack {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The filled part of a {@link Slider}'s track: from the start to a single\n * thumb, or between two.\n *\n * @example\n * ```html\n * <div ndSliderRange></div>\n * ```\n */\n@Directive({\n  selector: '[ndSliderRange]',\n  hostDirectives: [NdSliderRange],\n  host: {\n    'data-slot': 'slider-range',\n    '[style.inset-inline-start.%]': 'horizontal() ? range().start : null',\n    '[style.inset-inline-end.%]': 'horizontal() ? 100 - range().end : null',\n    '[style.bottom.%]': 'horizontal() ? null : range().start',\n    '[style.top.%]': 'horizontal() ? null : 100 - range().end',\n    '[class]': 'classes()',\n  },\n})\nexport class SliderRange {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  private readonly slider = inject(ND_SLIDER);\n\n  protected readonly range = this.slider.range;\n\n  protected readonly horizontal = computed(\n    () => this.slider.orientation() === 'horizontal',\n  );\n\n  protected readonly classes = computed(() =>\n    cn(\n      'absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A thumb of a {@link Slider}: one value, bound with `[(value)]` or a forms\n * library. Name it with `aria-label`; add a second one for a range. It\n * stays inside the track at both ends.\n *\n * @example\n * ```html\n * <span ndSliderThumb aria-label=\"Volume\" [(value)]=\"volume\"></span>\n * ```\n */\n@Directive({\n  selector: '[ndSliderThumb]',\n  hostDirectives: [\n    {\n      directive: NdSliderThumb,\n      inputs: ['value', 'defaultValue', 'valueText', 'invalid'],\n      outputs: ['valueChange'],\n    },\n  ],\n  host: {\n    'data-slot': 'slider-thumb',\n    // The thumb's edge moves from the track's start to its end, so it\n    // never overhangs: positioned at the value's percentage, then pulled\n    // back by the same percentage of its own size.\n    '[style.inset-inline-start.%]': 'horizontal() ? thumb.percent() : null',\n    '[style.bottom.%]': 'horizontal() ? null : thumb.percent()',\n    '[style.--slider-thumb-offset]': 'thumb.percent() + \"%\"',\n    '[class]': 'classes()',\n  },\n})\nexport class SliderThumb {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly thumb = inject(NdSliderThumb);\n\n  protected readonly horizontal = computed(\n    () => this.thumb.slider.orientation() === 'horizontal',\n  );\n\n  protected readonly classes = computed(() =>\n    cn(\n      'block size-4 shrink-0 rounded-full border border-primary bg-background shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50',\n      'absolute data-[orientation=horizontal]:-translate-x-(--slider-thumb-offset) rtl:data-[orientation=horizontal]:translate-x-(--slider-thumb-offset) data-[orientation=vertical]:translate-y-(--slider-thumb-offset) aria-disabled:pointer-events-none aria-invalid:border-destructive',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Slider",
+      "SliderTrack",
+      "SliderRange",
+      "SliderThumb"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/slider.json",
+    "examples": [
+      "slider-demo",
+      "slider-range",
+      "slider-steps",
+      "slider-vertical",
+      "slider-disabled"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,44 @@
+{
+  "name": "radio-group",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Radio Group",
+  "description": "A set of options of which one at most is chosen, navigated with the arrow keys.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/radio-group/radio-group.ts",
+      "type": "registry:ui",
+      "target": "{ui}/radio-group/radio-group.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdRadioGroup,\n  NdRadioGroupIndicator,\n  NdRadioGroupItem,\n} from '@ndop/primitives/radio-group';\nimport { cn } from '@/lib/utils';\n\n/**\n * A radio group (`@ndop/primitives/radio-group`): options of which one at\n * most is checked, with the arrow keys moving between them. Bind it with\n * `[(value)]` or any forms library, and name it with `aria-label` or\n * `aria-labelledby`.\n *\n * @example\n * ```html\n * <div ndRadioGroup aria-label=\"Plan\" [(value)]=\"plan\">\n *   <div class=\"flex items-center gap-3\">\n *     <button ndRadioGroupItem value=\"free\" id=\"free\">\n *       <span ndRadioGroupIndicator><svg ndIcon=\"circle\"></svg></span>\n *     </button>\n *     <label ndLabel for=\"free\">Free</label>\n *   </div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndRadioGroup]',\n  hostDirectives: [\n    {\n      directive: NdRadioGroup,\n      inputs: [\n        'value',\n        'defaultValue',\n        'orientation',\n        'disabled',\n        'required',\n        'invalid',\n      ],\n      outputs: ['valueChange'],\n    },\n  ],\n  host: { 'data-slot': 'radio-group', '[class]': 'classes()' },\n})\nexport class RadioGroup {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('group/radio-group grid gap-3', this.class()),\n  );\n}\n\n/**\n * One option of a {@link RadioGroup}, on a native `button`, with a\n * `ndRadioGroupIndicator` inside. Name it with a `label[ndLabel]` whose\n * `for` is its `id`.\n *\n * @example\n * ```html\n * <button ndRadioGroupItem value=\"pro\" id=\"pro\">\n *   <span ndRadioGroupIndicator><svg ndIcon=\"circle\"></svg></span>\n * </button>\n * ```\n */\n@Directive({\n  selector: 'button[ndRadioGroupItem]',\n  hostDirectives: [\n    { directive: NdRadioGroupItem, inputs: ['value', 'disabled'] },\n  ],\n  host: { 'data-slot': 'radio-group-item', '[class]': 'classes()' },\n})\nexport class RadioGroupItem {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'aspect-square size-4 shrink-0 rounded-full border border-input text-primary shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40',\n      'group-aria-invalid/radio-group:border-destructive',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The dot of a {@link RadioGroupItem}, shown while it's checked. Put a\n * circle icon inside.\n *\n * @example\n * ```html\n * <span ndRadioGroupIndicator><svg ndIcon=\"circle\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndRadioGroupIndicator]',\n  hostDirectives: [NdRadioGroupIndicator],\n  host: { 'data-slot': 'radio-group-indicator', '[class]': 'classes()' },\n})\nexport class RadioGroupIndicator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative flex items-center justify-center [&>svg]:size-2 [&>svg]:fill-primary',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "RadioGroup",
+      "RadioGroupItem",
+      "RadioGroupIndicator"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/radio-group.json",
+    "examples": [
+      "radio-group-demo",
+      "radio-group-cards",
+      "radio-group-disabled",
+      "radio-group-form"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

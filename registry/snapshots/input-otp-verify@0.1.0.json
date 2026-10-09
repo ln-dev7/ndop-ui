@@ -1,0 +1,33 @@
+{
+  "name": "input-otp-verify",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Input OTP verify",
+  "description": "A verification step that submits the code as soon as it's complete.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "form-field",
+    "input-otp",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/input-otp-verify.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-otp-verify.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Field,\n  FieldDescription,\n  FieldError,\n  FieldLabel,\n} from '@/ui/form-field/form-field';\nimport {\n  InputOtp,\n  InputOtpGroup,\n  InputOtpInput,\n  InputOtpSeparator,\n  InputOtpSlot,\n} from '@/ui/input-otp/input-otp';\n\n/**\n * A verification step that checks the code as soon as it's complete,\n * without a submit button: a wrong code turns the field invalid and says\n * so. Here, 123456 is the right code.\n */\n@Component({\n  selector: 'example-input-otp-verify',\n  imports: [\n    Button,\n    Field,\n    FieldDescription,\n    FieldError,\n    FieldLabel,\n    InputOtp,\n    InputOtpGroup,\n    InputOtpInput,\n    InputOtpSeparator,\n    InputOtpSlot,\n    NdIcon,\n  ],\n  template: `\n    <div ndField class=\"w-fit\">\n      <label ndFieldLabel for=\"input-otp-verify-code\">\n        Verification code\n      </label>\n      <p ndFieldDescription>We sent a code to ada&#64;example.com.</p>\n      <div\n        ndInputOtp\n        [length]=\"6\"\n        [invalid]=\"status() === 'wrong'\"\n        [(value)]=\"code\"\n        (valueChange)=\"status.set('pending')\"\n        (completed)=\"verify($event)\"\n      >\n        <input ndInputOtpInput id=\"input-otp-verify-code\" />\n        <div ndInputOtpGroup>\n          @for (index of [0, 1, 2]; track index) {\n            <div ndInputOtpSlot [index]=\"index\"></div>\n          }\n        </div>\n        <div ndInputOtpSeparator><svg ndIcon=\"minus\"></svg></div>\n        <div ndInputOtpGroup>\n          @for (index of [3, 4, 5]; track index) {\n            <div ndInputOtpSlot [index]=\"index\"></div>\n          }\n        </div>\n      </div>\n      <p ndFieldError>That code isn't right. Check it, or send a new one.</p>\n      <p class=\"text-sm\" aria-live=\"polite\">\n        @if (status() === 'verified') {\n          Verified.\n        }\n      </p>\n      <button\n        ndButton\n        variant=\"link\"\n        class=\"justify-self-start px-0\"\n        (click)=\"resend()\"\n      >\n        Send a new code\n      </button>\n    </div>\n  `,\n})\nexport class InputOtpVerifyExample {\n  protected readonly code = signal('');\n  protected readonly status = signal<'pending' | 'wrong' | 'verified'>(\n    'pending',\n  );\n\n  /**\n   * Checks a complete code.\n   *\n   * @param code - The code.\n   */\n  protected verify(code: string): void {\n    this.status.set(code === '123456' ? 'verified' : 'wrong');\n  }\n\n  /** Clears the code, as after sending a new one. */\n  protected resend(): void {\n    this.code.set('');\n    this.status.set('pending');\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputOtpVerifyExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

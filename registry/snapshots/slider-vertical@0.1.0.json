@@ -1,0 +1,27 @@
+{
+  "name": "slider-vertical",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Slider vertical",
+  "description": "A vertical slider, running bottom to top.",
+  "registryDependencies": [
+    "slider"
+  ],
+  "files": [
+    {
+      "path": "examples/slider-vertical.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/slider-vertical.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Slider,\n  SliderRange,\n  SliderThumb,\n  SliderTrack,\n} from '@/ui/slider/slider';\n\n/** A vertical slider, running bottom to top. */\n@Component({\n  selector: 'example-slider-vertical',\n  imports: [Slider, SliderRange, SliderThumb, SliderTrack],\n  template: `\n    <div class=\"flex h-44 items-center gap-6\">\n      <div ndSlider orientation=\"vertical\">\n        <div ndSliderTrack><div ndSliderRange></div></div>\n        <span ndSliderThumb aria-label=\"Bass\" [defaultValue]=\"30\"></span>\n      </div>\n      <div ndSlider orientation=\"vertical\">\n        <div ndSliderTrack><div ndSliderRange></div></div>\n        <span ndSliderThumb aria-label=\"Treble\" [defaultValue]=\"70\"></span>\n      </div>\n    </div>\n  `,\n})\nexport class SliderVerticalExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SliderVerticalExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

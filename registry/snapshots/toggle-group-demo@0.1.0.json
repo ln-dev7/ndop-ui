@@ -1,0 +1,31 @@
+{
+  "name": "toggle-group-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toggle Group demo",
+  "description": "Text formatting where any number of options combine, in the outline style.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "toggle-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-group-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-group-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';\n\n/** Text formatting where any number of options combine, in the outline style. */\n@Component({\n  selector: 'example-toggle-group-demo',\n  imports: [NdIcon, ToggleGroup, ToggleGroupItem],\n  template: `\n    <div\n      ndToggleGroup\n      type=\"multiple\"\n      variant=\"outline\"\n      aria-label=\"Text formatting\"\n      [(value)]=\"formatting\"\n    >\n      <button ndToggleGroupItem value=\"bold\" aria-label=\"Toggle bold\">\n        <svg ndIcon=\"bold\"></svg>\n      </button>\n      <button ndToggleGroupItem value=\"italic\" aria-label=\"Toggle italic\">\n        <svg ndIcon=\"italic\"></svg>\n      </button>\n      <button ndToggleGroupItem value=\"underline\" aria-label=\"Toggle underline\">\n        <svg ndIcon=\"underline\"></svg>\n      </button>\n    </div>\n  `,\n})\nexport class ToggleGroupDemoExample {\n  protected readonly formatting = signal<readonly string[]>(['bold']);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroupDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

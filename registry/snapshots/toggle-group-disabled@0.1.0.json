@@ -1,0 +1,31 @@
+{
+  "name": "toggle-group-disabled",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toggle Group disabled",
+  "description": "A disabled group.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "toggle-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-group-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-group-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';\n\n/** A disabled group. */\n@Component({\n  selector: 'example-toggle-group-disabled',\n  imports: [NdIcon, ToggleGroup, ToggleGroupItem],\n  template: `\n    <div\n      ndToggleGroup\n      type=\"multiple\"\n      disabled\n      aria-label=\"Text formatting\"\n      [defaultValue]=\"['bold']\"\n    >\n      <button ndToggleGroupItem value=\"bold\" aria-label=\"Toggle bold\">\n        <svg ndIcon=\"bold\"></svg>\n      </button>\n      <button ndToggleGroupItem value=\"italic\" aria-label=\"Toggle italic\">\n        <svg ndIcon=\"italic\"></svg>\n      </button>\n      <button ndToggleGroupItem value=\"underline\" aria-label=\"Toggle underline\">\n        <svg ndIcon=\"underline\"></svg>\n      </button>\n    </div>\n  `,\n})\nexport class ToggleGroupDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroupDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

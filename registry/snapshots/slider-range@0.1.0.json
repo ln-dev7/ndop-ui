@@ -1,0 +1,27 @@
+{
+  "name": "slider-range",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Slider range",
+  "description": "A price range with two thumbs, and the values shown beside it.",
+  "registryDependencies": [
+    "slider"
+  ],
+  "files": [
+    {
+      "path": "examples/slider-range.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/slider-range.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport {\n  Slider,\n  SliderRange,\n  SliderThumb,\n  SliderTrack,\n} from '@/ui/slider/slider';\n\n/**\n * A price filter with two thumbs that can't pass each other, and the\n * chosen range shown beside it.\n */\n@Component({\n  selector: 'example-slider-range',\n  imports: [Slider, SliderRange, SliderThumb, SliderTrack],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <div class=\"flex items-center justify-between gap-2\">\n        <span id=\"slider-range-label\" class=\"text-sm font-medium\">Price</span>\n        <span class=\"text-sm text-muted-foreground\">\n          {{ '$' + min() }} – {{ '$' + max() }}\n        </span>\n      </div>\n      <div ndSlider [max]=\"500\" [step]=\"10\">\n        <div ndSliderTrack><div ndSliderRange></div></div>\n        <span\n          ndSliderThumb\n          aria-label=\"Minimum price\"\n          [valueText]=\"'$' + min()\"\n          [(value)]=\"min\"\n        ></span>\n        <span\n          ndSliderThumb\n          aria-label=\"Maximum price\"\n          [valueText]=\"'$' + max()\"\n          [(value)]=\"max\"\n        ></span>\n      </div>\n    </div>\n  `,\n})\nexport class SliderRangeExample {\n  protected readonly min = signal(100);\n  protected readonly max = signal(350);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SliderRangeExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

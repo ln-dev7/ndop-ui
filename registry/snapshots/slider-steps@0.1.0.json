@@ -1,0 +1,27 @@
+{
+  "name": "slider-steps",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Slider steps",
+  "description": "Steps of ten, with the value said in words for screen readers.",
+  "registryDependencies": [
+    "slider"
+  ],
+  "files": [
+    {
+      "path": "examples/slider-steps.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/slider-steps.ts",
+      "content": "import { Component, computed, signal } from '@angular/core';\nimport {\n  Slider,\n  SliderRange,\n  SliderThumb,\n  SliderTrack,\n} from '@/ui/slider/slider';\n\n/** Steps of ten, with the value said in words for screen readers. */\n@Component({\n  selector: 'example-slider-steps',\n  imports: [Slider, SliderRange, SliderThumb, SliderTrack],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <div ndSlider [step]=\"10\">\n        <div ndSliderTrack><div ndSliderRange></div></div>\n        <span\n          ndSliderThumb\n          aria-label=\"Quality\"\n          [valueText]=\"label()\"\n          [(value)]=\"quality\"\n        ></span>\n      </div>\n      <p class=\"text-sm text-muted-foreground\">Quality: {{ label() }}</p>\n    </div>\n  `,\n})\nexport class SliderStepsExample {\n  protected readonly quality = signal(60);\n\n  protected readonly label = computed(() => {\n    const quality = this.quality();\n    const trade =\n      quality < 40\n        ? 'smaller files'\n        : quality < 80\n          ? 'balanced'\n          : 'best quality';\n    return `${quality}%, ${trade}`;\n  });\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SliderStepsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

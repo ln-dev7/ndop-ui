@@ -1,0 +1,28 @@
+{
+  "name": "switch-small",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Switch small",
+  "description": "The small size, for dense lists of settings.",
+  "registryDependencies": [
+    "label",
+    "switch"
+  ],
+  "files": [
+    {
+      "path": "examples/switch-small.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/switch-small.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Label } from '@/ui/label/label';\nimport { Switch, SwitchThumb } from '@/ui/switch/switch';\n\n/** The small size, for dense lists of settings. */\n@Component({\n  selector: 'example-switch-small',\n  imports: [Label, Switch, SwitchThumb],\n  template: `\n    <div class=\"flex items-center gap-2\">\n      <button\n        ndSwitch\n        size=\"sm\"\n        id=\"switch-small-captions\"\n        [defaultChecked]=\"true\"\n      >\n        <span ndSwitchThumb></span>\n      </button>\n      <label ndLabel for=\"switch-small-captions\">Captions</label>\n    </div>\n  `,\n})\nexport class SwitchSmallExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SwitchSmallExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

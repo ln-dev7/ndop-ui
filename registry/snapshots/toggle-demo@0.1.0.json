@@ -1,0 +1,31 @@
+{
+  "name": "toggle-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toggle demo",
+  "description": "An icon-only toggle, named for screen readers.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "toggle",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Toggle } from '@/ui/toggle/toggle';\n\n/** An icon-only toggle, named for screen readers. */\n@Component({\n  selector: 'example-toggle-demo',\n  imports: [NdIcon, Toggle],\n  template: `\n    <button ndToggle aria-label=\"Toggle bold\">\n      <svg ndIcon=\"bold\"></svg>\n    </button>\n  `,\n})\nexport class ToggleDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

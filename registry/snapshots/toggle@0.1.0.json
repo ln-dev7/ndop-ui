@@ -1,0 +1,44 @@
+{
+  "name": "toggle",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Toggle",
+  "description": "A button that stays pressed or released, such as Bold in a text editor.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/toggle/toggle.ts",
+      "type": "registry:ui",
+      "target": "{ui}/toggle/toggle.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { NdToggle } from '@ndop/primitives/toggle';\nimport { cn, variants, type VariantOf } from '@/lib/utils';\n\n/** Class table for {@link Toggle}, shared with Toggle Group's items. */\nexport const toggleVariants = variants({\n  base: \"inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-[color,box-shadow] outline-none hover:bg-muted hover:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4\",\n  variants: {\n    variant: {\n      default: 'bg-transparent',\n      outline:\n        'border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground',\n    },\n    size: {\n      default: 'h-9 min-w-9 px-2',\n      sm: 'h-8 min-w-8 px-1.5',\n      lg: 'h-10 min-w-10 px-2.5',\n    },\n  },\n  defaults: { variant: 'default', size: 'default' },\n});\n\n/** Visual style of a {@link Toggle}. */\nexport type ToggleVariant = VariantOf<typeof toggleVariants, 'variant'>;\n\n/** Size of a {@link Toggle}. */\nexport type ToggleSize = VariantOf<typeof toggleVariants, 'size'>;\n\n/**\n * A toggle button (`@ndop/primitives/toggle`): pressed or released,\n * announced with `aria-pressed`. Bind it with `[(pressed)]`. Keep its name\n * the same in both states, such as `aria-label=\"Toggle bold\"`.\n *\n * @example\n * ```html\n * <button ndToggle aria-label=\"Toggle bold\" [(pressed)]=\"bold\">\n *   <svg ndIcon=\"bold\"></svg>\n * </button>\n * ```\n */\n@Directive({\n  selector: 'button[ndToggle]',\n  hostDirectives: [\n    {\n      directive: NdToggle,\n      inputs: ['pressed', 'defaultPressed', 'disabled'],\n      outputs: ['pressedChange'],\n    },\n  ],\n  host: {\n    'data-slot': 'toggle',\n    '[attr.data-variant]': 'variant()',\n    '[attr.data-size]': 'size()',\n    '[class]': 'classes()',\n  },\n})\nexport class Toggle {\n  /** Visual style. */\n  readonly variant = input<ToggleVariant>('default');\n\n  /** Size. */\n  readonly size = input<ToggleSize>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      toggleVariants({ variant: this.variant(), size: this.size() }),\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Toggle",
+      "toggleVariants"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/toggle.json",
+    "examples": [
+      "toggle-demo",
+      "toggle-outline",
+      "toggle-with-text",
+      "toggle-sizes",
+      "toggle-disabled"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

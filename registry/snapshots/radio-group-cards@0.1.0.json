@@ -1,0 +1,32 @@
+{
+  "name": "radio-group-cards",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Radio Group cards",
+  "description": "Plans as selectable cards, each with a description.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "form-field",
+    "radio-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/radio-group-cards.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/radio-group-cards.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Field,\n  FieldContent,\n  FieldDescription,\n  FieldLabel,\n  FieldTitle,\n} from '@/ui/form-field/form-field';\nimport {\n  RadioGroup,\n  RadioGroupIndicator,\n  RadioGroupItem,\n} from '@/ui/radio-group/radio-group';\n\n/**\n * Plans as selectable cards: each card is the label of its radio, so\n * clicking anywhere on it chooses the plan, and the chosen card is\n * highlighted.\n */\n@Component({\n  selector: 'example-radio-group-cards',\n  imports: [\n    Field,\n    FieldContent,\n    FieldDescription,\n    FieldLabel,\n    FieldTitle,\n    NdIcon,\n    RadioGroup,\n    RadioGroupIndicator,\n    RadioGroupItem,\n  ],\n  template: `\n    <div\n      ndRadioGroup\n      aria-label=\"Plan\"\n      class=\"w-full max-w-sm\"\n      [(value)]=\"plan\"\n    >\n      @for (option of plans; track option.value) {\n        <label ndFieldLabel [for]=\"'radio-group-cards-' + option.value\">\n          <div ndField orientation=\"horizontal\">\n            <div ndFieldContent>\n              <div ndFieldTitle>{{ option.title }}</div>\n              <p ndFieldDescription>{{ option.description }}</p>\n            </div>\n            <button\n              ndRadioGroupItem\n              [value]=\"option.value\"\n              [id]=\"'radio-group-cards-' + option.value\"\n              [attr.aria-label]=\"option.title\"\n            >\n              <span ndRadioGroupIndicator><svg ndIcon=\"circle\"></svg></span>\n            </button>\n          </div>\n        </label>\n      }\n    </div>\n  `,\n})\nexport class RadioGroupCardsExample {\n  protected readonly plans = [\n    {\n      value: 'starter',\n      title: 'Starter',\n      description: 'For side projects: one seat, 5 GB of storage.',\n    },\n    {\n      value: 'pro',\n      title: 'Pro',\n      description: 'For small teams: ten seats, 100 GB of storage.',\n    },\n    {\n      value: 'business',\n      title: 'Business',\n      description: 'Unlimited seats, single sign-on and audit logs.',\n    },\n  ];\n\n  protected readonly plan = signal<string | null>('pro');\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "RadioGroupCardsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

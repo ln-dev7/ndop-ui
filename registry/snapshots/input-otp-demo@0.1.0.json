@@ -1,0 +1,31 @@
+{
+  "name": "input-otp-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Input OTP demo",
+  "description": "A six-digit code in two groups of three.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "input-otp",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/input-otp-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-otp-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  InputOtp,\n  InputOtpGroup,\n  InputOtpInput,\n  InputOtpSeparator,\n  InputOtpSlot,\n} from '@/ui/input-otp/input-otp';\n\n/** A six-digit code in two groups of three. */\n@Component({\n  selector: 'example-input-otp-demo',\n  imports: [\n    InputOtp,\n    InputOtpGroup,\n    InputOtpInput,\n    InputOtpSeparator,\n    InputOtpSlot,\n    NdIcon,\n  ],\n  template: `\n    <div ndInputOtp [length]=\"6\">\n      <input ndInputOtpInput aria-label=\"Verification code\" />\n      <div ndInputOtpGroup>\n        @for (index of [0, 1, 2]; track index) {\n          <div ndInputOtpSlot [index]=\"index\"></div>\n        }\n      </div>\n      <div ndInputOtpSeparator><svg ndIcon=\"minus\"></svg></div>\n      <div ndInputOtpGroup>\n        @for (index of [3, 4, 5]; track index) {\n          <div ndInputOtpSlot [index]=\"index\"></div>\n        }\n      </div>\n    </div>\n  `,\n})\nexport class InputOtpDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputOtpDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

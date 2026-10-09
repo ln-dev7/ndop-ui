@@ -1,0 +1,31 @@
+{
+  "name": "toggle-with-text",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toggle with text",
+  "description": "A toggle with an icon and a label.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "toggle",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-with-text.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-with-text.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Toggle } from '@/ui/toggle/toggle';\n\n/**\n * A toggle with an icon and a label, whose icon fills while it's pressed.\n */\n@Component({\n  selector: 'example-toggle-with-text',\n  imports: [NdIcon, Toggle],\n  template: `\n    <button\n      ndToggle\n      variant=\"outline\"\n      size=\"sm\"\n      class=\"data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-current\"\n      [(pressed)]=\"saved\"\n    >\n      <svg ndIcon=\"bookmark\"></svg>\n      Bookmark\n    </button>\n  `,\n})\nexport class ToggleWithTextExample {\n  protected readonly saved = signal(false);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleWithTextExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

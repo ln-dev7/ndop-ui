@@ -1,0 +1,33 @@
+{
+  "name": "checkbox-form",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Checkbox form",
+  "description": "A required terms checkbox in a Signal Forms form, with its error once touched.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "checkbox",
+    "form-field",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/checkbox-form.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/checkbox-form.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { form, FormField, required } from '@angular/forms/signals';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport { Checkbox, CheckboxIndicator } from '@/ui/checkbox/checkbox';\nimport {\n  Field,\n  FieldContent,\n  FieldDescription,\n  FieldError,\n  FieldLabel,\n} from '@/ui/form-field/form-field';\n\n/**\n * A terms checkbox that must be checked to continue, in a Signal Forms\n * form: its error shows once the box has been left unchecked, or the form\n * was submitted.\n */\n@Component({\n  selector: 'example-checkbox-form',\n  imports: [\n    Button,\n    Checkbox,\n    CheckboxIndicator,\n    Field,\n    FieldContent,\n    FieldDescription,\n    FieldError,\n    FieldLabel,\n    FormField,\n    NdIcon,\n  ],\n  template: `\n    <form class=\"flex max-w-sm flex-col gap-6\" (submit)=\"submit($event)\">\n      <div ndField orientation=\"horizontal\">\n        <button ndCheckbox id=\"checkbox-form-terms\" [formField]=\"signup.terms\">\n          <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n        </button>\n        <div ndFieldContent>\n          <label ndFieldLabel for=\"checkbox-form-terms\">\n            I agree to the terms of service\n          </label>\n          <p ndFieldDescription>Read them before you sign up.</p>\n          <p ndFieldError>Agree to the terms to create your account.</p>\n        </div>\n      </div>\n      <button ndButton type=\"submit\" class=\"self-start\">Create account</button>\n    </form>\n  `,\n})\nexport class CheckboxFormExample {\n  protected readonly model = signal({ terms: false });\n\n  protected readonly signup = form(this.model, (path) => {\n    required(path.terms);\n  });\n\n  /**\n   * Marks the fields touched, so errors show, instead of reloading.\n   *\n   * @param event - The form's submit event.\n   */\n  protected submit(event: Event): void {\n    event.preventDefault();\n    this.signup().markAsTouched();\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CheckboxFormExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

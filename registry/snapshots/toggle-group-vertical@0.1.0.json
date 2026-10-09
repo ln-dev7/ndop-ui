@@ -1,0 +1,27 @@
+{
+  "name": "toggle-group-vertical",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toggle Group vertical",
+  "description": "A vertical group, moved through with the up and down arrows.",
+  "registryDependencies": [
+    "toggle-group"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-group-vertical.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-group-vertical.ts",
+      "content": "import { Component } from '@angular/core';\nimport { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';\n\n/** A vertical group, moved through with the up and down arrows. */\n@Component({\n  selector: 'example-toggle-group-vertical',\n  imports: [ToggleGroup, ToggleGroupItem],\n  template: `\n    <div\n      ndToggleGroup\n      orientation=\"vertical\"\n      variant=\"outline\"\n      [spacing]=\"1\"\n      aria-label=\"Layout\"\n      [defaultValue]=\"['list']\"\n    >\n      <button ndToggleGroupItem value=\"list\">List</button>\n      <button ndToggleGroupItem value=\"board\">Board</button>\n      <button ndToggleGroupItem value=\"calendar\">Calendar</button>\n    </div>\n  `,\n})\nexport class ToggleGroupVerticalExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroupVerticalExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

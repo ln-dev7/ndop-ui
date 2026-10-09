@@ -1,0 +1,33 @@
+{
+  "name": "checkbox-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Checkbox demo",
+  "description": "A checkbox with its label, and one with a description beside it.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "checkbox",
+    "form-field",
+    "label",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/checkbox-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/checkbox-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Checkbox, CheckboxIndicator } from '@/ui/checkbox/checkbox';\nimport {\n  Field,\n  FieldContent,\n  FieldDescription,\n  FieldLabel,\n} from '@/ui/form-field/form-field';\nimport { Label } from '@/ui/label/label';\n\n/** A checkbox with its label, and one with a description beside it. */\n@Component({\n  selector: 'example-checkbox-demo',\n  imports: [\n    Checkbox,\n    CheckboxIndicator,\n    Field,\n    FieldContent,\n    FieldDescription,\n    FieldLabel,\n    Label,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"flex flex-col gap-6\">\n      <div class=\"flex items-center gap-3\">\n        <button ndCheckbox id=\"checkbox-demo-terms\">\n          <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n        </button>\n        <label ndLabel for=\"checkbox-demo-terms\">\n          Accept terms and conditions\n        </label>\n      </div>\n      <div ndField orientation=\"horizontal\">\n        <button ndCheckbox id=\"checkbox-demo-notify\" [defaultChecked]=\"true\">\n          <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n        </button>\n        <div ndFieldContent>\n          <label ndFieldLabel for=\"checkbox-demo-notify\">\n            Enable notifications\n          </label>\n          <p ndFieldDescription>\n            You can enable or disable notifications at any time.\n          </p>\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class CheckboxDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CheckboxDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "slider-disabled",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Slider disabled",
+  "description": "A disabled slider.",
+  "registryDependencies": [
+    "slider"
+  ],
+  "files": [
+    {
+      "path": "examples/slider-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/slider-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Slider,\n  SliderRange,\n  SliderThumb,\n  SliderTrack,\n} from '@/ui/slider/slider';\n\n/** A disabled slider. */\n@Component({\n  selector: 'example-slider-disabled',\n  imports: [Slider, SliderRange, SliderThumb, SliderTrack],\n  template: `\n    <div ndSlider disabled class=\"w-3/5\">\n      <div ndSliderTrack><div ndSliderRange></div></div>\n      <span ndSliderThumb aria-label=\"Brightness\" [defaultValue]=\"40\"></span>\n    </div>\n  `,\n})\nexport class SliderDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SliderDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

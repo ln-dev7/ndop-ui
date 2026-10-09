@@ -1,0 +1,31 @@
+{
+  "name": "toggle-group-single",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toggle Group single",
+  "description": "Text alignment, where one option at most is pressed.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "toggle-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-group-single.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-group-single.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';\n\n/** Text alignment, where one option at most is pressed. */\n@Component({\n  selector: 'example-toggle-group-single',\n  imports: [NdIcon, ToggleGroup, ToggleGroupItem],\n  template: `\n    <div ndToggleGroup aria-label=\"Text alignment\" [(value)]=\"alignment\">\n      <button ndToggleGroupItem value=\"start\" aria-label=\"Align start\">\n        <svg ndIcon=\"text-align-start\"></svg>\n      </button>\n      <button ndToggleGroupItem value=\"center\" aria-label=\"Align center\">\n        <svg ndIcon=\"text-align-center\"></svg>\n      </button>\n      <button ndToggleGroupItem value=\"end\" aria-label=\"Align end\">\n        <svg ndIcon=\"text-align-end\"></svg>\n      </button>\n    </div>\n  `,\n})\nexport class ToggleGroupSingleExample {\n  protected readonly alignment = signal<readonly string[]>(['start']);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroupSingleExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
