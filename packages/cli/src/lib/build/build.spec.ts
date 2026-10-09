@@ -191,6 +191,21 @@ describe('buildRegistry', () => {
     expect(index['items']).toHaveLength(3);
   });
 
+  it("serves the registry's LICENSE.txt next to its items", async () => {
+    await fixture({ 'LICENSE.txt': 'MIT License\n' });
+    const result = await build();
+    expect(result.files).toContain('r/LICENSE.txt');
+    expect(await readFile(join(root, 'dist/r/LICENSE.txt'), 'utf-8')).toBe(
+      'MIT License\n',
+    );
+  });
+
+  it('writes no license when the registry has none', async () => {
+    await fixture({});
+    const result = await build();
+    expect(result.files).not.toContain('r/LICENSE.txt');
+  });
+
   it('reports unchanged snapshots on the next build', async () => {
     await fixture({});
     await build();

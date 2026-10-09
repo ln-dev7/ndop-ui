@@ -18,6 +18,9 @@ import type {
   SnapshotStatus,
 } from './types';
 
+/** The registry's license and notices, served next to its items. */
+const LICENSE_FILE = 'LICENSE.txt';
+
 /**
  * Builds a registry: validates the source manifest and every item, checks
  * imports and exports, type-checks the items with `ngc`, checks version
@@ -35,6 +38,9 @@ import type {
  *   the version before (ADR-0020). Items with docs pages (`registry:ui`,
  *   `registry:block`, `registry:theme`) fail the build without a section
  *   for every version.
+ * - `<output>/r/LICENSE.txt`: `<root>/LICENSE.txt` as it is, when the
+ *   registry has one, so the license and third-party notices of the items
+ *   are served with them (ADR-0014, amendment 2).
  *
  * A snapshot is written to `<root>/snapshots/<name>@<version>.json` the
  * first time a version is built, and must be committed. If one already
@@ -175,6 +181,10 @@ export async function buildRegistry(
   }
   for (const [name, content] of changelogs) {
     outputs.set(`r/changelog/${name}.json`, content);
+  }
+  const license = await readOptional(join(root, LICENSE_FILE));
+  if (license !== undefined) {
+    outputs.set(`r/${LICENSE_FILE}`, license);
   }
 
   if (!options.dryRun) {
@@ -509,4 +519,19 @@ function json(value: unknown): string {
 async function write(path: string, content: string): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, content);
+}
+
+/**
+ * Reads a text file that may not exist.
+ *
+ * @param path - Absolute path.
+ * @returns Its content, or `undefined` when there is no such file.
+ */
+async function readOptional(path: string): Promise<string | undefined> {
+  try {
+    return await readFile(path, 'utf-8');
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined;
+    throw error;
+  }
 }
