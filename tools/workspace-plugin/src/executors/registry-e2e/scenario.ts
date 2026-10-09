@@ -23,6 +23,37 @@ export interface InstallCase {
    * again (ADR-0020).
    */
   update?: boolean;
+  /**
+   * Also install every component, example and block in the registry and
+   * build the app (RFC-0001's definition of done; ADR-0022).
+   */
+  all?: boolean;
+}
+
+/** The item types the `all` step installs. */
+const INSTALLABLE = new Set([
+  'registry:ui',
+  'registry:primitive-usage',
+  'registry:block',
+]);
+
+/** The part of a built registry's `r/index.json` the `all` step reads. */
+export interface RegistryIndex {
+  /** Every item, by name and type. */
+  items: { name: string; type: string }[];
+}
+
+/**
+ * The names of every component, example and block in a built registry's
+ * index, for the `all` step.
+ *
+ * @param index - `r/index.json`.
+ * @returns Item names, in index order.
+ */
+export function installableItems(index: RegistryIndex): string[] {
+  return index.items
+    .filter((item) => INSTALLABLE.has(item.type))
+    .map((item) => item.name);
 }
 
 /** The parts of `ndop update --json` the real-app update case reads. */

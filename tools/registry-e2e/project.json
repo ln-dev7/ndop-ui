@@ -46,7 +46,8 @@
           {
             "packageManager": "pnpm",
             "angular": "22.2.1",
-            "update": true
+            "update": true,
+            "all": true
           },
           {
             "packageManager": "bun",
@@ -54,7 +55,8 @@
           },
           {
             "packageManager": "pnpm",
-            "angular": "21.2.24"
+            "angular": "21.2.24",
+            "all": true
           }
         ]
       }

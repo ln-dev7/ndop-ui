@@ -21,6 +21,7 @@ import {
   run,
   runScriptCommand,
   type InstallCase,
+  installableItems,
 } from './scenario';
 import { withLocalPackages } from '../../utils/local-packages';
 
@@ -45,7 +46,9 @@ interface CaseResult {
  * `AGENTS.md`. Then it runs `ndop add <item> --json` again and checks
  * that the plan is empty and no file changed. A case with `update` also
  * installs `button@0.1.0`, edits it, runs `ndop update` and builds the app
- * again (ADR-0020).
+ * again (ADR-0020). A case with `all` then installs every component,
+ * example and block in the registry and builds the app, outside the
+ * budget.
  *
  * @param options - Cases, budget and paths.
  * @param context - Nx executor context.
@@ -58,6 +61,18 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
   const workDir = join(context.root, options.workDir ?? 'tmp/registry-e2e');
   const budget = options.budgetSeconds ?? 120;
   const item = options.item ?? 'dialog';
+  const everything = installableItems(
+    JSON.parse(
+      await readFile(
+        join(
+          context.root,
+          options.registryPath ?? 'dist/registry',
+          'r/index.json',
+        ),
+        'utf-8',
+      ),
+    ),
+  );
   const cases = options.cases.filter(
     (installCase) =>
       !options.only?.length || options.only.includes(caseId(installCase)),
@@ -78,7 +93,14 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
       const done: CaseResult[] = [];
       for (const installCase of cases) {
         done.push(
-          await runCase(installCase, { workDir, env, version, item, budget }),
+          await runCase(installCase, {
+            workDir,
+            env,
+            version,
+            item,
+            budget,
+            everything,
+          }),
         );
       }
       return done;
@@ -114,6 +136,8 @@ interface CaseSettings {
   item: string;
   /** Time budget in seconds. */
   budget: number;
+  /** Every component, example and block, for cases with `all`. */
+  everything: string[];
 }
 
 /**
@@ -249,6 +273,11 @@ async function runCase(
       if (problems.length) {
         return { id, seconds, error: problems.join('; ') };
       }
+      await run(runScriptCommand(packageManager, 'build'), options);
+    }
+
+    if (installCase.all) {
+      await run(ndop(['add', ...settings.everything, '--yes']), options);
       await run(runScriptCommand(packageManager, 'build'), options);
     }
     return { id, seconds };

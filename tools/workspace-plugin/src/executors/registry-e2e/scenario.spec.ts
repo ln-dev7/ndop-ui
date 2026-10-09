@@ -9,6 +9,7 @@ import {
   changedPaths,
   execCommand,
   hashTree,
+  installableItems,
   lastJsonObject,
   run,
   runScriptCommand,
@@ -165,5 +166,21 @@ describe('addDevCommand', () => {
       ['install', '--save-dev', 'a@1'],
     ]);
     expect(addDevCommand('bun', 'a@1')).toEqual(['bun', ['add', '-d', 'a@1']]);
+  });
+});
+
+describe('installableItems', () => {
+  it('lists components, examples and blocks, not libs or themes', () => {
+    expect(
+      installableItems({
+        items: [
+          { name: 'utils', type: 'registry:lib' },
+          { name: 'default', type: 'registry:theme' },
+          { name: 'button', type: 'registry:ui' },
+          { name: 'button-demo', type: 'registry:primitive-usage' },
+          { name: 'login-01', type: 'registry:block' },
+        ],
+      }),
+    ).toEqual(['button', 'button-demo', 'login-01']);
   });
 });

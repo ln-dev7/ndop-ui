@@ -22,6 +22,10 @@
           "update": {
             "type": "boolean",
             "description": "Also add button@0.1.0, edit it, run ndop update and build again (ADR-0020)."
+          },
+          "all": {
+            "type": "boolean",
+            "description": "Also add every component, example and block in the registry and build again (ADR-0022)."
           }
         },
         "required": ["packageManager", "angular"]
