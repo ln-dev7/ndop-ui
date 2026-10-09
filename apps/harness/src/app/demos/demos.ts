@@ -20,4 +20,7 @@ export const DEMOS: readonly Demo[] = [
   { path: 'dialog', title: 'Dialog' },
   { path: 'popover', title: 'Popover' },
   { path: 'tooltip', title: 'Tooltip' },
+  { path: 'collapsible', title: 'Collapsible' },
+  { path: 'avatar', title: 'Avatar' },
+  { path: 'progress', title: 'Progress' },
 ];

@@ -16,7 +16,7 @@ import { FormField } from '@angular/forms/signals';
 import { NdControlRegistry } from './control-registry';
 
 /**
- * Headless text input. Forms own the value: Signal Forms (`[formField]`) or
+ * Headless text input, on an `input` or a `textarea`. Forms own the value: Signal Forms (`[formField]`) or
  * reactive and template-driven forms bind the native input directly, and Ndop
  * adds no value accessor (ADR-0004, amendment 1). The directive reads the
  * bound field's state and reflects it:
@@ -37,7 +37,7 @@ import { NdControlRegistry } from './control-registry';
  * ```
  */
 @Directive({
-  selector: 'input[ndInput]',
+  selector: 'input[ndInput], textarea[ndInput]',
   host: {
     '[attr.id]': 'id()',
     '[attr.aria-invalid]': 'showInvalid() ? "true" : null',
@@ -56,7 +56,8 @@ export class NdInput implements OnInit {
   readonly invalid = input(false, { transform: booleanAttribute });
 
   private readonly element =
-    inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
+    inject<ElementRef<HTMLInputElement | HTMLTextAreaElement>>(ElementRef)
+      .nativeElement;
   private readonly destroyRef = inject(DestroyRef);
   private readonly formField = inject(FormField, {
     self: true,

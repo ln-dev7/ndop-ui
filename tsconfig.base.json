@@ -45,7 +45,14 @@
       ],
       "@/*": ["./registry/*"],
       "@ndop/verify": ["./packages/verify/src/index.ts"],
-      "@ndop/merge": ["./packages/merge/src/index.ts"]
+      "@ndop/merge": ["./packages/merge/src/index.ts"],
+      "@ndop/primitives/collapsible": [
+        "./packages/primitives/collapsible/src/index.ts"
+      ],
+      "@ndop/primitives/avatar": ["./packages/primitives/avatar/src/index.ts"],
+      "@ndop/primitives/progress": [
+        "./packages/primitives/progress/src/index.ts"
+      ]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

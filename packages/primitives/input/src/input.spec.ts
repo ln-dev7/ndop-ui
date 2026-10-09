@@ -6,6 +6,28 @@ import userEvent from '@testing-library/user-event';
 import { NdInput } from './input';
 
 describe('NdInput', () => {
+  it('works on a textarea, with a Signal Forms field', async () => {
+    @Component({
+      imports: [NdInput, FormField],
+      template: `<textarea
+        ndInput
+        aria-label="Bio"
+        [formField]="form.bio"
+      ></textarea>`,
+    })
+    class Host {
+      readonly model = signal({ bio: '' });
+      readonly form = form(this.model, (path) => required(path.bio));
+    }
+    const { fixture } = await render(Host);
+    const element = screen.getByRole('textbox', { name: 'Bio' });
+    expect(element.tagName).toBe('TEXTAREA');
+    await userEvent.click(element);
+    await userEvent.tab();
+    await fixture.whenStable();
+    expect(element.getAttribute('aria-invalid')).toBe('true');
+  });
+
   describe('without a forms library', () => {
     @Component({
       imports: [NdInput],

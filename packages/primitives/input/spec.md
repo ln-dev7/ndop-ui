@@ -11,9 +11,9 @@ No APG pattern: a native HTML `input`. Its accessible name comes from a
 
 ## Parts, roles and attributes
 
-| Part  | Selector         | Role   | ARIA attributes | Data attributes                 |
-| ----- | ---------------- | ------ | --------------- | ------------------------------- |
-| Input | `input[ndInput]` | native | `aria-invalid`  | `data-disabled`, `data-invalid` |
+| Part  | Selector                              | Role   | ARIA attributes | Data attributes                 |
+| ----- | ------------------------------------- | ------ | --------------- | ------------------------------- |
+| Input | `input[ndInput]`, `textarea[ndInput]` | native | `aria-invalid`  | `data-disabled`, `data-invalid` |
 
 - Forms own the value: Signal Forms (`[formField]`) and reactive or
   template-driven forms (`formControl`, `ngModel`) bind the native input
