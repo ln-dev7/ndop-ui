@@ -1,0 +1,27 @@
+{
+  "name": "progress-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Progress demo",
+  "description": "A labelled progress bar.",
+  "registryDependencies": [
+    "progress"
+  ],
+  "files": [
+    {
+      "path": "examples/progress-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/progress-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Progress, ProgressIndicator } from '@/ui/progress/progress';\n\n/** A progress bar named by a visible label. */\n@Component({\n  selector: 'example-progress-demo',\n  imports: [Progress, ProgressIndicator],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-2\">\n      <span id=\"progress-demo-label\" class=\"text-sm font-medium\"\n        >Setting up your workspace</span\n      >\n      <div ndProgress [value]=\"66\" aria-labelledby=\"progress-demo-label\">\n        <div ndProgressIndicator></div>\n      </div>\n    </div>\n  `,\n})\nexport class ProgressDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ProgressDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

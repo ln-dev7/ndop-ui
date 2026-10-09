@@ -1,0 +1,27 @@
+{
+  "name": "aspect-ratio-square",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Aspect Ratio square",
+  "description": "Square tiles in a grid.",
+  "registryDependencies": [
+    "aspect-ratio"
+  ],
+  "files": [
+    {
+      "path": "examples/aspect-ratio-square.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/aspect-ratio-square.ts",
+      "content": "import { Component } from '@angular/core';\nimport { AspectRatio } from '@/ui/aspect-ratio/aspect-ratio';\n\n/** Square tiles in a grid that stay square as the grid resizes. */\n@Component({\n  selector: 'example-aspect-ratio-square',\n  imports: [AspectRatio],\n  template: `\n    <ul class=\"grid w-full max-w-md grid-cols-3 gap-2\">\n      @for (tile of tiles; track tile) {\n        <li\n          ndAspectRatio\n          class=\"grid place-items-center rounded-md bg-muted text-sm font-medium\"\n        >\n          {{ tile }}\n        </li>\n      }\n    </ul>\n  `,\n})\nexport class AspectRatioSquareExample {\n  protected readonly tiles = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AspectRatioSquareExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

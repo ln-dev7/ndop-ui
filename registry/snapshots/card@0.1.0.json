@@ -1,0 +1,43 @@
+{
+  "name": "card",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Card",
+  "description": "Displays a card with a header, content and footer.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "data-display"
+  ],
+  "files": [
+    {
+      "path": "ui/card/card.ts",
+      "type": "registry:ui",
+      "target": "{ui}/card/card.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/**\n * A card: a bordered surface grouping related content, with optional\n * header, content and footer parts.\n *\n * @example\n * ```html\n * <div ndCard>\n *   <div ndCardHeader>\n *     <h3 ndCardTitle>Notifications</h3>\n *     <p ndCardDescription>You have 3 unread messages.</p>\n *   </div>\n *   <div ndCardContent>…</div>\n *   <div ndCardFooter>…</div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndCard]',\n  host: { 'data-slot': 'card', '[class]': 'classes()' },\n})\nexport class Card {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A card's header: its title, description and an optional action, laid\n * out in a grid.\n *\n * @example\n * ```html\n * <div ndCardHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndCardHeader]',\n  host: { 'data-slot': 'card-header', '[class]': 'classes()' },\n})\nexport class CardHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A card's title. Put it on the heading element that fits the page's\n * outline.\n *\n * @example\n * ```html\n * <h3 ndCardTitle>Notifications</h3>\n * ```\n */\n@Directive({\n  selector: '[ndCardTitle]',\n  host: { 'data-slot': 'card-title', '[class]': 'classes()' },\n})\nexport class CardTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('leading-none font-semibold', this.class()),\n  );\n}\n\n/**\n * Supporting text under a card's title.\n *\n * @example\n * ```html\n * <p ndCardDescription>You have 3 unread messages.</p>\n * ```\n */\n@Directive({\n  selector: '[ndCardDescription]',\n  host: { 'data-slot': 'card-description', '[class]': 'classes()' },\n})\nexport class CardDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-sm text-muted-foreground', this.class()),\n  );\n}\n\n/**\n * An action in a card's header, at its end, such as a button or menu.\n *\n * @example\n * ```html\n * <div ndCardAction><button ndButton variant=\"link\">Sign up</button></div>\n * ```\n */\n@Directive({\n  selector: '[ndCardAction]',\n  host: { 'data-slot': 'card-action', '[class]': 'classes()' },\n})\nexport class CardAction {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'col-start-2 row-span-2 row-start-1 self-start justify-self-end',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A card's main content.\n *\n * @example\n * ```html\n * <div ndCardContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndCardContent]',\n  host: { 'data-slot': 'card-content', '[class]': 'classes()' },\n})\nexport class CardContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() => cn('px-6', this.class()));\n}\n\n/**\n * A card's footer, usually its actions.\n *\n * @example\n * ```html\n * <div ndCardFooter><button ndButton>Save</button></div>\n * ```\n */\n@Directive({\n  selector: '[ndCardFooter]',\n  host: { 'data-slot': 'card-footer', '[class]': 'classes()' },\n})\nexport class CardFooter {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex items-center px-6 [.border-t]:pt-6', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Card",
+      "CardHeader",
+      "CardTitle",
+      "CardDescription",
+      "CardAction",
+      "CardContent",
+      "CardFooter"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/card.json",
+    "examples": [
+      "card-demo",
+      "card-with-action"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

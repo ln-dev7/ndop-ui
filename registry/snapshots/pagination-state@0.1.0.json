@@ -1,0 +1,31 @@
+{
+  "name": "pagination-state",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Pagination state",
+  "description": "Pages kept in component state, with buttons.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "pagination",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/pagination-state.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/pagination-state.ts",
+      "content": "import { Component, computed, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Pagination,\n  PaginationContent,\n  PaginationItem,\n  PaginationLink,\n  PaginationNext,\n  PaginationPrevious,\n} from '@/ui/pagination/pagination';\n\n/**\n * Pages kept in component state: buttons instead of links, with the\n * current page marked and the arrows disabled at either end.\n */\n@Component({\n  selector: 'example-pagination-state',\n  imports: [\n    NdIcon,\n    Pagination,\n    PaginationContent,\n    PaginationItem,\n    PaginationLink,\n    PaginationNext,\n    PaginationPrevious,\n  ],\n  template: `\n    <div class=\"grid gap-4\">\n      <p class=\"text-center text-sm text-muted-foreground\" aria-live=\"polite\">\n        Showing results {{ (page() - 1) * 10 + 1 }} to {{ page() * 10 }} of 50\n      </p>\n      <nav ndPagination label=\"Results pages\">\n        <ul ndPaginationContent>\n          <li ndPaginationItem>\n            <button\n              ndPaginationPrevious\n              [disabled]=\"page() === 1\"\n              (click)=\"page.set(page() - 1)\"\n            >\n              <svg ndIcon=\"chevron-left\"></svg>\n              <span class=\"hidden sm:block\">Previous</span>\n            </button>\n          </li>\n          @for (number of pages(); track number) {\n            <li ndPaginationItem>\n              <button\n                ndPaginationLink\n                [active]=\"number === page()\"\n                (click)=\"page.set(number)\"\n              >\n                {{ number }}\n              </button>\n            </li>\n          }\n          <li ndPaginationItem>\n            <button\n              ndPaginationNext\n              [disabled]=\"page() === count\"\n              (click)=\"page.set(page() + 1)\"\n            >\n              <span class=\"hidden sm:block\">Next</span>\n              <svg ndIcon=\"chevron-right\"></svg>\n            </button>\n          </li>\n        </ul>\n      </nav>\n    </div>\n  `,\n})\nexport class PaginationStateExample {\n  protected readonly count = 5;\n  protected readonly page = signal(1);\n  protected readonly pages = computed(() =>\n    Array.from({ length: this.count }, (_, index) => index + 1),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "PaginationStateExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

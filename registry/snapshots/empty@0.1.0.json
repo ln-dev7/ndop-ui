@@ -1,0 +1,44 @@
+{
+  "name": "empty",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Empty State",
+  "description": "Shows that there is nothing here yet, and what to do about it.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "ui/empty/empty.ts",
+      "type": "registry:ui",
+      "target": "{ui}/empty/empty.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn, variants, type VariantOf } from '@/lib/utils';\n\n/**\n * An empty state: shown where content would be, when there's none yet,\n * with what to do about it.\n *\n * @example\n * ```html\n * <div ndEmpty>\n *   <div ndEmptyHeader>\n *     <div ndEmptyMedia variant=\"icon\"><svg ndIcon=\"inbox\"></svg></div>\n *     <h3 ndEmptyTitle>No messages</h3>\n *     <p ndEmptyDescription>New messages show up here.</p>\n *   </div>\n *   <div ndEmptyContent><button ndButton>Compose</button></div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndEmpty]',\n  host: { 'data-slot': 'empty', '[class]': 'classes()' },\n})\nexport class Empty {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * An empty state's header: its media, title and description.\n *\n * @example\n * ```html\n * <div ndEmptyHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndEmptyHeader]',\n  host: { 'data-slot': 'empty-header', '[class]': 'classes()' },\n})\nexport class EmptyHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex max-w-sm flex-col items-center gap-2 text-center', this.class()),\n  );\n}\n\n/**\n * Class table for {@link EmptyMedia}.\n */\nexport const emptyMediaVariants = variants({\n  base: 'mb-2 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0',\n  variants: {\n    variant: {\n      default: 'bg-transparent',\n      icon: \"flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6\",\n    },\n  },\n  defaults: { variant: 'default' },\n});\n\n/** Visual style of an {@link EmptyMedia}. */\nexport type EmptyMediaVariant = VariantOf<typeof emptyMediaVariants, 'variant'>;\n\n/**\n * An image or icon above an empty state's title; `variant=\"icon\"` puts an\n * icon on a muted tile.\n *\n * @example\n * ```html\n * <div ndEmptyMedia variant=\"icon\"><svg ndIcon=\"inbox\"></svg></div>\n * ```\n */\n@Directive({\n  selector: '[ndEmptyMedia]',\n  host: {\n    'data-slot': 'empty-icon',\n    '[attr.data-variant]': 'variant()',\n    '[class]': 'classes()',\n  },\n})\nexport class EmptyMedia {\n  /** Visual style. */\n  readonly variant = input<EmptyMediaVariant>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(emptyMediaVariants({ variant: this.variant() }), this.class()),\n  );\n}\n\n/**\n * An empty state's title. Put it on the heading element that fits the\n * page's outline.\n *\n * @example\n * ```html\n * <h3 ndEmptyTitle>No messages</h3>\n * ```\n */\n@Directive({\n  selector: '[ndEmptyTitle]',\n  host: { 'data-slot': 'empty-title', '[class]': 'classes()' },\n})\nexport class EmptyTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-lg font-medium tracking-tight', this.class()),\n  );\n}\n\n/**\n * What an empty state means, and what to do; links in it are underlined.\n *\n * @example\n * ```html\n * <p ndEmptyDescription>New messages show up here.</p>\n * ```\n */\n@Directive({\n  selector: '[ndEmptyDescription]',\n  host: { 'data-slot': 'empty-description', '[class]': 'classes()' },\n})\nexport class EmptyDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * An empty state's actions, under its header.\n *\n * @example\n * ```html\n * <div ndEmptyContent><button ndButton>Compose</button></div>\n * ```\n */\n@Directive({\n  selector: '[ndEmptyContent]',\n  host: { 'data-slot': 'empty-content', '[class]': 'classes()' },\n})\nexport class EmptyContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Empty",
+      "EmptyHeader",
+      "emptyMediaVariants",
+      "EmptyMedia",
+      "EmptyTitle",
+      "EmptyDescription",
+      "EmptyContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/empty.json",
+    "examples": [
+      "empty-demo",
+      "empty-search",
+      "empty-avatar"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

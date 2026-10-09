@@ -1,5 +1,9 @@
 # Dialog
 
+## 0.1.5
+
+Adds the `dialog-unsaved-changes` example: a dialog that a click outside doesn't close. The files are unchanged.
+
 ## 0.1.4
 
 Lists the item under Overlays in the docs. The files are unchanged.

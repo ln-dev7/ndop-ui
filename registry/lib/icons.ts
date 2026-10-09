@@ -1,5 +1,16 @@
 import { type EnvironmentProviders } from '@angular/core';
-import { LucideX } from '@lucide/angular';
+import {
+  LucideChevronLeft,
+  LucideChevronRight,
+  LucideChevronsUpDown,
+  LucideCircleAlert,
+  LucideCircleCheck,
+  LucideEllipsis,
+  LucideFolderOpen,
+  LucideLoaderCircle,
+  LucideSearch,
+  LucideX,
+} from '@lucide/angular';
 import { provideNdopIcons, type NdIcons } from '@ndop/core';
 
 /**
@@ -8,6 +19,15 @@ import { provideNdopIcons, type NdIcons } from '@ndop/core';
  * to switch icon libraries, change the values here.
  */
 export const ndopIcons = {
+  'chevron-left': LucideChevronLeft.icon,
+  'chevron-right': LucideChevronRight.icon,
+  'chevrons-up-down': LucideChevronsUpDown.icon,
+  'circle-alert': LucideCircleAlert.icon,
+  'circle-check': LucideCircleCheck.icon,
+  ellipsis: LucideEllipsis.icon,
+  'folder-open': LucideFolderOpen.icon,
+  'loader-circle': LucideLoaderCircle.icon,
+  search: LucideSearch.icon,
   x: LucideX.icon,
 } satisfies NdIcons;
 

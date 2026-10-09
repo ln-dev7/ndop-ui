@@ -1,0 +1,43 @@
+{
+  "name": "breadcrumb",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Breadcrumb",
+  "description": "Shows the path to the current page in a hierarchy of pages.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "navigation"
+  ],
+  "files": [
+    {
+      "path": "ui/breadcrumb/breadcrumb.ts",
+      "type": "registry:ui",
+      "target": "{ui}/breadcrumb/breadcrumb.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/**\n * A breadcrumb trail: the path from the top of a site to the current page,\n * as a `nav` landmark.\n *\n * @example\n * ```html\n * <nav ndBreadcrumb>\n *   <ol ndBreadcrumbList>\n *     <li ndBreadcrumbItem><a ndBreadcrumbLink href=\"/\">Home</a></li>\n *     <li ndBreadcrumbSeparator><svg ndIcon=\"chevron-right\"></svg></li>\n *     <li ndBreadcrumbItem><span ndBreadcrumbPage>Settings</span></li>\n *   </ol>\n * </nav>\n * ```\n */\n@Directive({\n  selector: 'nav[ndBreadcrumb]',\n  host: { 'data-slot': 'breadcrumb', '[attr.aria-label]': 'label()' },\n})\nexport class Breadcrumb {\n  /** Name of the landmark. */\n  readonly label = input('Breadcrumb');\n}\n\n/**\n * The ordered list of a breadcrumb's items and separators.\n *\n * @example\n * ```html\n * <ol ndBreadcrumbList>…</ol>\n * ```\n */\n@Directive({\n  selector: 'ol[ndBreadcrumbList]',\n  host: { 'data-slot': 'breadcrumb-list', '[class]': 'classes()' },\n})\nexport class BreadcrumbList {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground sm:gap-2.5',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * One step of a breadcrumb trail.\n *\n * @example\n * ```html\n * <li ndBreadcrumbItem><a ndBreadcrumbLink href=\"/docs\">Docs</a></li>\n * ```\n */\n@Directive({\n  selector: 'li[ndBreadcrumbItem]',\n  host: { 'data-slot': 'breadcrumb-item', '[class]': 'classes()' },\n})\nexport class BreadcrumbItem {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('inline-flex items-center gap-1.5', this.class()),\n  );\n}\n\n/**\n * A link to an ancestor page. With the router, add `routerLink` to the\n * same `a`.\n *\n * @example\n * ```html\n * <a ndBreadcrumbLink routerLink=\"/docs\">Docs</a>\n * ```\n */\n@Directive({\n  selector: 'a[ndBreadcrumbLink]',\n  host: { 'data-slot': 'breadcrumb-link', '[class]': 'classes()' },\n})\nexport class BreadcrumbLink {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('transition-colors hover:text-foreground', this.class()),\n  );\n}\n\n/**\n * The current page, last in the trail: plain text marked\n * `aria-current=\"page\"`.\n *\n * @example\n * ```html\n * <span ndBreadcrumbPage>Settings</span>\n * ```\n */\n@Directive({\n  selector: '[ndBreadcrumbPage]',\n  host: {\n    'data-slot': 'breadcrumb-page',\n    'aria-current': 'page',\n    '[class]': 'classes()',\n  },\n})\nexport class BreadcrumbPage {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('font-normal text-foreground', this.class()),\n  );\n}\n\n/**\n * The mark between two items, hidden from assistive technology. Put an\n * icon in it, such as `chevron-right`, which turns around in right-to-left\n * layouts.\n *\n * @example\n * ```html\n * <li ndBreadcrumbSeparator><svg ndIcon=\"chevron-right\"></svg></li>\n * ```\n */\n@Directive({\n  selector: 'li[ndBreadcrumbSeparator]',\n  host: {\n    'data-slot': 'breadcrumb-separator',\n    role: 'presentation',\n    'aria-hidden': 'true',\n    '[class]': 'classes()',\n  },\n})\nexport class BreadcrumbSeparator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('[&>svg]:size-3.5', 'rtl:[&>svg]:rotate-180', this.class()),\n  );\n}\n\n/**\n * Stands for collapsed items in a long trail. Put an icon in it, such as\n * `ellipsis`; wrap it in a menu trigger to reveal the hidden items.\n *\n * @example\n * ```html\n * <span ndBreadcrumbEllipsis><svg ndIcon=\"ellipsis\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndBreadcrumbEllipsis]',\n  host: {\n    'data-slot': 'breadcrumb-ellipsis',\n    role: 'presentation',\n    'aria-hidden': 'true',\n    '[class]': 'classes()',\n  },\n})\nexport class BreadcrumbEllipsis {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex size-9 items-center justify-center',\n      '[&>svg]:size-4',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Breadcrumb",
+      "BreadcrumbList",
+      "BreadcrumbItem",
+      "BreadcrumbLink",
+      "BreadcrumbPage",
+      "BreadcrumbSeparator",
+      "BreadcrumbEllipsis"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/breadcrumb.json",
+    "examples": [
+      "breadcrumb-demo",
+      "breadcrumb-separator"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

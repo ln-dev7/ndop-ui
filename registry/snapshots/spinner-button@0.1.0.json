@@ -1,0 +1,32 @@
+{
+  "name": "spinner-button",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Spinner button",
+  "description": "A button that shows a spinner while it saves.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "spinner",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/spinner-button.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/spinner-button.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport { Spinner } from '@/ui/spinner/spinner';\n\n/**\n * A button that shows a spinner, and is disabled, while its action runs.\n */\n@Component({\n  selector: 'example-spinner-button',\n  imports: [Button, NdIcon, Spinner],\n  template: `\n    <button ndButton [disabled]=\"saving()\" (click)=\"save()\">\n      @if (saving()) {\n        <span ndSpinner label=\"Saving\"><svg ndIcon=\"loader-circle\"></svg></span>\n        Saving…\n      } @else {\n        Save changes\n      }\n    </button>\n  `,\n})\nexport class SpinnerButtonExample {\n  protected readonly saving = signal(false);\n\n  /** Pretends to save for two seconds. */\n  protected save(): void {\n    this.saving.set(true);\n    setTimeout(() => this.saving.set(false), 2000);\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SpinnerButtonExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

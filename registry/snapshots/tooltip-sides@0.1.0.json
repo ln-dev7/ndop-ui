@@ -1,0 +1,31 @@
+{
+  "name": "tooltip-sides",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Tooltip sides",
+  "description": "Tooltips on each side of their triggers.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "button",
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "examples/tooltip-sides.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/tooltip-sides.ts",
+      "content": "import { Component } from '@angular/core';\nimport type { NdSide } from '@ndop/primitives/tooltip';\nimport { Button } from '@/ui/button/button';\nimport {\n  NdTooltip,\n  NdTooltipPortal,\n  NdTooltipTrigger,\n  TooltipContent,\n} from '@/ui/tooltip/tooltip';\n\n/**\n * Tooltips on each side of their triggers. `start` and `end` follow the\n * reading direction, so they swap in right-to-left layouts.\n */\n@Component({\n  selector: 'example-tooltip-sides',\n  imports: [\n    Button,\n    NdTooltip,\n    NdTooltipPortal,\n    NdTooltipTrigger,\n    TooltipContent,\n  ],\n  template: `\n    <div class=\"flex flex-wrap gap-2\">\n      @for (side of sides; track side) {\n        <ng-container ndTooltip>\n          <button ndButton ndTooltipTrigger variant=\"outline\">\n            {{ side }}\n          </button>\n          <ng-template ndTooltipPortal>\n            <div ndTooltipContent [side]=\"side\">On the {{ side }} side</div>\n          </ng-template>\n        </ng-container>\n      }\n    </div>\n  `,\n})\nexport class TooltipSidesExample {\n  protected readonly sides: NdSide[] = ['top', 'end', 'bottom', 'start'];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TooltipSidesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

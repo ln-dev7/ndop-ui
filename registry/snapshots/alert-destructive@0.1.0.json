@@ -1,0 +1,31 @@
+{
+  "name": "alert-destructive",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Alert destructive",
+  "description": "An error, with what to do about it.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "alert",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/alert-destructive.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/alert-destructive.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Alert, AlertDescription, AlertTitle } from '@/ui/alert/alert';\n\n/** An error, with what to do about it. */\n@Component({\n  selector: 'example-alert-destructive',\n  imports: [Alert, AlertDescription, AlertTitle, NdIcon],\n  template: `\n    <div ndAlert variant=\"destructive\" role=\"none\" class=\"max-w-md\">\n      <svg ndIcon=\"circle-alert\"></svg>\n      <div ndAlertTitle>Unable to process your payment</div>\n      <div ndAlertDescription>\n        <p>Please check your billing information and try again.</p>\n        <ul class=\"list-inside list-disc text-sm\">\n          <li>Check your card details</li>\n          <li>Make sure there are enough funds</li>\n          <li>Verify the billing address</li>\n        </ul>\n      </div>\n    </div>\n  `,\n})\nexport class AlertDestructiveExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AlertDestructiveExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

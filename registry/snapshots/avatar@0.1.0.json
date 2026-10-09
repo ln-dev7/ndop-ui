@@ -1,0 +1,45 @@
+{
+  "name": "avatar",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Avatar",
+  "description": "Displays a user's image, with a fallback while it loads or when it fails.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "data-display"
+  ],
+  "files": [
+    {
+      "path": "ui/avatar/avatar.ts",
+      "type": "registry:ui",
+      "target": "{ui}/avatar/avatar.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdAvatar,\n  NdAvatarFallback,\n  NdAvatarImage,\n} from '@ndop/primitives/avatar';\nimport { cn } from '@/lib/utils';\n\n/** Size of an {@link Avatar}. */\nexport type AvatarSize = 'default' | 'sm' | 'lg';\n\n/**\n * A user's picture, with a fallback, such as initials, shown until the\n * image loads or when it fails (`@ndop/primitives/avatar`).\n *\n * @example\n * ```html\n * <span ndAvatar>\n *   <img ndAvatarImage [src]=\"user.photo\" [alt]=\"user.name\" />\n *   <span ndAvatarFallback>VM</span>\n * </span>\n * ```\n */\n@Directive({\n  selector: '[ndAvatar]',\n  hostDirectives: [NdAvatar],\n  host: {\n    'data-slot': 'avatar',\n    '[attr.data-size]': 'size()',\n    '[class]': 'classes()',\n  },\n})\nexport class Avatar {\n  /** Size. */\n  readonly size = input<AvatarSize>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group/avatar relative flex size-8 shrink-0 overflow-hidden rounded-full select-none data-[size=lg]:size-10 data-[size=sm]:size-6',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * An avatar's image. It covers the fallback once loaded; its `alt` names\n * the avatar.\n *\n * @example\n * ```html\n * <img ndAvatarImage src=\"/me.png\" alt=\"Valery Melou\" />\n * ```\n */\n@Directive({\n  selector: 'img[ndAvatarImage]',\n  hostDirectives: [{ directive: NdAvatarImage, inputs: ['src'] }],\n  host: { 'data-slot': 'avatar-image', '[class]': 'classes()' },\n})\nexport class AvatarImage {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'aspect-square size-full',\n      'absolute inset-0 data-[status=error]:hidden data-[status=loading]:opacity-0',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * What an avatar shows until its image loads, or when it fails.\n *\n * @example\n * ```html\n * <span ndAvatarFallback>VM</span>\n * ```\n */\n@Directive({\n  selector: '[ndAvatarFallback]',\n  hostDirectives: [NdAvatarFallback],\n  host: { 'data-slot': 'avatar-fallback', '[class]': 'classes()' },\n})\nexport class AvatarFallback {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      // Foreground text: shadcn's muted text on the muted fill is 4.3:1,\n      // under WCAG's 4.5:1 for text this size.\n      'flex size-full items-center justify-center rounded-full bg-muted text-sm text-foreground group-data-[size=sm]/avatar:text-xs',\n      'data-[status=loaded]:invisible',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A status dot on an avatar's corner, such as \"online\". Say the status in\n * text too, for screen readers.\n *\n * @example\n * ```html\n * <span ndAvatarBadge><span class=\"sr-only\">Online</span></span>\n * ```\n */\n@Directive({\n  selector: '[ndAvatarBadge]',\n  host: { 'data-slot': 'avatar-badge', '[class]': 'classes()' },\n})\nexport class AvatarBadge {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'absolute end-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-background select-none',\n      'group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden',\n      'group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2',\n      'group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Overlapping avatars, such as a team's.\n *\n * @example\n * ```html\n * <div ndAvatarGroup>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndAvatarGroup]',\n  host: { 'data-slot': 'avatar-group', '[class]': 'classes()' },\n})\nexport class AvatarGroup {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background',\n      'rtl:space-x-reverse',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The count of avatars left out of a group, such as \"+3\".\n *\n * @example\n * ```html\n * <span ndAvatarGroupCount>+3</span>\n * ```\n */\n@Directive({\n  selector: '[ndAvatarGroupCount]',\n  host: { 'data-slot': 'avatar-group-count', '[class]': 'classes()' },\n})\nexport class AvatarGroupCount {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Avatar",
+      "AvatarImage",
+      "AvatarFallback",
+      "AvatarBadge",
+      "AvatarGroup",
+      "AvatarGroupCount"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/avatar.json",
+    "examples": [
+      "avatar-demo",
+      "avatar-group"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

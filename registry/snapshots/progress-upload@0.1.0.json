@@ -1,0 +1,27 @@
+{
+  "name": "progress-upload",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Progress upload",
+  "description": "Files uploading, each with its progress and percentage.",
+  "registryDependencies": [
+    "progress"
+  ],
+  "files": [
+    {
+      "path": "examples/progress-upload.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/progress-upload.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Progress, ProgressIndicator } from '@/ui/progress/progress';\n\n/**\n * Files uploading, each with its own bar and percentage; the last one\n * waits to start, so its bar is indeterminate.\n */\n@Component({\n  selector: 'example-progress-upload',\n  imports: [Progress, ProgressIndicator],\n  template: `\n    <ul class=\"grid w-full max-w-sm gap-4\">\n      @for (file of files; track file.name) {\n        <li class=\"grid gap-2\">\n          <div class=\"flex justify-between text-sm\">\n            <span [id]=\"'progress-upload-' + $index\" class=\"font-medium\">{{\n              file.name\n            }}</span>\n            <span class=\"text-muted-foreground\">{{\n              file.value === null ? 'Waiting' : file.value + '%'\n            }}</span>\n          </div>\n          <div\n            ndProgress\n            [value]=\"file.value\"\n            [attr.aria-labelledby]=\"'progress-upload-' + $index\"\n          >\n            <div ndProgressIndicator></div>\n          </div>\n        </li>\n      }\n    </ul>\n  `,\n})\nexport class ProgressUploadExample {\n  protected readonly files = [\n    { name: 'report.pdf', value: 100 },\n    { name: 'photos.zip', value: 45 },\n    { name: 'video.mp4', value: null },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ProgressUploadExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

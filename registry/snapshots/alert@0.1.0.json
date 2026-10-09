@@ -1,0 +1,40 @@
+{
+  "name": "alert",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Alert",
+  "description": "Displays a callout that draws the user's attention.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "ui/alert/alert.ts",
+      "type": "registry:ui",
+      "target": "{ui}/alert/alert.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn, variants, type VariantOf } from '@/lib/utils';\n\n/**\n * Class table for {@link Alert}.\n */\nexport const alertVariants = variants({\n  base: 'relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',\n  variants: {\n    variant: {\n      default: 'bg-card text-card-foreground',\n      // The description is full destructive: shadcn's 90% is 4.49:1 on\n      // the card, under WCAG's 4.5:1.\n      destructive:\n        'bg-card text-destructive *:data-[slot=alert-description]:text-destructive [&>svg]:text-current',\n    },\n  },\n  defaults: { variant: 'default' },\n});\n\n/** Visual style of an {@link Alert}. */\nexport type AlertVariant = VariantOf<typeof alertVariants, 'variant'>;\n\n/**\n * A callout: a message that draws attention, with an optional icon,\n * title and description. It's announced as an `alert` by default; use\n * `role=\"status\"` for messages that can wait, or `role=\"none\"` for ones\n * that are part of the page from the start.\n *\n * @example\n * ```html\n * <div ndAlert variant=\"destructive\">\n *   <svg ndIcon=\"circle-alert\"></svg>\n *   <div ndAlertTitle>Payment failed</div>\n *   <div ndAlertDescription>Check your card details and try again.</div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndAlert]',\n  host: {\n    'data-slot': 'alert',\n    '[attr.role]': 'role()',\n    '[attr.data-variant]': 'variant()',\n    '[class]': 'classes()',\n  },\n})\nexport class Alert {\n  /** Visual style. */\n  readonly variant = input<AlertVariant>('default');\n\n  /**\n   * How assistive technology treats it: `alert` interrupts, `status`\n   * waits for a pause, `none` is read with the page.\n   */\n  readonly role = input<'alert' | 'status' | 'none'>('alert');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(alertVariants({ variant: this.variant() }), this.class()),\n  );\n}\n\n/**\n * An alert's title.\n *\n * @example\n * ```html\n * <div ndAlertTitle>Payment failed</div>\n * ```\n */\n@Directive({\n  selector: '[ndAlertTitle]',\n  host: { 'data-slot': 'alert-title', '[class]': 'classes()' },\n})\nexport class AlertTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * An alert's description, under its title.\n *\n * @example\n * ```html\n * <div ndAlertDescription>Check your card details and try again.</div>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDescription]',\n  host: { 'data-slot': 'alert-description', '[class]': 'classes()' },\n})\nexport class AlertDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "alertVariants",
+      "Alert",
+      "AlertTitle",
+      "AlertDescription"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/alert.json",
+    "examples": [
+      "alert-demo",
+      "alert-destructive"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

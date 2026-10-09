@@ -18,7 +18,7 @@ This app uses [Ndop UI](https://ndop.dev): accessible Angular components install
 
 ### Installed
 
-\`default\` 0.1.0, \`icons\` 0.1.0, \`utils\` 0.1.0.
+\`default\` 0.1.0, \`icons\` 0.2.0, \`utils\` 0.1.0.
 
 Components are in \`src/app/ui\` (\`@/ui/…\`), helpers in \`src/app/lib\` (\`@/lib/…\`) and blocks in \`src/app/blocks\` (\`@/blocks/…\`).
 

@@ -21,7 +21,7 @@
     {
       "name": "icons",
       "type": "registry:lib",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Icons",
       "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
       "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
@@ -79,7 +79,7 @@
     {
       "name": "badge",
       "type": "registry:ui",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Badge",
       "description": "Displays a badge or a component that looks like a badge.",
       "categories": ["data-display"],
@@ -99,7 +99,7 @@
       },
       "ndop": {
         "metadata": "metadata/badge.json",
-        "examples": ["badge-demo", "badge-link"]
+        "examples": ["badge-demo", "badge-link", "badge-variants"]
       }
     },
     {
@@ -132,7 +132,7 @@
     {
       "name": "input",
       "type": "registry:ui",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "title": "Input",
       "description": "Displays a form input field.",
       "categories": ["inputs"],
@@ -153,7 +153,12 @@
       },
       "ndop": {
         "metadata": "metadata/input.json",
-        "examples": ["input-demo", "input-signal-forms", "input-with-button"]
+        "examples": [
+          "input-demo",
+          "input-signal-forms",
+          "input-with-button",
+          "input-disabled"
+        ]
       }
     },
     {
@@ -186,7 +191,7 @@
     {
       "name": "dialog",
       "type": "registry:ui",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "title": "Dialog",
       "description": "A window overlaid on the primary window, rendering the content underneath inert.",
       "categories": ["overlays"],
@@ -219,7 +224,11 @@
       },
       "ndop": {
         "metadata": "metadata/dialog.json",
-        "examples": ["dialog-demo", "dialog-close-button"]
+        "examples": [
+          "dialog-demo",
+          "dialog-close-button",
+          "dialog-unsaved-changes"
+        ]
       }
     },
     {
@@ -261,7 +270,7 @@
     {
       "name": "tooltip",
       "type": "registry:ui",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "title": "Tooltip",
       "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
       "categories": ["overlays"],
@@ -287,7 +296,427 @@
       },
       "ndop": {
         "metadata": "metadata/tooltip.json",
-        "examples": ["tooltip-demo", "tooltip-icon-button"]
+        "examples": ["tooltip-demo", "tooltip-icon-button", "tooltip-sides"]
+      }
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Textarea",
+      "description": "Displays a multi-line text field, or a component that looks like one.",
+      "registryDependencies": ["utils"],
+      "categories": ["inputs"],
+      "files": [
+        {
+          "path": "ui/textarea/textarea.ts",
+          "type": "registry:ui",
+          "target": "{ui}/textarea/textarea.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Textarea"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/textarea.json",
+        "examples": ["textarea-demo", "textarea-form", "textarea-disabled"]
+      },
+      "dependencies": ["@ndop/primitives"]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Card",
+      "description": "Displays a card with a header, content and footer.",
+      "registryDependencies": ["utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/card/card.ts",
+          "type": "registry:ui",
+          "target": "{ui}/card/card.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Card",
+          "CardHeader",
+          "CardTitle",
+          "CardDescription",
+          "CardAction",
+          "CardContent",
+          "CardFooter"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/card.json",
+        "examples": ["card-demo", "card-with-action"]
+      }
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Alert",
+      "description": "Displays a callout that draws the user's attention.",
+      "registryDependencies": ["utils"],
+      "categories": ["feedback"],
+      "files": [
+        {
+          "path": "ui/alert/alert.ts",
+          "type": "registry:ui",
+          "target": "{ui}/alert/alert.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["alertVariants", "Alert", "AlertTitle", "AlertDescription"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/alert.json",
+        "examples": ["alert-demo", "alert-destructive"]
+      }
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Skeleton",
+      "description": "Shows a placeholder while content loads.",
+      "registryDependencies": ["utils"],
+      "categories": ["feedback"],
+      "files": [
+        {
+          "path": "ui/skeleton/skeleton.ts",
+          "type": "registry:ui",
+          "target": "{ui}/skeleton/skeleton.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Skeleton"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/skeleton.json",
+        "examples": ["skeleton-demo", "skeleton-card"]
+      }
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Spinner",
+      "description": "Shows that something is loading.",
+      "registryDependencies": ["utils"],
+      "categories": ["feedback"],
+      "files": [
+        {
+          "path": "ui/spinner/spinner.ts",
+          "type": "registry:ui",
+          "target": "{ui}/spinner/spinner.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Spinner"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/spinner.json",
+        "examples": ["spinner-demo", "spinner-button"]
+      }
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Empty State",
+      "description": "Shows that there is nothing here yet, and what to do about it.",
+      "registryDependencies": ["utils"],
+      "categories": ["feedback"],
+      "files": [
+        {
+          "path": "ui/empty/empty.ts",
+          "type": "registry:ui",
+          "target": "{ui}/empty/empty.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Empty",
+          "EmptyHeader",
+          "emptyMediaVariants",
+          "EmptyMedia",
+          "EmptyTitle",
+          "EmptyDescription",
+          "EmptyContent"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/empty.json",
+        "examples": ["empty-demo", "empty-search", "empty-avatar"]
+      }
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Aspect Ratio",
+      "description": "Displays content within a chosen width-to-height ratio.",
+      "registryDependencies": ["utils"],
+      "categories": ["layout"],
+      "files": [
+        {
+          "path": "ui/aspect-ratio/aspect-ratio.ts",
+          "type": "registry:ui",
+          "target": "{ui}/aspect-ratio/aspect-ratio.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AspectRatio"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/aspect-ratio.json",
+        "examples": ["aspect-ratio-demo", "aspect-ratio-square"]
+      }
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Breadcrumb",
+      "description": "Shows the path to the current page in a hierarchy of pages.",
+      "registryDependencies": ["utils"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/breadcrumb/breadcrumb.ts",
+          "type": "registry:ui",
+          "target": "{ui}/breadcrumb/breadcrumb.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Breadcrumb",
+          "BreadcrumbList",
+          "BreadcrumbItem",
+          "BreadcrumbLink",
+          "BreadcrumbPage",
+          "BreadcrumbSeparator",
+          "BreadcrumbEllipsis"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/breadcrumb.json",
+        "examples": ["breadcrumb-demo", "breadcrumb-separator"]
+      }
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Pagination",
+      "description": "Navigates between pages of results.",
+      "registryDependencies": ["utils", "button"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/pagination/pagination.ts",
+          "type": "registry:ui",
+          "target": "{ui}/pagination/pagination.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Pagination",
+          "PaginationContent",
+          "PaginationItem",
+          "PaginationLink",
+          "PaginationPrevious",
+          "PaginationNext",
+          "PaginationEllipsis"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/pagination.json",
+        "examples": ["pagination-demo", "pagination-state"]
+      }
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Table",
+      "description": "Displays tabular data with responsive styles.",
+      "registryDependencies": ["utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/table/table.ts",
+          "type": "registry:ui",
+          "target": "{ui}/table/table.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "TableContainer",
+          "Table",
+          "TableHeader",
+          "TableBody",
+          "TableFooter",
+          "TableRow",
+          "TableHead",
+          "TableCell",
+          "TableCaption"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/table.json",
+        "examples": ["table-demo", "table-status"]
+      }
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Scroll Area",
+      "description": "A scrollable region with styled scrollbars.",
+      "registryDependencies": ["utils"],
+      "categories": ["layout"],
+      "files": [
+        {
+          "path": "ui/scroll-area/scroll-area.ts",
+          "type": "registry:ui",
+          "target": "{ui}/scroll-area/scroll-area.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ScrollArea"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/scroll-area.json",
+        "examples": ["scroll-area-demo", "scroll-area-horizontal"]
+      }
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Avatar",
+      "description": "Displays a user's image, with a fallback while it loads or when it fails.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/avatar/avatar.ts",
+          "type": "registry:ui",
+          "target": "{ui}/avatar/avatar.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Avatar",
+          "AvatarImage",
+          "AvatarFallback",
+          "AvatarBadge",
+          "AvatarGroup",
+          "AvatarGroupCount"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/avatar.json",
+        "examples": ["avatar-demo", "avatar-group"]
+      }
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Progress",
+      "description": "Displays how far a task has got.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["feedback"],
+      "files": [
+        {
+          "path": "ui/progress/progress.ts",
+          "type": "registry:ui",
+          "target": "{ui}/progress/progress.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Progress", "ProgressIndicator"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/progress.json",
+        "examples": ["progress-demo", "progress-upload"]
+      }
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Collapsible",
+      "description": "Shows and hides a section of content.",
+      "dependencies": ["@ndop/primitives"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/collapsible/collapsible.ts",
+          "type": "registry:ui",
+          "target": "{ui}/collapsible/collapsible.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "NdCollapsible",
+          "NdCollapsibleTrigger",
+          "NdCollapsibleContent"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/collapsible.json",
+        "examples": ["collapsible-demo", "collapsible-settings"]
       }
     },
     {
@@ -689,6 +1118,738 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": ["TooltipIconButtonExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "textarea-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Textarea demo",
+      "description": "A textarea with a label and a description.",
+      "registryDependencies": ["label", "textarea"],
+      "files": [
+        {
+          "path": "examples/textarea-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/textarea-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TextareaDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "textarea-form",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Textarea form",
+      "description": "A required message field in a Signal Forms form, with its error.",
+      "registryDependencies": ["button", "label", "textarea"],
+      "files": [
+        {
+          "path": "examples/textarea-form.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/textarea-form.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TextareaFormExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "card-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Card demo",
+      "description": "A sign-in form in a card.",
+      "registryDependencies": ["button", "card", "input", "label"],
+      "files": [
+        {
+          "path": "examples/card-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/card-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CardDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "card-with-action",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Card with action",
+      "description": "A card with a header action, content and footer.",
+      "registryDependencies": ["badge", "button", "card"],
+      "files": [
+        {
+          "path": "examples/card-with-action.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/card-with-action.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CardWithActionExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "alert-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Alert demo",
+      "description": "A success message with an icon.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["alert", "icons"],
+      "files": [
+        {
+          "path": "examples/alert-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/alert-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AlertDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "alert-destructive",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Alert destructive",
+      "description": "An error, with what to do about it.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["alert", "icons"],
+      "files": [
+        {
+          "path": "examples/alert-destructive.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/alert-destructive.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AlertDestructiveExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "skeleton-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Skeleton demo",
+      "description": "Placeholders for a profile while it loads.",
+      "registryDependencies": ["skeleton"],
+      "files": [
+        {
+          "path": "examples/skeleton-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/skeleton-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SkeletonDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "skeleton-card",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Skeleton card",
+      "description": "A card that shows skeletons while its content loads.",
+      "registryDependencies": ["button", "card", "skeleton"],
+      "files": [
+        {
+          "path": "examples/skeleton-card.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/skeleton-card.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SkeletonCardExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "spinner-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Spinner demo",
+      "description": "Spinners in three sizes.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["spinner", "icons"],
+      "files": [
+        {
+          "path": "examples/spinner-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/spinner-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SpinnerDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "spinner-button",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Spinner button",
+      "description": "A button that shows a spinner while it saves.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "spinner", "icons"],
+      "files": [
+        {
+          "path": "examples/spinner-button.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/spinner-button.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SpinnerButtonExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "empty-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Empty State demo",
+      "description": "No projects yet, with actions to create one.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "empty", "icons"],
+      "files": [
+        {
+          "path": "examples/empty-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/empty-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["EmptyDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "empty-search",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Empty State search",
+      "description": "No search results, with a way to clear the search.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "empty", "icons"],
+      "files": [
+        {
+          "path": "examples/empty-search.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/empty-search.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["EmptySearchExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "aspect-ratio-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Aspect Ratio demo",
+      "description": "An illustration kept at 16:9.",
+      "registryDependencies": ["aspect-ratio"],
+      "files": [
+        {
+          "path": "examples/aspect-ratio-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/aspect-ratio-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AspectRatioDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "aspect-ratio-square",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Aspect Ratio square",
+      "description": "Square tiles in a grid.",
+      "registryDependencies": ["aspect-ratio"],
+      "files": [
+        {
+          "path": "examples/aspect-ratio-square.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/aspect-ratio-square.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AspectRatioSquareExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "breadcrumb-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Breadcrumb demo",
+      "description": "A trail with collapsed items.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["breadcrumb", "icons"],
+      "files": [
+        {
+          "path": "examples/breadcrumb-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/breadcrumb-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["BreadcrumbDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "breadcrumb-separator",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Breadcrumb separator",
+      "description": "A trail with slash separators.",
+      "registryDependencies": ["breadcrumb"],
+      "files": [
+        {
+          "path": "examples/breadcrumb-separator.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/breadcrumb-separator.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["BreadcrumbSeparatorExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "pagination-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Pagination demo",
+      "description": "Links to pages, with the current one marked.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["pagination", "icons"],
+      "files": [
+        {
+          "path": "examples/pagination-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/pagination-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["PaginationDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "pagination-state",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Pagination state",
+      "description": "Pages kept in component state, with buttons.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["pagination", "icons"],
+      "files": [
+        {
+          "path": "examples/pagination-state.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/pagination-state.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["PaginationStateExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "table-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Table demo",
+      "description": "Invoices with a caption and a total.",
+      "registryDependencies": ["table"],
+      "files": [
+        {
+          "path": "examples/table-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/table-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TableDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "table-status",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Table status",
+      "description": "Orders with a status and an action on each row.",
+      "registryDependencies": ["badge", "button", "table"],
+      "files": [
+        {
+          "path": "examples/table-status.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/table-status.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TableStatusExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "scroll-area-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Scroll Area demo",
+      "description": "A list of tags that scrolls vertically.",
+      "registryDependencies": ["scroll-area", "separator"],
+      "files": [
+        {
+          "path": "examples/scroll-area-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/scroll-area-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ScrollAreaDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "scroll-area-horizontal",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Scroll Area horizontal",
+      "description": "A row of artworks that scrolls sideways.",
+      "registryDependencies": ["aspect-ratio", "scroll-area"],
+      "files": [
+        {
+          "path": "examples/scroll-area-horizontal.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/scroll-area-horizontal.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ScrollAreaHorizontalExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "avatar-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Avatar demo",
+      "description": "An avatar with an image, and one that falls back to initials.",
+      "registryDependencies": ["avatar"],
+      "files": [
+        {
+          "path": "examples/avatar-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/avatar-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AvatarDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "avatar-group",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Avatar group",
+      "description": "A team's avatars, with a count and a status badge.",
+      "registryDependencies": ["avatar"],
+      "files": [
+        {
+          "path": "examples/avatar-group.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/avatar-group.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AvatarGroupExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "progress-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Progress demo",
+      "description": "A labelled progress bar.",
+      "registryDependencies": ["progress"],
+      "files": [
+        {
+          "path": "examples/progress-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/progress-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ProgressDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "progress-upload",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Progress upload",
+      "description": "Files uploading, each with its progress and percentage.",
+      "registryDependencies": ["progress"],
+      "files": [
+        {
+          "path": "examples/progress-upload.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/progress-upload.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ProgressUploadExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "collapsible-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Collapsible demo",
+      "description": "A list of repositories that expands.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "collapsible", "icons"],
+      "files": [
+        {
+          "path": "examples/collapsible-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/collapsible-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CollapsibleDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "collapsible-settings",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Collapsible settings",
+      "description": "Advanced options shown on demand.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "button",
+        "collapsible",
+        "input",
+        "label",
+        "icons"
+      ],
+      "files": [
+        {
+          "path": "examples/collapsible-settings.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/collapsible-settings.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CollapsibleSettingsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "badge-variants",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Badge variants",
+      "description": "Every Badge variant side by side.",
+      "registryDependencies": ["badge"],
+      "files": [
+        {
+          "path": "examples/badge-variants.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/badge-variants.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["BadgeVariantsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "dialog-unsaved-changes",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Dialog unsaved changes",
+      "description": "A dialog that only closes through its buttons, so a click outside doesn't lose the user's changes.",
+      "registryDependencies": ["button", "dialog", "label", "textarea"],
+      "files": [
+        {
+          "path": "examples/dialog-unsaved-changes.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/dialog-unsaved-changes.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DialogUnsavedChangesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "tooltip-sides",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Tooltip sides",
+      "description": "Tooltips on each side of their triggers.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["button", "tooltip"],
+      "files": [
+        {
+          "path": "examples/tooltip-sides.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/tooltip-sides.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TooltipSidesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "input-disabled",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Input disabled",
+      "description": "A disabled input with its label.",
+      "registryDependencies": ["input", "label"],
+      "files": [
+        {
+          "path": "examples/input-disabled.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/input-disabled.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["InputDisabledExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "textarea-disabled",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Textarea disabled",
+      "description": "A disabled textarea with its label.",
+      "registryDependencies": ["label", "textarea"],
+      "files": [
+        {
+          "path": "examples/textarea-disabled.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/textarea-disabled.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TextareaDisabledExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "empty-avatar",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Empty State avatar",
+      "description": "An empty state with an avatar as its media.",
+      "registryDependencies": ["avatar", "button", "empty"],
+      "files": [
+        {
+          "path": "examples/empty-avatar.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/empty-avatar.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["EmptyAvatarExample"],
         "zoneless": true,
         "ssr": true
       }

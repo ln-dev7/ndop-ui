@@ -1,0 +1,39 @@
+{
+  "name": "collapsible",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Collapsible",
+  "description": "Shows and hides a section of content.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "categories": [
+    "data-display"
+  ],
+  "files": [
+    {
+      "path": "ui/collapsible/collapsible.ts",
+      "type": "registry:ui",
+      "target": "{ui}/collapsible/collapsible.ts",
+      "content": "/**\n * Collapsible (`@ndop/primitives/collapsible`): a trigger that shows and\n * hides a section of content. It has no styles of its own; style the\n * trigger and content with other items, such as a ghost Button. Import the\n * parts from this file.\n *\n * @example\n * ```html\n * <div ndCollapsible [(open)]=\"open\">\n *   <button ndCollapsibleTrigger ndButton variant=\"ghost\">Show more</button>\n *   <div ndCollapsibleContent>…</div>\n * </div>\n * ```\n *\n * @packageDocumentation\n */\nexport {\n  NdCollapsible,\n  NdCollapsibleContent,\n  NdCollapsibleTrigger,\n} from '@ndop/primitives/collapsible';\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "NdCollapsible",
+      "NdCollapsibleTrigger",
+      "NdCollapsibleContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/collapsible.json",
+    "examples": [
+      "collapsible-demo",
+      "collapsible-settings"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

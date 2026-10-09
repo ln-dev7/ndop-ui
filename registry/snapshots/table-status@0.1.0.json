@@ -1,0 +1,29 @@
+{
+  "name": "table-status",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Table status",
+  "description": "Orders with a status and an action on each row.",
+  "registryDependencies": [
+    "badge",
+    "button",
+    "table"
+  ],
+  "files": [
+    {
+      "path": "examples/table-status.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/table-status.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Badge, type BadgeVariant } from '@/ui/badge/badge';\nimport { Button } from '@/ui/button/button';\nimport {\n  Table,\n  TableBody,\n  TableCell,\n  TableContainer,\n  TableHead,\n  TableHeader,\n  TableRow,\n} from '@/ui/table/table';\n\n/** One order's status. */\ntype Status = 'Delivered' | 'Shipped' | 'Cancelled';\n\n/**\n * Orders with a status badge and an action on each row; each button's\n * name says which order it acts on.\n */\n@Component({\n  selector: 'example-table-status',\n  imports: [\n    Badge,\n    Button,\n    Table,\n    TableBody,\n    TableCell,\n    TableContainer,\n    TableHead,\n    TableHeader,\n    TableRow,\n  ],\n  template: `\n    <div ndTableContainer class=\"rounded-md border\">\n      <table ndTable aria-label=\"Orders\">\n        <thead ndTableHeader>\n          <tr ndTableRow>\n            <th ndTableHead scope=\"col\">Order</th>\n            <th ndTableHead scope=\"col\">Customer</th>\n            <th ndTableHead scope=\"col\">Status</th>\n            <th ndTableHead scope=\"col\">\n              <span class=\"sr-only\">Actions</span>\n            </th>\n          </tr>\n        </thead>\n        <tbody ndTableBody>\n          @for (order of orders; track order.id) {\n            <tr ndTableRow>\n              <th ndTableHead scope=\"row\">{{ order.id }}</th>\n              <td ndTableCell>{{ order.customer }}</td>\n              <td ndTableCell>\n                <span ndBadge [variant]=\"variants[order.status]\">{{\n                  order.status\n                }}</span>\n              </td>\n              <td ndTableCell class=\"text-end\">\n                <button\n                  ndButton\n                  variant=\"ghost\"\n                  size=\"sm\"\n                  [attr.aria-label]=\"'View order ' + order.id\"\n                >\n                  View\n                </button>\n              </td>\n            </tr>\n          }\n        </tbody>\n      </table>\n    </div>\n  `,\n})\nexport class TableStatusExample {\n  protected readonly variants: Record<Status, BadgeVariant> = {\n    Delivered: 'secondary',\n    Shipped: 'outline',\n    Cancelled: 'destructive',\n  };\n\n  protected readonly orders: {\n    id: string;\n    customer: string;\n    status: Status;\n  }[] = [\n    { id: '#3210', customer: 'Olivia Martin', status: 'Delivered' },\n    { id: '#3209', customer: 'Jackson Lee', status: 'Shipped' },\n    { id: '#3204', customer: 'Isabella Nguyen', status: 'Cancelled' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TableStatusExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

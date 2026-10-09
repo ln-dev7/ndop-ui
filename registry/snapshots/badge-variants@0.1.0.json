@@ -1,0 +1,27 @@
+{
+  "name": "badge-variants",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Badge variants",
+  "description": "Every Badge variant side by side.",
+  "registryDependencies": [
+    "badge"
+  ],
+  "files": [
+    {
+      "path": "examples/badge-variants.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/badge-variants.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Badge } from '@/ui/badge/badge';\n\n/** Every Badge variant side by side. */\n@Component({\n  selector: 'example-badge-variants',\n  imports: [Badge],\n  template: `\n    <div class=\"flex flex-wrap gap-2\">\n      <span ndBadge>Default</span>\n      <span ndBadge variant=\"secondary\">Secondary</span>\n      <span ndBadge variant=\"destructive\">Destructive</span>\n      <span ndBadge variant=\"outline\">Outline</span>\n      <span ndBadge variant=\"ghost\">Ghost</span>\n      <a ndBadge variant=\"link\" href=\"#changelog\">Link</a>\n    </div>\n  `,\n})\nexport class BadgeVariantsExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "BadgeVariantsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

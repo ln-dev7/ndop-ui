@@ -1,5 +1,9 @@
 # Tooltip
 
+## 0.1.4
+
+Adds the `tooltip-sides` example: tooltips on each side. The files are unchanged.
+
 ## 0.1.3
 
 Lists the item under Overlays in the docs. The files are unchanged.

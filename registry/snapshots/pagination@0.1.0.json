@@ -1,0 +1,44 @@
+{
+  "name": "pagination",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Pagination",
+  "description": "Navigates between pages of results.",
+  "registryDependencies": [
+    "utils",
+    "button"
+  ],
+  "categories": [
+    "navigation"
+  ],
+  "files": [
+    {
+      "path": "ui/pagination/pagination.ts",
+      "type": "registry:ui",
+      "target": "{ui}/pagination/pagination.ts",
+      "content": "import { booleanAttribute, computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\nimport { buttonVariants, type ButtonSize } from '@/ui/button/button';\n\n/**\n * Page navigation for a list of results, as a `nav` landmark.\n *\n * @example\n * ```html\n * <nav ndPagination>\n *   <ul ndPaginationContent>\n *     <li ndPaginationItem>\n *       <a ndPaginationPrevious href=\"?page=1\"><svg ndIcon=\"chevron-left\"></svg><span>Previous</span></a>\n *     </li>\n *     <li ndPaginationItem><a ndPaginationLink href=\"?page=2\" active>2</a></li>\n *     <li ndPaginationItem>\n *       <a ndPaginationNext href=\"?page=3\"><span>Next</span><svg ndIcon=\"chevron-right\"></svg></a>\n *     </li>\n *   </ul>\n * </nav>\n * ```\n */\n@Directive({\n  selector: 'nav[ndPagination]',\n  host: {\n    'data-slot': 'pagination',\n    '[attr.aria-label]': 'label()',\n    '[class]': 'classes()',\n  },\n})\nexport class Pagination {\n  /** Name of the landmark. */\n  readonly label = input('Pagination');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('mx-auto flex w-full justify-center', this.class()),\n  );\n}\n\n/**\n * The list of a pagination's links.\n *\n * @example\n * ```html\n * <ul ndPaginationContent>…</ul>\n * ```\n */\n@Directive({\n  selector: 'ul[ndPaginationContent]',\n  host: { 'data-slot': 'pagination-content', '[class]': 'classes()' },\n})\nexport class PaginationContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex flex-row items-center gap-1', this.class()),\n  );\n}\n\n/**\n * One entry of a pagination: a link, or an ellipsis.\n *\n * @example\n * ```html\n * <li ndPaginationItem>…</li>\n * ```\n */\n@Directive({\n  selector: 'li[ndPaginationItem]',\n  host: { 'data-slot': 'pagination-item' },\n})\nexport class PaginationItem {}\n\n/**\n * A link to one page, styled as a ghost button, or an outline one for the\n * current page, which it marks `aria-current=\"page\"`. On a `button`, it\n * calls your handler instead of navigating.\n *\n * @example\n * ```html\n * <a ndPaginationLink href=\"?page=2\" active>2</a>\n * ```\n */\n@Directive({\n  selector: 'a[ndPaginationLink], button[ndPaginationLink]',\n  host: {\n    'data-slot': 'pagination-link',\n    '[attr.aria-current]': 'active() ? \"page\" : null',\n    '[attr.data-active]': 'active()',\n    '[class]': 'classes()',\n  },\n})\nexport class PaginationLink {\n  /** Whether it's the current page. */\n  readonly active = input(false, { transform: booleanAttribute });\n\n  /** Button size. */\n  readonly size = input<ButtonSize>('icon');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({\n        variant: this.active() ? 'outline' : 'ghost',\n        size: this.size(),\n      }),\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The link to the previous page. Put a `chevron-left` icon and the word\n * \"Previous\" in it; the icon turns around in right-to-left layouts.\n *\n * @example\n * ```html\n * <a ndPaginationPrevious href=\"?page=1\"><svg ndIcon=\"chevron-left\"></svg><span>Previous</span></a>\n * ```\n */\n@Directive({\n  selector: 'a[ndPaginationPrevious], button[ndPaginationPrevious]',\n  host: {\n    'data-slot': 'pagination-link',\n    'aria-label': 'Go to previous page',\n    '[class]': 'classes()',\n  },\n})\nexport class PaginationPrevious {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({ variant: 'ghost', size: 'default' }),\n      'gap-1 px-2.5 sm:ps-2.5',\n      'rtl:[&>svg]:rotate-180',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The link to the next page. Put the word \"Next\" and a `chevron-right`\n * icon in it; the icon turns around in right-to-left layouts.\n *\n * @example\n * ```html\n * <a ndPaginationNext href=\"?page=3\"><span>Next</span><svg ndIcon=\"chevron-right\"></svg></a>\n * ```\n */\n@Directive({\n  selector: 'a[ndPaginationNext], button[ndPaginationNext]',\n  host: {\n    'data-slot': 'pagination-link',\n    'aria-label': 'Go to next page',\n    '[class]': 'classes()',\n  },\n})\nexport class PaginationNext {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({ variant: 'ghost', size: 'default' }),\n      'gap-1 px-2.5 sm:pe-2.5',\n      'rtl:[&>svg]:rotate-180',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Stands for pages left out of a long range; hidden from assistive\n * technology. Put an `ellipsis` icon in it.\n *\n * @example\n * ```html\n * <span ndPaginationEllipsis><svg ndIcon=\"ellipsis\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndPaginationEllipsis]',\n  host: {\n    'data-slot': 'pagination-ellipsis',\n    'aria-hidden': 'true',\n    '[class]': 'classes()',\n  },\n})\nexport class PaginationEllipsis {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex size-9 items-center justify-center',\n      '[&>svg]:size-4',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Pagination",
+      "PaginationContent",
+      "PaginationItem",
+      "PaginationLink",
+      "PaginationPrevious",
+      "PaginationNext",
+      "PaginationEllipsis"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/pagination.json",
+    "examples": [
+      "pagination-demo",
+      "pagination-state"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,32 @@
+{
+  "name": "collapsible-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Collapsible demo",
+  "description": "A list of repositories that expands.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "collapsible",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/collapsible-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/collapsible-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  NdCollapsible,\n  NdCollapsibleContent,\n  NdCollapsibleTrigger,\n} from '@/ui/collapsible/collapsible';\n\n/** A list of starred repositories that expands to show the rest. */\n@Component({\n  selector: 'example-collapsible-demo',\n  imports: [\n    Button,\n    NdCollapsible,\n    NdCollapsibleContent,\n    NdCollapsibleTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div ndCollapsible class=\"flex w-[350px] flex-col gap-2\">\n      <div class=\"flex items-center justify-between gap-4 px-4\">\n        <h2 class=\"text-sm font-semibold\">\n          &#64;peduarte starred 3 repositories\n        </h2>\n        <button\n          ndCollapsibleTrigger\n          ndButton\n          variant=\"ghost\"\n          size=\"icon\"\n          class=\"size-8\"\n        >\n          <svg ndIcon=\"chevrons-up-down\"></svg>\n          <span class=\"sr-only\">Show all repositories</span>\n        </button>\n      </div>\n      <div class=\"rounded-md border px-4 py-2 font-mono text-sm\">\n        &#64;radix-ui/primitives\n      </div>\n      <div ndCollapsibleContent class=\"flex flex-col gap-2\">\n        <div class=\"rounded-md border px-4 py-2 font-mono text-sm\">\n          &#64;radix-ui/colors\n        </div>\n        <div class=\"rounded-md border px-4 py-2 font-mono text-sm\">\n          &#64;stitches/react\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class CollapsibleDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CollapsibleDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "avatar-group",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Avatar group",
+  "description": "A team's avatars, with a count and a status badge.",
+  "registryDependencies": [
+    "avatar"
+  ],
+  "files": [
+    {
+      "path": "examples/avatar-group.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/avatar-group.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Avatar,\n  AvatarBadge,\n  AvatarFallback,\n  AvatarGroup,\n  AvatarGroupCount,\n} from '@/ui/avatar/avatar';\n\n/**\n * A team's avatars overlapping, with a count of the others and a status\n * badge that says its meaning in text too.\n */\n@Component({\n  selector: 'example-avatar-group',\n  imports: [Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-8\">\n      <div ndAvatarGroup role=\"group\" aria-label=\"Design team\">\n        @for (member of team; track member) {\n          <span ndAvatar>\n            <span ndAvatarFallback>{{ member }}</span>\n          </span>\n        }\n        <span ndAvatarGroupCount>+3</span>\n      </div>\n      <span ndAvatar size=\"lg\">\n        <span ndAvatarFallback>VM</span>\n        <span ndAvatarBadge><span class=\"sr-only\">Online</span></span>\n      </span>\n    </div>\n  `,\n})\nexport class AvatarGroupExample {\n  protected readonly team = ['AL', 'GH', 'KJ'];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AvatarGroupExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

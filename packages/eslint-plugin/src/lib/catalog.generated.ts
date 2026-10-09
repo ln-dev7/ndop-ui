@@ -4,8 +4,16 @@ import type { Catalog } from './catalog';
 
 /** What the rules know about Ndop's components. */
 export const CATALOG: Catalog = {
-  buttons: ['button[ndButton], a[ndButton]', 'button[ndDialogCloseButton]'],
-  controls: ['input[ndInput]'],
+  buttons: [
+    'a[ndBreadcrumbLink]',
+    'a[ndPaginationLink], button[ndPaginationLink]',
+    'a[ndPaginationNext], button[ndPaginationNext]',
+    'a[ndPaginationPrevious], button[ndPaginationPrevious]',
+    'button[ndButton], a[ndButton]',
+    'button[ndCollapsibleTrigger]',
+    'button[ndDialogCloseButton]',
+  ],
+  controls: ['input[ndInput]', 'textarea[ndTextarea]'],
   dialogs: [
     {
       content: '[ndDialogContent]',
@@ -14,11 +22,14 @@ export const CATALOG: Catalog = {
   ],
   primitiveEntryPoints: [
     '@ndop/primitives',
+    '@ndop/primitives/avatar',
     '@ndop/primitives/button',
+    '@ndop/primitives/collapsible',
     '@ndop/primitives/dialog',
     '@ndop/primitives/input',
     '@ndop/primitives/label',
     '@ndop/primitives/popover',
+    '@ndop/primitives/progress',
     '@ndop/primitives/separator',
     '@ndop/primitives/tooltip',
   ],

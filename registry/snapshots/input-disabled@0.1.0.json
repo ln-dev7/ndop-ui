@@ -1,0 +1,28 @@
+{
+  "name": "input-disabled",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Input disabled",
+  "description": "A disabled input with its label.",
+  "registryDependencies": [
+    "input",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/input-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/** A disabled input; its label dims with it. */\n@Component({\n  selector: 'example-input-disabled',\n  imports: [Input, Label],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <label ndLabel for=\"input-disabled-email\">Email</label>\n      <input\n        ndInput\n        id=\"input-disabled-email\"\n        type=\"email\"\n        value=\"team@example.com\"\n        disabled\n      />\n    </div>\n  `,\n})\nexport class InputDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

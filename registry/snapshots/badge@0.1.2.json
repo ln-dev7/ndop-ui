@@ -1,0 +1,38 @@
+{
+  "name": "badge",
+  "type": "registry:ui",
+  "version": "0.1.2",
+  "title": "Badge",
+  "description": "Displays a badge or a component that looks like a badge.",
+  "categories": [
+    "data-display"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/badge/badge.ts",
+      "type": "registry:ui",
+      "target": "{ui}/badge/badge.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn, variants, type VariantOf } from '@/lib/utils';\n\n/**\n * Class table for {@link Badge}; also usable to style other elements like\n * a badge.\n */\nexport const badgeVariants = variants({\n  base: 'inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3',\n  variants: {\n    variant: {\n      default: 'bg-primary text-primary-foreground [a&]:hover:bg-primary/90',\n      secondary:\n        'bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',\n      destructive:\n        'bg-destructive text-destructive-foreground focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90',\n      outline:\n        'border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',\n      ghost: '[a&]:hover:bg-accent [a&]:hover:text-accent-foreground',\n      link: 'text-primary underline-offset-4 [a&]:hover:underline',\n    },\n  },\n  defaults: { variant: 'default' },\n});\n\n/** Visual style of a {@link Badge}. */\nexport type BadgeVariant = VariantOf<typeof badgeVariants, 'variant'>;\n\n/**\n * Styled badge: a short status, count or label. It only styles its host,\n * so the host keeps its own semantics: a `span` for text, an `a` when it\n * links somewhere, an `li` in a list of badges.\n *\n * @example\n * ```html\n * <span ndBadge variant=\"secondary\">Beta</span>\n * <a ndBadge variant=\"outline\" href=\"/changelog\">v1.2</a>\n * ```\n */\n@Directive({\n  selector: '[ndBadge]',\n  host: {\n    'data-slot': 'badge',\n    '[attr.data-variant]': 'variant()',\n    '[class]': 'classes()',\n  },\n})\nexport class Badge {\n  /** Visual style. */\n  readonly variant = input<BadgeVariant>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(badgeVariants({ variant: this.variant() }), this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Badge"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/badge.json",
+    "examples": [
+      "badge-demo",
+      "badge-link",
+      "badge-variants"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

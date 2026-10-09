@@ -1,0 +1,27 @@
+{
+  "name": "aspect-ratio-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Aspect Ratio demo",
+  "description": "An illustration kept at 16:9.",
+  "registryDependencies": [
+    "aspect-ratio"
+  ],
+  "files": [
+    {
+      "path": "examples/aspect-ratio-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/aspect-ratio-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { AspectRatio } from '@/ui/aspect-ratio/aspect-ratio';\n\n/** An illustration kept at 16:9 whatever the width. */\n@Component({\n  selector: 'example-aspect-ratio-demo',\n  imports: [AspectRatio],\n  template: `\n    <div\n      ndAspectRatio\n      [ratio]=\"16 / 9\"\n      class=\"w-full max-w-md overflow-hidden rounded-lg bg-muted\"\n    >\n      <svg\n        viewBox=\"0 0 160 90\"\n        role=\"img\"\n        aria-label=\"Hills under a setting sun\"\n        class=\"size-full\"\n      >\n        <circle cx=\"112\" cy=\"34\" r=\"14\" class=\"fill-primary/30\" />\n        <path d=\"M0 70 Q40 40 80 62 T160 52 V90 H0Z\" class=\"fill-primary/20\" />\n        <path d=\"M0 80 Q50 58 100 76 T160 70 V90 H0Z\" class=\"fill-primary/40\" />\n      </svg>\n    </div>\n  `,\n})\nexport class AspectRatioDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AspectRatioDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

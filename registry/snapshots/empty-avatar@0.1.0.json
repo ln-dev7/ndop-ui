@@ -1,0 +1,29 @@
+{
+  "name": "empty-avatar",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Empty State avatar",
+  "description": "An empty state with an avatar as its media.",
+  "registryDependencies": [
+    "avatar",
+    "button",
+    "empty"
+  ],
+  "files": [
+    {
+      "path": "examples/empty-avatar.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/empty-avatar.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Avatar, AvatarFallback } from '@/ui/avatar/avatar';\nimport { Button } from '@/ui/button/button';\nimport {\n  Empty,\n  EmptyContent,\n  EmptyDescription,\n  EmptyHeader,\n  EmptyMedia,\n  EmptyTitle,\n} from '@/ui/empty/empty';\n\n/** An empty state with an avatar as its media, in the default style. */\n@Component({\n  selector: 'example-empty-avatar',\n  imports: [\n    Avatar,\n    AvatarFallback,\n    Button,\n    Empty,\n    EmptyContent,\n    EmptyDescription,\n    EmptyHeader,\n    EmptyMedia,\n    EmptyTitle,\n  ],\n  template: `\n    <div ndEmpty>\n      <div ndEmptyHeader>\n        <div ndEmptyMedia>\n          <span ndAvatar size=\"lg\"><span ndAvatarFallback>LR</span></span>\n        </div>\n        <h2 ndEmptyTitle>Lena is away</h2>\n        <p ndEmptyDescription>\n          She'll reply to messages when she's back on Monday.\n        </p>\n      </div>\n      <div ndEmptyContent>\n        <button ndButton variant=\"outline\" size=\"sm\">Leave a message</button>\n      </div>\n    </div>\n  `,\n})\nexport class EmptyAvatarExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "EmptyAvatarExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

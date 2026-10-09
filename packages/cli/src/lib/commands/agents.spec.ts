@@ -104,15 +104,18 @@ describe('agent context files', () => {
     const environment = app();
     await ndop(environment, 'init');
     const before = environment.project.files.get('AGENTS.md') ?? '';
-    expect(before).toContain('`default` 0.1.0, `icons` 0.1.0, `utils` 0.1.0.');
+    const version = (name: string) => environment.registry[name]?.version;
+    expect(before).toContain(
+      `\`default\` ${version('default')}, \`icons\` ${version('icons')}, \`utils\` ${version('utils')}.`,
+    );
     expect(before).toContain(
       'read `https://ndop.dev/docs/components/<name>.md`',
     );
     expect(before).toContain('run `npx ndop init --mcp`');
 
     await ndop(environment, 'add', 'dialog');
-    expect(environment.project.files.get('AGENTS.md')).toMatch(
-      /`default` 0\.1\.0, `dialog` [\d.]+, `icons` 0\.1\.0, `utils` 0\.1\.0\./,
+    expect(environment.project.files.get('AGENTS.md')).toContain(
+      `\`default\` ${version('default')}, \`dialog\` ${version('dialog')}, \`icons\` ${version('icons')}, \`utils\` ${version('utils')}.`,
     );
   });
 
