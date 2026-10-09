@@ -84,7 +84,7 @@ test('the page menu follows the WAI-ARIA menu button pattern', async ({
   ).toBeFocused();
   await expect(
     menu.getByRole('menuitem', { name: 'View source' }),
-  ).toHaveAttribute('href', /github\.com\/valerymelou\/ndop/);
+  ).toHaveAttribute('href', /github\.com\/ndop-ui\/ui/);
   await page.keyboard.press('Escape');
   await expect(menu).toHaveCount(0);
   await expect(trigger).toBeFocused();

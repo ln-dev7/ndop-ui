@@ -94,7 +94,7 @@ Ndop adds four things on top:
 - **Safe updates for owned code.** A lockfile records the version each file was installed from, and `ndop update` does a three-way merge between that base, the user's edits and upstream.
 - **Angular done properly.** Directive-first APIs, signals, zoneless, SSR and hydration safe, Signal Forms integration, behavior built on the CDK.
 - **Agent-native from day one.** One compiler-extracted metadata source feeds the docs, an MCP server, `llms.txt`, per-project agent context files and a `verify` loop agents can run on their own output.
-- **A documentation site that is a product.** Live, tested examples, a generated props playground, a theme studio, keyboard and ARIA tables, and copy-for-agent on every page.
+- **A documentation site that is a product.** Live, tested examples of every variant, a theme studio, keyboard and ARIA tables, and copy-for-agent on every page.
 
 ## Goals, non-goals and success metrics
 
@@ -162,7 +162,7 @@ The two top layers are copied into the user's repo; the two bottom layers update
 | `ndop` (CLI)                     | npm, `npx ndop` + `ng add @ndop/cli` | init, add, diff, update, doctor, verify, build                                |
 | `@ndop/mcp`                      | npm, `npx @ndop/mcp`                 | MCP server over the registry and metadata                                     |
 | `@ndop/metadata`                 | Build-time tool                      | Extracts component APIs from compiled code into `metadata.json`               |
-| `apps/docs`                      | Website                              | Analog-based docs, playground, theme studio, llms.txt                         |
+| `apps/docs`                      | Website                              | Analog-based docs, theme studio, llms.txt                                     |
 
 **Dependency rules (MUST, enforced by Nx module boundaries)**
 
@@ -379,7 +379,7 @@ The update result is reported as a table (item, from version, to version, files 
 
 ## Agent-native DX
 
-One metadata file per component, extracted from compiled code, feeds every surface: docs, playground, MCP, `llms.txt`, terminal `view` and the project's agent context. Nothing is documented by hand twice, so nothing drifts.
+One metadata file per component, extracted from compiled code, feeds every surface: docs, MCP, `llms.txt`, terminal `view` and the project's agent context. Nothing is documented by hand twice, so nothing drifts.
 
 **Metadata pipeline (`@ndop/metadata`)**
 
@@ -452,7 +452,7 @@ The docs site is the product's storefront and must be visibly better than shadcn
 2. **Hero preview:** the main example rendered live in a resizable frame with Preview / Code tabs, a light/dark toggle, an RTL toggle and a viewport width switcher (mobile, tablet, desktop). The frame is isolated so docs styles never leak in.
 3. **Install:** CLI tab (`npx ndop add dialog`) and Manual tab (files to copy, deps to install), both with one-click copy.
 4. **Usage:** the smallest correct import and template.
-5. **Playground:** controls generated from metadata (enum → segmented control, boolean → switch, string → input, number → slider). Changing a control updates the live preview and the code snippet together; the snippet is always copy-pasteable.
+5. **Playground:** none; every variant and meaningful state is an example instead (ADR-0016, amendment 13).
 6. **Examples:** every example is a real file in the registry, compiled and tested in CI; each has preview, code, a short "when to use this" line and its own deep link.
 7. **Accessibility:** WAI-ARIA pattern link, a keyboard table rendered from `spec.md` with keycaps, and focus behavior notes. An interactive "try the keyboard" mode highlights each key as the user presses it.
 8. **API reference:** one table per part with inputs, models, outputs, data attributes and CSS variables, generated from metadata, with types linked.
@@ -476,7 +476,6 @@ The docs site is the product's storefront and must be visibly better than shadcn
 - **Blocks gallery:** large live previews with device frames, filter by category, "Copy CLI command", "Open in StackBlitz", and a dependency list.
 - **Version switcher** for the two supported Angular majors and Ndop versions, plus a per-component changelog that shows the diff between versions.
 - **"Update preview":** on the changelog, paste your local file and see what `ndop update` would produce (the merge runs in the browser).
-- **Shareable state:** playground settings serialize into the URL so any configuration can be linked.
 - **Feedback widget** on every page ("Was this helpful?" + optional comment) to a GitHub discussion or form.
 
 ### Docs quality bar (MUST)
@@ -517,7 +516,7 @@ One Nx monorepo with pnpm workspaces holds every package, the registry source an
 ```text
 ndop/
 ├─ apps/                    # deployed: never published to npm
-│  ├─ docs/                 # Analog docs site, playground, theme studio
+│  ├─ docs/                 # Analog docs site, theme studio
 │  └─ harness/              # Test app: SSR + zoneless + every example routed
 ├─ packages/                # published to npm under the @ndop scope
 │  ├─ primitives/           # @ndop/primitives (one folder per primitive + spec.md)

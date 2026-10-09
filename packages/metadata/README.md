@@ -5,8 +5,8 @@ Build-time extraction of Ndop UI component metadata (ADR-0007). For each
 extractor, adds what that misses (inputs forwarded through `hostDirectives`,
 defaults, enum values, host data attributes), merges the composed
 primitive's `spec.md` and the item's `docs.md`, and returns the content of
-`metadata/<name>.json`. One file feeds the docs site, the playground, the
-MCP server and `llms.txt`.
+`metadata/<name>.json`. One file feeds the docs site, the MCP
+server and `llms.txt`.
 
 `ndop build` runs it; you rarely call it directly.
 

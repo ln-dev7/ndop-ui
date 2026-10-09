@@ -407,3 +407,33 @@ Status: Accepted (approved by Valery on 2026-10-08).
 - Migration guides stay in Phase 7, as RFC-0001 lists them there; this
   ADR's Routes section had them in Phase 6.
 - Every new page meets the same Lighthouse and axe gates.
+
+## Amendment 13 (2026-10-09): no playground; examples show every variant
+
+Status: Accepted (approved by Valery on 2026-10-09). **Deviation** from
+RFC-0001's component page anatomy (item 5, "Playground") and its
+"Shareable state" DX feature.
+
+The playground was kept on 2026-10-03 as one of the RFC's own additions.
+Seven components had one when Phase 6 began. Weighed again then:
+
+- Ndop's components have few inputs, and the examples already showed
+  their combinations (`button-variants`, `button-sizes`,
+  `popover-placement`), as real, compiled and tested code rather than
+  generated markup.
+- Agents don't use it; they read the `.md` twins and the MCP server.
+- Each component needed a host, its snippet template and tests, and the
+  playground grew special cases (nullable numbers, start values) with each
+  batch. Every page that had one shipped and hydrated one more island.
+
+Decision:
+
+- Component pages have no playground. Like shadcn/ui's, they show every
+  variant and state that matters as examples, each with its code.
+- The playground panel, its hosts, URL state and snippet generator are
+  removed, and examples were added for what only the playground showed:
+  `badge-variants`, `dialog-unsaved-changes`, `tooltip-sides`,
+  `input-disabled`, and, for new components, `textarea-disabled` and
+  `empty-avatar`.
+- From now on, a component's examples cover each of its variants and
+  meaningful states; the Phase 6 batches follow that.

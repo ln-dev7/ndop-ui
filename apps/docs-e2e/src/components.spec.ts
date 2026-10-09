@@ -1,17 +1,16 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import { open } from './support/open';
 
-/** Every component the registry publishes, in navigation order. */
-const COMPONENTS = [
-  'badge',
-  'button',
-  'dialog',
-  'input',
-  'label',
-  'popover',
-  'separator',
-  'tooltip',
-];
+/** Every component in the registry, so new ones are checked as they land. */
+const COMPONENTS = (
+  JSON.parse(
+    readFileSync(join(__dirname, '../../../registry/registry.json'), 'utf-8'),
+  ) as { items: { name: string; type: string }[] }
+).items
+  .filter((item) => item.type === 'registry:ui')
+  .map((item) => item.name);
 
 for (const name of COMPONENTS) {
   test(`the ${name} page renders and hydrates without errors`, async ({
@@ -105,41 +104,4 @@ test("a preview's overlays follow the site's direction", async ({ page }) => {
   expect(
     await dialog.evaluate((element) => getComputedStyle(element).direction),
   ).toBe('rtl');
-});
-
-test('the playground updates the preview, the snippet and the URL', async ({
-  page,
-}) => {
-  await open(page, '/docs/components/button');
-  const playground = page.locator('docs-playground');
-  const fieldset = playground.getByRole('group', { name: 'variant' });
-  // The radios are visually hidden behind their segments.
-  await fieldset.getByText('secondary', { exact: true }).click();
-  await expect(
-    fieldset.getByRole('radio', { name: 'secondary' }),
-  ).toBeChecked();
-  await playground.getByRole('switch', { name: 'disabled' }).check();
-  await expect(playground.locator('.preview-backdrop button')).toHaveAttribute(
-    'data-variant',
-    'secondary',
-  );
-  await expect(playground.locator('.preview-backdrop button')).toBeDisabled();
-  await expect(playground.locator('pre')).toHaveText(
-    '<button ndButton variant="secondary" [disabled]="true">Button</button>',
-  );
-  await expect(page).toHaveURL(/\?variant=secondary&disabled=true$/);
-});
-
-test('a playground link opens with its values', async ({ page }) => {
-  await open(page, '/docs/components/popover?side=top&sideOffset=12');
-  const playground = page.locator('docs-playground');
-  await expect(
-    playground.getByRole('radio', { name: 'top', exact: true }).first(),
-  ).toBeChecked();
-  await expect(
-    playground.getByRole('slider', { name: 'sideOffset' }),
-  ).toHaveValue('12');
-  await expect(playground.locator('pre')).toContainText(
-    'side="top" [sideOffset]="12"',
-  );
 });

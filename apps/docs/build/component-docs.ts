@@ -11,7 +11,6 @@ import type {
   ComponentPageData,
   ComponentSummary,
   ExampleData,
-  TemplatePalette,
 } from '../src/app/components/component-data';
 import {
   COLOR_REPLACEMENTS,
@@ -306,13 +305,7 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             return `${JSON.stringify(example)}: () => import(${JSON.stringify(join(options.workspace, 'registry/examples', `${example}.ts`))}).then((m) => m.${exported})`;
           }),
         );
-        highlighter ??= createHighlighter({
-          langs: LANGUAGES,
-          themes: Object.values(THEMES),
-        });
-        const palette = templatePalette(await highlighter);
         return [
-          `export const templatePalette = ${JSON.stringify(palette)};`,
           `export const components = ${JSON.stringify(components)};`,
           `export const examples = {${loaders.join(',')}};`,
           `export const pages = {${components
@@ -387,36 +380,6 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       }
       return undefined;
     },
-  };
-}
-
-/**
- * Reads the colors Shiki gives each part of an Angular template, from a
- * sample highlighted with the docs' themes.
- *
- * @param highlighter - The docs' Shiki highlighter.
- * @returns The palette.
- */
-export function templatePalette(highlighter: Highlighter): TemplatePalette {
-  const [line = []] = highlighter.codeToTokens('<a b="c">', {
-    lang: 'angular-html',
-    themes: THEMES,
-    defaultColor: false,
-  }).tokens;
-  const style = (content: string) => {
-    const token = line.find((entry) => entry.content === content);
-    if (!token?.htmlStyle) {
-      throw new Error(`Shiki gave no colors for "${content}" in a template.`);
-    }
-    return Object.entries(token.htmlStyle)
-      .map(([name, value]) => `${name}:${value}`)
-      .join(';');
-  };
-  return {
-    plain: style('<'),
-    tag: style('a'),
-    attribute: style('b'),
-    string: style('"c"'),
   };
 }
 

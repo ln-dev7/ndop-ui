@@ -5,13 +5,9 @@
 declare module 'virtual:ndop/components' {
   type ComponentPageData =
     import('./app/components/component-data').ComponentPageData;
-  type TemplatePalette =
-    import('./app/components/component-data').TemplatePalette;
   type ComponentSummary =
     import('./app/components/component-data').ComponentSummary;
 
-  /** Shiki's colors for the parts of an Angular template. */
-  export const templatePalette: TemplatePalette;
   /** Every component, in navigation order. */
   export const components: ComponentSummary[];
   /** Loads one component's page data, by name. */

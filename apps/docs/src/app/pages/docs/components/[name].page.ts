@@ -12,17 +12,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Badge } from '@/ui/badge/badge';
 import { Button } from '@/ui/button/button';
-import { examples, pages, templatePalette } from 'virtual:ndop/components';
+import { examples, pages } from 'virtual:ndop/components';
 import { ApiReference } from '../../../components/api-reference';
-import type { PlaygroundHost } from '../../../playground/playground';
-import { PlaygroundPanel } from '../../../playground/playground-panel';
 import { PageActions } from '../../../site/page-actions';
 import { StaticHtml } from '../../../site/static-html';
-import { playgrounds } from '../../../playground/hosts';
-import type {
-  ComponentPageData,
-  PartData,
-} from '../../../components/component-data';
+import type { ComponentPageData } from '../../../components/component-data';
 import { ExamplePreview } from '../../../components/example-preview';
 import { KeyboardTable } from '../../../components/keyboard-table';
 import { CodeFrames } from '../../../site/code-frames';
@@ -33,13 +27,11 @@ import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
 interface LoadedPage {
   data: ComponentPageData;
   components: Record<string, Type<unknown> | undefined>;
-  playground?: { host: PlaygroundHost; part: PartData };
 }
 
 /**
- * Loads a component page's data, its examples' components and its
- * playground together, so the prerendered previews hydrate against the
- * same components.
+ * Loads a component page's data and its examples' components together,
+ * so the prerendered previews hydrate against the same components.
  *
  * @param name - Registry item name.
  * @returns The page, or `undefined` for an unknown name.
@@ -56,13 +48,7 @@ async function loadPage(name: string): Promise<LoadedPage | undefined> {
       ),
     ),
   );
-  const host = await playgrounds[name]?.();
-  const part = data.parts.find((entry) => entry.name === host?.part);
-  return {
-    data,
-    components,
-    ...(host && part ? { playground: { host, part } } : {}),
-  };
+  return { data, components };
 }
 
 /** Classes of the section headings (`h2`). */
@@ -90,7 +76,6 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
     KeyboardTable,
     ApiReference,
     StaticHtml,
-    PlaygroundPanel,
     PageActions,
   ],
   template: `
@@ -265,18 +250,6 @@ const H3 = 'scroll-mt-20 text-lg font-semibold tracking-tight';
               <div class="prose" [docsHtml]="item.usage.templateHtml"></div>
             </section>
 
-            @if (loaded.playground; as playground) {
-              <section class="mt-12" aria-labelledby="playground">
-                <h2 id="playground" [class]="h2">Playground</h2>
-                <docs-playground
-                  class="mt-4"
-                  [host]="playground.host"
-                  [part]="playground.part"
-                  [palette]="palette"
-                />
-              </section>
-            }
-
             @if (item.examples.length > 1) {
               <section class="mt-12" aria-labelledby="examples">
                 <h2 id="examples" [class]="h2">Examples</h2>
@@ -447,7 +420,6 @@ export default class ComponentPage {
   private readonly meta = inject(Meta);
 
   protected readonly h2 = H2;
-  protected readonly palette = templatePalette;
   protected readonly h3 = H3;
   protected readonly installTabs = [
     { id: 'cli', label: 'CLI' },
@@ -477,9 +449,6 @@ export default class ComponentPage {
     return [
       { id: 'installation', text: 'Installation', level: 2 },
       { id: 'usage', text: 'Usage', level: 2 },
-      ...(this.page.value()?.playground
-        ? [{ id: 'playground', text: 'Playground', level: 2 }]
-        : []),
       ...(item.examples.length > 1
         ? [
             { id: 'examples', text: 'Examples', level: 2 },
