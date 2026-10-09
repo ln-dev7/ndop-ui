@@ -13,7 +13,12 @@ test('every route renders on the server, hydrates cleanly and passes axe', async
 
   for (const route of routes) {
     await test.step(route, async () => {
-      const serverHtml = await (await request.get(route)).text();
+      // A new connection each time: the dev server closes idle keep-alive
+      // sockets after Node's 5 s default, and a request that reuses one
+      // as it closes fails with ECONNRESET.
+      const serverHtml = await (
+        await request.get(route, { headers: { connection: 'close' } })
+      ).text();
       // `ngh` is Angular's hydration annotation: its presence shows the
       // page was rendered on the server with hydration enabled.
       expect(serverHtml, 'server-rendered content').toContain('<main');
