@@ -29,6 +29,21 @@
       "implementation": "./src/executors/update-e2e/update-e2e",
       "schema": "./src/executors/update-e2e/schema.json",
       "description": "Run the update fixture suite: ndop add an old version, apply local edits, ndop update, and check files, statuses, exit codes and the lockfile (ADR-0020)."
+    },
+    "primitives-api": {
+      "implementation": "./src/executors/primitives-api/primitives-api",
+      "schema": "./src/executors/primitives-api/schema.json",
+      "description": "Extract the headless primitives' API reference and spec.md contracts for the docs' Primitives section (ADR-0016, amendment 12)."
+    },
+    "visual": {
+      "implementation": "./src/executors/visual/visual",
+      "schema": "./src/executors/visual/schema.json",
+      "description": "Run the visual regression tests with the browser in Playwright's Docker image, so screenshots match on every machine (ADR-0021)."
+    },
+    "size": {
+      "implementation": "./src/executors/size/size",
+      "schema": "./src/executors/size/schema.json",
+      "description": "Measure what each registry component adds to an app, gzipped, and fail over its budget (ADR-0021)."
     }
   }
 }

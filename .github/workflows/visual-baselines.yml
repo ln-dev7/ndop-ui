@@ -1,0 +1,35 @@
+name: Visual baselines
+
+# ADR-0021: writes the screenshot baselines of the visual tests in
+# Playwright's Docker image, as CI compares them, and uploads them as an
+# artifact to commit. Started by hand, after a deliberate visual change or
+# when items are added.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    name: Update baselines
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm nx run harness-e2e:visual:update
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: visual-baselines
+          path: apps/harness-e2e/src/visual/__screenshots__/
+          if-no-files-found: error

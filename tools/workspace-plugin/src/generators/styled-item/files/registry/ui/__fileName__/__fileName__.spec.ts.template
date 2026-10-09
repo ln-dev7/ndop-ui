@@ -1,0 +1,15 @@
+import { render, screen } from '@testing-library/angular/zoneless';
+import { <%= className %> } from './<%= fileName %>';
+
+describe('<%= className %>', () => {
+  it('styles its host and merges the class input last', async () => {
+    await render(
+      `<div nd<%= className %> class="font-mono"><%= title %></div>`,
+      { imports: [<%= className %>] },
+    );
+    const host = screen.getByText('<%= title %>');
+    expect(host.getAttribute('data-slot')).toBe('<%= fileName %>');
+    expect(host.getAttribute('data-variant')).toBe('default');
+    expect(host.classList).toContain('font-mono');
+  });
+});

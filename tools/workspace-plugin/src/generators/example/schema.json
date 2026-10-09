@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NdopExample",
+  "title": "Ndop example",
+  "description": "Scaffold an example of a registry item (ADR-0014): registry/examples/<item>-<case>.ts, its registry.json entry, the item's examples list, and the harness route that renders and tests it.",
+  "type": "object",
+  "properties": {
+    "item": {
+      "type": "string",
+      "description": "The item it shows, for example `button`.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "Item?"
+    },
+    "case": {
+      "type": "string",
+      "description": "What the example shows, in kebab-case, for example `demo` or `with-icon`. The example is named `<item>-<case>`.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": { "$source": "argv", "index": 1 },
+      "x-prompt": "Case (kebab-case)?"
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence on what it shows, which the docs print as its \"when to use this\" line.",
+      "x-prompt": "One-sentence description?"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the generated files.",
+      "default": false
+    }
+  },
+  "required": ["item", "case", "description"]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "PrimitivesApi executor",
+  "description": "Extract the API reference and spec.md contract of every headless primitive, for the docs' Primitives section (ADR-0016, amendment 12).",
+  "type": "object",
+  "properties": {
+    "primitivesRoot": {
+      "type": "string",
+      "description": "Workspace-relative folder holding one folder per primitive, each with spec.md and src/index.ts.",
+      "default": "packages/primitives"
+    },
+    "tsconfig": {
+      "type": "string",
+      "description": "Workspace-relative tsconfig whose program covers every primitive's sources.",
+      "default": "packages/primitives/tsconfig.lib.json"
+    },
+    "importPrefix": {
+      "type": "string",
+      "description": "Package name the entry points are published under.",
+      "default": "@ndop/primitives"
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Workspace-relative folder for index.json and <name>.json.",
+      "default": "dist/primitives-api"
+    }
+  },
+  "required": []
+}

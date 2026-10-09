@@ -1,0 +1,7 @@
+{
+  "default": 4000,
+  "items": {
+    "button": 2000,
+    "dialog": 8000
+  }
+}

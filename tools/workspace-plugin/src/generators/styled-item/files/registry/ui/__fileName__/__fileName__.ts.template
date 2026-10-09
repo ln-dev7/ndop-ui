@@ -1,0 +1,49 @@
+import { computed, Directive, input } from '@angular/core';
+<% if (primitive) { %>import { Nd<%= className %> } from '@ndop/primitives/<%= fileName %>';
+<% } %>import { cn, variants, type VariantOf } from '@/lib/utils';
+
+/** Class table for {@link <%= className %>}. */
+export const <%= propertyName %>Variants = variants({
+  base: '',
+  variants: {
+    variant: {
+      default: '',
+    },
+  },
+  defaults: { variant: 'default' },
+});
+
+/** Visual style of a {@link <%= className %>}. */
+export type <%= className %>Variant = VariantOf<
+  typeof <%= propertyName %>Variants,
+  'variant'
+>;
+
+/**
+ * <%= description %>
+ *
+ * @example
+ * ```html
+ * <div nd<%= className %>></div>
+ * ```
+ */
+@Directive({
+  selector: '[nd<%= className %>]',
+<% if (primitive) { %>  hostDirectives: [Nd<%= className %>],
+<% } %>  host: {
+    'data-slot': '<%= fileName %>',
+    '[attr.data-variant]': 'variant()',
+    '[class]': 'classes()',
+  },
+})
+export class <%= className %> {
+  /** Visual style. */
+  readonly variant = input<<%= className %>Variant>('default');
+
+  /** Extra classes, merged last so they win. */
+  readonly class = input('');
+
+  protected readonly classes = computed(() =>
+    cn(<%= propertyName %>Variants({ variant: this.variant() }), this.class()),
+  );
+}

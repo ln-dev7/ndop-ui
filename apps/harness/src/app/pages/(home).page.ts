@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { BLOCK_NAMES } from '../blocks/block-names';
 import { DEMOS } from '../demos/demos';
 import { EXAMPLE_NAMES } from '../examples/example-names';
 
 /**
- * Harness index (`/`): links every primitive demo and registry example.
+ * Harness index (`/`): links every primitive demo, registry example and
+ * block.
  */
 @Component({
   selector: 'harness-home',
@@ -40,10 +42,23 @@ import { EXAMPLE_NAMES } from '../examples/example-names';
           </li>
         }
       </ul>
+      @if (blocks.length > 0) {
+        <h2 class="mt-8 text-lg font-semibold">Blocks</h2>
+        <ul class="mt-4 space-y-2">
+          @for (block of blocks; track block) {
+            <li>
+              <a class="underline" [routerLink]="'/blocks/' + block">{{
+                block
+              }}</a>
+            </li>
+          }
+        </ul>
+      }
     </main>
   `,
 })
 export default class HomePage {
   protected readonly demos = DEMOS;
   protected readonly examples = EXAMPLE_NAMES;
+  protected readonly blocks = BLOCK_NAMES;
 }

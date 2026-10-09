@@ -9,6 +9,26 @@
       "factory": "./src/generators/eslint-catalog/eslint-catalog",
       "schema": "./src/generators/eslint-catalog/schema.json",
       "description": "Regenerate @ndop/eslint-plugin's catalog from the built registry's metadata."
+    },
+    "styled-item": {
+      "factory": "./src/generators/styled-item/styled-item",
+      "schema": "./src/generators/styled-item/schema.json",
+      "description": "Scaffold a styled registry item: directive, spec, docs.md, registry entry and changelog."
+    },
+    "example": {
+      "factory": "./src/generators/example/example",
+      "schema": "./src/generators/example/schema.json",
+      "description": "Scaffold a registry example for an item: component, registry entry and harness route."
+    },
+    "block": {
+      "factory": "./src/generators/block/block",
+      "schema": "./src/generators/block/schema.json",
+      "description": "Scaffold a registry block: page component, registry entry, changelog and harness route."
+    },
+    "theme": {
+      "factory": "./src/generators/theme/theme",
+      "schema": "./src/generators/theme/schema.json",
+      "description": "Scaffold a registry theme: theme.css, registry entry and changelog."
     }
   }
 }

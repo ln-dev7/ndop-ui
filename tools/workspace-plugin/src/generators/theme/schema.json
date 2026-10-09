@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NdopTheme",
+  "title": "Ndop theme",
+  "description": "Scaffold a registry theme (ADR-0023): registry/themes/<name>/theme.css, starting from the default theme's tokens, its registry.json entry and changelog.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Theme name in kebab-case, for example `ocean`.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "Theme name (kebab-case)?"
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence on the theme's look.",
+      "x-prompt": "One-sentence description?"
+    },
+    "author": {
+      "type": "string",
+      "description": "Who made it, shown in the theme gallery; for community themes, a name and a link."
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the generated files.",
+      "default": false
+    }
+  },
+  "required": ["name", "description"]
+}

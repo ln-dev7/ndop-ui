@@ -15,6 +15,7 @@
     "ui/**/*.spec.ts",
     "lib/**/*.spec.ts",
     "examples/**/*.spec.ts",
+    "blocks/**/*.spec.ts",
     "**/*.d.ts",
     "testing/**/*.ts"
   ],

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Size executor",
+  "description": "Measure what each registry component adds to an app, gzipped, and fail over its budget (ADR-0021).",
+  "type": "object",
+  "properties": {
+    "budgets": {
+      "type": "string",
+      "description": "Workspace-relative JSON of budgets in bytes: `default`, and `items` by name."
+    },
+    "registryRoot": {
+      "type": "string",
+      "description": "Workspace-relative registry source.",
+      "default": "registry"
+    },
+    "tsconfig": {
+      "type": "string",
+      "description": "Workspace-relative tsconfig whose `paths` resolve the packages items import.",
+      "default": "tsconfig.base.json"
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Workspace-relative folder for report.json.",
+      "default": "dist/size"
+    }
+  },
+  "required": ["budgets"]
+}

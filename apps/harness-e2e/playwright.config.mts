@@ -23,6 +23,8 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4300';
  */
 export default defineConfig({
   ...nxE2EPreset(import.meta.dirname, { testDir: './src' }),
+  // Screenshots run on their own, in Docker (playwright.visual.config.mts).
+  testIgnore: ['**/visual/**'],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     baseURL,

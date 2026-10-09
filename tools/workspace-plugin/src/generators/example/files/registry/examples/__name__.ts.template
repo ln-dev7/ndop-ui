@@ -1,0 +1,10 @@
+import { Component } from '@angular/core';
+import { <%= part %> } from '@/ui/<%= item %>/<%= item %>';
+
+/** <%= description %> */
+@Component({
+  selector: 'example-<%= name %>',
+  imports: [<%= part %>],
+  template: `<div nd<%= part %>><%= title %></div>`,
+})
+export class <%= className %>Example {}

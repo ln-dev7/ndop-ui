@@ -666,6 +666,9 @@ importers:
       '@ndop/eslint-plugin':
         specifier: workspace:*
         version: link:../../packages/eslint-plugin
+      '@ndop/metadata':
+        specifier: workspace:*
+        version: link:../../packages/metadata
       '@nx/angular':
         specifier: 23.2.1
         version: 23.2.1(35b663ded60aa09ce5ce614af77cadec)

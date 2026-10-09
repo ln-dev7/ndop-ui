@@ -1,0 +1,13 @@
+---
+keywords: <%= fileName.replace(/-/g, ' ') %>
+---
+
+<%= description %>
+
+## Do
+
+- Say when to reach for <%= title %>.
+
+## Don't
+
+- Say what to use instead, and when.

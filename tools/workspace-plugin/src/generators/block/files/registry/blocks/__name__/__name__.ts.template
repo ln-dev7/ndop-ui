@@ -1,0 +1,12 @@
+import { Component } from '@angular/core';
+
+/** <%= description %> */
+@Component({
+  selector: 'block-<%= name %>',
+  template: `
+    <main class="flex min-h-svh items-center justify-center p-6">
+      <h1 class="text-2xl font-semibold"><%= title %></h1>
+    </main>
+  `,
+})
+export class <%= className %>Block {}

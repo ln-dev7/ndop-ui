@@ -48,10 +48,10 @@ jobs:
       # Pull requests run only what they affect; pushes to master run
       # everything, so a batch of commits can't skip projects.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t lint typecheck test build
+        run: pnpm nx affected -t lint typecheck test build check
 
       - if: github.event_name == 'push'
-        run: pnpm nx run-many -t lint typecheck test build
+        run: pnpm nx run-many -t lint typecheck test build check
 
       # E2E runs on its own: the harness's dev server renders pages on
       # demand, and sharing the runner with lint, type-check and test tasks
@@ -63,6 +63,13 @@ jobs:
 
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --exclude=registry-e2e
+
+      # ADR-0021: every example in light, dark and RTL, against committed
+      # baselines. The browser runs in Playwright's Docker image, so one
+      # Node version is enough. The Visual baselines workflow writes them;
+      # until they're committed, there's nothing to compare.
+      - if: matrix.node == '24.21.0' && hashFiles('apps/harness-e2e/src/visual/__screenshots__/**') != ''
+        run: pnpm nx run harness-e2e:visual
 
   # ADR-0016: Lighthouse on every prerendered docs route, served the way
   # Cloudflare Pages serves it; any category under 95 fails. On its own

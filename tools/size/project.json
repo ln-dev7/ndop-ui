@@ -1,0 +1,31 @@
+{
+  "name": "size",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "tags": ["type:e2e"],
+  "implicitDependencies": ["registry", "primitives", "core"],
+  "targets": {
+    "check": {
+      "executor": "@ndop/workspace-plugin:size",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/budgets.json",
+        "{workspaceRoot}/registry/**/*",
+        "{workspaceRoot}/packages/primitives/**/*",
+        "{workspaceRoot}/tsconfig.base.json",
+        {
+          "externalDependencies": [
+            "@angular/cdk",
+            "@angular/compiler-cli",
+            "esbuild"
+          ]
+        },
+        "{workspaceRoot}/tools/workspace-plugin/src/executors/size/**/*"
+      ],
+      "outputs": ["{workspaceRoot}/dist/size"],
+      "options": {
+        "budgets": "tools/size/budgets.json"
+      }
+    }
+  }
+}

@@ -29,8 +29,8 @@ export default [
         'error',
         {
           type: 'element',
-          // Examples are components users copy into their apps.
-          prefix: ['nd', 'example'],
+          // Examples and blocks are components users copy into their apps.
+          prefix: ['nd', 'example', 'block'],
           style: 'kebab-case',
         },
       ],

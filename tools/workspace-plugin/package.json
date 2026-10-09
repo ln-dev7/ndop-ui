@@ -7,12 +7,13 @@
   "types": "./src/index.d.ts",
   "dependencies": {
     "@nx/devkit": "23.2.1",
-    "tslib": "^2.3.0",
-    "@nx/angular": "23.2.1",
     "@ndop/cli": "workspace:*",
+    "@ndop/eslint-plugin": "workspace:*",
+    "@ndop/metadata": "workspace:*",
+    "@nx/angular": "23.2.1",
     "@nx/js": "23.2.1",
     "nx": "23.2.1",
-    "@ndop/eslint-plugin": "workspace:*"
+    "tslib": "^2.3.0"
   },
   "generators": "./generators.json",
   "executors": "./executors.json"

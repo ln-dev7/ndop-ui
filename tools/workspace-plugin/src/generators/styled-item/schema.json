@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NdopStyledItem",
+  "title": "Ndop styled item",
+  "description": "Scaffold a styled registry item (ADR-0021): the directive at registry/ui/<name>/<name>.ts, its test, docs.md, the registry.json entry at 0.1.0 and its changelog.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Item name in kebab-case, for example `radio-group`.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Item name (kebab-case)?"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display name, when it isn't the name in title case, for example `Input OTP`."
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence on what the item is, for registry.json and the directive's TSDoc.",
+      "x-prompt": "One-sentence description?"
+    },
+    "category": {
+      "type": "string",
+      "description": "Docs group: the item's first `categories` entry (ADR-0021).",
+      "enum": [
+        "inputs",
+        "overlays",
+        "navigation",
+        "data-display",
+        "feedback",
+        "layout"
+      ],
+      "x-prompt": "Docs group?"
+    },
+    "primitive": {
+      "type": "boolean",
+      "description": "Compose the primitive `@ndop/primitives/<name>` as a host directive and depend on `@ndop/primitives`.",
+      "default": false
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the generated files.",
+      "default": false
+    }
+  },
+  "required": ["name", "description", "category"]
+}

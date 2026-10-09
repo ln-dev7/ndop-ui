@@ -52,6 +52,16 @@
           "externalDependencies": ["eslint"]
         }
       ]
+    },
+    "api": {
+      "executor": "@ndop/workspace-plugin:primitives-api",
+      "cache": true,
+      "outputs": ["{workspaceRoot}/dist/primitives-api"],
+      "inputs": [
+        "production",
+        "{workspaceRoot}/packages/metadata/src/**/*",
+        "{workspaceRoot}/tools/workspace-plugin/src/executors/primitives-api/**/*"
+      ]
     }
   }
 }

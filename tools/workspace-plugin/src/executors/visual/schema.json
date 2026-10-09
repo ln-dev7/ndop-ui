@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Visual executor",
+  "description": "Run the visual regression tests with the browser in Playwright's Docker image, so screenshots render the same on every machine (ADR-0021).",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "string",
+      "description": "Workspace-relative Playwright config of the visual tests."
+    },
+    "update": {
+      "type": "boolean",
+      "description": "Rewrite the baselines instead of comparing with them.",
+      "default": false
+    },
+    "image": {
+      "type": "string",
+      "description": "Playwright Docker image; its version must match the installed @playwright/test.",
+      "default": "mcr.microsoft.com/playwright:v1.63.0-noble"
+    },
+    "port": {
+      "type": "number",
+      "description": "Host port of the browser server in the container.",
+      "default": 3333
+    }
+  },
+  "required": ["config"]
+}

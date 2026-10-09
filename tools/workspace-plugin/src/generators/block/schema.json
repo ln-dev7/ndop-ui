@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NdopBlock",
+  "title": "Ndop block",
+  "description": "Scaffold a registry block (ADR-0022): a page component at registry/blocks/<name>/<name>.ts, its registry.json entry and changelog, and the harness route that renders and tests it.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Block name, shadcn-style, for example `login-01`.",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "Block name (for example login-01)?"
+    },
+    "category": {
+      "type": "string",
+      "description": "Gallery category, the block's first `categories` entry (ADR-0022).",
+      "enum": [
+        "auth",
+        "dashboard",
+        "settings",
+        "data-table",
+        "sidebar",
+        "marketing"
+      ],
+      "x-prompt": "Category?"
+    },
+    "description": {
+      "type": "string",
+      "description": "One sentence on what the block is.",
+      "x-prompt": "One-sentence description?"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the generated files.",
+      "default": false
+    }
+  },
+  "required": ["name", "category", "description"]
+}
