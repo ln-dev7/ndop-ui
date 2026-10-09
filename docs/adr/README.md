@@ -27,7 +27,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0018](0018-verify-and-eslint-plugin.md)                 | `ndop verify` and the ESLint plugin                       | Accepted                       |
 | [0019](0019-agent-eval-suite.md)                         | Agent eval suite                                          | Accepted, with amendment 1     |
 | [0020](0020-diff-and-update.md)                          | `ndop diff`, `ndop update` and the update preview         | Accepted, with amendment 1     |
-| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted                       |
+| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendment 1     |
 | [0022](0022-blocks.md)                                   | Blocks and the blocks gallery                             | Accepted                       |
 | [0023](0023-themes-and-theme-studio.md)                  | Themes, the theme studio and the theme gallery            | Accepted                       |
 | [0024](0024-doctor.md)                                   | `ndop doctor`                                             | Accepted                       |

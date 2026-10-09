@@ -120,15 +120,15 @@ The bar: a developer goes from `ng new` to a themed, accessible, production-qual
 
 **Success metrics**
 
-| Metric                  | Target                                                   | How it's measured                                   |
-| ----------------------- | -------------------------------------------------------- | --------------------------------------------------- |
-| Time to first component | < 2 min from `npx ndop init`                             | Scripted e2e run in CI on a fresh `ng new` app      |
-| Clean update rate       | ≥ 90% of `ndop update` runs with no conflicts            | Fixture suite of realistic local edits              |
-| Accessibility           | 0 axe violations; full keyboard spec per component       | Automated a11y tests                                |
-| Docs performance        | Lighthouse ≥ 95 on every page; LCP < 1.5 s               | Lighthouse CI                                       |
-| Agent accuracy          | ≥ 95% of generated snippets pass `ndop verify`           | Eval suite of 50 prompts run against the MCP server |
-| Bundle cost             | Button < 2 kB gzip; Dialog < 8 kB gzip                   | Size-limit check per component                      |
-| Adoption (post-launch)  | 1,000 GitHub stars and 3 external registries in 6 months | GitHub, registry directory                          |
+| Metric                  | Target                                                   | How it's measured                                                                   |
+| ----------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Time to first component | < 2 min from `npx ndop init`                             | Scripted e2e run in CI on a fresh `ng new` app                                      |
+| Clean update rate       | ≥ 90% of `ndop update` runs with no conflicts            | Fixture suite of realistic local edits                                              |
+| Accessibility           | 0 axe violations; full keyboard spec per component       | Automated a11y tests                                                                |
+| Docs performance        | Lighthouse ≥ 95 on every page; LCP < 1.5 s               | Lighthouse CI                                                                       |
+| Agent accuracy          | ≥ 95% of generated snippets pass `ndop verify`           | Eval suite of 50 prompts run against the MCP server                                 |
+| Bundle cost             | Button < 2 kB gzip; Dialog < 8 kB gzip                   | Size check per component, on Ndop's own code; the shared CDK is reported (ADR-0021) |
+| Adoption (post-launch)  | 1,000 GitHub stars and 3 external registries in 6 months | GitHub, registry directory                                                          |
 
 ## Landscape and differentiation
 
@@ -633,7 +633,7 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 - [ ] At least 12 blocks across auth, dashboard, settings, data table, sidebar and marketing.
 - [ ] Theme studio with export to CSS, theme URL and JSON; community theme gallery.
 - [ ] `ndop doctor`; namespaced and private registries; a "build your own registry" guide and template repo; shadcn-compat output via ndop build --compat shadcn, with an e2e that installs a compat item through the shadcn CLI.
-- [ ] Third-party notices, before the docs site's first public deploy: a license notice served with the registry (shadcn/ui's MIT terms and any others), acknowledgements in the README, and a shadcn/ui credit on the docs site (ADR-0014, amendments 1 and 2). Registry files carry no notices of their own.
+- [x] Third-party notices, before the docs site's first public deploy: a license notice served with the registry (shadcn/ui's MIT terms and any others), acknowledgements in the README, and a shadcn/ui credit on the docs site (ADR-0014, amendments 1 and 2). Registry files carry no notices of their own.
 
 * **Accept when:** an external sample registry installs via `ndop add @sample/widget`, and every block builds in the registry e2e.
 

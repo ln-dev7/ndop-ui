@@ -1,7 +1,7 @@
 # ADR-0021: Completing the v1 catalog
 
-- Status: Accepted (approved by Valery on 2026-10-08). Deviates from the
-  definition of done for items without behavior
+- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1.
+  Deviates from the definition of done for items without behavior
 - Date: 2026-10-08
 - Phase: 6
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Component catalog and
@@ -94,7 +94,10 @@ Each runs `--dry-run` cleanly and is unit-tested like `primitive`.
 - Screenshots depend on fonts and rendering, so both CI and baseline updates
   run in the Playwright image `mcr.microsoft.com/playwright:v1.63.0-noble`.
   A `harness-e2e:visual` target runs it through Docker locally;
-  `--update` rewrites the baselines, which are committed.
+  its `update` configuration rewrites the baselines, which are committed.
+  The manual "Visual baselines" workflow does the same in CI and uploads
+  them as an artifact, for machines without Docker or bandwidth for the
+  image.
 - It runs in CI's `main` job, on Node 24 only.
 - The eight existing items get baselines in the first step.
 
@@ -133,3 +136,29 @@ data and dates. The plan lists the batches.
 - CI gains a Docker-based visual job and per-item size builds. Visual
   baselines change whenever a style changes, which is the point; updating
   them is one command.
+
+## Amendment 1 (2026-10-08): budgets cover Ndop's own code
+
+Status: Accepted (approved by Valery on 2026-10-08). Changes how
+RFC-0001's "Button < 2 kB gzip; Dialog < 8 kB gzip" is measured.
+
+Measured as decided above, with the CDK counted, the overlays are far
+over their budgets: Dialog 12.7 kB, Popover 16.3 kB, Tooltip 14.3 kB. About
+10 kB of each is the CDK overlay, which all overlays share: the three
+together are 20.0 kB. Ndop's own code for each is about 3 kB.
+
+- **Budgets apply to Ndop's own code:** the styled item and its primitive,
+  without the Angular CDK. That's the code Ndop controls, and what a
+  budget can keep from growing.
+- **The CDK cost is measured and reported, not budgeted.** `size:check`
+  prints both, the component pages show both ("2.9 kB gzip" and "+9.7 kB
+  Angular CDK, shared"), and the `.md` twins show the first.
+- **How it's measured**, which replaces the per-item app builds above: one
+  `ngc` compile of every item and the primitives, then, per item, an
+  esbuild bundle of that output and the CDK code it imports, run first
+  through `@angular/build`'s `JavaScriptTransformer` (the application
+  builder's own linking and tree-shaking optimizations) with production
+  globals (`ngDevMode: false`). It takes seconds rather than a build per
+  item. The transformer is a private export of `@angular/build`, so an
+  Angular upgrade may need this tool to follow it.
+- Budgets stay as decided: Button 2 kB, Dialog 8 kB, 4 kB otherwise.

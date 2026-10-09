@@ -216,3 +216,32 @@ uses a key manager and its own bindings instead, and its `spec.md` says so.
 
 Value-bearing primitives here implement both `ControlValueAccessor` and
 Signal Forms' `FormValueControl`, as amendment 1 requires.
+
+### Spike: accessibility on the CDK (2026-10-08)
+
+Before any Phase 6 primitive, a throwaway harness page built eight of the
+patterns above directly on the CDK: menu button with a submenu, checkbox
+and radio items (`cdk/menu`), menubar, context menu, select-only combobox
+(`cdk/listbox` in a connected overlay), editable combobox
+(`ActiveDescendantKeyManager`), accordion (`cdk/accordion`), tabs and a
+date grid (roving tabindex). Playwright checked each against its APG
+keyboard map, and axe ran closed and open, in Chromium, Firefox and WebKit:
+27 of 27 passed, twice in a row. Nothing in the CDK blocked an
+accessibility requirement. What the primitives must do:
+
+- **Open overlays and axe's `region` rule.** Menus and listboxes render at
+  the end of `<body>`, outside landmarks, like the tooltip. `region` is a
+  best-practice rule, not WCAG; the tests disable it only while an overlay
+  is open, as the Tooltip test does. Dialogs are exempt from it already.
+- **Menubar focus.** CDK tracks the active menubar item from keyboard focus
+  entering the bar. Any focus the primitive moves itself (restoring focus,
+  say) goes through the CDK menu's own `focus` methods.
+- **Select.** CDK's listbox moves focus to an option. Opening focuses the
+  selected option (or the first), as soon as the list renders, and
+  typeahead lands after the key manager's debounce.
+- **Roving tabindex.** `tabindex` must change before the next keystroke;
+  with zoneless change detection, the primitive sets the active item and
+  its `tabindex` in the key handler, not in a later render.
+
+Axe and keyboard tests aren't screen-reader tests; neither the spike nor
+the Phase 1 primitives were checked with one.
