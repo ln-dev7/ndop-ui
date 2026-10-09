@@ -33,6 +33,22 @@ describe('styled-item generator', () => {
     );
   });
 
+  it('writes descriptions as they are, without HTML escapes', async () => {
+    await styledItemGenerator(tree, {
+      name: 'switch',
+      description: "An on/off control that's applied at once.",
+      category: 'inputs',
+      skipFormat: true,
+    });
+
+    expect(tree.read('registry/ui/switch/switch.ts', 'utf-8')).toContain(
+      " * An on/off control that's applied at once.",
+    );
+    expect(tree.read('registry/ui/switch/docs.md', 'utf-8')).toContain(
+      "An on/off control that's applied at once.",
+    );
+  });
+
   it('composes the primitive of the same name with --primitive', async () => {
     await styledItemGenerator(tree, {
       name: 'switch',

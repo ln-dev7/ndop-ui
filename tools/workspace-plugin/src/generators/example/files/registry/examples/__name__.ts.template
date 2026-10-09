@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { <%= part %> } from '@/ui/<%= item %>/<%= item %>';
 
-/** <%= description %> */
+/** <%- description %> */
 @Component({
   selector: 'example-<%= name %>',
   imports: [<%= part %>],

@@ -2,7 +2,7 @@
 keywords: <%= fileName.replace(/-/g, ' ') %>
 ---
 
-<%= description %>
+<%- description %>
 
 ## Do
 

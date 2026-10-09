@@ -20,7 +20,7 @@ export type <%= className %>Variant = VariantOf<
 >;
 
 /**
- * <%= description %>
+ * <%- description %>
  *
  * @example
  * ```html

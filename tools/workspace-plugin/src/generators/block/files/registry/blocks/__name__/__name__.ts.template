@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-/** <%= description %> */
+/** <%- description %> */
 @Component({
   selector: 'block-<%= name %>',
   template: `
