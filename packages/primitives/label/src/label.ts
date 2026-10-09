@@ -10,8 +10,9 @@ const INTERACTIVE =
 
 /**
  * Headless label. Keeps native `label` semantics and, when `for` names an
- * `input[ndInput]`, mirrors that input's state as `data-disabled` and
- * `data-invalid`, through {@link NdControlRegistry} rather than DOM queries.
+ * Ndop form control, such as `input[ndInput]` or `button[ndCheckbox]`,
+ * mirrors its state as `data-disabled` and `data-invalid`, through
+ * {@link NdControlRegistry} rather than DOM queries.
  * Double-clicking the label's own text doesn't select it.
  *
  * @see spec.md in this entry point for the full contract.
@@ -35,7 +36,7 @@ export class NdLabel {
   /** Id of the labelled control. */
   readonly for = input<string>();
 
-  /** State of the labelled `input[ndInput]`, if one is registered. */
+  /** State of the labelled control, if one is registered. */
   protected readonly control = inject(NdControlRegistry).lookup(() =>
     this.for(),
   );

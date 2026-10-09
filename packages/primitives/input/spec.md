@@ -11,9 +11,9 @@ No APG pattern: a native HTML `input`. Its accessible name comes from a
 
 ## Parts, roles and attributes
 
-| Part  | Selector                              | Role   | ARIA attributes | Data attributes                 |
-| ----- | ------------------------------------- | ------ | --------------- | ------------------------------- |
-| Input | `input[ndInput]`, `textarea[ndInput]` | native | `aria-invalid`  | `data-disabled`, `data-invalid` |
+| Part  | Selector                              | Role   | ARIA attributes                    | Data attributes                 |
+| ----- | ------------------------------------- | ------ | ---------------------------------- | ------------------------------- |
+| Input | `input[ndInput]`, `textarea[ndInput]` | native | `aria-invalid`, `aria-describedby` | `data-disabled`, `data-invalid` |
 
 - Forms own the value: Signal Forms (`[formField]`) and reactive or
   template-driven forms (`formControl`, `ngModel`) bind the native input
@@ -32,6 +32,9 @@ No APG pattern: a native HTML `input`. Its accessible name comes from a
 - `data-disabled` while the native input is disabled.
 - When the input has an `id`, it registers its state so a `label[ndLabel]`
   pointing at it can mirror it.
+- Inside a form field (`[ndField]`, see Form Field's `spec.md`), its
+  `aria-describedby` lists the field's description and, while invalid, its
+  error, after any static `aria-describedby` it already has.
 
 ## Keyboard map
 

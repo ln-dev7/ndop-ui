@@ -16,11 +16,13 @@ associated control its accessible name.
 | Label | `label[ndLabel]` |      |                 | `data-disabled`, `data-invalid` |
 
 - The accessible name comes from native `label` semantics; Ndop adds no ARIA.
-- When `for` names an `input[ndInput]` in the same app, the label mirrors
-  that input's state: `data-disabled` while it is disabled and
-  `data-invalid` while it is invalid (see Input's `spec.md`). The two find
-  each other through a signal-based registry keyed by id, with no DOM
-  queries, so it works during SSR and without zone.js.
+- When `for` names an Ndop form control with that `id` in the same app
+  (`input[ndInput]`, `textarea[ndInput]`, Checkbox, Switch or Input OTP's
+  input), the label mirrors its state: `data-disabled` while it is
+  disabled and `data-invalid` while it is invalid (see each control's
+  `spec.md`). The two find each other through a signal-based registry
+  keyed by id, with no DOM queries, so it works during SSR and without
+  zone.js.
 - Double-clicking the label's own text doesn't select it (`mousedown` with
   `detail > 1` is prevented), unless the target is inside an interactive
   element nested in the label.

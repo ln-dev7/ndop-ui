@@ -23,4 +23,12 @@ export const DEMOS: readonly Demo[] = [
   { path: 'collapsible', title: 'Collapsible' },
   { path: 'avatar', title: 'Avatar' },
   { path: 'progress', title: 'Progress' },
+  { path: 'checkbox', title: 'Checkbox' },
+  { path: 'switch', title: 'Switch' },
+  { path: 'toggle', title: 'Toggle' },
+  { path: 'radio-group', title: 'Radio Group' },
+  { path: 'toggle-group', title: 'Toggle Group' },
+  { path: 'slider', title: 'Slider' },
+  { path: 'input-otp', title: 'Input OTP' },
+  { path: 'form-field', title: 'Form Field' },
 ];

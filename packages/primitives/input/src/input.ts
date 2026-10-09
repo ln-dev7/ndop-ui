@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { FormField } from '@angular/forms/signals';
+import { injectFieldDescribedBy } from '@ndop/primitives/internal';
 import { NdControlRegistry } from './control-registry';
 
 /**
@@ -26,7 +27,8 @@ import { NdControlRegistry } from './control-registry';
  * - `data-disabled` while the input is disabled.
  *
  * With an `id`, it publishes that state for a `label[ndLabel]` pointing at
- * it.
+ * it. Inside a form field (`[ndField]`), its `aria-describedby` lists the
+ * field's description and, while invalid, its error.
  *
  * @see spec.md in this entry point for the full contract.
  *
@@ -41,6 +43,7 @@ import { NdControlRegistry } from './control-registry';
   host: {
     '[attr.id]': 'id()',
     '[attr.aria-invalid]': 'showInvalid() ? "true" : null',
+    '[attr.aria-describedby]': 'describedBy()',
     '[attr.data-invalid]': 'showInvalid() ? "" : null',
     '[attr.data-disabled]': 'disabled() ? "" : null',
   },
@@ -103,6 +106,11 @@ export class NdInput implements OnInit {
     this.controlVersion();
     const control = this.ngControl?.control;
     return control ? control.disabled : this.nativeDisabled();
+  });
+
+  protected readonly describedBy = injectFieldDescribedBy({
+    invalid: this.showInvalid,
+    disabled: this.disabled,
   });
 
   constructor() {
