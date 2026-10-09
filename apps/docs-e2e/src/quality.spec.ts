@@ -7,11 +7,13 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
   page,
   request,
 }) => {
-  // One test walks the whole site, discovering routes from its links.
+  // One test walks the whole site, discovering routes from its links, so
+  // its budget grows with each route it finds.
   test.setTimeout(10 * 60_000);
   const site = new SiteMap('/');
 
   for (let route = site.next(); route !== undefined; route = site.next()) {
+    test.setTimeout(test.info().timeout + 10_000);
     await test.step(route, async () => {
       const response = await request.get(route);
       expect(response.status(), 'status').toBe(200);
