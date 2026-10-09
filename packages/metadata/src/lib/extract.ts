@@ -95,31 +95,10 @@ interface CompilerCli {
 export async function extractMetadata(
   options: MetadataOptions,
 ): Promise<MetadataResult> {
-  const fromRoot = createRequire(join(options.root, 'noop.js'));
-  let cli: CompilerCli;
-  let ts: typeof Ts;
-  try {
-    cli = fromRoot('@angular/compiler-cli') as CompilerCli;
-    ts = fromRoot('typescript') as typeof Ts;
-  } catch {
+  const context = createContext(options.root, options.tsconfig, options.items);
+  if (!context) {
     return { skipped: true };
   }
-
-  const config = cli.readConfiguration(options.tsconfig);
-  const program = new cli.NgtscProgram(
-    config.rootNames,
-    config.options as never,
-    cli.createCompilerHost({ options: config.options }) as never,
-  );
-  const context: Context = {
-    root: options.root,
-    ts,
-    program,
-    checker: program.getTsProgram().getTypeChecker(),
-    docs: new Map(),
-    fromRoot,
-    items: options.items,
-  };
 
   const metadata: ComponentMetadata[] = [];
   const issues: MetadataIssue[] = [];
@@ -131,6 +110,162 @@ export async function extractMetadata(
     }
   }
   return { skipped: false, metadata, issues };
+}
+
+/**
+ * Starts an extraction run: an Angular program over a tsconfig, with the
+ * compiler and TypeScript loaded from the root.
+ *
+ * @param root - Absolute folder to load the compiler from.
+ * @param tsconfig - Absolute path of the program's tsconfig.
+ * @param items - Built items, for examples' sources.
+ * @returns The run's state, or `undefined` without the Angular compiler.
+ */
+function createContext(
+  root: string,
+  tsconfig: string,
+  items: readonly RegistryItem[],
+): Context | undefined {
+  const fromRoot = createRequire(join(root, 'noop.js'));
+  let cli: CompilerCli;
+  let ts: typeof Ts;
+  try {
+    cli = fromRoot('@angular/compiler-cli') as CompilerCli;
+    ts = fromRoot('typescript') as typeof Ts;
+  } catch {
+    return undefined;
+  }
+  const config = cli.readConfiguration(tsconfig);
+  const program = new cli.NgtscProgram(
+    config.rootNames,
+    config.options as never,
+    cli.createCompilerHost({ options: config.options }) as never,
+  );
+  return {
+    root,
+    ts,
+    program,
+    checker: program.getTsProgram().getTypeChecker(),
+    docs: new Map(),
+    fromRoot,
+    items,
+  };
+}
+
+/** One primitive entry point to document. */
+export interface PrimitiveEntry {
+  /** Folder name, such as `dialog`. */
+  name: string;
+  /** Import path, such as `@ndop/primitives/dialog`. */
+  importPath: string;
+  /** Absolute path of the entry point's `index.ts`. */
+  entry: string;
+}
+
+/**
+ * A primitive's API reference: its parts with every input, model, output
+ * and data attribute, and its `spec.md` contract.
+ */
+export interface PrimitiveMetadata {
+  /** Folder name, such as `dialog`. */
+  name: string;
+  /** Import path. */
+  importPath: string;
+  /** WAI-ARIA pattern, from `spec.md`. */
+  pattern?: ComponentMetadata['pattern'];
+  /** Every directive the entry point exports. */
+  parts: ComponentMetadata['parts'];
+  /** Keyboard map, from `spec.md`. */
+  keyboard: ComponentMetadata['keyboard'];
+  /** Focus rules, from `spec.md`. */
+  focus: ComponentMetadata['focus'];
+  /** RTL notes, from `spec.md`. */
+  rtl?: ComponentMetadata['rtl'];
+}
+
+/** Options of {@link extractPrimitiveMetadata}. */
+export interface PrimitiveMetadataOptions {
+  /** Absolute folder to load the Angular compiler and TypeScript from. */
+  root: string;
+  /** Absolute path of a tsconfig whose program covers the entry points. */
+  tsconfig: string;
+  /** The entry points to document. */
+  primitives: readonly PrimitiveEntry[];
+}
+
+/**
+ * Extracts the API reference of headless primitives, for the docs'
+ * Primitives section (ADR-0016, amendment 12): the same part metadata as
+ * {@link extractMetadata} gives styled items, read from each entry point
+ * and its `spec.md`.
+ *
+ * @param options - Where to load the compiler from, the program's
+ *   tsconfig, and the entry points; see {@link PrimitiveMetadataOptions}.
+ * @returns One reference per entry point, in order, or `undefined`
+ *   without the Angular compiler.
+ *
+ * @example
+ * ```ts
+ * const refs = extractPrimitiveMetadata({ root, tsconfig, primitives: [{ name: 'dialog', importPath: '@ndop/primitives/dialog', entry }] });
+ * ```
+ */
+export function extractPrimitiveMetadata(
+  options: PrimitiveMetadataOptions,
+): PrimitiveMetadata[] | undefined {
+  const context = createContext(options.root, options.tsconfig, []);
+  if (!context) {
+    return undefined;
+  }
+  return options.primitives.map((primitive) => {
+    const entry = resolve(primitive.entry);
+    const specs = new Map<string, ParsedSpec>();
+    collectSpec(context, entry, primitive.importPath, specs);
+    const own = new Set(
+      context.program
+        .getTsProgram()
+        .getSourceFiles()
+        .map((file) => resolve(file.fileName))
+        .filter((file) => file.startsWith(dirname(entry))),
+    );
+    const parts: Part[] = [];
+    const selectors = new Map<Part, string[]>();
+    const classes = new Map<Part, Ts.ClassDeclaration[]>();
+    for (const doc of documentation(context, entry)) {
+      if (doc.entryType !== 'directive') continue;
+      const directive = doc as DirectiveEntry;
+      const built = buildPart(
+        context,
+        directive,
+        classDeclaration(context, entry, directive.name),
+        entry,
+        own,
+        specs,
+        () => undefined,
+      );
+      const part = { ...built.part, source: primitive.importPath };
+      parts.push(part);
+      selectors.set(part, built.selectors);
+      classes.set(part, built.classes);
+    }
+    addRequires(context, parts, classes);
+    const spec = mergeSpecs([...specs.values()]);
+    for (const part of parts) {
+      applySpec(
+        part,
+        selectors.get(part) ?? [part.selector],
+        spec?.parts ?? [],
+      );
+    }
+    return {
+      name: primitive.name,
+      importPath: primitive.importPath,
+      ...(spec?.pattern ? { pattern: spec.pattern } : {}),
+      parts,
+      keyboard: spec?.keyboard ?? [],
+      focus: spec?.focus ?? [],
+      ...(spec?.rtl ? { rtl: spec.rtl } : {}),
+    };
+  });
 }
 
 /**

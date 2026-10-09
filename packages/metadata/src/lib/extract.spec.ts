@@ -1,7 +1,11 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import type { RegistryItem } from '@ndop/schema';
-import { extractMetadata, packageSpecPath } from './extract';
+import {
+  extractMetadata,
+  extractPrimitiveMetadata,
+  packageSpecPath,
+} from './extract';
 
 // Inside the workspace, so the Angular compiler, TypeScript and esbuild
 // resolve from its node_modules as they do from a registry author's repo.
@@ -310,6 +314,57 @@ export class Thing {}
       tsconfig: '/x',
     });
     expect(result).toEqual({ skipped: true });
+  });
+});
+
+describe('extractPrimitiveMetadata', { timeout: 30_000 }, () => {
+  it("documents a primitive's parts with its spec", async () => {
+    await fixture({
+      'primitives/thing/index.ts': "export * from './thing';\n",
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          strict: true,
+          target: 'ES2022',
+          module: 'preserve',
+          skipLibCheck: true,
+        },
+        files: ['primitives/thing/index.ts'],
+      }),
+    });
+    const [thing] =
+      extractPrimitiveMetadata({
+        root,
+        tsconfig: join(root, 'tsconfig.json'),
+        primitives: [
+          {
+            name: 'thing',
+            importPath: '@acme/primitives/thing',
+            entry: join(root, 'primitives/thing/index.ts'),
+          },
+        ],
+      }) ?? [];
+
+    expect(thing?.importPath).toBe('@acme/primitives/thing');
+    expect(thing?.pattern).toEqual(
+      expect.objectContaining({ name: 'Disclosure' }),
+    );
+    expect(thing?.keyboard).toEqual([
+      expect.objectContaining({ keys: ['Enter'] }),
+    ]);
+    expect(thing?.parts.map((part) => [part.name, part.source])).toEqual([
+      ['NdThing', '@acme/primitives/thing'],
+      ['NdThingRoot', '@acme/primitives/thing'],
+    ]);
+    expect(thing?.parts[0]).toEqual(
+      expect.objectContaining({
+        selector: '[ndThing]',
+        role: 'button',
+        inputs: [expect.objectContaining({ name: 'disabled' })],
+      }),
+    );
+    expect(thing?.parts[1]?.models).toEqual([
+      expect.objectContaining({ name: 'open' }),
+    ]);
   });
 });
 

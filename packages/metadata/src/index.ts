@@ -2,7 +2,8 @@
  * `@ndop/metadata`: build-time extraction of Ndop component metadata
  * (ADR-0007). It reads each styled item's API with Angular's documentation
  * extractor, merges the composed primitive's `spec.md` and the item's
- * `docs.md`, and returns `metadata/<name>.json` content for `ndop build`.
+ * `docs.md`, and returns `metadata/<name>.json` content for `ndop build`;
+ * and the same API reference for the headless primitives themselves.
  * It also renders a component's documentation as Markdown from the built
  * registry, for the docs' `.md` twins and the MCP server.
  *
@@ -10,7 +11,11 @@
  */
 export {
   extractMetadata,
+  extractPrimitiveMetadata,
   type MetadataIssue,
+  type PrimitiveEntry,
+  type PrimitiveMetadata,
+  type PrimitiveMetadataOptions,
   type MetadataOptions,
   type MetadataResult,
 } from './lib/extract';
