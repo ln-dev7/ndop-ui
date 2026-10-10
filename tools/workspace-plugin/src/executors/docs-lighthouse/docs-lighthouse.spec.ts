@@ -93,6 +93,15 @@ describe('warnings', () => {
       ),
     ).toEqual(['/ Performance 94', '/a Performance 90']);
   });
+
+  it('warns on every performance score under the target with no floor', () => {
+    const results: RouteScores[] = [
+      { route: '/', scores: { Performance: 60, SEO: 100 } },
+      { route: '/a', scores: { Performance: 95 } },
+    ];
+    expect(failures(results, 95, 0)).toEqual([]);
+    expect(warnings(results, 95, 0)).toEqual(['/ Performance 60']);
+  });
 });
 
 describe('reportName', () => {

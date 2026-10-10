@@ -49,7 +49,8 @@ export function shardRoutes(routes: string[], shard: string): string[] {
 
 /**
  * The scores that fail the gate: any category under the minimum, except
- * performance, which fails only under its floor (ADR-0016, amendment 10).
+ * performance, which fails only under its floor (ADR-0016, amendments 10
+ * and 14).
  *
  * @param results - Every route's scores.
  * @param minScore - Lowest passing score, and performance's target.
@@ -74,7 +75,7 @@ export function failures(
 
 /**
  * Performance scores between the floor and the target, which warn without
- * failing (ADR-0016, amendment 10).
+ * failing (ADR-0016, amendments 10 and 14).
  *
  * @param results - Every route's scores.
  * @param minScore - The target score.

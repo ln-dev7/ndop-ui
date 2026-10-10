@@ -6,7 +6,8 @@ export interface DocsLighthouseExecutorSchema {
   minScore?: number;
   /**
    * Lowest passing performance score; scores from here up to `minScore`
-   * warn (ADR-0016, amendment 10).
+   * warn. 0, the default, never fails on performance (ADR-0016,
+   * amendment 14).
    */
   performanceFloor?: number;
   /** Where the HTML reports go, relative to the workspace root. */

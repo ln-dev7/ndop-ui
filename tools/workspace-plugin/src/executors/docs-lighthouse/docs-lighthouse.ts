@@ -50,7 +50,7 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
 ) => {
   const dir = join(context.root, options.dir);
   const minScore = options.minScore ?? 95;
-  const performanceFloor = options.performanceFloor ?? 90;
+  const performanceFloor = options.performanceFloor ?? 0;
   const outputDir = join(
     context.root,
     options.outputDir ?? 'dist/lighthouse/docs',
@@ -139,13 +139,13 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
   const warned = warnings(results, minScore, performanceFloor);
   if (warned.length) {
     logger.warn(
-      `Performance between the ${performanceFloor} floor and the ${minScore} target:\n${warned.map((line) => `  ${line}`).join('\n')}`,
+      `Performance under the ${minScore} target${performanceFloor > 0 ? `, at or above the ${performanceFloor} floor` : ''}:\n${warned.map((line) => `  ${line}`).join('\n')}`,
     );
   }
   const failed = failures(results, minScore, performanceFloor);
   if (failed.length) {
     logger.error(
-      `Failing (any category under ${minScore}, performance under ${performanceFloor}):\n${failed.map((line) => `  ${line}`).join('\n')}`,
+      `Failing (any category under ${minScore}${performanceFloor > 0 ? `, performance under ${performanceFloor}` : ', performance excepted'}):\n${failed.map((line) => `  ${line}`).join('\n')}`,
     );
   }
   logger.info(`Reports: ${options.outputDir ?? 'dist/lighthouse/docs'}`);
