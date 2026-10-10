@@ -262,7 +262,6 @@ const CARET_KEYS = new Set([
     autocomplete: 'one-time-code',
     spellcheck: 'false',
     '[attr.id]': 'id()',
-    '[attr.maxlength]': 'otp.length()',
     '[attr.inputmode]': 'otp.inputMode()',
     '[attr.aria-invalid]': 'otp.showInvalid() || null',
     '[attr.aria-describedby]': 'describedBy()',
@@ -270,7 +269,7 @@ const CARET_KEYS = new Set([
     '[disabled]': 'otp.isDisabled()',
     '[value]': 'otp.value()',
     '(input)': 'input()',
-    '(paste)': 'paste($event)',
+    '(paste)': 'paste()',
     '(keydown)': 'keydown($event)',
     '(focus)': 'focus()',
     '(blur)': 'blur()',
@@ -315,16 +314,13 @@ export class NdInputOtpInput {
   }
 
   /**
-   * Replaces the code with the pasted text's allowed characters, before
-   * `maxlength` can cut the text short.
-   *
-   * @param event - The paste event.
+   * Makes a paste replace the whole code: the browser inserts the text over
+   * the selection once this handler returns, and the `input` that follows
+   * keeps its allowed characters. The paste itself isn't prevented, so
+   * browsers and audits see a field that accepts pasting.
    */
-  protected paste(event: ClipboardEvent): void {
-    const text = event.clipboardData?.getData('text') ?? '';
-    event.preventDefault();
-    this.element.value = this.otp.setFromUser(text);
-    this.caretToEnd();
+  protected paste(): void {
+    this.element.setSelectionRange(0, this.element.value.length);
   }
 
   /**

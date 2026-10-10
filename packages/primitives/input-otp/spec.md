@@ -30,12 +30,15 @@ from assistive technology.
 - `completed` is an output that emits the code when the user's typing
   or pasting makes it `length` characters long, for submitting it
   straight away.
-- **InputOtpInput** is the native input inside it: it gets `maxlength` (the code's `length`),
+- **InputOtpInput** is the native input inside it: it gets
   `autocomplete="one-time-code"`, `inputmode` (`numeric` by default, set
   by `inputMode` on the root), `spellcheck="false"` and the value. It
   needs a name, from a `label` or `aria-label`. Typed or pasted
   characters that `allow` rejects are dropped, and the value is cut to
-  `length`. The caret always sits at the end of the code.
+  `length`. It has no `maxlength`, which would cut a pasted code such as
+  `123-456` before its separators are dropped. Pasting is never
+  prevented: the paste replaces the whole code. The caret always sits at
+  the end of the code.
 - **Forms**: the root owns its value, so it implements
   `ControlValueAccessor` and Signal Forms' `FormValueControl` (a string),
   and every forms library binds it through its value accessor, on the

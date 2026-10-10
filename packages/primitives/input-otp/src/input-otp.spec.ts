@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { NdLabel } from '@ndop/primitives/label';
-import { fireEvent, render, screen } from '@testing-library/angular/zoneless';
+import { render, screen } from '@testing-library/angular/zoneless';
 import userEvent from '@testing-library/user-event';
 import {
   NdInputOtp,
@@ -49,7 +49,7 @@ describe('NdInputOtp', () => {
     const input = screen.getByRole('textbox', { name: 'Code' });
     expect(input.getAttribute('autocomplete')).toBe('one-time-code');
     expect(input.getAttribute('inputmode')).toBe('numeric');
-    expect(input.getAttribute('maxlength')).toBe('4');
+    expect(input.hasAttribute('maxlength')).toBe(false);
     expect(screen.getByTestId('group').getAttribute('aria-hidden')).toBe(
       'true',
     );
@@ -133,9 +133,8 @@ describe('NdInputOtp', () => {
     const { fixture } = await render(Host);
     const input = screen.getByRole('textbox');
     expect(input.getAttribute('inputmode')).toBe('text');
-    fireEvent.paste(input, {
-      clipboardData: { getData: () => 'AB-12-CD' },
-    });
+    await userEvent.click(input);
+    await userEvent.paste('AB-12-CD');
     await fixture.whenStable();
     expect(fixture.componentInstance.code()).toBe('AB12');
   });
