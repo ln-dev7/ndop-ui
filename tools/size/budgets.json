@@ -1,7 +1,10 @@
 {
   "default": 4000,
   "items": {
+    "alert-dialog": 8000,
     "button": 2000,
-    "dialog": 8000
+    "dialog": 8000,
+    "drawer": 8000,
+    "sheet": 8000
   }
 }
