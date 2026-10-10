@@ -1,12 +1,13 @@
 # Vendored shadcn/ui sources
 
 shadcn/ui new-york-v4 registry items (MIT License, Copyright (c) 2023 shadcn),
-fetched on 2026-10-02 (badge on 2026-10-03; the Phase 6 batch A and B items on 2026-10-09) from https://ui.shadcn.com/r/styles/new-york-v4/<item>.json.
+fetched on 2026-10-02 (badge on 2026-10-03; the Phase 6 batch A and B items on 2026-10-09, batch C on 2026-10-10) from https://ui.shadcn.com/r/styles/new-york-v4/<item>.json.
 The styled items' parity tests compare their classes with these files
 (ADR-0014). Refresh deliberately, in its own commit, and review the diff.
 
 | File | SHA-256 |
 | ---- | ------- |
+| `alert-dialog.json` | `03c0d4de131a9b049e9080724666045c8785074af7e07040a0a0f922a810e7c2` |
 | `alert.json` | `413c97869ec0e53efa4a37f590833bcf4a7a57255f5a2e909c6bb5bac7b4570d` |
 | `aspect-ratio.json` | `f80a95d041bfc0b7fb0f15c88eaccfb449803733b5254a83f2401e4383ced9e7` |
 | `avatar.json` | `f843fc6e2d2fea1337bdcdc8b70c5189f84562d87f8e852e994f4bbdd7cd229d` |
@@ -16,9 +17,13 @@ The styled items' parity tests compare their classes with these files
 | `card.json` | `c7ebaa49ba2a0613838558f3892c5007523c2dc26d6b36a244145d454a796106` |
 | `checkbox.json` | `567b649e4cd68c05bfdc58ca00fa04aee38bca291cd6f16ed7776ec06ba3d6bd` |
 | `collapsible.json` | `fdc6666e9c728d7e731b0e4d67e11db81020aff47408c259549fc1aefcc8e3e7` |
+| `context-menu.json` | `e9680a7b71840b7203e1625acab8754d7c18122b66289baf281c3a6e31246ada` |
 | `dialog.json` | `0115e3a57aa55a978c5fed0d77f7e98edd694215aae3e569def3fff722ba9f26` |
+| `drawer.json` | `3a7c12a2ebfd888f76d3eb5a19ab12f64a8b09d37b8138492b39ac32e4fd8d09` |
+| `dropdown-menu.json` | `235b1231cf71d94225eccd6c19117e7fa7b09cf256d23a199d63aee53265fd52` |
 | `empty.json` | `2c377f47c4e661d73a565d37c0678d2445edfdcae5446e5b79f23ccda9b80f1d` |
 | `field.json` | `5524eca8a5aca35b2f02dac696144053ea8d3d02f722676942e4e92bb08efeb2` |
+| `hover-card.json` | `205af771916016bd2d483032060ca4c10eb3f72887230d1acc258c2229e4e63a` |
 | `input-otp.json` | `4700e3d241168a63ef104531a643c7949b170b47351e6b005137f99d0b6b4a41` |
 | `input.json` | `b1fffa12ba72ce30a291749012b47235eda110648b8106725ced22b5b31c8f1b` |
 | `label.json` | `b03d6bc91da205758df87c5403d74bae4d742f1f4ac5ae0b94ad7a29ab6350ea` |
@@ -28,8 +33,10 @@ The styled items' parity tests compare their classes with these files
 | `radio-group.json` | `299fa36d5c5df3aefa40a59d8d3f92a1ccc9feae6b5187135851d9846348f1af` |
 | `scroll-area.json` | `a5e2e040b90e584c5282ee7ea758d1af5f5fbd88ecc89f11dddb098462d1e865` |
 | `separator.json` | `4242a9fe839cae9083acff1280b7cccfda10e97bbc83283aed12d2d12bebdc6a` |
+| `sheet.json` | `bdf118300491675f05a9181af491217ba690929338aefd108437c2b07d25432f` |
 | `skeleton.json` | `1ed4d99f9d632d9697a054eefcd19932abd68cef7808407986f6e14da401edf7` |
 | `slider.json` | `99f6044fa83df91dfda17d3cc57cf5297c3759d57fd483665e518e4961208e73` |
+| `sonner.json` | `439c5d5256091829350d3136309f55f8ba788f1cc0f0dbad016ce6b5b2765488` |
 | `spinner.json` | `9516791ff6443cb5dee344f4f61df812c6b1fa455b86eb2febd10acc66c0c178` |
 | `switch.json` | `cc526c3a4827be315be746355a988e22dacc99d663ed31924fd30c2507cdc005` |
 | `table.json` | `35a45f90ee92883533c4c1029212d38bd263694e90ea54fbfaf66a099f7d3cc4` |
@@ -49,6 +56,7 @@ an item is re-copied or changes on purpose.
 | Item | Copied | Differences from shadcn/ui new-york-v4 |
 | ---- | ------ | -------------------------------------- |
 | `alert` | 2026-10-09 | `role` is an input (`alert` by default, as shadcn has it), so callouts rendered with the page can be `none` or `status`. The destructive description is full `text-destructive`: shadcn's `/90` is 4.49:1 on the card, under WCAG's 4.5:1. |
+| `alert-dialog` | 2026-10-10 | `text-left` becomes `text-start`. Action and Cancel are directives on the user's `button` with Button's classes, `variant` and `size`, instead of wrapping a Button. Exit animations don't play, as for Dialog. |
 | `aspect-ratio` | 2026-10-09 | The CSS `aspect-ratio` property instead of Radix's padding wrapper; `relative w-full` added. |
 | `avatar` | 2026-10-09 | The image covers the fallback (`absolute inset-0`) once loaded instead of replacing it. The fallback and group count use `text-foreground`: shadcn's `text-muted-foreground` on `bg-muted` is 4.3:1, under WCAG's 4.5:1. The badge sits at `end-0`, and groups reverse their spacing in RTL. |
 | `badge` | 2026-10-03 | `destructive` uses `text-destructive-foreground`, not `text-white`: registry items use tokens only (RFC-0001, ADR-0006). An attribute on any element replaces `asChild`, so the hover styles shadcn scopes to links with `[a&]` apply to an `a[ndBadge]` the same way. |
@@ -57,9 +65,13 @@ an item is re-copied or changes on purpose.
 | `card` | 2026-10-09 | Parts are attributes on the user's elements, so a card can be a `section` or `article` and its title a heading. |
 | `checkbox` | 2026-10-09 | Adds `data-[state=indeterminate]` styles matching the checked ones, for a mixed checkbox. The check icon is the user's `<svg ndIcon="check">`, sized by the indicator with `[&>svg]:size-3.5`. |
 | `collapsible` | 2026-10-09 | None: the item re-exports the primitive's parts, which have no styles. |
+| `context-menu` | 2026-10-10 | As Dropdown Menu, on the Menu primitive and `CdkContextMenuTrigger`. |
 | `dialog` | 2026-10-02 | shadcn renders the portal, overlay and close button inside `DialogContent`; directives can't render elements, so users write `ndDialogPortal`, `ndDialogOverlay` and `ndDialogCloseButton` (shadcn's close button classes). The close icon is `<svg ndIcon="x">` (ADR-0013). `data-[state=closed]` exit animations are kept, but the content is removed as soon as the dialog closes, so only enter animations play. The close button sits at `end-4` and the header aligns `sm:text-start`, not `right-4` and `sm:text-left`, so both mirror in right-to-left layouts (RFC-0001). |
+| `drawer` | 2026-10-10 | vaul's behavior is the primitive's own code. `data-[vaul-drawer-direction=…]` becomes the primitive's `data-[direction=…]`, with logical sides (`right`/`left` become `end`/`start`). The handle is `ndDrawerHandle`, written by the user. The content follows the drag through `--nd-drawer-drag` with a spring-back transition, off for reduced motion, and slides in on open. |
+| `dropdown-menu` | 2026-10-10 | Built on the Menu primitive (`@angular/cdk/menu`). Logical sides and spacing (`ps-8`, `pe-2`, `start-2`, `ms-auto`, `data-[side=start\|end]`). The Radix custom properties are gone: `max-h-[80vh]` replaces the available-height one, and the transform origin is dropped. Checkbox and radio indicators are `ndDropdownMenuItemIndicator`, with the user's icon; the sub-trigger's chevron is the user's too. Group and radio group have no classes, as in shadcn. |
 | `empty` | 2026-10-09 | None. |
 | `form-field` | 2026-10-09 | From shadcn/ui's `field` (`field.json`); named Form Field, as RFC-0001 does, and its classes are `Field`, `FieldLabel` and so on, as shadcn's are. The primitive sets `data-invalid` and `data-disabled` as presence attributes from the control, so `data-[invalid=true]:` and `group-data-[disabled=true]/field:` become `data-invalid:` and `group-data-disabled/field:`. `FieldError` shows the messages the user writes inside it rather than rendering an `errors` list, and is hidden until the field is invalid. `FieldSeparator` draws its line with `::before` and takes its text in `ndFieldSeparatorContent`, since a directive can't add elements. `FieldLabel` includes Label's classes, as shadcn's wraps Label. In a checked choice card, descriptions are `text-foreground/80`: shadcn's `text-muted-foreground` on the `bg-primary/5` tint is 4.27:1, under WCAG's 4.5:1. |
+| `hover-card` | 2026-10-10 | As Popover: logical sides and no `origin-(--radix-hover-card-content-transform-origin)`. |
 | `input` | 2026-10-02 | None. |
 | `input-otp` | 2026-10-09 | The `input-otp` library's behavior is the primitive's own code. Slots use logical sides (`border-e`, `first:rounded-s-md`) and the primitive's `data-active` and `data-invalid` presence attributes; slots are hidden from assistive technology, so they carry no `aria-invalid`. The fake caret is the slot's `::after`. The root adds `relative w-fit` for the invisible input stretched over the slots, and sets `dir="ltr"`. |
 | `label` | 2026-10-02 | None. |
@@ -69,12 +81,14 @@ an item is re-copied or changes on purpose.
 | `radio-group` | 2026-10-09 | The indicator centers the icon with flex instead of `absolute top-1/2 left-1/2` and translates; the circle is the user's `<svg ndIcon="circle">`. The group adds `group/radio-group`, so items turn destructive while the group is invalid (`aria-invalid` is on the group). |
 | `scroll-area` | 2026-10-09 | Native scrolling with `scrollbar-color` and `scrollbar-width: thin` instead of Radix's custom scrollbar, so the scrollbar and thumb classes are gone (ADR-0021). The region is focusable, with the viewport's focus ring, and scrolls vertically, horizontally or both. |
 | `separator` | 2026-10-02 | shadcn defaults to decorative; Ndop keeps the primitive's semantic default (`role="separator"`), so `decorative` is passed for purely visual lines. |
+| `sheet` | 2026-10-10 | Sides are logical: `right` and `left` become `end` and `start` (`end-0`, `border-s`, `slide-in-from-end`), the default is `end`, and the close button sits at `end-4`. The close button is `ndSheetCloseButton`, with the user's icon and name. The root and parts compose the Dialog primitive, as shadcn's compose Radix Dialog. |
 | `skeleton` | 2026-10-09 | `aria-hidden="true"` on the placeholder; the loading region says it's busy instead. |
 | `slider` | 2026-10-09 | Thumbs are positioned by the styled item from their values (`inset-inline-start` or `bottom`, pulled back by their own size so they stay inside the track), and the range from the thumbs' positions; each thumb holds one value. `bg-white` becomes `bg-background`: tokens only. Thumbs turn destructive while invalid. |
 | `spinner` | 2026-10-09 | An attribute on a wrapper (`span[ndSpinner]`) that spins the icon inside it, since `ndIcon` owns its `svg`'s ARIA; `inline-flex [&>svg]:size-full` added. The label is an input. |
 | `switch` | 2026-10-09 | The thumb also moves left when checked in right-to-left layouts (`rtl:data-[state=checked]:-translate-x-[calc(100%-2px)]`). Adds `aria-invalid` styles like Checkbox's. |
 | `table` | 2026-10-09 | The scroll container is its own directive, `ndTableContainer`. `text-left` and `pr-0` become `text-start` and `pe-0`. |
 | `textarea` | 2026-10-09 | None. It composes the Input primitive, so it reflects the bound field's invalid and disabled states. |
+| `toast` | 2026-10-10 | From shadcn/ui's `sonner` (`sonner.json`), which wraps the Sonner library; Ndop's toasts are the Toast primitive's own code, styled after Sonner's default look with tokens. The region keeps shadcn's `toaster group` classes. Icons for each type are the user's markup, in the region the app's shell renders. |
 | `toggle` | 2026-10-09 | None. |
 | `toggle-group` | 2026-10-09 | Joined items use logical sides (`first:rounded-s-md`, `last:rounded-e-md`, `border-s-0`, `first:border-s`), so the bar mirrors in right-to-left layouts. Vertical groups stack (`data-[orientation=vertical]:flex-col`). Items take the group's variant and size through dependency injection instead of React context. |
 | `tooltip` | 2026-10-02 | Sides are logical, as for Popover. `origin-(--radix-tooltip-content-transform-origin)` is dropped. No arrow: the primitive doesn't position one. Timing follows the primitive's contract (700 ms to open on hover, immediate on keyboard focus) rather than shadcn's instant default. |
