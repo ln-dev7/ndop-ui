@@ -5,9 +5,9 @@ import {
   registrySource,
 } from '../../testing/shadcn-parity';
 import {
-  NdPopover,
-  NdPopoverPortal,
-  NdPopoverTrigger,
+  Popover,
+  PopoverPortal,
+  PopoverTrigger,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,
@@ -40,9 +40,9 @@ describe('Popover', () => {
       </ng-container>`,
       {
         imports: [
-          NdPopover,
-          NdPopoverTrigger,
-          NdPopoverPortal,
+          Popover,
+          PopoverTrigger,
+          PopoverPortal,
           PopoverContent,
           PopoverHeader,
           PopoverTitle,

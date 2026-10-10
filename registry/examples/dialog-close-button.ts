@@ -9,10 +9,10 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogTitle,
-  NdDialog,
-  NdDialogClose,
-  NdDialogPortal,
-  NdDialogTrigger,
+  Dialog,
+  DialogClose,
+  DialogPortal,
+  DialogTrigger,
 } from '@/ui/dialog/dialog';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
@@ -21,10 +21,10 @@ import { Label } from '@/ui/label/label';
 @Component({
   selector: 'example-dialog-close-button',
   imports: [
-    NdDialog,
-    NdDialogTrigger,
-    NdDialogPortal,
-    NdDialogClose,
+    Dialog,
+    DialogTrigger,
+    DialogPortal,
+    DialogClose,
     DialogOverlay,
     DialogContent,
     DialogHeader,

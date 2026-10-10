@@ -3,9 +3,9 @@ import { Button } from '@/ui/button/button';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
 import {
-  NdPopover,
-  NdPopoverPortal,
-  NdPopoverTrigger,
+  Popover,
+  PopoverPortal,
+  PopoverTrigger,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,
@@ -16,9 +16,9 @@ import {
 @Component({
   selector: 'example-popover-demo',
   imports: [
-    NdPopover,
-    NdPopoverTrigger,
-    NdPopoverPortal,
+    Popover,
+    PopoverTrigger,
+    PopoverPortal,
     PopoverContent,
     PopoverHeader,
     PopoverTitle,

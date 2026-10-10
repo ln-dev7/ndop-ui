@@ -1,0 +1,20 @@
+{
+  "name": "icons",
+  "type": "registry:lib",
+  "version": "0.4.0",
+  "title": "Icons",
+  "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
+  "dependencies": [
+    "@lucide/angular@^1.50.0",
+    "@ndop/core"
+  ],
+  "files": [
+    {
+      "path": "lib/icons.ts",
+      "type": "registry:lib",
+      "target": "{lib}/icons.ts",
+      "content": "import { type EnvironmentProviders } from '@angular/core';\nimport {\n  LucideBold,\n  LucideBookmark,\n  LucideCheck,\n  LucideChevronLeft,\n  LucideChevronRight,\n  LucideChevronsUpDown,\n  LucideCircleAlert,\n  LucideCircle,\n  LucideCircleCheck,\n  LucideEllipsis,\n  LucideFolderOpen,\n  LucideInfo,\n  LucideItalic,\n  LucideLoaderCircle,\n  LucideMinus,\n  LucideOctagonX,\n  LucidePlus,\n  LucideSearch,\n  LucideTextAlignCenter,\n  LucideTextAlignEnd,\n  LucideTextAlignStart,\n  LucideTriangleAlert,\n  LucideUnderline,\n  LucideX,\n} from '@lucide/angular';\nimport { provideNdopIcons, type NdIcons } from '@ndop/core';\n\n/**\n * Icons styled items ask for by semantic name, drawn with Lucide\n * (ADR-0013). Add an entry when you install an item that needs a new name;\n * to switch icon libraries, change the values here.\n */\nexport const ndopIcons = {\n  bold: LucideBold.icon,\n  bookmark: LucideBookmark.icon,\n  check: LucideCheck.icon,\n  'chevron-left': LucideChevronLeft.icon,\n  'chevron-right': LucideChevronRight.icon,\n  'chevrons-up-down': LucideChevronsUpDown.icon,\n  circle: LucideCircle.icon,\n  'circle-alert': LucideCircleAlert.icon,\n  'circle-check': LucideCircleCheck.icon,\n  ellipsis: LucideEllipsis.icon,\n  'folder-open': LucideFolderOpen.icon,\n  info: LucideInfo.icon,\n  italic: LucideItalic.icon,\n  'loader-circle': LucideLoaderCircle.icon,\n  minus: LucideMinus.icon,\n  'octagon-x': LucideOctagonX.icon,\n  plus: LucidePlus.icon,\n  search: LucideSearch.icon,\n  'text-align-center': LucideTextAlignCenter.icon,\n  'text-align-end': LucideTextAlignEnd.icon,\n  'text-align-start': LucideTextAlignStart.icon,\n  'triangle-alert': LucideTriangleAlert.icon,\n  underline: LucideUnderline.icon,\n  x: LucideX.icon,\n} satisfies NdIcons;\n\n/**\n * Registers {@link ndopIcons}. `ndop init` adds it to the providers in\n * `app.config.ts`.\n *\n * @returns Providers for `ApplicationConfig`.\n *\n * @example\n * ```ts\n * providers: [provideNdop(), provideIcons()];\n * ```\n */\nexport function provideIcons(): EnvironmentProviders {\n  return provideNdopIcons(ndopIcons);\n}\n"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

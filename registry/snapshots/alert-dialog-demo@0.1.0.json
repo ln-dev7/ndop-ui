@@ -1,0 +1,28 @@
+{
+  "name": "alert-dialog-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Alert Dialog demo",
+  "description": "A confirmation before signing out, with Cancel focused first.",
+  "registryDependencies": [
+    "alert-dialog",
+    "button"
+  ],
+  "files": [
+    {
+      "path": "examples/alert-dialog-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/alert-dialog-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  AlertDialogAction,\n  AlertDialogCancel,\n  AlertDialogContent,\n  AlertDialogDescription,\n  AlertDialogFooter,\n  AlertDialogHeader,\n  AlertDialogOverlay,\n  AlertDialogTitle,\n  AlertDialog,\n  AlertDialogPortal,\n  AlertDialogTrigger,\n} from '@/ui/alert-dialog/alert-dialog';\nimport { Button } from '@/ui/button/button';\n\n/** A confirmation before signing out, with Cancel focused first. */\n@Component({\n  selector: 'example-alert-dialog-demo',\n  imports: [\n    AlertDialogAction,\n    AlertDialogCancel,\n    AlertDialogContent,\n    AlertDialogDescription,\n    AlertDialogFooter,\n    AlertDialogHeader,\n    AlertDialogOverlay,\n    AlertDialogTitle,\n    Button,\n    AlertDialog,\n    AlertDialogPortal,\n    AlertDialogTrigger,\n  ],\n  template: `\n    <ng-container ndAlertDialog>\n      <button ndButton variant=\"outline\" ndAlertDialogTrigger>Sign out</button>\n      <ng-template ndAlertDialogPortal>\n        <div ndAlertDialogOverlay></div>\n        <div ndAlertDialogContent>\n          <div ndAlertDialogHeader>\n            <h2 ndAlertDialogTitle>Sign out of every device?</h2>\n            <p ndAlertDialogDescription>\n              You'll need to sign in again on your phone and other computers.\n            </p>\n          </div>\n          <div ndAlertDialogFooter>\n            <button ndAlertDialogCancel>Cancel</button>\n            <button ndAlertDialogAction>Sign out</button>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class AlertDialogDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AlertDialogDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

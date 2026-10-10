@@ -4,9 +4,9 @@ import {
   registrySource,
 } from '../../testing/shadcn-parity';
 import {
-  NdCollapsible,
-  NdCollapsibleContent,
-  NdCollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from './collapsible';
 
 describe('Collapsible', () => {
@@ -25,7 +25,7 @@ describe('Collapsible', () => {
         <button ndCollapsibleTrigger>More</button>
         <p ndCollapsibleContent>Details</p>
       </div>`,
-      { imports: [NdCollapsible, NdCollapsibleTrigger, NdCollapsibleContent] },
+      { imports: [Collapsible, CollapsibleTrigger, CollapsibleContent] },
     );
     expect(
       screen

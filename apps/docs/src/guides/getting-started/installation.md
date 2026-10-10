@@ -116,7 +116,7 @@ After `ndop add dialog`, import the parts you need from the file it wrote:
 
 ```ts title="src/app/app.ts"
 import { Component } from '@angular/core';
-import { DialogContent, DialogTitle, NdDialog, NdDialogPortal, NdDialogTrigger } from '@/ui/dialog/dialog';
+import { DialogContent, DialogTitle, Dialog, DialogPortal, DialogTrigger } from '@/ui/dialog/dialog';
 ```
 
 Every component page shows complete, tested examples.

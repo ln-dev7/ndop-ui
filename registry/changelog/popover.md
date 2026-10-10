@@ -1,5 +1,9 @@
 # Popover
 
+## 0.2.0
+
+Every part of the item is now its own directive without the `Nd` prefix, which is kept for the headless primitives. Renames `NdPopover` to `Popover`, `NdPopoverClose` to `PopoverClose`, `NdPopoverPortal` to `PopoverPortal` and `NdPopoverTrigger` to `PopoverTrigger`. Selectors and inputs are unchanged, and `ndop update` renames the imports and their uses in your code.
+
 ## 0.1.3
 
 Lists the item under Overlays in the docs. The files are unchanged.

@@ -1,0 +1,32 @@
+{
+  "name": "drawer-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Drawer demo",
+  "description": "A daily goal set with buttons in a bottom drawer, with a handle to drag it away.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "drawer",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/drawer-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/drawer-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DrawerContent,\n  DrawerDescription,\n  DrawerFooter,\n  DrawerHandle,\n  DrawerHeader,\n  DrawerOverlay,\n  DrawerTitle,\n  Drawer,\n  DrawerClose,\n  DrawerPortal,\n  DrawerTrigger,\n} from '@/ui/drawer/drawer';\n\n/**\n * A daily goal set with buttons in a bottom drawer, with a handle to drag\n * it away. The goal is announced as it changes.\n */\n@Component({\n  selector: 'example-drawer-demo',\n  imports: [\n    Button,\n    DrawerContent,\n    DrawerDescription,\n    DrawerFooter,\n    DrawerHandle,\n    DrawerHeader,\n    DrawerOverlay,\n    DrawerTitle,\n    Drawer,\n    DrawerClose,\n    DrawerPortal,\n    DrawerTrigger,\n    NdIcon,\n  ],\n  template: `\n    <ng-container ndDrawer>\n      <button ndButton variant=\"outline\" ndDrawerTrigger>Set goal</button>\n      <ng-template ndDrawerPortal>\n        <div ndDrawerOverlay></div>\n        <div ndDrawerContent>\n          <div ndDrawerHandle></div>\n          <div class=\"mx-auto w-full max-w-sm\">\n            <div ndDrawerHeader>\n              <h2 ndDrawerTitle>Move goal</h2>\n              <p ndDrawerDescription>Set your daily activity goal.</p>\n            </div>\n            <div class=\"flex items-center justify-center gap-4 p-4\">\n              <button\n                ndButton\n                variant=\"outline\"\n                size=\"icon\"\n                class=\"rounded-full\"\n                [disabled]=\"goal() <= 200\"\n                (click)=\"change(-10)\"\n              >\n                <svg ndIcon=\"minus\"></svg>\n                <span class=\"sr-only\">Decrease</span>\n              </button>\n              <p class=\"text-center\" aria-live=\"polite\">\n                <span class=\"block text-6xl font-bold tracking-tighter\">{{\n                  goal()\n                }}</span>\n                <span class=\"text-[0.70rem] text-muted-foreground uppercase\">\n                  Calories a day\n                </span>\n              </p>\n              <button\n                ndButton\n                variant=\"outline\"\n                size=\"icon\"\n                class=\"rounded-full\"\n                [disabled]=\"goal() >= 400\"\n                (click)=\"change(10)\"\n              >\n                <svg ndIcon=\"plus\"></svg>\n                <span class=\"sr-only\">Increase</span>\n              </button>\n            </div>\n            <div ndDrawerFooter>\n              <button ndButton ndDrawerClose>Submit</button>\n              <button ndButton variant=\"outline\" ndDrawerClose>Cancel</button>\n            </div>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class DrawerDemoExample {\n  protected readonly goal = signal(350);\n\n  /**\n   * Moves the goal by a step, between 200 and 400.\n   *\n   * @param step - How much to add.\n   */\n  protected change(step: number): void {\n    this.goal.update((goal) => Math.min(400, Math.max(200, goal + step)));\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DrawerDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,32 @@
+{
+  "name": "dropdown-menu-checkboxes",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Dropdown Menu checkboxes",
+  "description": "Checkbox items that show or hide panels, keeping the menu open on Space.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "dropdown-menu",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/dropdown-menu-checkboxes.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dropdown-menu-checkboxes.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DropdownMenuCheckboxItem,\n  DropdownMenuContent,\n  DropdownMenuGroup,\n  DropdownMenuItemIndicator,\n  DropdownMenuLabel,\n  DropdownMenuTrigger,\n} from '@/ui/dropdown-menu/dropdown-menu';\n\n/**\n * Checkbox items that show or hide panels. Space toggles one and keeps the\n * menu open; Enter or a click toggles it and closes the menu.\n */\n@Component({\n  selector: 'example-dropdown-menu-checkboxes',\n  imports: [\n    Button,\n    DropdownMenuCheckboxItem,\n    DropdownMenuContent,\n    DropdownMenuGroup,\n    DropdownMenuItemIndicator,\n    DropdownMenuLabel,\n    DropdownMenuTrigger,\n    NdIcon,\n  ],\n  template: `\n    <button ndButton variant=\"outline\" [ndDropdownMenuTrigger]=\"panels\">\n      Appearance\n    </button>\n    <ng-template #panels>\n      <div ndDropdownMenuContent class=\"w-56\">\n        <div\n          ndDropdownMenuGroup\n          aria-labelledby=\"dropdown-menu-checkboxes-label\"\n        >\n          <div ndDropdownMenuLabel id=\"dropdown-menu-checkboxes-label\">\n            Panels\n          </div>\n          <div ndDropdownMenuCheckboxItem [(checked)]=\"statusBar\">\n            <span ndDropdownMenuItemIndicator><svg ndIcon=\"check\"></svg></span>\n            Status bar\n          </div>\n          <div ndDropdownMenuCheckboxItem [(checked)]=\"activityBar\" disabled>\n            <span ndDropdownMenuItemIndicator><svg ndIcon=\"check\"></svg></span>\n            Activity bar\n          </div>\n          <div ndDropdownMenuCheckboxItem [(checked)]=\"panel\">\n            <span ndDropdownMenuItemIndicator><svg ndIcon=\"check\"></svg></span>\n            Panel\n          </div>\n        </div>\n      </div>\n    </ng-template>\n  `,\n})\nexport class DropdownMenuCheckboxesExample {\n  protected readonly statusBar = signal(true);\n  protected readonly activityBar = signal(false);\n  protected readonly panel = signal(false);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DropdownMenuCheckboxesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,77 @@
+{
+  "name": "dialog",
+  "type": "registry:ui",
+  "version": "0.2.0",
+  "title": "Dialog",
+  "description": "A window overlaid on the primary window, rendering the content underneath inert.",
+  "categories": [
+    "overlays"
+  ],
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/dialog/dialog.ts",
+      "type": "registry:ui",
+      "target": "{ui}/dialog/dialog.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdDialog,\n  NdDialogClose,\n  NdDialogContent,\n  NdDialogDescription,\n  NdDialogOverlay,\n  NdDialogPortal,\n  NdDialogTitle,\n  NdDialogTrigger,\n} from '@ndop/primitives/dialog';\nimport { cn } from '@/lib/utils';\n\n/**\n * A modal dialog (`@ndop/primitives/dialog`): it renders its portal's\n * content over the page while open, traps focus inside it and returns it on\n * close, and closes on Escape or a backdrop click. Put it on an\n * `ng-container`; `open` is two-way bindable.\n *\n * @example\n * ```html\n * <ng-container ndDialog [(open)]=\"open\">…</ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndDialog]',\n  hostDirectives: [\n    {\n      directive: NdDialog,\n      inputs: ['open', 'defaultOpen', 'closeOnEscape', 'closeOnOverlayClick'],\n      outputs: ['openChange'],\n    },\n  ],\n})\nexport class Dialog {}\n\n/**\n * The button that opens its dialog, with `aria-haspopup`, `aria-expanded`\n * and `aria-controls`.\n *\n * @example\n * ```html\n * <button ndButton ndDialogTrigger>Edit profile</button>\n * ```\n */\n@Directive({\n  selector: '[ndDialogTrigger]',\n  hostDirectives: [NdDialogTrigger],\n  host: { 'data-slot': 'dialog-trigger' },\n})\nexport class DialogTrigger {}\n\n/**\n * Marks the `ng-template` its dialog renders while open.\n *\n * @example\n * ```html\n * <ng-template ndDialogPortal>…</ng-template>\n * ```\n */\n@Directive({\n  selector: 'ng-template[ndDialogPortal]',\n  hostDirectives: [NdDialogPortal],\n})\nexport class DialogPortal {}\n\n/**\n * A button that closes its dialog.\n *\n * @example\n * ```html\n * <button ndButton variant=\"outline\" ndDialogClose>Cancel</button>\n * ```\n */\n@Directive({\n  selector: '[ndDialogClose]',\n  hostDirectives: [NdDialogClose],\n  host: { 'data-slot': 'dialog-close' },\n})\nexport class DialogClose {}\n\n/**\n * Backdrop behind the dialog; a click on it closes the dialog.\n *\n * @example\n * ```html\n * <div ndDialogOverlay></div>\n * ```\n */\n@Directive({\n  selector: '[ndDialogOverlay]',\n  hostDirectives: [NdDialogOverlay],\n  host: { 'data-slot': 'dialog-overlay', '[class]': 'classes()' },\n})\nexport class DialogOverlay {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The dialog box, centered on screen.\n *\n * @example\n * ```html\n * <div ndDialogContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndDialogContent]',\n  hostDirectives: [NdDialogContent],\n  host: { 'data-slot': 'dialog-content', '[class]': 'classes()' },\n})\nexport class DialogContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The icon button in the content's corner that closes the dialog. Put an\n * `<svg ndIcon=\"x\">` and a `sr-only` label inside it.\n *\n * @example\n * ```html\n * <button ndDialogCloseButton>\n *   <svg ndIcon=\"x\"></svg>\n *   <span class=\"sr-only\">Close</span>\n * </button>\n * ```\n */\n@Directive({\n  selector: 'button[ndDialogCloseButton]',\n  hostDirectives: [NdDialogClose],\n  host: {\n    type: 'button',\n    'data-slot': 'dialog-close',\n    '[class]': 'classes()',\n  },\n})\nexport class DialogCloseButton {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      \"absolute top-4 end-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4\",\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Layout for the title and description.\n *\n * @example\n * ```html\n * <div ndDialogHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndDialogHeader]',\n  host: { 'data-slot': 'dialog-header', '[class]': 'classes()' },\n})\nexport class DialogHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex flex-col gap-2 text-center sm:text-start', this.class()),\n  );\n}\n\n/**\n * Layout for the action buttons.\n *\n * @example\n * ```html\n * <div ndDialogFooter>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndDialogFooter]',\n  host: { 'data-slot': 'dialog-footer', '[class]': 'classes()' },\n})\nexport class DialogFooter {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', this.class()),\n  );\n}\n\n/**\n * The dialog's title; it names the dialog.\n *\n * @example\n * ```html\n * <h2 ndDialogTitle>Edit profile</h2>\n * ```\n */\n@Directive({\n  selector: '[ndDialogTitle]',\n  hostDirectives: [NdDialogTitle],\n  host: { 'data-slot': 'dialog-title', '[class]': 'classes()' },\n})\nexport class DialogTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-lg leading-none font-semibold', this.class()),\n  );\n}\n\n/**\n * The dialog's description; it describes the dialog.\n *\n * @example\n * ```html\n * <p ndDialogDescription>Changes are saved when you close.</p>\n * ```\n */\n@Directive({\n  selector: '[ndDialogDescription]',\n  hostDirectives: [NdDialogDescription],\n  host: { 'data-slot': 'dialog-description', '[class]': 'classes()' },\n})\nexport class DialogDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-sm text-muted-foreground', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Dialog",
+      "DialogTrigger",
+      "DialogPortal",
+      "DialogClose",
+      "DialogOverlay",
+      "DialogContent",
+      "DialogCloseButton",
+      "DialogHeader",
+      "DialogFooter",
+      "DialogTitle",
+      "DialogDescription"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "codemods": [
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdDialog",
+      "to": "Dialog"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdDialogClose",
+      "to": "DialogClose"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdDialogPortal",
+      "to": "DialogPortal"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdDialogTrigger",
+      "to": "DialogTrigger"
+    }
+  ],
+  "ndop": {
+    "metadata": "metadata/dialog.json",
+    "examples": [
+      "dialog-demo",
+      "dialog-close-button",
+      "dialog-unsaved-changes"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,34 @@
+{
+  "name": "collapsible-settings",
+  "type": "registry:primitive-usage",
+  "version": "0.1.1",
+  "title": "Collapsible settings",
+  "description": "Advanced options shown on demand.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "collapsible",
+    "input",
+    "label",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/collapsible-settings.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/collapsible-settings.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Collapsible,\n  CollapsibleContent,\n  CollapsibleTrigger,\n} from '@/ui/collapsible/collapsible';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/**\n * Advanced options a form shows on demand; the chevron turns with\n * `data-state`.\n */\n@Component({\n  selector: 'example-collapsible-settings',\n  imports: [\n    Button,\n    Input,\n    Label,\n    Collapsible,\n    CollapsibleContent,\n    CollapsibleTrigger,\n    NdIcon,\n  ],\n  template: `\n    <form class=\"grid w-full max-w-sm gap-4\">\n      <div class=\"grid gap-2\">\n        <label ndLabel for=\"collapsible-settings-name\">Project name</label>\n        <input ndInput id=\"collapsible-settings-name\" value=\"ndop-docs\" />\n      </div>\n      <div ndCollapsible class=\"grid gap-4\">\n        <button\n          ndCollapsibleTrigger\n          ndButton\n          variant=\"ghost\"\n          size=\"sm\"\n          class=\"group justify-self-start\"\n        >\n          Advanced options\n          <svg\n            ndIcon=\"chevron-right\"\n            class=\"transition-transform group-data-[state=open]:rotate-90 rtl:rotate-180 rtl:group-data-[state=open]:rotate-90\"\n          ></svg>\n        </button>\n        <div ndCollapsibleContent class=\"grid gap-2\">\n          <label ndLabel for=\"collapsible-settings-dir\">Output folder</label>\n          <input ndInput id=\"collapsible-settings-dir\" value=\"dist\" />\n        </div>\n      </div>\n    </form>\n  `,\n})\nexport class CollapsibleSettingsExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CollapsibleSettingsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

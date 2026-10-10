@@ -1,0 +1,28 @@
+{
+  "name": "toast-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Toast demo",
+  "description": "A toast with a description and an Undo action.",
+  "registryDependencies": [
+    "button",
+    "toast"
+  ],
+  "files": [
+    {
+      "path": "examples/toast-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toast-demo.ts",
+      "content": "import { Component, inject } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport { Toaster } from '@/ui/toast/toast';\n\n/**\n * A toast with a description and an Undo action. Toasts show in the\n * toast region your app's shell renders once (see the Toast page).\n */\n@Component({\n  selector: 'example-toast-demo',\n  imports: [Button],\n  template: `\n    <button ndButton variant=\"outline\" (click)=\"schedule()\">\n      Add to calendar\n    </button>\n  `,\n})\nexport class ToastDemoExample {\n  private readonly toaster = inject(Toaster);\n\n  /** Shows the confirmation, with an Undo that says so. */\n  protected schedule(): void {\n    this.toaster.show({\n      title: 'Event has been created',\n      description: 'Sunday, December 3 at 9:00 AM',\n      action: {\n        label: 'Undo',\n        onClick: () => this.toaster.show({ title: 'Event removed' }),\n      },\n    });\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToastDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

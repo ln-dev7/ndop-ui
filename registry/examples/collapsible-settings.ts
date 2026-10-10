@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import {
-  NdCollapsible,
-  NdCollapsibleContent,
-  NdCollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from '@/ui/collapsible/collapsible';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
@@ -19,9 +19,9 @@ import { Label } from '@/ui/label/label';
     Button,
     Input,
     Label,
-    NdCollapsible,
-    NdCollapsibleContent,
-    NdCollapsibleTrigger,
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
     NdIcon,
   ],
   template: `

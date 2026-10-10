@@ -14,10 +14,10 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogTitle,
-  NdDialog,
-  NdDialogClose,
-  NdDialogPortal,
-  NdDialogTrigger,
+  Dialog,
+  DialogClose,
+  DialogPortal,
+  DialogTrigger,
 } from './dialog';
 
 describe('Dialog', () => {
@@ -48,10 +48,10 @@ describe('Dialog', () => {
       </ng-container>`,
       {
         imports: [
-          NdDialog,
-          NdDialogTrigger,
-          NdDialogPortal,
-          NdDialogClose,
+          Dialog,
+          DialogTrigger,
+          DialogPortal,
+          DialogClose,
           NdIcon,
           DialogOverlay,
           DialogContent,

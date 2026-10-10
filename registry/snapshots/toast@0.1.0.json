@@ -1,0 +1,49 @@
+{
+  "name": "toast",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Toast",
+  "description": "A brief message about an action, shown in a corner without interrupting, such as Saved or Message sent.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "ui/toast/toast.ts",
+      "type": "registry:ui",
+      "target": "{ui}/toast/toast.ts",
+      "content": "import { computed, Directive, inject, input } from '@angular/core';\nimport {\n  NdToast,\n  NdToastAction,\n  NdToastClose,\n  NdToastDescription,\n  NdToastRegion,\n  NdToastTitle,\n  NdToasterOutlet,\n} from '@ndop/primitives/toast';\nimport { cn } from '@/lib/utils';\n\nexport {\n  NdToaster as Toaster,\n  type NdToastActionOptions as ToastActionOptions,\n  type NdToastOptions as ToastOptions,\n  type NdToastRecord as ToastRecord,\n  type NdToastType as ToastType,\n} from '@ndop/primitives/toast';\n\n/**\n * Renders the toast region in its template above everything else, once the\n * app has hydrated. Put one in the app's shell.\n *\n * @example\n * ```html\n * <ng-template ndToaster><section ndToastRegion>…</section></ng-template>\n * ```\n */\n@Directive({\n  selector: 'ng-template[ndToaster]',\n  hostDirectives: [NdToasterOutlet],\n})\nexport class ToasterOutlet {}\n\n/** How many toasts show in the collapsed stack. */\nconst VISIBLE = 3;\n\n/**\n * The toast region (`@ndop/primitives/toast`), in the corner at the end\n * side, bottom: a polite live region and landmark that F8 focuses. Put it\n * in an `ng-template[ndToaster]` once, in the app's shell, with an `ol` of\n * the toasts in `NdToaster.toasts()`. Hovering it or focusing inside it\n * pauses the toasts and spreads the stack out.\n *\n * @example\n * ```html\n * <ng-template ndToaster>\n *   <section ndToastRegion>\n *     <ol ndToastList>\n *       @for (toast of toaster.toasts(); track toast.id) {\n *         <li [ndToast]=\"toast\">…</li>\n *       }\n *     </ol>\n *   </section>\n * </ng-template>\n * ```\n */\n@Directive({\n  selector: '[ndToastRegion]',\n  hostDirectives: [NdToastRegion],\n  host: { 'data-slot': 'toaster', '[class]': 'classes()' },\n})\nexport class ToastRegion {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'toaster group fixed end-4 bottom-4 z-[1100] w-[calc(100%-2rem)] rounded-(--radius) outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:w-[356px]',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The list of toasts: stacked on top of each other, newest in front, and\n * spread out while its region is hovered or focused.\n *\n * @example\n * ```html\n * <ol ndToastList>…</ol>\n * ```\n */\n@Directive({\n  selector: 'ol[ndToastList]',\n  host: { 'data-slot': 'toast-list', '[class]': 'classes()' },\n})\nexport class ToastList {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'grid [grid-template-areas:\"stack\"] items-end group-data-expanded:flex group-data-expanded:flex-col-reverse group-data-expanded:gap-2',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * One toast, styled like Sonner's: in the stack, older toasts sit\n * slightly behind and above the newest, and only three show until the\n * stack spreads out. It follows a swipe toward the end side, which\n * dismisses it past 50 pixels.\n *\n * @example\n * ```html\n * <li [ndToast]=\"toast\">\n *   <svg ndIcon=\"circle-check\"></svg>\n *   <div ndToastContent>\n *     <p ndToastTitle>{{ toast.title }}</p>\n *   </div>\n * </li>\n * ```\n */\n@Directive({\n  selector: '[ndToast]',\n  hostDirectives: [{ directive: NdToast, inputs: ['ndToast'] }],\n  host: { 'data-slot': 'toast', '[class]': 'classes()' },\n})\nexport class Toast {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  private readonly toast = inject(NdToast);\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative flex w-full items-center gap-3 rounded-(--radius) border border-border bg-popover p-4 text-sm text-popover-foreground shadow-lg [grid-area:stack] [&>svg]:size-4 [&>svg]:shrink-0',\n      'z-[calc(100-var(--nd-toast-index))] origin-bottom transition-[translate,scale,opacity] duration-300 ease-out motion-reduce:transition-none data-swiping:transition-none',\n      'translate-x-(--nd-toast-swipe) rtl:-translate-x-(--nd-toast-swipe) translate-y-[calc(var(--nd-toast-index)*-14px)] scale-[calc(1-var(--nd-toast-index)*0.05)]',\n      'group-data-expanded:translate-y-0 group-data-expanded:scale-100',\n      this.toast.index() >= VISIBLE &&\n        'pointer-events-none opacity-0 group-data-expanded:pointer-events-auto group-data-expanded:opacity-100',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Stacks a toast's title and description.\n *\n * @example\n * ```html\n * <div ndToastContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndToastContent]',\n  host: { 'data-slot': 'toast-content', '[class]': 'classes()' },\n})\nexport class ToastContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('grid flex-1 gap-0.5', this.class()),\n  );\n}\n\n/**\n * A toast's message.\n *\n * @example\n * ```html\n * <p ndToastTitle>{{ toast.title }}</p>\n * ```\n */\n@Directive({\n  selector: '[ndToastTitle]',\n  hostDirectives: [NdToastTitle],\n  host: { 'data-slot': 'toast-title', '[class]': 'classes()' },\n})\nexport class ToastTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() => cn('font-medium', this.class()));\n}\n\n/**\n * A toast's detail, under its title.\n *\n * @example\n * ```html\n * <p ndToastDescription>{{ toast.description }}</p>\n * ```\n */\n@Directive({\n  selector: '[ndToastDescription]',\n  hostDirectives: [NdToastDescription],\n  host: { 'data-slot': 'toast-description', '[class]': 'classes()' },\n})\nexport class ToastDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-muted-foreground', this.class()),\n  );\n}\n\n/**\n * The button of a toast's action, such as Undo: it runs the action, then\n * dismisses the toast.\n *\n * @example\n * ```html\n * <button ndToastAction>{{ action.label }}</button>\n * ```\n */\n@Directive({\n  selector: 'button[ndToastAction]',\n  hostDirectives: [NdToastAction],\n  host: { 'data-slot': 'toast-action', '[class]': 'classes()' },\n})\nexport class ToastAction {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'ms-auto inline-flex h-6 shrink-0 items-center rounded-md bg-primary px-2 text-xs font-medium text-primary-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The button that dismisses its toast, at its top start corner; name it,\n * such as `aria-label=\"Close\"`, and put an icon in it.\n *\n * @example\n * ```html\n * <button ndToastClose aria-label=\"Close\"><svg ndIcon=\"x\"></svg></button>\n * ```\n */\n@Directive({\n  selector: 'button[ndToastClose]',\n  hostDirectives: [NdToastClose],\n  host: { 'data-slot': 'toast-close', '[class]': 'classes()' },\n})\nexport class ToastClose {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'absolute -top-2 -start-2 flex size-5 items-center justify-center rounded-full border border-border bg-popover text-popover-foreground opacity-0 transition-opacity outline-none group-data-expanded:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-3',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Toaster",
+      "ToasterOutlet",
+      "ToastRegion",
+      "ToastList",
+      "Toast",
+      "ToastContent",
+      "ToastTitle",
+      "ToastDescription",
+      "ToastAction",
+      "ToastClose"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/toast.json",
+    "examples": [
+      "toast-demo",
+      "toast-types"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

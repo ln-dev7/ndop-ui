@@ -25,8 +25,8 @@ import {
   DialogContent,
   DialogOverlay,
   DialogTitle,
-  NdDialog,
-  NdDialogPortal,
+  Dialog,
+  DialogPortal,
 } from '@/ui/dialog/dialog';
 import { commandFor, type PackageManager } from '../../highlight/shiki';
 import type { SearchEntry } from '../search/search-entry';
@@ -106,8 +106,8 @@ export class PaletteOption implements Highlightable {
   imports: [
     NdIcon,
     Button,
-    NdDialog,
-    NdDialogPortal,
+    Dialog,
+    DialogPortal,
     DialogOverlay,
     DialogContent,
     DialogTitle,

@@ -8,9 +8,12 @@ test('the navigation groups components and lists the primitives', async ({
   const navigation = page.getByRole('navigation', { name: 'Docs' });
   await expect(navigation.getByText('Overlays', { exact: true })).toBeVisible();
   await expect(
-    navigation.getByRole('link', { name: 'Dialog' }).first(),
+    navigation.getByRole('link', { name: 'Dialog', exact: true }).first(),
   ).toHaveAttribute('href', '/docs/components/dialog');
-  await navigation.getByRole('link', { name: 'Dialog' }).last().click();
+  await navigation
+    .getByRole('link', { name: 'Dialog', exact: true })
+    .last()
+    .click();
   await expect(page).toHaveURL(/\/docs\/primitives\/dialog$/);
 });
 

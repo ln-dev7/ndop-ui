@@ -7,7 +7,56 @@ import {
 } from '@ndop/primitives/tooltip';
 import { cn } from '@/lib/utils';
 
-export { NdTooltip, NdTooltipPortal, NdTooltipTrigger };
+/**
+ * A tooltip (`@ndop/primitives/tooltip`): a short description of its
+ * trigger, shown after a delay on hover and at once on keyboard focus. Put
+ * it on an `ng-container`.
+ *
+ * @example
+ * ```html
+ * <ng-container ndTooltip>…</ng-container>
+ * ```
+ */
+@Directive({
+  selector: '[ndTooltip]',
+  hostDirectives: [
+    {
+      directive: NdTooltip,
+      inputs: ['open', 'defaultOpen', 'openDelay', 'closeDelay'],
+      outputs: ['openChange'],
+    },
+  ],
+})
+export class Tooltip {}
+
+/**
+ * The element its tooltip describes, which shows it on hover and focus.
+ *
+ * @example
+ * ```html
+ * <button ndButton ndTooltipTrigger>Add to library</button>
+ * ```
+ */
+@Directive({
+  selector: '[ndTooltipTrigger]',
+  hostDirectives: [NdTooltipTrigger],
+  host: { 'data-slot': 'tooltip-trigger' },
+})
+export class TooltipTrigger {}
+
+/**
+ * Marks the `ng-template` its tooltip renders while open.
+ *
+ * @example
+ * ```html
+ * <ng-template ndTooltipPortal>…</ng-template>
+ * ```
+ */
+@Directive({
+  selector: 'ng-template[ndTooltipPortal]',
+  hostDirectives: [NdTooltipPortal],
+})
+export class TooltipPortal {}
 
 /**
  * The tooltip bubble.

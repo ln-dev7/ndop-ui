@@ -21,7 +21,7 @@
     {
       "name": "icons",
       "type": "registry:lib",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "title": "Icons",
       "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
       "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
@@ -191,7 +191,7 @@
     {
       "name": "dialog",
       "type": "registry:ui",
-      "version": "0.1.5",
+      "version": "0.2.0",
       "title": "Dialog",
       "description": "A window overlaid on the primary window, rendering the content underneath inert.",
       "categories": ["overlays"],
@@ -207,21 +207,47 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": [
+          "Dialog",
+          "DialogTrigger",
+          "DialogPortal",
+          "DialogClose",
           "DialogOverlay",
           "DialogContent",
           "DialogCloseButton",
           "DialogHeader",
           "DialogFooter",
           "DialogTitle",
-          "DialogDescription",
-          "NdDialog",
-          "NdDialogClose",
-          "NdDialogPortal",
-          "NdDialogTrigger"
+          "DialogDescription"
         ],
         "zoneless": true,
         "ssr": true
       },
+      "codemods": [
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdDialog",
+          "to": "Dialog"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdDialogClose",
+          "to": "DialogClose"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdDialogPortal",
+          "to": "DialogPortal"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdDialogTrigger",
+          "to": "DialogTrigger"
+        }
+      ],
       "ndop": {
         "metadata": "metadata/dialog.json",
         "examples": [
@@ -234,7 +260,7 @@
     {
       "name": "popover",
       "type": "registry:ui",
-      "version": "0.1.3",
+      "version": "0.2.0",
       "title": "Popover",
       "description": "Displays rich content in a portal, triggered by a button.",
       "categories": ["overlays"],
@@ -250,18 +276,44 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": [
+          "Popover",
+          "PopoverTrigger",
+          "PopoverPortal",
+          "PopoverClose",
           "PopoverContent",
           "PopoverHeader",
           "PopoverTitle",
-          "PopoverDescription",
-          "NdPopover",
-          "NdPopoverClose",
-          "NdPopoverPortal",
-          "NdPopoverTrigger"
+          "PopoverDescription"
         ],
         "zoneless": true,
         "ssr": true
       },
+      "codemods": [
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdPopover",
+          "to": "Popover"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdPopoverClose",
+          "to": "PopoverClose"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdPopoverPortal",
+          "to": "PopoverPortal"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdPopoverTrigger",
+          "to": "PopoverTrigger"
+        }
+      ],
       "ndop": {
         "metadata": "metadata/popover.json",
         "examples": ["popover-demo", "popover-placement"]
@@ -270,7 +322,7 @@
     {
       "name": "tooltip",
       "type": "registry:ui",
-      "version": "0.1.4",
+      "version": "0.2.0",
       "title": "Tooltip",
       "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
       "categories": ["overlays"],
@@ -286,14 +338,34 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": [
-          "TooltipContent",
-          "NdTooltip",
-          "NdTooltipPortal",
-          "NdTooltipTrigger"
+          "Tooltip",
+          "TooltipTrigger",
+          "TooltipPortal",
+          "TooltipContent"
         ],
         "zoneless": true,
         "ssr": true
       },
+      "codemods": [
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdTooltip",
+          "to": "Tooltip"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdTooltipPortal",
+          "to": "TooltipPortal"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdTooltipTrigger",
+          "to": "TooltipTrigger"
+        }
+      ],
       "ndop": {
         "metadata": "metadata/tooltip.json",
         "examples": ["tooltip-demo", "tooltip-icon-button", "tooltip-sides"]
@@ -692,7 +764,7 @@
     {
       "name": "collapsible",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Collapsible",
       "description": "Shows and hides a section of content.",
       "dependencies": ["@ndop/primitives"],
@@ -706,14 +778,30 @@
       ],
       "angular": {
         "minVersion": "21.0.0",
-        "exports": [
-          "NdCollapsible",
-          "NdCollapsibleTrigger",
-          "NdCollapsibleContent"
-        ],
+        "exports": ["Collapsible", "CollapsibleTrigger", "CollapsibleContent"],
         "zoneless": true,
         "ssr": true
       },
+      "codemods": [
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdCollapsible",
+          "to": "Collapsible"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdCollapsibleTrigger",
+          "to": "CollapsibleTrigger"
+        },
+        {
+          "since": "0.2.0",
+          "kind": "rename-export",
+          "from": "NdCollapsibleContent",
+          "to": "CollapsibleContent"
+        }
+      ],
       "ndop": {
         "metadata": "metadata/collapsible.json",
         "examples": ["collapsible-demo", "collapsible-settings"]
@@ -999,6 +1087,285 @@
       }
     },
     {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Alert Dialog",
+      "description": "A modal dialog that interrupts with an important question, such as confirming a deletion, and expects an answer.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils", "button"],
+      "categories": ["overlays"],
+      "files": [
+        {
+          "path": "ui/alert-dialog/alert-dialog.ts",
+          "type": "registry:ui",
+          "target": "{ui}/alert-dialog/alert-dialog.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "AlertDialog",
+          "AlertDialogTrigger",
+          "AlertDialogPortal",
+          "AlertDialogOverlay",
+          "AlertDialogContent",
+          "AlertDialogHeader",
+          "AlertDialogFooter",
+          "AlertDialogTitle",
+          "AlertDialogDescription",
+          "AlertDialogMedia",
+          "AlertDialogAction",
+          "AlertDialogCancel"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/alert-dialog.json",
+        "examples": [
+          "alert-dialog-demo",
+          "alert-dialog-destructive",
+          "alert-dialog-small"
+        ]
+      }
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Sheet",
+      "description": "A dialog that slides in from an edge of the screen, for secondary content such as settings or filters.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["overlays"],
+      "files": [
+        {
+          "path": "ui/sheet/sheet.ts",
+          "type": "registry:ui",
+          "target": "{ui}/sheet/sheet.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Sheet",
+          "SheetTrigger",
+          "SheetPortal",
+          "SheetClose",
+          "SheetOverlay",
+          "sheetVariants",
+          "SheetContent",
+          "SheetCloseButton",
+          "SheetHeader",
+          "SheetFooter",
+          "SheetTitle",
+          "SheetDescription"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/sheet.json",
+        "examples": ["sheet-demo", "sheet-sides"]
+      }
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Drawer",
+      "description": "A panel that slides up from the bottom of the screen and can be dragged away, suited to phones.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["overlays"],
+      "files": [
+        {
+          "path": "ui/drawer/drawer.ts",
+          "type": "registry:ui",
+          "target": "{ui}/drawer/drawer.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Drawer",
+          "DrawerTrigger",
+          "DrawerPortal",
+          "DrawerClose",
+          "DrawerOverlay",
+          "DrawerContent",
+          "DrawerHandle",
+          "DrawerHeader",
+          "DrawerFooter",
+          "DrawerTitle",
+          "DrawerDescription"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/drawer.json",
+        "examples": ["drawer-demo", "drawer-directions"]
+      }
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Hover Card",
+      "description": "A preview of what's behind a link, shown to pointer and keyboard users while they hover or focus it.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["overlays"],
+      "files": [
+        {
+          "path": "ui/hover-card/hover-card.ts",
+          "type": "registry:ui",
+          "target": "{ui}/hover-card/hover-card.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "HoverCard",
+          "HoverCardTrigger",
+          "HoverCardPortal",
+          "HoverCardContent"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/hover-card.json",
+        "examples": ["hover-card-demo", "hover-card-sides"]
+      }
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Toast",
+      "description": "A brief message about an action, shown in a corner without interrupting, such as Saved or Message sent.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["feedback"],
+      "files": [
+        {
+          "path": "ui/toast/toast.ts",
+          "type": "registry:ui",
+          "target": "{ui}/toast/toast.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Toaster",
+          "ToasterOutlet",
+          "ToastRegion",
+          "ToastList",
+          "Toast",
+          "ToastContent",
+          "ToastTitle",
+          "ToastDescription",
+          "ToastAction",
+          "ToastClose"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/toast.json",
+        "examples": ["toast-demo", "toast-types"]
+      }
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Dropdown Menu",
+      "description": "A menu of actions or options that a button opens, such as a row's actions in a table.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["overlays"],
+      "files": [
+        {
+          "path": "ui/dropdown-menu/dropdown-menu.ts",
+          "type": "registry:ui",
+          "target": "{ui}/dropdown-menu/dropdown-menu.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "DropdownMenuTrigger",
+          "DropdownMenuContent",
+          "DropdownMenuSubContent",
+          "DropdownMenuGroup",
+          "DropdownMenuItem",
+          "DropdownMenuCheckboxItem",
+          "DropdownMenuRadioGroup",
+          "DropdownMenuRadioItem",
+          "DropdownMenuItemIndicator",
+          "DropdownMenuLabel",
+          "DropdownMenuSeparator",
+          "DropdownMenuShortcut",
+          "DropdownMenuSubTrigger"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/dropdown-menu.json",
+        "examples": [
+          "dropdown-menu-demo",
+          "dropdown-menu-checkboxes",
+          "dropdown-menu-radio-group"
+        ]
+      }
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Context Menu",
+      "description": "A menu of actions that a right click or long press on an area opens, at the pointer.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["overlays"],
+      "files": [
+        {
+          "path": "ui/context-menu/context-menu.ts",
+          "type": "registry:ui",
+          "target": "{ui}/context-menu/context-menu.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "ContextMenuTrigger",
+          "ContextMenuContent",
+          "ContextMenuSubContent",
+          "ContextMenuGroup",
+          "ContextMenuItem",
+          "ContextMenuCheckboxItem",
+          "ContextMenuRadioGroup",
+          "ContextMenuRadioItem",
+          "ContextMenuItemIndicator",
+          "ContextMenuLabel",
+          "ContextMenuSeparator",
+          "ContextMenuShortcut",
+          "ContextMenuSubTrigger"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/context-menu.json",
+        "examples": ["context-menu-demo", "context-menu-checkboxes"]
+      }
+    },
+    {
       "name": "badge-demo",
       "type": "registry:primitive-usage",
       "version": "0.1.0",
@@ -1128,7 +1495,7 @@
     {
       "name": "dialog-close-button",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Dialog close button",
       "description": "A share dialog with a read-only link and a footer close button.",
       "dependencies": ["@ndop/core"],
@@ -1150,7 +1517,7 @@
     {
       "name": "dialog-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Dialog demo",
       "description": "An edit-profile dialog with a Signal Forms form. Saving validates the form, closes the dialog when it passes, and keeps it open otherwise.",
       "dependencies": ["@ndop/core"],
@@ -1277,7 +1644,7 @@
     {
       "name": "popover-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Popover demo",
       "description": "A popover holding a small dimensions form.",
       "registryDependencies": ["button", "input", "label", "popover"],
@@ -1298,7 +1665,7 @@
     {
       "name": "popover-placement",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Popover placement",
       "description": "Popovers on each logical side, with a close button inside. `start` and `end` follow the text direction.",
       "registryDependencies": ["button", "popover"],
@@ -1361,7 +1728,7 @@
     {
       "name": "tooltip-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Tooltip demo",
       "description": "A tooltip describing a button, shown on hover and keyboard focus.",
       "registryDependencies": ["button", "tooltip"],
@@ -1382,7 +1749,7 @@
     {
       "name": "tooltip-icon-button",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Tooltip icon button",
       "description": "An icon-only button with its own accessible name and a tooltip on the end side for sighted users.",
       "dependencies": ["@ndop/core"],
@@ -1959,7 +2326,7 @@
     {
       "name": "collapsible-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Collapsible demo",
       "description": "A list of repositories that expands.",
       "dependencies": ["@ndop/core"],
@@ -1981,7 +2348,7 @@
     {
       "name": "collapsible-settings",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Collapsible settings",
       "description": "Advanced options shown on demand.",
       "dependencies": ["@ndop/core"],
@@ -2030,7 +2397,7 @@
     {
       "name": "dialog-unsaved-changes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Dialog unsaved changes",
       "description": "A dialog that only closes through its buttons, so a click outside doesn't lose the user's changes.",
       "registryDependencies": ["button", "dialog", "label", "textarea"],
@@ -2051,7 +2418,7 @@
     {
       "name": "tooltip-sides",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Tooltip sides",
       "description": "Tooltips on each side of their triggers.",
       "dependencies": ["@ndop/primitives"],
@@ -2912,6 +3279,350 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": ["FormFieldChoiceCardExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "alert-dialog-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Alert Dialog demo",
+      "description": "A confirmation before signing out, with Cancel focused first.",
+      "registryDependencies": ["alert-dialog", "button"],
+      "files": [
+        {
+          "path": "examples/alert-dialog-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/alert-dialog-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AlertDialogDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "alert-dialog-destructive",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Alert Dialog destructive",
+      "description": "Deleting a project, with an icon and a destructive action that runs before the dialog closes.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["alert-dialog", "button", "icons"],
+      "files": [
+        {
+          "path": "examples/alert-dialog-destructive.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/alert-dialog-destructive.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AlertDialogDestructiveExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "alert-dialog-small",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Alert Dialog small",
+      "description": "The small size: a short question with side-by-side buttons.",
+      "registryDependencies": ["alert-dialog", "button"],
+      "files": [
+        {
+          "path": "examples/alert-dialog-small.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/alert-dialog-small.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AlertDialogSmallExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "sheet-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Sheet demo",
+      "description": "A profile form in a sheet from the end side, saved from its footer.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "input", "label", "sheet", "icons"],
+      "files": [
+        {
+          "path": "examples/sheet-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/sheet-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SheetDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "sheet-sides",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Sheet sides",
+      "description": "A sheet from each edge: top, end, bottom and start.",
+      "registryDependencies": ["button", "sheet"],
+      "files": [
+        {
+          "path": "examples/sheet-sides.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/sheet-sides.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SheetSidesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "drawer-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Drawer demo",
+      "description": "A daily goal set with buttons in a bottom drawer, with a handle to drag it away.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "drawer", "icons"],
+      "files": [
+        {
+          "path": "examples/drawer-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/drawer-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DrawerDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "drawer-directions",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Drawer directions",
+      "description": "Drawers from the end side and the top.",
+      "registryDependencies": ["button", "drawer"],
+      "files": [
+        {
+          "path": "examples/drawer-directions.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/drawer-directions.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DrawerDirectionsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "hover-card-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Hover Card demo",
+      "description": "A profile preview behind a username link.",
+      "registryDependencies": ["avatar", "button", "hover-card"],
+      "files": [
+        {
+          "path": "examples/hover-card-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/hover-card-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["HoverCardDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "hover-card-sides",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Hover Card sides",
+      "description": "Cards on each side of their links.",
+      "registryDependencies": ["button", "hover-card"],
+      "files": [
+        {
+          "path": "examples/hover-card-sides.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/hover-card-sides.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["HoverCardSidesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "toast-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Toast demo",
+      "description": "A toast with a description and an Undo action.",
+      "registryDependencies": ["button", "toast"],
+      "files": [
+        {
+          "path": "examples/toast-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/toast-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ToastDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "toast-types",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Toast types",
+      "description": "Success, info, warning, error and loading toasts, the loading one replaced when it finishes.",
+      "registryDependencies": ["button", "toast"],
+      "files": [
+        {
+          "path": "examples/toast-types.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/toast-types.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ToastTypesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "dropdown-menu-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Dropdown Menu demo",
+      "description": "An account menu with groups, shortcuts, a submenu, a disabled item and a destructive action.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "dropdown-menu", "icons"],
+      "files": [
+        {
+          "path": "examples/dropdown-menu-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/dropdown-menu-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DropdownMenuDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "dropdown-menu-checkboxes",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Dropdown Menu checkboxes",
+      "description": "Checkbox items that show or hide panels, keeping the menu open on Space.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "dropdown-menu", "icons"],
+      "files": [
+        {
+          "path": "examples/dropdown-menu-checkboxes.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/dropdown-menu-checkboxes.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DropdownMenuCheckboxesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "dropdown-menu-radio-group",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Dropdown Menu radio group",
+      "description": "Radio items that choose one panel position.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "dropdown-menu", "icons"],
+      "files": [
+        {
+          "path": "examples/dropdown-menu-radio-group.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/dropdown-menu-radio-group.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DropdownMenuRadioGroupExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "context-menu-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Context Menu demo",
+      "description": "Browser-style actions on an area, with shortcuts, a submenu, checkbox and radio items.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["context-menu", "icons"],
+      "files": [
+        {
+          "path": "examples/context-menu-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/context-menu-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ContextMenuDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "context-menu-checkboxes",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Context Menu checkboxes",
+      "description": "Checkbox items on a right click, for showing and hiding layers.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["context-menu", "icons"],
+      "files": [
+        {
+          "path": "examples/context-menu-checkboxes.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/context-menu-checkboxes.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ContextMenuCheckboxesExample"],
         "zoneless": true,
         "ssr": true
       }

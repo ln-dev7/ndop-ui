@@ -11,7 +11,73 @@ import {
 } from '@ndop/primitives/dialog';
 import { cn } from '@/lib/utils';
 
-export { NdDialog, NdDialogClose, NdDialogPortal, NdDialogTrigger };
+/**
+ * A modal dialog (`@ndop/primitives/dialog`): it renders its portal's
+ * content over the page while open, traps focus inside it and returns it on
+ * close, and closes on Escape or a backdrop click. Put it on an
+ * `ng-container`; `open` is two-way bindable.
+ *
+ * @example
+ * ```html
+ * <ng-container ndDialog [(open)]="open">…</ng-container>
+ * ```
+ */
+@Directive({
+  selector: '[ndDialog]',
+  hostDirectives: [
+    {
+      directive: NdDialog,
+      inputs: ['open', 'defaultOpen', 'closeOnEscape', 'closeOnOverlayClick'],
+      outputs: ['openChange'],
+    },
+  ],
+})
+export class Dialog {}
+
+/**
+ * The button that opens its dialog, with `aria-haspopup`, `aria-expanded`
+ * and `aria-controls`.
+ *
+ * @example
+ * ```html
+ * <button ndButton ndDialogTrigger>Edit profile</button>
+ * ```
+ */
+@Directive({
+  selector: '[ndDialogTrigger]',
+  hostDirectives: [NdDialogTrigger],
+  host: { 'data-slot': 'dialog-trigger' },
+})
+export class DialogTrigger {}
+
+/**
+ * Marks the `ng-template` its dialog renders while open.
+ *
+ * @example
+ * ```html
+ * <ng-template ndDialogPortal>…</ng-template>
+ * ```
+ */
+@Directive({
+  selector: 'ng-template[ndDialogPortal]',
+  hostDirectives: [NdDialogPortal],
+})
+export class DialogPortal {}
+
+/**
+ * A button that closes its dialog.
+ *
+ * @example
+ * ```html
+ * <button ndButton variant="outline" ndDialogClose>Cancel</button>
+ * ```
+ */
+@Directive({
+  selector: '[ndDialogClose]',
+  hostDirectives: [NdDialogClose],
+  host: { 'data-slot': 'dialog-close' },
+})
+export class DialogClose {}
 
 /**
  * Backdrop behind the dialog; a click on it closes the dialog.

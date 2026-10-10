@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import {
-  NdCollapsible,
-  NdCollapsibleContent,
-  NdCollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from '@/ui/collapsible/collapsible';
 
 /** A list of starred repositories that expands to show the rest. */
@@ -12,9 +12,9 @@ import {
   selector: 'example-collapsible-demo',
   imports: [
     Button,
-    NdCollapsible,
-    NdCollapsibleContent,
-    NdCollapsibleTrigger,
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
     NdIcon,
   ],
   template: `

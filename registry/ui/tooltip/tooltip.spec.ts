@@ -4,9 +4,9 @@ import {
   registrySource,
 } from '../../testing/shadcn-parity';
 import {
-  NdTooltip,
-  NdTooltipPortal,
-  NdTooltipTrigger,
+  Tooltip,
+  TooltipPortal,
+  TooltipTrigger,
   TooltipContent,
 } from './tooltip';
 
@@ -31,7 +31,7 @@ describe('Tooltip', () => {
         </ng-template>
       </ng-container>`,
       {
-        imports: [NdTooltip, NdTooltipTrigger, NdTooltipPortal, TooltipContent],
+        imports: [Tooltip, TooltipTrigger, TooltipPortal, TooltipContent],
       },
     );
     await view.fixture.whenStable();

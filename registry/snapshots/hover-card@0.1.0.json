@@ -1,0 +1,43 @@
+{
+  "name": "hover-card",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Hover Card",
+  "description": "A preview of what's behind a link, shown to pointer and keyboard users while they hover or focus it.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "overlays"
+  ],
+  "files": [
+    {
+      "path": "ui/hover-card/hover-card.ts",
+      "type": "registry:ui",
+      "target": "{ui}/hover-card/hover-card.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { NdTooltip } from '@ndop/primitives/tooltip';\nimport {\n  NdHoverCardContent,\n  NdHoverCardPortal,\n  NdHoverCardTrigger,\n} from '@ndop/primitives/hover-card';\nimport { cn } from '@/lib/utils';\n\n/**\n * A hover card (`@ndop/primitives/hover-card`): a preview of what's behind\n * a link, for sighted users, after a short delay on hover or keyboard\n * focus. Put it on an `ng-container`.\n *\n * @example\n * ```html\n * <ng-container ndHoverCard>…</ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndHoverCard]',\n  hostDirectives: [\n    {\n      directive: NdTooltip,\n      inputs: ['open', 'defaultOpen', 'openDelay', 'closeDelay'],\n      outputs: ['openChange'],\n    },\n  ],\n})\nexport class HoverCard {}\n\n/**\n * The link its card previews.\n *\n * @example\n * ```html\n * <a ndButton variant=\"link\" ndHoverCardTrigger href=\"/ada\">&#64;ada</a>\n * ```\n */\n@Directive({\n  selector: '[ndHoverCardTrigger]',\n  hostDirectives: [NdHoverCardTrigger],\n  host: { 'data-slot': 'hover-card-trigger' },\n})\nexport class HoverCardTrigger {}\n\n/**\n * Marks the `ng-template` its card renders while open.\n *\n * @example\n * ```html\n * <ng-template ndHoverCardPortal>…</ng-template>\n * ```\n */\n@Directive({\n  selector: 'ng-template[ndHoverCardPortal]',\n  hostDirectives: [NdHoverCardPortal],\n})\nexport class HoverCardPortal {}\n\n/**\n * A hover card (`@ndop/primitives/hover-card`): a preview of what's behind\n * a link, shown after a short delay while the link is hovered or focused\n * with the keyboard, and kept open while the pointer is over it. It's for\n * sighted users only, so the link must make sense without it.\n *\n * @example\n * ```html\n * <ng-container ndHoverCard>\n *   <a ndButton variant=\"link\" ndHoverCardTrigger href=\"/nextjs\">&#64;nextjs</a>\n *   <ng-template ndHoverCardPortal>\n *     <div ndHoverCardContent>…</div>\n *   </ng-template>\n * </ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndHoverCardContent]',\n  hostDirectives: [\n    {\n      directive: NdHoverCardContent,\n      inputs: ['side', 'align', 'sideOffset'],\n    },\n  ],\n  host: { 'data-slot': 'hover-card-content', '[class]': 'classes()' },\n})\nexport class HoverCardContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "HoverCard",
+      "HoverCardTrigger",
+      "HoverCardPortal",
+      "HoverCardContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/hover-card.json",
+    "examples": [
+      "hover-card-demo",
+      "hover-card-sides"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

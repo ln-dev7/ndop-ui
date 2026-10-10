@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { EXAMPLES } from '../../examples/examples';
+import { ExampleToaster } from '../../examples/toaster';
 
 /**
  * Example page (`/examples/<name>`): renders one registry example on its
@@ -11,7 +12,7 @@ import { EXAMPLES } from '../../examples/examples';
  */
 @Component({
   selector: 'harness-example',
-  imports: [NgComponentOutlet],
+  imports: [NgComponentOutlet, ExampleToaster],
   template: `
     <main class="mx-auto max-w-3xl p-8">
       <h1 class="mb-8 text-2xl font-semibold">{{ name() }}</h1>
@@ -21,6 +22,7 @@ import { EXAMPLES } from '../../examples/examples';
         <p class="text-muted-foreground">No example with this name.</p>
       }
     </main>
+    <harness-toaster />
   `,
 })
 export default class ExamplePage {

@@ -7,10 +7,10 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogTitle,
-  NdDialog,
-  NdDialogClose,
-  NdDialogPortal,
-  NdDialogTrigger,
+  Dialog,
+  DialogClose,
+  DialogPortal,
+  DialogTrigger,
 } from '@/ui/dialog/dialog';
 import { Label } from '@/ui/label/label';
 import { Textarea } from '@/ui/textarea/textarea';
@@ -30,10 +30,10 @@ import { Textarea } from '@/ui/textarea/textarea';
     DialogOverlay,
     DialogTitle,
     Label,
-    NdDialog,
-    NdDialogClose,
-    NdDialogPortal,
-    NdDialogTrigger,
+    Dialog,
+    DialogClose,
+    DialogPortal,
+    DialogTrigger,
     Textarea,
   ],
   template: `

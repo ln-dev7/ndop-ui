@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Button } from '@/ui/button/button';
 import {
-  NdPopover,
-  NdPopoverClose,
-  NdPopoverPortal,
-  NdPopoverTrigger,
+  Popover,
+  PopoverClose,
+  PopoverPortal,
+  PopoverTrigger,
   PopoverContent,
 } from '@/ui/popover/popover';
 
@@ -15,10 +15,10 @@ import {
 @Component({
   selector: 'example-popover-placement',
   imports: [
-    NdPopover,
-    NdPopoverTrigger,
-    NdPopoverPortal,
-    NdPopoverClose,
+    Popover,
+    PopoverTrigger,
+    PopoverPortal,
+    PopoverClose,
     PopoverContent,
     Button,
   ],

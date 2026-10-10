@@ -1,0 +1,31 @@
+{
+  "name": "context-menu-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Context Menu demo",
+  "description": "Browser-style actions on an area, with shortcuts, a submenu, checkbox and radio items.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "context-menu",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/context-menu-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/context-menu-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  ContextMenuCheckboxItem,\n  ContextMenuContent,\n  ContextMenuItem,\n  ContextMenuItemIndicator,\n  ContextMenuLabel,\n  ContextMenuRadioGroup,\n  ContextMenuRadioItem,\n  ContextMenuSeparator,\n  ContextMenuShortcut,\n  ContextMenuSubContent,\n  ContextMenuSubTrigger,\n  ContextMenuTrigger,\n} from '@/ui/context-menu/context-menu';\n\n/**\n * Browser-style actions on an area: shortcuts, a disabled item, a submenu,\n * a checkbox and a group of radios. The area is focusable and named, so\n * Shift + F10 opens the menu from the keyboard.\n */\n@Component({\n  selector: 'example-context-menu-demo',\n  imports: [\n    ContextMenuCheckboxItem,\n    ContextMenuContent,\n    ContextMenuItem,\n    ContextMenuItemIndicator,\n    ContextMenuLabel,\n    ContextMenuRadioGroup,\n    ContextMenuRadioItem,\n    ContextMenuSeparator,\n    ContextMenuShortcut,\n    ContextMenuSubContent,\n    ContextMenuSubTrigger,\n    ContextMenuTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div\n      [ndContextMenuTrigger]=\"menu\"\n      tabindex=\"0\"\n      aria-label=\"Page preview\"\n      class=\"flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50\"\n    >\n      Right click here\n    </div>\n    <ng-template #menu>\n      <div ndContextMenuContent class=\"w-52\">\n        <div ndContextMenuItem inset>\n          Back <span ndContextMenuShortcut>⌘[</span>\n        </div>\n        <div ndContextMenuItem inset disabled>\n          Forward <span ndContextMenuShortcut>⌘]</span>\n        </div>\n        <div ndContextMenuItem inset>\n          Reload <span ndContextMenuShortcut>⌘R</span>\n        </div>\n        <div [ndContextMenuSubTrigger]=\"tools\" inset>\n          More tools\n          <svg ndIcon=\"chevron-right\" class=\"ms-auto rtl:rotate-180\"></svg>\n        </div>\n        <div ndContextMenuSeparator></div>\n        <div ndContextMenuCheckboxItem [(checked)]=\"bookmarks\">\n          <span ndContextMenuItemIndicator><svg ndIcon=\"check\"></svg></span>\n          Show bookmarks\n        </div>\n        <div ndContextMenuSeparator></div>\n        <div ndContextMenuLabel inset id=\"context-menu-demo-people\">People</div>\n        <div\n          ndContextMenuRadioGroup\n          aria-labelledby=\"context-menu-demo-people\"\n          [(value)]=\"person\"\n        >\n          @for (name of people; track name) {\n            <div ndContextMenuRadioItem [value]=\"name\">\n              <span ndContextMenuItemIndicator>\n                <svg ndIcon=\"circle\" class=\"size-2 fill-current\"></svg>\n              </span>\n              {{ name }}\n            </div>\n          }\n        </div>\n      </div>\n    </ng-template>\n    <ng-template #tools>\n      <div ndContextMenuSubContent class=\"w-44\">\n        <div ndContextMenuItem>Save page…</div>\n        <div ndContextMenuItem>Developer tools</div>\n        <div ndContextMenuSeparator></div>\n        <div ndContextMenuItem variant=\"destructive\">Delete</div>\n      </div>\n    </ng-template>\n  `,\n})\nexport class ContextMenuDemoExample {\n  protected readonly bookmarks = signal(true);\n  protected readonly people = ['Pedro Duarte', 'Colm Tuite'];\n  protected readonly person = signal<string | null>('Pedro Duarte');\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ContextMenuDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

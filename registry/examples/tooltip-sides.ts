@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import type { NdSide } from '@ndop/primitives/tooltip';
 import { Button } from '@/ui/button/button';
 import {
-  NdTooltip,
-  NdTooltipPortal,
-  NdTooltipTrigger,
+  Tooltip,
+  TooltipPortal,
+  TooltipTrigger,
   TooltipContent,
 } from '@/ui/tooltip/tooltip';
 
@@ -14,13 +14,7 @@ import {
  */
 @Component({
   selector: 'example-tooltip-sides',
-  imports: [
-    Button,
-    NdTooltip,
-    NdTooltipPortal,
-    NdTooltipTrigger,
-    TooltipContent,
-  ],
+  imports: [Button, Tooltip, TooltipPortal, TooltipTrigger, TooltipContent],
   template: `
     <div class="flex flex-wrap gap-2">
       @for (side of sides; track side) {

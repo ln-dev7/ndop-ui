@@ -1,0 +1,28 @@
+{
+  "name": "drawer-directions",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Drawer directions",
+  "description": "Drawers from the end side and the top.",
+  "registryDependencies": [
+    "button",
+    "drawer"
+  ],
+  "files": [
+    {
+      "path": "examples/drawer-directions.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/drawer-directions.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DrawerContent,\n  DrawerDescription,\n  DrawerFooter,\n  DrawerHeader,\n  DrawerOverlay,\n  DrawerTitle,\n  Drawer,\n  DrawerClose,\n  DrawerPortal,\n  DrawerTrigger,\n} from '@/ui/drawer/drawer';\n\n/**\n * Drawers from the end side and the top, each dragged back toward its\n * own edge.\n */\n@Component({\n  selector: 'example-drawer-directions',\n  imports: [\n    Button,\n    DrawerContent,\n    DrawerDescription,\n    DrawerFooter,\n    DrawerHeader,\n    DrawerOverlay,\n    DrawerTitle,\n    Drawer,\n    DrawerClose,\n    DrawerPortal,\n    DrawerTrigger,\n  ],\n  template: `\n    <div class=\"flex gap-2\">\n      @for (direction of directions; track direction) {\n        <ng-container ndDrawer>\n          <button ndButton variant=\"outline\" ndDrawerTrigger class=\"capitalize\">\n            {{ direction }}\n          </button>\n          <ng-template ndDrawerPortal>\n            <div ndDrawerOverlay></div>\n            <div ndDrawerContent [direction]=\"direction\">\n              <div ndDrawerHeader>\n                <h2 ndDrawerTitle class=\"capitalize\">{{ direction }} drawer</h2>\n                <p ndDrawerDescription>Drag it toward its edge to close it.</p>\n              </div>\n              <div ndDrawerFooter>\n                <button ndButton variant=\"outline\" ndDrawerClose>Close</button>\n              </div>\n            </div>\n          </ng-template>\n        </ng-container>\n      }\n    </div>\n  `,\n})\nexport class DrawerDirectionsExample {\n  protected readonly directions = ['end', 'top'] as const;\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DrawerDirectionsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

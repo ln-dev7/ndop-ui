@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import {
-  NdTooltip,
-  NdTooltipPortal,
-  NdTooltipTrigger,
+  Tooltip,
+  TooltipPortal,
+  TooltipTrigger,
   TooltipContent,
 } from '@/ui/tooltip/tooltip';
 
@@ -15,9 +15,9 @@ import {
 @Component({
   selector: 'example-tooltip-icon-button',
   imports: [
-    NdTooltip,
-    NdTooltipTrigger,
-    NdTooltipPortal,
+    Tooltip,
+    TooltipTrigger,
+    TooltipPortal,
     TooltipContent,
     Button,
     NdIcon,

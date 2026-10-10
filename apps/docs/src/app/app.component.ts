@@ -3,14 +3,16 @@ import { RouterOutlet } from '@angular/router';
 import { injectCurrentPath } from './site/current-path';
 import { SiteFooter } from './site/site-footer';
 import { SiteHeader } from './site/site-header';
+import { SiteToaster } from './site/toaster';
 
 /**
  * Root component of the docs site: the header on every page, the
- * file-based routes from `src/app/pages`, then the footer.
+ * file-based routes from `src/app/pages`, the footer, and the toast
+ * region.
  */
 @Component({
   selector: 'docs-root',
-  imports: [RouterOutlet, SiteHeader, SiteFooter],
+  imports: [RouterOutlet, SiteHeader, SiteFooter, SiteToaster],
   template: `
     <a
       [href]="path() + '#main'"
@@ -20,6 +22,7 @@ import { SiteHeader } from './site/site-header';
     <docs-site-header />
     <router-outlet />
     <docs-site-footer />
+    <docs-toaster />
   `,
 })
 export class AppComponent {

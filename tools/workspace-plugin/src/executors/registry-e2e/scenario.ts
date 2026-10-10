@@ -368,14 +368,14 @@ export const GOOD_PAGE = `import { Component } from '@angular/core';
 import {
   DialogContent,
   DialogTitle,
-  NdDialog,
-  NdDialogPortal,
-  NdDialogTrigger,
+  Dialog,
+  DialogPortal,
+  DialogTrigger,
 } from '@/ui/dialog/dialog';
 
 @Component({
   selector: 'app-good',
-  imports: [NdDialog, NdDialogTrigger, NdDialogPortal, DialogContent, DialogTitle],
+  imports: [Dialog, DialogTrigger, DialogPortal, DialogContent, DialogTitle],
   template: \`
     <h1>Account</h1>
     <ng-container ndDialog>
