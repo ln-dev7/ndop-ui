@@ -34,20 +34,6 @@ export function writeRegistryFixture(tree: Tree): void {
     "export const EXAMPLE_NAMES: readonly string[] = [\n  'badge-demo',\n  'card-demo',\n];\n",
   );
   tree.write(
-    'apps/harness/src/app/examples/examples.ts',
-    [
-      "import type { Type } from '@angular/core';",
-      "import { BadgeDemoExample } from '@/examples/badge-demo';",
-      "import { CardDemoExample } from '@/examples/card-demo';",
-      '',
-      'export const EXAMPLES: Readonly<Record<string, Type<unknown>>> = {',
-      "  'badge-demo': BadgeDemoExample,",
-      "  'card-demo': CardDemoExample,",
-      '};',
-      '',
-    ].join('\n'),
-  );
-  tree.write(
     'apps/harness/src/app/blocks/block-names.ts',
     'export const BLOCK_NAMES: readonly string[] = [];\n',
   );

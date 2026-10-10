@@ -20,8 +20,9 @@ const HARNESS = 'apps/harness/src/app/examples';
  *   first export;
  * - its `registry.json` entry at 0.1.0, depending on the item;
  * - the name in the item's `ndop.examples`, so its docs page shows it;
- * - the harness route `/examples/<item>-<case>`, where it is rendered,
- *   server-rendered, hydrated and checked with axe.
+ * - its name in the harness's `EXAMPLE_NAMES`, which links its route,
+ *   `/examples/<item>-<case>`, where it is rendered, server-rendered,
+ *   hydrated and checked with axe; the route loads any example file.
  *
  * @param tree - Virtual file system the generator writes to.
  * @param options - Generator options; see `schema.json`.
@@ -96,21 +97,6 @@ export async function exampleGenerator(
     '];',
     `  '${name}',`,
   );
-  insertSortedLine(
-    tree,
-    `${HARNESS}/examples.ts`,
-    "import type { Type } from '@angular/core';",
-    '',
-    `import { ${n.className}Example } from '@/examples/${name}';`,
-  );
-  insertSortedLine(
-    tree,
-    `${HARNESS}/examples.ts`,
-    'export const EXAMPLES',
-    '};',
-    `  '${name}': ${n.className}Example,`,
-  );
-
   if (!options.skipFormat) {
     await formatFiles(tree);
   }

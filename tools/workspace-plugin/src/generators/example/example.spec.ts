@@ -46,18 +46,6 @@ describe('example generator', () => {
     ).toBe(
       "export const EXAMPLE_NAMES: readonly string[] = [\n  'badge-demo',\n  'badge-with-icon',\n  'card-demo',\n];\n",
     );
-    const examples =
-      tree.read('apps/harness/src/app/examples/examples.ts', 'utf-8') ?? '';
-    expect(examples).toContain(
-      [
-        "import { BadgeDemoExample } from '@/examples/badge-demo';",
-        "import { BadgeWithIconExample } from '@/examples/badge-with-icon';",
-        "import { CardDemoExample } from '@/examples/card-demo';",
-      ].join('\n'),
-    );
-    expect(examples).toContain(
-      "  'badge-with-icon': BadgeWithIconExample,\n  'card-demo'",
-    );
   });
 
   it('refuses an unknown item', async () => {

@@ -1,6 +1,6 @@
 /**
- * Every registry example's name, for links. Kept apart from `EXAMPLES` so
- * the home page doesn't load every example's code (ADR-0014).
+ * Every registry example's name, for the home page's links, which route
+ * discovery and the e2e crawl follow (ADR-0014).
  */
 export const EXAMPLE_NAMES: readonly string[] = [
   'alert-demo',

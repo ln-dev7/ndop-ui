@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
@@ -15,9 +15,9 @@ import { EXAMPLES } from '../../examples/examples';
   template: `
     <main class="mx-auto max-w-3xl p-8">
       <h1 class="mb-8 text-2xl font-semibold">{{ name() }}</h1>
-      @if (example(); as component) {
+      @if (example.value(); as component) {
         <ng-container *ngComponentOutlet="component" />
-      } @else {
+      } @else if (example.status() === 'resolved') {
         <p class="text-muted-foreground">No example with this name.</p>
       }
     </main>
@@ -31,5 +31,10 @@ export default class ExamplePage {
     { initialValue: '' },
   );
 
-  protected readonly example = computed(() => EXAMPLES[this.name()]);
+  /** The example's component, loaded on its own. */
+  protected readonly example = resource({
+    params: () => ({ name: this.name() }),
+    loader: ({ params }) =>
+      EXAMPLES[params.name]?.() ?? Promise.resolve(undefined),
+  });
 }
