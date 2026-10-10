@@ -352,7 +352,8 @@ time it's used, while its code is fetched.
 
 ## Amendment 10 (2026-10-07): performance fails under 90 and warns under 95
 
-Status: Accepted; approved by Valery on 2026-10-07.
+Status: Accepted; approved by Valery on 2026-10-07. Its performance floor is
+replaced by amendment 14.
 
 **Deviation:** RFC-0001 asks for "Lighthouse ≥ 95 on every page", and
 "Quality gates" above fails the job on any category under 95. With the
@@ -437,3 +438,28 @@ Decision:
   `empty-avatar`.
 - From now on, a component's examples cover each of its variants and
   meaningful states; the Phase 6 batches follow that.
+
+## Amendment 14 (2026-10-10): performance warns and never fails
+
+Status: Accepted (approved by Valery on 2026-10-10). **Deviation** from
+RFC-0001's "Lighthouse ≥ 95 on every page" as a gate, and replaces
+amendment 10's performance floor.
+
+Performance scores still move a few points between runs of the same
+build, even with amendment 8's calibration and the median of three runs.
+Since amendment 10, CI has gone red on unchanged pages, and each time a
+rerun was the fix. Telling noise from a regression took longer than the
+regressions it caught, while the other categories caught real bugs, such
+as a contrast failure and non-descriptive link text.
+
+- **Performance** never fails the job. Every route under 95 is listed as a
+  warning, with its score, so a regression is still visible in the log
+  and the uploaded reports.
+- **Accessibility, best practices, SEO and agentic browsing** still fail
+  under 95.
+- The `docs-lighthouse` executor keeps `performanceFloor`, now 0 by
+  default; a project can set a floor again without code changes.
+
+Consequences: CI no longer blocks on a performance drop, so reading the
+warnings is part of reviewing changes to the docs site. 95 stays the
+target for every page.

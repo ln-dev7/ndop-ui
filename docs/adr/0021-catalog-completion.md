@@ -1,6 +1,6 @@
 # ADR-0021: Completing the v1 catalog
 
-- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1.
+- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–2.
   Deviates from the definition of done for items without behavior
 - Date: 2026-10-08
 - Phase: 6
@@ -162,3 +162,17 @@ together are 20.0 kB. Ndop's own code for each is about 3 kB.
   item. The transformer is a private export of `@angular/build`, so an
   Angular upgrade may need this tool to follow it.
 - Budgets stay as decided: Button 2 kB, Dialog 8 kB, 4 kB otherwise.
+
+## Amendment 2 (2026-10-10): dialog-family items share Dialog's budget
+
+Status: Accepted (approved by Valery on 2026-10-10).
+
+Alert Dialog, Sheet and Drawer are dialogs: each ships the Dialog
+primitive, and Alert Dialog and Drawer add a primitive of their own on top
+of it. Measured as amendment 1 decides, Alert Dialog is 4.00 kB and Drawer
+3.99 kB against the 4 kB default, so any fix would fail the budget.
+RFC-0001's 8 kB for Dialog is the budget for this pattern.
+
+- Alert Dialog, Sheet and Drawer get Dialog's 8 kB budget in
+  `tools/size/budgets.json`.
+- Other items keep 4 kB, and Button 2 kB.

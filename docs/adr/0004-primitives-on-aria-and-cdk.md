@@ -1,7 +1,6 @@
 # ADR-0004: Primitives on `@angular/aria` + CDK, and custom fallbacks
 
-- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–3;
-  amendment 4 proposed
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–4
 - Date: 2026-10-02
 - Phase: 1
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Primitives layer (`@ndop/primitives`)"
@@ -249,7 +248,7 @@ the Phase 1 primitives were checked with one.
 
 ## Amendment 4 (2026-10-09): value-owning primitives bind forms through their value accessor
 
-Status: Proposed. Refines how amendment 1's "implement both contracts" is
+Status: Accepted (approved by Valery on 2026-10-10). Refines how amendment 1's "implement both contracts" is
 done; the RFC's "Forms" bullet is unchanged.
 
 Context, read from `@angular/forms` 21.2.24 and 22.2.1:
