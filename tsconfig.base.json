@@ -70,7 +70,22 @@
       "@ndop/primitives/toggle-group": [
         "./packages/primitives/toggle-group/src/index.ts"
       ],
-      "@ndop/primitives/slider": ["./packages/primitives/slider/src/index.ts"]
+      "@ndop/primitives/slider": ["./packages/primitives/slider/src/index.ts"],
+      "@ndop/primitives/alert-dialog": [
+        "./packages/primitives/alert-dialog/src/index.ts"
+      ],
+      "@ndop/primitives/drawer": ["./packages/primitives/drawer/src/index.ts"],
+      "@ndop/primitives/hover-card": [
+        "./packages/primitives/hover-card/src/index.ts"
+      ],
+      "@ndop/primitives/menu": ["./packages/primitives/menu/src/index.ts"],
+      "@ndop/primitives/dropdown-menu": [
+        "./packages/primitives/dropdown-menu/src/index.ts"
+      ],
+      "@ndop/primitives/context-menu": [
+        "./packages/primitives/context-menu/src/index.ts"
+      ],
+      "@ndop/primitives/toast": ["./packages/primitives/toast/src/index.ts"]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

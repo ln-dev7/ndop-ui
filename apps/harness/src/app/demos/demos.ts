@@ -31,4 +31,10 @@ export const DEMOS: readonly Demo[] = [
   { path: 'slider', title: 'Slider' },
   { path: 'input-otp', title: 'Input OTP' },
   { path: 'form-field', title: 'Form Field' },
+  { path: 'alert-dialog', title: 'Alert Dialog' },
+  { path: 'drawer', title: 'Drawer' },
+  { path: 'hover-card', title: 'Hover Card' },
+  { path: 'dropdown-menu', title: 'Dropdown Menu' },
+  { path: 'context-menu', title: 'Context Menu' },
+  { path: 'toast', title: 'Toast' },
 ];

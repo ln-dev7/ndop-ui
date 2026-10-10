@@ -22,6 +22,7 @@ export default defineConfig(() => {
       include: [
         '@angular/cdk/a11y',
         '@angular/cdk/bidi',
+        '@angular/cdk/menu',
         '@angular/cdk/overlay',
         '@angular/cdk/platform',
         '@angular/cdk/portal',
