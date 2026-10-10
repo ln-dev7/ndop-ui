@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SearchEntry } from '../src/app/search/search-entry';
+import { headingId, plainText } from '../src/markdown/heading-ids';
 
 /** The metadata fields the index reads. */
 export interface IndexedComponent {
@@ -15,42 +16,6 @@ export interface IndexedComponent {
     models: { name: string; type: string; description: string }[];
     outputs: { name: string; type: string; description: string }[];
   }[];
-}
-
-/**
- * Markdown or TSDoc as one line of plain text.
- *
- * @param text - Markdown, possibly with `{@link X}`.
- * @returns Plain text.
- */
-export function plainText(text: string): string {
-  return text
-    .replace(
-      /\{@link\s+([^}|\s]+)\s*(?:\|\s*([^}]+?)\s*)?\}/g,
-      (_m, target: string, label?: string) => label ?? target,
-    )
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-    .replace(/[`*_]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/**
- * The `id` a heading gets on the page: GitHub's slugs, as
- * `marked-gfm-heading-id` makes them, with `-1`, `-2` for repeats.
- *
- * @param text - The heading's Markdown.
- * @param seen - Slugs already used on the page, updated.
- * @returns The slug.
- */
-export function headingId(text: string, seen: Map<string, number>): string {
-  const base = plainText(text)
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s_-]/gu, '')
-    .replace(/ /g, '-');
-  const count = seen.get(base) ?? 0;
-  seen.set(base, count + 1);
-  return count ? `${base}-${count}` : base;
 }
 
 /**
@@ -82,14 +47,18 @@ export function guideEntries(markdown: string, url: string): SearchEntry[] {
       url,
     },
   ];
-  for (const match of body.matchAll(/^#{2,3}\s+(.+?)\s*#*$/gm)) {
-    const text = match[1] ?? '';
+  // Every level numbers repeats on the page, so every level counts here
+  // too, though only `##` and `###` are indexed.
+  for (const match of body.matchAll(/^(#{1,6})\s+(.+?)\s*#*$/gm)) {
+    const text = match[2] ?? '';
+    const id = headingId(text, seen);
+    if (match[1] !== '##' && match[1] !== '###') continue;
     entries.push({
       kind: 'heading',
       title: plainText(text),
       context: title,
       description: '',
-      url: `${url}#${headingId(text, seen)}`,
+      url: `${url}#${id}`,
     });
   }
   return entries;

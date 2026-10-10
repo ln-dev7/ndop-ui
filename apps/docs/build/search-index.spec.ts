@@ -1,13 +1,4 @@
-import { componentEntries, guideEntries, headingId } from './search-index';
-
-describe('headingId', () => {
-  it('slugs headings the way the page does', () => {
-    const seen = new Map<string, number>();
-    expect(headingId("What it's built on", seen)).toBe('what-its-built-on');
-    expect(headingId('What `init` changes', seen)).toBe('what-init-changes');
-    expect(headingId('What `init` changes', seen)).toBe('what-init-changes-1');
-  });
-});
+import { componentEntries, guideEntries } from './search-index';
 
 describe('guideEntries', () => {
   it('lists the page and its sections, but not step titles or code', () => {
@@ -55,6 +46,25 @@ describe('guideEntries', () => {
         url: '/docs/getting-started/installation#what-init-changes',
       },
     ]);
+  });
+
+  it('numbers repeats across every heading level, as the page does', () => {
+    const markdown = [
+      '---',
+      'title: Verify',
+      '---',
+      '',
+      '## Options',
+      '',
+      '#### Options',
+      '',
+      '### Options',
+    ].join('\n');
+    expect(
+      guideEntries(markdown, '/docs/x')
+        .slice(1)
+        .map((entry) => entry.url),
+    ).toEqual(['/docs/x#options', '/docs/x#options-2']);
   });
 });
 

@@ -15,6 +15,7 @@ import {
   THEMES,
   transformers,
 } from './src/highlight/shiki';
+import { headingIdsExtension } from './src/markdown/heading-ids';
 import { stepsExtension } from './src/markdown/steps';
 
 const workspace = join(import.meta.dirname, '../..');
@@ -53,7 +54,9 @@ export default defineConfig(() => {
         // highlighter ships to the browser.
         content: {
           highlighter: 'shiki',
-          markedOptions: { extensions: [stepsExtension()] },
+          markedOptions: {
+            extensions: [stepsExtension(), headingIdsExtension()],
+          },
           shikiOptions: {
             highlighter: { langs: LANGUAGES, themes: Object.values(THEMES) },
             highlight: {
