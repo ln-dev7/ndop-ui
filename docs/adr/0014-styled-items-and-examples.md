@@ -1,7 +1,7 @@
 # ADR-0014: Styled items and examples
 
-- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1
-  and 2
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments
+  1–3
 - Date: 2026-10-02
 - Phase: 2
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Styled layer, variants and
@@ -102,3 +102,42 @@ therefore applies to the first public deploy, not to the 1.0.0 release:
 They move from RFC-0001's Phase 7 checklist to the first step of Phase 6.
 The changelogs' 0.1.1 notes ("the credit … is on the docs site instead")
 are true from then on.
+
+## Amendment 3 (2026-10-10): every part of a styled item is its own, unprefixed
+
+Status: Accepted (approved by Valery on 2026-10-10). Changes how
+RFC-0001's "Styled items re-export the primitive parts they wrap" is done.
+
+Context: styled items re-exported the primitive parts they had nothing to
+style (roots, triggers, portals, closes) under their primitive names, so
+one file exported `NdDialogTrigger` next to `DialogContent`. Users of
+`@/ui/dialog` saw two naming schemes, and the docs listed both. Sheet,
+which has no primitive of its own, already wrapped every part.
+
+### Decision
+
+- **Names say who owns the code.** `Nd<Part>` is a primitive from
+  `@ndop/primitives`, installed and never edited. A class without the
+  prefix is a styled item's, in the user's own files.
+- **Every part a styled item offers is its own directive,** without the
+  prefix, even when it adds no classes: a thin directive on the same
+  selector that composes the primitive part as a host directive and
+  exposes its inputs and outputs, as `Sheet` and `SheetTrigger` do.
+  `Dialog`, `DialogTrigger` and `DialogPortal` replace the re-exported
+  `NdDialog`, `NdDialogTrigger` and `NdDialogPortal`. Names follow
+  shadcn/ui's.
+- **Selectors keep the `nd` prefix,** so a styled part and its primitive
+  match the same attribute, and Ndop's attributes don't clash with HTML or
+  other libraries.
+- **Services and types** an item passes on are re-exported under
+  unprefixed aliases, such as `export { NdToaster as Toaster }`.
+- **Items already released** (Dialog, Popover, Tooltip, Collapsible) get
+  a minor version with a `rename-export` codemod per renamed export
+  (ADR-0020), so `ndop update` renames the user's imports.
+
+### Consequences
+
+- Users import one naming scheme from each item, which matches shadcn's
+  and the shadcn-compatible output (ADR-0025).
+- Each wrapped part costs a few lines and a few bytes.
+- Primitive docs pages keep the `Nd` names; component pages show none.

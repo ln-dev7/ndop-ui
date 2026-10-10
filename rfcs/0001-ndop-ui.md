@@ -223,7 +223,7 @@ Styled items are small, boring files the user owns: one primitive (or native ele
 - `variants()` in `@ndop/core` mirrors the cva API (base, variants, compoundVariants, defaults) and returns a typed function; variant prop types are derived from it.
 - A `class` input on every styled item, merged with `cn()` (clsx + tailwind-merge) so user classes always win.
 - One file per component where possible; at most one `.ts` plus one `.css` for animations. No barrel files that hide where things live.
-- Styled items re-export the primitive parts they wrap so users import from one local path, e.g. `@/ui/dialog`.
+- Every part a styled item offers is its own directive without the `Nd` prefix, even when it adds no classes, so users import one naming scheme from one local path, e.g. `Dialog`, `DialogTrigger` and `DialogContent` from `@/ui/dialog`. `Nd<Part>` names belong to `@ndop/primitives` (ADR-0014, amendment 3).
 
 ```ts
 const buttonVariants = variants({
