@@ -351,7 +351,14 @@ export class NdInputOtpInput {
   /** Puts the caret after the last character. */
   protected caretToEnd(): void {
     const end = this.element.value.length;
-    this.element.setSelectionRange(end, end);
+    // Setting the selection fires `select`, which calls this again, so
+    // only move a caret that isn't already at the end.
+    if (
+      this.element.selectionStart !== end ||
+      this.element.selectionEnd !== end
+    ) {
+      this.element.setSelectionRange(end, end);
+    }
   }
 }
 

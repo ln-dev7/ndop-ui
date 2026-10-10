@@ -33,7 +33,7 @@ const SLOTS = `
 `;
 
 function slots(): HTMLElement[] {
-  return [...document.querySelectorAll<HTMLElement>('[ndInputOtpSlot]')];
+  return Array.from(document.querySelectorAll<HTMLElement>('[ndInputOtpSlot]'));
 }
 
 describe('NdInputOtp', () => {
