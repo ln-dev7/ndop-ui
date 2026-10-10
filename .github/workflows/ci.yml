@@ -73,13 +73,6 @@ jobs:
       matrix:
         browser: [chromium, firefox, webkit]
     steps:
-      # The runner image ships SDKs this workspace never uses; the
-      # Chromium job ran out of disk without this space. `df` before and
-      # after shows how much the run takes.
-      - run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          df -h /
-
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -106,9 +99,6 @@ jobs:
 
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }}
-
-      - if: always()
-        run: df -h /
 
       # ADR-0021: every example in light, dark and RTL, against committed
       # baselines. The browser runs in Playwright's Docker image, so one
