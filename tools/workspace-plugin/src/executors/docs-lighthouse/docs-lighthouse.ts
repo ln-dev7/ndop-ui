@@ -9,6 +9,7 @@ import {
   medianRun,
   prerenderedRoutes,
   reportName,
+  shardRoutes,
   warnings,
   type RouteScores,
 } from './routes';
@@ -54,7 +55,8 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
     context.root,
     options.outputDir ?? 'dist/lighthouse/docs',
   );
-  const routes = options.routes ?? (await prerenderedRoutes(dir));
+  const all = options.routes ?? (await prerenderedRoutes(dir));
+  const routes = options.shard ? shardRoutes(all, options.shard) : all;
   await mkdir(outputDir, { recursive: true });
 
   // Lighthouse and chrome-launcher are ES modules, loaded when needed.

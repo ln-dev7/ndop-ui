@@ -19,6 +19,11 @@ export interface DocsLighthouseExecutorSchema {
   /** Routes to audit; every prerendered route by default. */
   routes?: string[];
   /**
+   * Audit one shard of the routes, such as `2/3`, so parallel runners
+   * share them; routes are dealt out in turn.
+   */
+  shard?: string;
+  /**
    * CPU slowdown to use instead of calibrating it to the host's benchmark
    * (ADR-0016, amendment 8).
    */

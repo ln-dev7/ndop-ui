@@ -28,6 +28,26 @@ export async function prerenderedRoutes(dir: string): Promise<string[]> {
 }
 
 /**
+ * One shard's share of the routes, for auditing them on parallel runners.
+ * Routes are dealt out in turn, so every shard gets a similar mix of
+ * pages.
+ *
+ * @param routes - Every route, sorted.
+ * @param shard - Which shard and of how many, such as `2/3`.
+ * @returns This shard's routes.
+ * @throws When `shard` isn't `<index>/<total>` with 1 ≤ index ≤ total.
+ */
+export function shardRoutes(routes: string[], shard: string): string[] {
+  const match = /^(\d+)\/(\d+)$/.exec(shard);
+  const index = Number(match?.[1]);
+  const total = Number(match?.[2]);
+  if (!match || index < 1 || index > total) {
+    throw new Error(`Expected a shard like 1/3, got "${shard}".`);
+  }
+  return routes.filter((_, position) => position % total === index - 1);
+}
+
+/**
  * The scores that fail the gate: any category under the minimum, except
  * performance, which fails only under its floor (ADR-0016, amendment 10).
  *

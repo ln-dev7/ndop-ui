@@ -9,6 +9,7 @@ import {
   prerenderedRoutes,
   REFERENCE_BENCHMARK,
   reportName,
+  shardRoutes,
   warnings,
   type RouteScores,
 } from './routes';
@@ -27,6 +28,28 @@ describe('prerenderedRoutes', () => {
       '/docs/components/dialog',
     ]);
     await rm(dir, { recursive: true, force: true });
+  });
+});
+
+describe('shardRoutes', () => {
+  const routes = ['/', '/a', '/b', '/c', '/d'];
+
+  it('deals the routes out in turn', () => {
+    expect(shardRoutes(routes, '1/2')).toEqual(['/', '/b', '/d']);
+    expect(shardRoutes(routes, '2/2')).toEqual(['/a', '/c']);
+  });
+
+  it('covers every route exactly once across the shards', () => {
+    const shards = ['1/3', '2/3', '3/3'].flatMap((shard) =>
+      shardRoutes(routes, shard),
+    );
+    expect(shards.sort()).toEqual(routes);
+  });
+
+  it('rejects malformed shards', () => {
+    expect(() => shardRoutes(routes, '0/3')).toThrow('1/3');
+    expect(() => shardRoutes(routes, '4/3')).toThrow();
+    expect(() => shardRoutes(routes, 'two')).toThrow();
   });
 });
 

@@ -31,6 +31,11 @@
       },
       "description": "Routes to audit; every prerendered route by default."
     },
+    "shard": {
+      "type": "string",
+      "description": "Audit one shard of the routes, such as `2/3`, so parallel runners share them; routes are dealt out in turn.",
+      "pattern": "^[0-9]+/[0-9]+$"
+    },
     "cpuSlowdownMultiplier": {
       "type": "number",
       "description": "CPU slowdown to use instead of calibrating it to the host's benchmark (ADR-0016, amendment 8)."
