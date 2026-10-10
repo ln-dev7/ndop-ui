@@ -3,6 +3,10 @@ import { expect, test } from '@playwright/test';
 import { open } from './support/open';
 import { SiteMap } from './support/site-map';
 
+// One test walks every route, so a retry's trace records the whole site
+// and can fill a CI runner's disk; the step names say which route failed.
+test.use({ trace: 'off' });
+
 test('every route renders on the server, hydrates cleanly, passes axe and links only to pages that exist', async ({
   page,
   request,
