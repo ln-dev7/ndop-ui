@@ -21,11 +21,15 @@ export default defineConfig(() => {
     optimizeDeps: {
       include: [
         '@angular/cdk/a11y',
+        '@angular/cdk/bidi',
         '@angular/cdk/overlay',
         '@angular/cdk/platform',
         '@angular/cdk/portal',
         '@angular/forms',
         '@angular/forms/signals',
+        '@lucide/angular',
+        'clsx',
+        'tailwind-merge',
       ],
     },
     server: {
