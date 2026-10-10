@@ -280,7 +280,7 @@
   }
   /* Removed lines are tinted, not dimmed: dimmed text fails contrast. */
   & .line.diff.remove {
-    @apply bg-[oklch(0.95_0.04_25)] dark:bg-[oklch(0.3_0.06_25)];
+    @apply bg-[oklch(0.97_0.025_25)] dark:bg-[oklch(0.3_0.06_25)];
   }
 }
 
