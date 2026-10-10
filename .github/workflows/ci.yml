@@ -13,6 +13,11 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # In the workspace, rather than Nx's per-user folder, so actions/cache
+  # can carry task results from one run to the next.
+  NX_CACHE_DIRECTORY: .nx/cache
+
 jobs:
   main:
     name: Node ${{ matrix.node }}
@@ -41,7 +46,13 @@ jobs:
         with:
           main-branch-name: master
 
-      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      # Restores the latest results for this job, so unchanged projects hit
+      # Nx's cache; each run saves its own entry.
+      - uses: actions/cache@v6
+        with:
+          path: .nx/cache
+          key: nx-main-${{ matrix.node }}-${{ github.sha }}
+          restore-keys: nx-main-${{ matrix.node }}-
 
       - run: pnpm nx format:check
 
@@ -53,30 +64,27 @@ jobs:
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t lint typecheck test build check
 
-      # E2E runs on its own: the harness's dev server renders pages on
-      # demand, and sharing the runner with lint, type-check and test tasks
-      # starved it past Vite's 60s server-render limit. The docs' e2e runs
-      # against their production build. The registry install test has its
-      # own job.
+      # The update merge suite (ADR-0020) needs no browser, but does depend
+      # on Node, so it stays here.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t e2e --exclude=registry-e2e
+        run: pnpm nx affected -t e2e --projects=update-fixtures
 
       - if: github.event_name == 'push'
-        run: pnpm nx run-many -t e2e --exclude=registry-e2e
+        run: pnpm nx run-many -t e2e --projects=update-fixtures
 
-      # ADR-0021: every example in light, dark and RTL, against committed
-      # baselines. The browser runs in Playwright's Docker image, so one
-      # Node version is enough. The Visual baselines workflow writes them;
-      # until they're committed, there's nothing to compare.
-      - if: matrix.node == '24.21.0' && hashFiles('apps/harness-e2e/src/visual/__screenshots__/**') != ''
-        run: pnpm nx run harness-e2e:visual
-
-  # ADR-0016: Lighthouse on every prerendered docs route, served the way
-  # Cloudflare Pages serves it; any category under 95 fails. On its own
-  # runner, so other tasks don't skew the performance measurements.
-  docs-lighthouse:
-    name: Docs Lighthouse
+  # Browser tests depend on the browser, not on Node, so they run once, on
+  # the active LTS, with one job per browser in parallel. They have their
+  # own runners: the harness's dev server renders pages on demand, and
+  # sharing a runner with lint, type-check and test tasks starved it past
+  # Vite's 60s server-render limit. The docs' e2e runs against their
+  # production build. The registry install test has its own job.
+  e2e:
+    name: E2E ${{ matrix.browser }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -95,23 +103,85 @@ jobs:
         with:
           main-branch-name: master
 
+      # Restores the latest results for this job, so unchanged projects hit
+      # Nx's cache; each run saves its own entry.
+      - uses: actions/cache@v6
+        with:
+          path: .nx/cache
+          key: nx-e2e-${{ matrix.browser }}-${{ github.sha }}
+          restore-keys: nx-e2e-${{ matrix.browser }}-
+
+      - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+
+      # Arguments after `--` reach every Playwright run, which keeps it to
+      # this job's browser.
+      - if: github.event_name == 'pull_request'
+        run: pnpm nx affected -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }}
+
+      - if: github.event_name == 'push'
+        run: pnpm nx run-many -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }}
+
+      # ADR-0021: every example in light, dark and RTL, against committed
+      # baselines. The browser runs in Playwright's Docker image, so one
+      # job is enough. The Visual baselines workflow writes them; until
+      # they're committed, there's nothing to compare.
+      - if: matrix.browser == 'chromium' && hashFiles('apps/harness-e2e/src/visual/__screenshots__/**') != ''
+        run: pnpm nx run harness-e2e:visual
+
+  # ADR-0016: Lighthouse on every prerendered docs route, served the way
+  # Cloudflare Pages serves it; any category under 95 fails. The routes are
+  # shared out across parallel jobs, each on its own runner, so other tasks
+  # don't skew the performance measurements.
+  docs-lighthouse:
+    name: Docs Lighthouse ${{ matrix.shard }}/3
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: master
+
+      # Restores the latest results for this job, so unchanged projects hit
+      # Nx's cache; each run saves its own entry.
+      - uses: actions/cache@v6
+        with:
+          path: .nx/cache
+          key: nx-lighthouse-${{ matrix.shard }}-${{ github.sha }}
+          restore-keys: nx-lighthouse-${{ matrix.shard }}-
+
       - run: pnpm exec playwright install --with-deps chromium
 
       - if: github.event_name == 'pull_request'
         run: |
           if pnpm nx show projects --affected --projects=docs --json | grep -q '"docs"'; then
-            pnpm nx lighthouse docs
+            pnpm nx lighthouse docs --shard=${{ matrix.shard }}/3
           else
             echo "No change affects the docs."
           fi
 
       - if: github.event_name == 'push'
-        run: pnpm nx lighthouse docs
+        run: pnpm nx lighthouse docs --shard=${{ matrix.shard }}/3
 
       - if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: docs-lighthouse-reports
+          name: docs-lighthouse-reports-${{ matrix.shard }}
           path: dist/lighthouse/docs
           if-no-files-found: ignore
 

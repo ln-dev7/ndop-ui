@@ -98,7 +98,7 @@ Each runs `--dry-run` cleanly and is unit-tested like `primitive`.
   The manual "Visual baselines" workflow does the same in CI and uploads
   them as an artifact, for machines without Docker or bandwidth for the
   image.
-- It runs in CI's `main` job, on Node 24 only.
+- It runs in CI's Chromium e2e job.
 - The eight existing items get baselines in the first step.
 
 ### Bundle-size budgets
