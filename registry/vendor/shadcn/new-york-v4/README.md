@@ -1,7 +1,7 @@
 # Vendored shadcn/ui sources
 
 shadcn/ui new-york-v4 registry items (MIT License, Copyright (c) 2023 shadcn),
-fetched on 2026-10-02 (badge on 2026-10-03; the Phase 6 batch A and B items on 2026-10-09, batch C and D on 2026-10-10) from https://ui.shadcn.com/r/styles/new-york-v4/<item>.json.
+fetched on 2026-10-02 (badge on 2026-10-03; the Phase 6 batch A and B items on 2026-10-09, batch C and D on 2026-10-10, batch E on 2026-10-11) from https://ui.shadcn.com/r/styles/new-york-v4/<item>.json.
 The styled items' parity tests compare their classes with these files
 (ADR-0014). Refresh deliberately, in its own commit, and review the diff.
 
@@ -33,8 +33,10 @@ the README's acknowledgements and the docs' credit cover them
 | `breadcrumb` | 2026-10-09 | The current page is text with `aria-current="page"`, without shadcn's `role="link" aria-disabled`. Separators and the ellipsis hold the user's icons, sized with `[&>svg]:` and turned around in RTL. The landmark is named "Breadcrumb". |
 | `button.json` | `4b8d7d848742727973c1b088af8d15f0b628272a1316f2d2fa344e73ddff9e9c` |
 | `button` | 2026-10-02 | `destructive` uses `text-destructive-foreground`, not `text-white`. `data-disabled:*` mirror `disabled:*`, because a disabled link has no `:disabled` state. |
+| `calendar.json` | `746d0f9d907a20959c28b1e9ea38e163a28487c1219d45db5c457733fc3066ac` |
 | `card.json` | `c7ebaa49ba2a0613838558f3892c5007523c2dc26d6b36a244145d454a796106` |
 | `card` | 2026-10-09 | Parts are attributes on the user's elements, so a card can be a `section` or `article` and its title a heading. |
+| `chart.json` | `2ea906f5c8e304dfb81c84e7b2172d13c03a302e183b7195cac24c101dee72e5` |
 | `checkbox.json` | `567b649e4cd68c05bfdc58ca00fa04aee38bca291cd6f16ed7776ec06ba3d6bd` |
 | `checkbox` | 2026-10-09 | Adds `data-[state=indeterminate]` styles matching the checked ones, for a mixed checkbox. The check icon is the user's `<svg ndIcon="check">`, sized by the indicator with `[&>svg]:size-3.5`. |
 | `collapsible.json` | `fdc6666e9c728d7e731b0e4d67e11db81020aff47408c259549fc1aefcc8e3e7` |
@@ -79,6 +81,7 @@ the README's acknowledgements and the docs' credit cover them
 | `separator` | 2026-10-02 | shadcn defaults to decorative; Ndop keeps the primitive's semantic default (`role="separator"`), so `decorative` is passed for purely visual lines. |
 | `sheet.json` | `bdf118300491675f05a9181af491217ba690929338aefd108437c2b07d25432f` |
 | `sheet` | 2026-10-10 | Sides are logical: `right` and `left` become `end` and `start` (`end-0`, `border-s`, `slide-in-from-end`), the default is `end`, and the close button sits at `end-4`. The close button is `ndSheetCloseButton`, with the user's icon and name. The root and parts compose the Dialog primitive, as shadcn's compose Radix Dialog. |
+| `sidebar.json` | `421f1735955361a12466c5c6e7d4c1124cc7f76422b4fdd5dcdf8451b8ae4052` |
 | `skeleton.json` | `1ed4d99f9d632d9697a054eefcd19932abd68cef7808407986f6e14da401edf7` |
 | `skeleton` | 2026-10-09 | `aria-hidden="true"` on the placeholder; the loading region says it's busy instead. |
 | `slider.json` | `99f6044fa83df91dfda17d3cc57cf5297c3759d57fd483665e518e4961208e73` |
