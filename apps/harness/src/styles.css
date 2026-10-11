@@ -7,3 +7,4 @@
    vendored shadcn sources next to them must not add classes. */
 @source '../../../registry/ui';
 @source '../../../registry/examples';
+@source '../../../registry/blocks';

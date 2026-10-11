@@ -12,7 +12,7 @@ export default defineConfig(() => ({
     watch: false,
     globals: true,
     environment: 'jsdom',
-    include: ['{ui,lib,examples,testing}/**/*.spec.ts'],
+    include: ['{ui,lib,examples,blocks,testing}/**/*.spec.ts'],
     setupFiles: ['test-setup.ts'],
     reporters: ['default'],
     coverage: {

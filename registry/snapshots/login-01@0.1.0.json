@@ -1,0 +1,34 @@
+{
+  "name": "login-01",
+  "type": "registry:block",
+  "version": "0.1.0",
+  "title": "Login 01",
+  "description": "A sign-in form in a card, with email and password.",
+  "registryDependencies": [
+    "button",
+    "card",
+    "form-field",
+    "input"
+  ],
+  "categories": [
+    "auth"
+  ],
+  "files": [
+    {
+      "path": "blocks/login-01/login-01.ts",
+      "type": "registry:block",
+      "target": "{blocks}/login-01/login-01.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { email, form, FormField, required } from '@angular/forms/signals';\nimport { Button } from '@/ui/button/button';\nimport {\n  Card,\n  CardContent,\n  CardDescription,\n  CardHeader,\n  CardTitle,\n} from '@/ui/card/card';\nimport {\n  Field,\n  FieldDescription,\n  FieldError,\n  FieldGroup,\n  FieldLabel,\n} from '@/ui/form-field/form-field';\nimport { Input } from '@/ui/input/input';\n\n/**\n * A sign-in page: a centered card with an email and password form,\n * validated with Signal Forms, a passkey alternative and a link to sign\n * up. Errors show once a field has been left, or the form submitted.\n */\n@Component({\n  selector: 'block-login-01',\n  imports: [\n    Button,\n    Card,\n    CardContent,\n    CardDescription,\n    CardHeader,\n    CardTitle,\n    Field,\n    FieldDescription,\n    FieldError,\n    FieldGroup,\n    FieldLabel,\n    FormField,\n    Input,\n  ],\n  template: `\n    <main\n      class=\"flex min-h-svh w-full items-center justify-center bg-background p-6 md:p-10\"\n    >\n      <section\n        ndCard\n        class=\"w-full max-w-sm\"\n        aria-labelledby=\"login-01-title\"\n        aria-describedby=\"login-01-description\"\n      >\n        <div ndCardHeader>\n          <h1 ndCardTitle id=\"login-01-title\" class=\"text-xl\">\n            Sign in to your account\n          </h1>\n          <p ndCardDescription id=\"login-01-description\">\n            Enter your email below to sign in to your account.\n          </p>\n        </div>\n        <div ndCardContent>\n          <form novalidate (submit)=\"submit($event)\">\n            <div ndFieldGroup>\n              <div ndField>\n                <label ndFieldLabel for=\"login-01-email\">Email</label>\n                <input\n                  ndInput\n                  id=\"login-01-email\"\n                  type=\"email\"\n                  autocomplete=\"email\"\n                  placeholder=\"ada@example.com\"\n                  [formField]=\"login.email\"\n                />\n                <div ndFieldError>\n                  @for (error of login.email().errors(); track error.kind) {\n                    <p>{{ error.message }}</p>\n                  }\n                </div>\n              </div>\n              <div ndField>\n                <div class=\"flex items-center\">\n                  <label ndFieldLabel for=\"login-01-password\">Password</label>\n                  <a\n                    href=\"/forgot-password\"\n                    class=\"ms-auto inline-block text-sm underline-offset-4 hover:underline\"\n                    >Forgot your password?</a\n                  >\n                </div>\n                <input\n                  ndInput\n                  id=\"login-01-password\"\n                  type=\"password\"\n                  autocomplete=\"current-password\"\n                  [formField]=\"login.password\"\n                />\n                <div ndFieldError>\n                  @for (error of login.password().errors(); track error.kind) {\n                    <p>{{ error.message }}</p>\n                  }\n                </div>\n              </div>\n              <div ndField>\n                <button ndButton type=\"submit\">Sign in</button>\n                <button ndButton type=\"button\" variant=\"outline\">\n                  Sign in with a passkey\n                </button>\n                <p ndFieldDescription class=\"text-center\">\n                  Don't have an account? <a href=\"/signup\">Sign up</a>\n                </p>\n              </div>\n            </div>\n          </form>\n        </div>\n      </section>\n    </main>\n  `,\n})\nexport class Login01Block {\n  protected readonly model = signal({ email: '', password: '' });\n\n  protected readonly login = form(this.model, (path) => {\n    required(path.email, { message: 'Enter your email.' });\n    email(path.email, { message: 'Enter an email like ada@example.com.' });\n    required(path.password, { message: 'Enter your password.' });\n  });\n\n  /**\n   * Marks the fields touched, so errors show, instead of reloading.\n   *\n   * @param event - The form's submit event.\n   */\n  protected submit(event: Event): void {\n    event.preventDefault();\n    this.login().markAsTouched();\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Login01Block"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "docs": "Route to it, for example: { path: 'login-01', loadComponent: () => import('./blocks/login-01/login-01').then((m) => m.Login01Block) }",
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

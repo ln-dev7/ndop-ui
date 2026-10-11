@@ -9,8 +9,8 @@ describe('BLOCKS', () => {
         '!**/*.spec.ts',
       ]),
     )
-      .map((path) => path.replace(/^.*\/|\.ts$/g, ''))
-      .filter((name, index, all) => all.indexOf(name) === index);
+      .map((path) => /\/([^/]+)\/\1\.ts$/.exec(path)?.[1])
+      .filter((name): name is string => name !== undefined);
     expect(Object.keys(BLOCKS).sort()).toEqual(files.sort());
     expect([...BLOCK_NAMES].sort()).toEqual(files.sort());
   });

@@ -21,7 +21,7 @@
     {
       "name": "icons",
       "type": "registry:lib",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "title": "Icons",
       "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
       "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
@@ -4948,6 +4948,388 @@
         "zoneless": true,
         "ssr": true
       }
+    },
+    {
+      "name": "login-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Login 01",
+      "description": "A sign-in form in a card, with email and password.",
+      "registryDependencies": ["button", "card", "form-field", "input"],
+      "categories": ["auth"],
+      "files": [
+        {
+          "path": "blocks/login-01/login-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/login-01/login-01.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Login01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'login-01', loadComponent: () => import('./blocks/login-01/login-01').then((m) => m.Login01Block) }"
+    },
+    {
+      "name": "login-02",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Login 02",
+      "description": "A two-column sign-in page with the form beside an image.",
+      "registryDependencies": ["button", "form-field", "input"],
+      "categories": ["auth"],
+      "files": [
+        {
+          "path": "blocks/login-02/login-02.ts",
+          "type": "registry:block",
+          "target": "{blocks}/login-02/login-02.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Login02Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'login-02', loadComponent: () => import('./blocks/login-02/login-02').then((m) => m.Login02Block) }"
+    },
+    {
+      "name": "signup-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Signup 01",
+      "description": "A sign-up form in a card, validated with Signal Forms.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "alert",
+        "button",
+        "card",
+        "checkbox",
+        "form-field",
+        "icons",
+        "input"
+      ],
+      "categories": ["auth"],
+      "files": [
+        {
+          "path": "blocks/signup-01/signup-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/signup-01/signup-01.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Signup01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'signup-01', loadComponent: () => import('./blocks/signup-01/signup-01').then((m) => m.Signup01Block) }"
+    },
+    {
+      "name": "dashboard-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Dashboard 01",
+      "description": "A dashboard of stat cards, an area chart and a table of recent orders.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "card",
+        "chart",
+        "icons",
+        "skeleton",
+        "table",
+        "toggle-group"
+      ],
+      "categories": ["dashboard"],
+      "files": [
+        {
+          "path": "blocks/dashboard-01/dashboard-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/dashboard-01/dashboard-01.ts"
+        },
+        {
+          "path": "blocks/dashboard-01/data.ts",
+          "type": "registry:block",
+          "target": "{blocks}/dashboard-01/data.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Dashboard01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'dashboard-01', loadComponent: () => import('./blocks/dashboard-01/dashboard-01').then((m) => m.Dashboard01Block) }"
+    },
+    {
+      "name": "dashboard-02",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Dashboard 02",
+      "description": "An analytics dashboard with tabs for overview, reports and notifications.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "avatar",
+        "badge",
+        "button",
+        "card",
+        "chart",
+        "icons",
+        "skeleton",
+        "table",
+        "tabs"
+      ],
+      "categories": ["dashboard"],
+      "files": [
+        {
+          "path": "blocks/dashboard-02/dashboard-02.ts",
+          "type": "registry:block",
+          "target": "{blocks}/dashboard-02/dashboard-02.ts"
+        },
+        {
+          "path": "blocks/dashboard-02/data.ts",
+          "type": "registry:block",
+          "target": "{blocks}/dashboard-02/data.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Dashboard02Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'dashboard-02', loadComponent: () => import('./blocks/dashboard-02/dashboard-02').then((m) => m.Dashboard02Block) }"
+    },
+    {
+      "name": "settings-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Settings 01",
+      "description": "A settings page with profile and account forms.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "card",
+        "form-field",
+        "icons",
+        "input",
+        "label",
+        "radio-group",
+        "select",
+        "separator",
+        "textarea"
+      ],
+      "categories": ["settings"],
+      "files": [
+        {
+          "path": "blocks/settings-01/settings-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/settings-01/settings-01.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Settings01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'settings-01', loadComponent: () => import('./blocks/settings-01/settings-01').then((m) => m.Settings01Block) }"
+    },
+    {
+      "name": "settings-02",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Settings 02",
+      "description": "A settings page of notification switches and a danger zone.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "alert-dialog",
+        "button",
+        "card",
+        "form-field",
+        "icons",
+        "radio-group",
+        "separator",
+        "switch"
+      ],
+      "categories": ["settings"],
+      "files": [
+        {
+          "path": "blocks/settings-02/settings-02.ts",
+          "type": "registry:block",
+          "target": "{blocks}/settings-02/settings-02.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Settings02Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'settings-02', loadComponent: () => import('./blocks/settings-02/settings-02').then((m) => m.Settings02Block) }"
+    },
+    {
+      "name": "data-table-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Data Table 01",
+      "description": "A table of tasks to search, filter, sort, page through and select, with actions per row.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "checkbox",
+        "data-table",
+        "dropdown-menu",
+        "icons",
+        "input",
+        "label",
+        "select",
+        "skeleton",
+        "table"
+      ],
+      "categories": ["data-table"],
+      "files": [
+        {
+          "path": "blocks/data-table-01/data-table-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/data-table-01/data-table-01.ts"
+        },
+        {
+          "path": "blocks/data-table-01/data.ts",
+          "type": "registry:block",
+          "target": "{blocks}/data-table-01/data.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DataTable01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'data-table-01', loadComponent: () => import('./blocks/data-table-01/data-table-01').then((m) => m.DataTable01Block) }"
+    },
+    {
+      "name": "sidebar-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Sidebar 01",
+      "description": "An app shell with a sidebar of grouped links.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "avatar",
+        "breadcrumb",
+        "icons",
+        "separator",
+        "sidebar"
+      ],
+      "categories": ["sidebar"],
+      "files": [
+        {
+          "path": "blocks/sidebar-01/sidebar-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/sidebar-01/sidebar-01.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Sidebar01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'sidebar-01', loadComponent: () => import('./blocks/sidebar-01/sidebar-01').then((m) => m.Sidebar01Block) }"
+    },
+    {
+      "name": "sidebar-02",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Sidebar 02",
+      "description": "An app shell whose sidebar collapses to icons and opens as a sheet on mobile.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "avatar",
+        "breadcrumb",
+        "collapsible",
+        "dropdown-menu",
+        "icons",
+        "separator",
+        "sidebar"
+      ],
+      "categories": ["sidebar"],
+      "files": [
+        {
+          "path": "blocks/sidebar-02/sidebar-02.ts",
+          "type": "registry:block",
+          "target": "{blocks}/sidebar-02/sidebar-02.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Sidebar02Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'sidebar-02', loadComponent: () => import('./blocks/sidebar-02/sidebar-02').then((m) => m.Sidebar02Block) }"
+    },
+    {
+      "name": "hero-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Hero 01",
+      "description": "A hero section with a headline, two actions and a product shot.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["badge", "button", "icons"],
+      "categories": ["marketing"],
+      "files": [
+        {
+          "path": "blocks/hero-01/hero-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/hero-01/hero-01.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Hero01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'hero-01', loadComponent: () => import('./blocks/hero-01/hero-01').then((m) => m.Hero01Block) }"
+    },
+    {
+      "name": "pricing-01",
+      "type": "registry:block",
+      "version": "0.1.0",
+      "title": "Pricing 01",
+      "description": "Pricing plans with a monthly or yearly billing toggle.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "accordion",
+        "badge",
+        "button",
+        "card",
+        "icons",
+        "toggle-group"
+      ],
+      "categories": ["marketing"],
+      "files": [
+        {
+          "path": "blocks/pricing-01/pricing-01.ts",
+          "type": "registry:block",
+          "target": "{blocks}/pricing-01/pricing-01.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Pricing01Block"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "docs": "Route to it, for example: { path: 'pricing-01', loadComponent: () => import('./blocks/pricing-01/pricing-01').then((m) => m.Pricing01Block) }"
     }
   ]
 }
