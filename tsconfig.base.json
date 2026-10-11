@@ -103,7 +103,13 @@
       "@ndop/primitives/combobox": [
         "./packages/primitives/combobox/src/index.ts"
       ],
-      "@ndop/primitives/command": ["./packages/primitives/command/src/index.ts"]
+      "@ndop/primitives/command": [
+        "./packages/primitives/command/src/index.ts"
+      ],
+      "@ndop/primitives/calendar": [
+        "./packages/primitives/calendar/src/index.ts"
+      ],
+      "@ndop/primitives/sidebar": ["./packages/primitives/sidebar/src/index.ts"]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

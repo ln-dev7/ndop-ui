@@ -45,4 +45,6 @@ export const DEMOS: readonly Demo[] = [
   { path: 'select', title: 'Select' },
   { path: 'combobox', title: 'Combobox' },
   { path: 'command', title: 'Command' },
+  { path: 'calendar', title: 'Calendar' },
+  { path: 'sidebar', title: 'Sidebar' },
 ];

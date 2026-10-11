@@ -23,6 +23,7 @@ export default defineConfig(() => {
         '@angular/cdk/a11y',
         '@angular/cdk/accordion',
         '@angular/cdk/bidi',
+        '@angular/cdk/layout',
         '@angular/cdk/listbox',
         '@angular/cdk/menu',
         '@angular/cdk/overlay',
