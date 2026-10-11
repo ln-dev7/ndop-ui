@@ -400,7 +400,9 @@ export class NdSidebarRail {
 
 /**
  * A link or button in the sidebar's menu. `active` marks the current page
- * with `aria-current="page"`; on mobile, activating it closes the sidebar.
+ * with `aria-current="page"`; on mobile, following it when it's a link
+ * closes the sidebar. A button stays put, since it may open a submenu or
+ * a menu inside the sidebar.
  *
  * @example
  * ```html
@@ -420,10 +422,14 @@ export class NdSidebarMenuButton {
   readonly active = input(false, { transform: booleanAttribute });
 
   private readonly provider = inject(ND_SIDEBAR_PROVIDER, { optional: true });
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** Closes the mobile sidebar, as following a link leaves it. */
   protected closeMobile(): void {
-    if (this.provider?.isMobile()) {
+    if (
+      this.provider?.isMobile() &&
+      this.element.nativeElement.matches('a[href]')
+    ) {
       this.provider.openMobile.set(false);
     }
   }

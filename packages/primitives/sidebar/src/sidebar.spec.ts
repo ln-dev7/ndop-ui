@@ -28,6 +28,7 @@ import {
         <div ndSidebarContainer aria-label="Main" data-testid="container">
           <a ndSidebarMenuButton href="#inbox" active>Inbox</a>
           <a ndSidebarMenuButton href="#drafts">Drafts</a>
+          <button ndSidebarMenuButton>Projects</button>
           <button ndSidebarRail title="Toggle sidebar"></button>
         </div>
       </div>
@@ -106,7 +107,7 @@ describe('NdSidebar', () => {
     expect(screen.getByTestId('gap').getAttribute('aria-hidden')).toBe('true');
   });
 
-  it('opens on mobile as a modal dialog that a link closes', async () => {
+  it('opens on mobile as a modal dialog that a link, not a button, closes', async () => {
     const { host, settle } = await setup();
     host.provider().isMobile.set(true);
     await settle();
@@ -119,6 +120,9 @@ describe('NdSidebar', () => {
     expect(container.hidden).toBe(false);
     expect(screen.getByRole('dialog', { name: 'Main' })).toBe(container);
     expect(container.getAttribute('aria-modal')).toBe('true');
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    await settle();
+    expect(host.openMobile()).toBe(true);
     fireEvent.click(screen.getByRole('link', { name: 'Drafts' }));
     await settle();
     expect(host.openMobile()).toBe(false);
