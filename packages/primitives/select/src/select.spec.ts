@@ -102,6 +102,11 @@ describe('NdSelect', () => {
     ).toBe('true');
   });
 
+  it('leaves focus alone until it has been opened', async () => {
+    await setup();
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it('shows the selected option’s text, including interpolated text', async () => {
     const { host, settle } = await setup();
     host.value.set('cherry');

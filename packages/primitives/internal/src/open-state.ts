@@ -21,6 +21,8 @@ export interface NdOpenStateHandlers {
  * Connects a primitive's `open` model to its overlay. Nothing is shown
  * before hydration: the server renders closed, then `defaultOpen` and an
  * initially bound `open` take effect after the first render in the browser.
+ * `hide` runs only after a `show`, so a primitive that starts closed never
+ * runs its closing work, such as returning focus to its trigger.
  * Call it in an injection context.
  *
  * @param open - The primitive's `open` model.
@@ -42,11 +44,14 @@ export function bindOpenState(
     hydrated.set(true);
   });
 
+  let shown = false;
   effect(() => {
     const isOpen = open();
-    if (hydrated()) {
-      untracked(() => (isOpen ? handlers.show() : handlers.hide()));
+    if (!hydrated() || isOpen === shown) {
+      return;
     }
+    shown = isOpen;
+    untracked(() => (isOpen ? handlers.show() : handlers.hide()));
   });
 
   return hydrated.asReadonly();
