@@ -481,6 +481,31 @@ describe('buildRegistry', () => {
     });
   });
 
+  it("requires a block's first category to be a gallery category", async () => {
+    const block = {
+      name: 'login-01',
+      type: 'registry:block',
+      version: '0.1.0',
+      title: 'Login 01',
+      description: 'A login form.',
+      categories: ['login'],
+      files: [
+        {
+          path: 'ui/badge/badge.ts',
+          type: 'registry:block',
+          target: '{blocks}/login-01/login-01.ts',
+        },
+      ],
+      angular: { ...ANGULAR, exports: ['Badge'] },
+    };
+    await fixture({}, [...items(), block]);
+    expect((await build({ compile: false })).issues).toContainEqual({
+      item: 'login-01',
+      message:
+        "A block's first category must be one of auth, dashboard, settings, data-table, sidebar, marketing.",
+    });
+  });
+
   it('requires theme imports to be dependencies', async () => {
     const undeclared = items();
     delete undeclared[2]?.['dependencies'];

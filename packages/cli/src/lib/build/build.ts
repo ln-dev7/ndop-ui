@@ -273,6 +273,19 @@ async function readManifest(
 }
 
 /**
+ * The blocks gallery's categories (ADR-0022). A block's first `categories`
+ * entry must be one of them, so the gallery and `list_blocks` can file it.
+ */
+export const BLOCK_CATEGORIES: readonly string[] = [
+  'auth',
+  'dashboard',
+  'settings',
+  'data-table',
+  'sidebar',
+  'marketing',
+];
+
+/**
  * Builds one item: embeds file contents, derives theme tokens, checks
  * registry dependencies and validates the result against the item schema.
  *
@@ -309,6 +322,15 @@ async function buildItem(
         `registryDependencies lists "${dependency}", which isn't in the manifest.`,
       );
     }
+  }
+
+  if (
+    item.type === 'registry:block' &&
+    !BLOCK_CATEGORIES.includes(item.categories?.[0] ?? '')
+  ) {
+    report(
+      `A block's first category must be one of ${BLOCK_CATEGORIES.join(', ')}.`,
+    );
   }
 
   if (item.type === 'registry:theme' && !item.cssVars) {
