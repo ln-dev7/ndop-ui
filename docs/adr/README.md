@@ -10,7 +10,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0001](0001-stack-and-pinned-versions.md)                | Stack and pinned versions                                 | Accepted                       |
 | [0002](0002-registry-format-shadcn-superset.md)          | Registry format as a shadcn superset                      | Accepted, with amendments 1–2  |
 | [0003](0003-three-way-merge-strategy.md)                 | Three-way merge strategy and structural merge scope       | Accepted, with amendments 1–2  |
-| [0004](0004-primitives-on-aria-and-cdk.md)               | Primitives on `@angular/aria` + CDK, and custom fallbacks | Accepted, with amendments 1–4  |
+| [0004](0004-primitives-on-aria-and-cdk.md)               | Primitives on `@angular/aria` + CDK, and custom fallbacks | Accepted, with amendments 1–5  |
 | [0005](0005-directive-only-styled-api.md)                | Directive-only styled API                                 | Accepted, with amendments 1–2  |
 | [0006](0006-shadcn-compatible-tokens.md)                 | Token naming compatible with shadcn                       | Accepted, with amendment 1     |
 | [0007](0007-metadata-extraction.md)                      | Metadata extraction approach                              | Accepted, with amendments 1–2  |
@@ -27,7 +27,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0018](0018-verify-and-eslint-plugin.md)                 | `ndop verify` and the ESLint plugin                       | Accepted                       |
 | [0019](0019-agent-eval-suite.md)                         | Agent eval suite                                          | Accepted, with amendment 1     |
 | [0020](0020-diff-and-update.md)                          | `ndop diff`, `ndop update` and the update preview         | Accepted, with amendment 1     |
-| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendments 1–2  |
+| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendments 1–3  |
 | [0022](0022-blocks.md)                                   | Blocks and the blocks gallery                             | Accepted                       |
 | [0023](0023-themes-and-theme-studio.md)                  | Themes, the theme studio and the theme gallery            | Accepted                       |
 | [0024](0024-doctor.md)                                   | `ndop doctor`                                             | Accepted                       |

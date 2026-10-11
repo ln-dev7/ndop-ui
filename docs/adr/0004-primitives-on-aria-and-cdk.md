@@ -1,6 +1,6 @@
 # ADR-0004: Primitives on `@angular/aria` + CDK, and custom fallbacks
 
-- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–4
+- Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–5
 - Date: 2026-10-02
 - Phase: 1
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Primitives layer (`@ndop/primitives`)"
@@ -295,3 +295,23 @@ Context, read from `@angular/forms` 21.2.24 and 22.2.1:
   path, so a `required` field marks a Checkbox `aria-required`.
 - Primitives don't depend on either major's custom-control details. When
   amendment 3's revisit happens, this one is revisited with it.
+
+## Amendment 5 (2026-10-10): Navigation Menu panels stay in place
+
+Status: Accepted (approved by Valery on 2026-10-10). Changes amendment 3's
+row for Navigation Menu, which put its panels in a CDK overlay.
+
+The WAI-ARIA disclosure navigation pattern expects each panel to follow
+its button in the document: Tab then moves from the button into its links
+and on to the next item with no help, and screen readers read the panel
+where it belongs. An overlay renders at the end of `<body>`, so Ndop would
+have to reroute Tab, as Popover does, and the links wouldn't be in the
+server-rendered HTML until a panel opens. shadcn/ui supports the same
+layout as `viewport={false}`.
+
+- Each `ndNavigationMenuContent` stays where it's written, after its
+  trigger, with the `hidden` attribute while closed. The styled layer
+  positions it under its item with CSS.
+- The links are in the server-rendered HTML, so crawlers find them.
+- Navigation Menu uses no CDK overlay. Its row in amendment 3's table
+  reads "Native `button` and `a`" from now on.

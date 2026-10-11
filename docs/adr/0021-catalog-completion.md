@@ -1,6 +1,6 @@
 # ADR-0021: Completing the v1 catalog
 
-- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–2.
+- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–3.
   Deviates from the definition of done for items without behavior
 - Date: 2026-10-08
 - Phase: 6
@@ -176,3 +176,17 @@ RFC-0001's 8 kB for Dialog is the budget for this pattern.
 - Alert Dialog, Sheet and Drawer get Dialog's 8 kB budget in
   `tools/size/budgets.json`.
 - Other items keep 4 kB, and Button 2 kB.
+
+## Amendment 3 (2026-10-10): Select and Combobox share Dialog's budget
+
+Status: Accepted (approved by Valery on 2026-10-10).
+
+Select and Combobox are overlays bound to forms: each carries Ndop's
+overlay positioning, a value accessor joined to Form Field, a listbox and
+its keyboard handling (typeahead for Select; filtering, an active
+descendant and chips for Combobox). Measured as amendment 1 decides,
+Select is 5.94 kB and Combobox 7.96 kB, against the 4 kB default.
+
+- Select and Combobox get Dialog's 8 kB budget in `tools/size/budgets.json`.
+- Combobox is close to it, so a feature that grows it needs another look,
+  such as moving chips into their own part.
