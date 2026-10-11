@@ -138,7 +138,10 @@ export function withDependencies(
  * @returns The path.
  */
 export function defaultTarget(target: string): string {
-  return target.replace('{ui}', 'src/app/ui').replace('{lib}', 'src/app/lib');
+  return target
+    .replace('{ui}', 'src/app/ui')
+    .replace('{lib}', 'src/app/lib')
+    .replace('{blocks}', 'src/app/blocks');
 }
 
 /**
