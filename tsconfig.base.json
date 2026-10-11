@@ -85,7 +85,25 @@
       "@ndop/primitives/context-menu": [
         "./packages/primitives/context-menu/src/index.ts"
       ],
-      "@ndop/primitives/toast": ["./packages/primitives/toast/src/index.ts"]
+      "@ndop/primitives/toast": ["./packages/primitives/toast/src/index.ts"],
+      "@ndop/primitives/tabs": ["./packages/primitives/tabs/src/index.ts"],
+      "@ndop/primitives/accordion": [
+        "./packages/primitives/accordion/src/index.ts"
+      ],
+      "@ndop/primitives/resizable": [
+        "./packages/primitives/resizable/src/index.ts"
+      ],
+      "@ndop/primitives/menubar": [
+        "./packages/primitives/menubar/src/index.ts"
+      ],
+      "@ndop/primitives/navigation-menu": [
+        "./packages/primitives/navigation-menu/src/index.ts"
+      ],
+      "@ndop/primitives/select": ["./packages/primitives/select/src/index.ts"],
+      "@ndop/primitives/combobox": [
+        "./packages/primitives/combobox/src/index.ts"
+      ],
+      "@ndop/primitives/command": ["./packages/primitives/command/src/index.ts"]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

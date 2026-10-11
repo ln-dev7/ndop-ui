@@ -85,6 +85,32 @@ describe('NdCollapsible', () => {
     expect(fixture.componentInstance.open()).toBe(false);
   });
 
+  it('sets the content height for animations, but not on the first render', async () => {
+    const { fixture } = await render(
+      `<div ndCollapsible>
+        <button ndCollapsibleTrigger>More</button>
+        <div ndCollapsibleContent data-testid="content">Details</div>
+      </div>`,
+      { imports: PARTS },
+    );
+    const content = screen.getByTestId('content');
+    expect(content.style.animationName).toBe('none');
+    // jsdom has no layout.
+    Object.defineProperty(content, 'scrollHeight', { value: 64 });
+    screen.getByRole('button', { name: 'More' }).click();
+    await fixture.whenStable();
+    expect(content.hidden).toBe(false);
+    expect(content.style.animationName).toBe('');
+    expect(
+      content.style.getPropertyValue('--nd-collapsible-content-height'),
+    ).toBe('64px');
+    screen.getByRole('button', { name: 'More' }).click();
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve));
+    // No animation runs in jsdom, so it hides at once.
+    expect(content.hidden).toBe(true);
+  });
+
   it('does nothing while disabled', async () => {
     await render(
       `<div ndCollapsible disabled>

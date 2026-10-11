@@ -10,7 +10,7 @@ import {
   signal,
   type OnInit,
 } from '@angular/core';
-import { injectId } from '@ndop/primitives/internal';
+import { injectCollapse, injectId } from '@ndop/primitives/internal';
 
 /**
  * The enclosing {@link NdCollapsible}, injected by its parts.
@@ -104,7 +104,10 @@ export class NdCollapsibleTrigger {
 /**
  * The content a {@link NdCollapsible} shows and hides. While closed it has
  * the `hidden` attribute, so it's out of the accessibility tree and the
- * tab order.
+ * tab order. For the styled layer to animate it, it sets
+ * `--nd-collapsible-content-height` to its height when it opens or closes,
+ * stays visible until a closing animation ends, and has `data-animating`
+ * while one runs; no animation plays on the first render.
  *
  * @example
  * ```html
@@ -116,11 +119,20 @@ export class NdCollapsibleTrigger {
   host: {
     '[attr.id]': 'collapsible.contentId()',
     '[attr.data-state]': 'collapsible.state()',
-    '[attr.hidden]': 'collapsible.open() ? null : ""',
+    '[attr.hidden]': 'collapse.present() ? null : ""',
+    '[attr.data-animating]': 'collapse.animating() ? "" : null',
+    // The page loads with the content already shown or hidden; only a
+    // toggle animates.
+    '[style.animation-name]': 'collapse.toggled() ? null : "none"',
   },
 })
 export class NdCollapsibleContent {
   protected readonly collapsible = inject(ND_COLLAPSIBLE);
+
+  protected readonly collapse = injectCollapse(
+    this.collapsible.open,
+    '--nd-collapsible-content-height',
+  );
 
   constructor() {
     const ownId = inject(new HostAttributeToken('id'), { optional: true });

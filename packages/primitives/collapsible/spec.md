@@ -10,11 +10,11 @@ is rendered from it.
 
 ## Parts, roles and attributes
 
-| Part               | Selector                       | Role | ARIA attributes                  | Data attributes               |
-| ------------------ | ------------------------------ | ---- | -------------------------------- | ----------------------------- |
-| Collapsible        | `[ndCollapsible]`              |      |                                  | `data-state`, `data-disabled` |
-| CollapsibleTrigger | `button[ndCollapsibleTrigger]` |      | `aria-expanded`, `aria-controls` | `data-state`, `data-disabled` |
-| CollapsibleContent | `[ndCollapsibleContent]`       |      |                                  | `data-state`                  |
+| Part               | Selector                       | Role | ARIA attributes                  | Data attributes                |
+| ------------------ | ------------------------------ | ---- | -------------------------------- | ------------------------------ |
+| Collapsible        | `[ndCollapsible]`              |      |                                  | `data-state`, `data-disabled`  |
+| CollapsibleTrigger | `button[ndCollapsibleTrigger]` |      | `aria-expanded`, `aria-controls` | `data-state`, `data-disabled`  |
+| CollapsibleContent | `[ndCollapsibleContent]`       |      |                                  | `data-state`, `data-animating` |
 
 - **Collapsible**: `open` is a `model()` (two-way `[(open)]`); unbound, it
   starts from the `defaultOpen` input (default `false`). `disabled`
@@ -25,7 +25,11 @@ is rendered from it.
   id; `disabled` while the collapsible is.
 - **CollapsibleContent**: has an id (its own, or a generated one) and the
   `hidden` attribute while closed, which removes it from the accessibility
-  tree and the tab order.
+  tree and the tab order. When it opens or closes, it sets
+  `--nd-collapsible-content-height` to its height, for the styled layer to
+  animate, gets the `hidden` attribute only once a closing animation ends,
+  and has `data-animating` while an animation runs. Content shown or
+  hidden on the first render doesn't animate.
 - `data-state` is `open` or `closed` on every part.
 - Unlike overlays, the content is in the page: the open state renders on
   the server too, so a collapsible that starts open is open before

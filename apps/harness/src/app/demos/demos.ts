@@ -37,4 +37,12 @@ export const DEMOS: readonly Demo[] = [
   { path: 'dropdown-menu', title: 'Dropdown Menu' },
   { path: 'context-menu', title: 'Context Menu' },
   { path: 'toast', title: 'Toast' },
+  { path: 'tabs', title: 'Tabs' },
+  { path: 'accordion', title: 'Accordion' },
+  { path: 'resizable', title: 'Resizable' },
+  { path: 'menubar', title: 'Menubar' },
+  { path: 'navigation-menu', title: 'Navigation Menu' },
+  { path: 'select', title: 'Select' },
+  { path: 'combobox', title: 'Combobox' },
+  { path: 'command', title: 'Command' },
 ];

@@ -21,7 +21,9 @@ export default defineConfig(() => {
     optimizeDeps: {
       include: [
         '@angular/cdk/a11y',
+        '@angular/cdk/accordion',
         '@angular/cdk/bidi',
+        '@angular/cdk/listbox',
         '@angular/cdk/menu',
         '@angular/cdk/overlay',
         '@angular/cdk/platform',

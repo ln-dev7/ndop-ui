@@ -3,7 +3,7 @@ import {
   type OverlayConfig,
   type OverlayRef,
 } from '@angular/cdk/overlay';
-import { TemplatePortal } from '@angular/cdk/portal';
+import { DomPortal, TemplatePortal, type Portal } from '@angular/cdk/portal';
 import { Platform } from '@angular/cdk/platform';
 import {
   DestroyRef,
@@ -48,12 +48,19 @@ export interface NdOverlay {
     viewContainer: ViewContainerRef,
   ): void;
   /**
-   * Renders the template into the overlay.
+   * Registers an element already in the document to move into the overlay
+   * while it is attached. Detaching puts it back where it was.
    *
-   * @returns The overlay, or `null` during SSR or before a template is set.
+   * @param element - The element.
+   */
+  setElement(element: HTMLElement): void;
+  /**
+   * Renders the template, or moves the element, into the overlay.
+   *
+   * @returns The overlay, or `null` during SSR or before either is set.
    */
   attach(): OverlayRef | null;
-  /** Removes the rendered template, keeping the overlay for reuse. */
+  /** Removes the template or returns the element, keeping the overlay. */
   detach(): void;
 }
 
@@ -67,7 +74,7 @@ export function injectOverlay(options: NdOverlayOptions): NdOverlay {
   const injector = inject(Injector);
   const browser = inject(Platform).isBrowser;
   let ref: OverlayRef | undefined;
-  let portal: TemplatePortal | undefined;
+  let portal: Portal<unknown> | undefined;
 
   inject(DestroyRef).onDestroy(() => ref?.dispose());
 
@@ -86,6 +93,9 @@ export function injectOverlay(options: NdOverlayOptions): NdOverlay {
   return {
     setTemplate(template, viewContainer) {
       portal = new TemplatePortal(template, viewContainer);
+    },
+    setElement(element) {
+      portal = new DomPortal(element);
     },
     attach() {
       // Overlays never render on the server; the content is interactive-only
