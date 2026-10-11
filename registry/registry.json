@@ -21,7 +21,7 @@
     {
       "name": "icons",
       "type": "registry:lib",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "title": "Icons",
       "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
       "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
@@ -1671,6 +1671,230 @@
       "ndop": {
         "metadata": "metadata/command.json",
         "examples": ["command-demo", "command-dialog"]
+      }
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Calendar",
+      "description": "Month grids to choose a date, a range or several dates.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["button", "utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/calendar/calendar.ts",
+          "type": "registry:ui",
+          "target": "{ui}/calendar/calendar.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Calendar",
+          "CalendarMonths",
+          "CalendarNav",
+          "CalendarPrevious",
+          "CalendarNext",
+          "CalendarMonth",
+          "CalendarCaption",
+          "CalendarHeading",
+          "CalendarGrid",
+          "CalendarWeekdays",
+          "CalendarWeekday",
+          "CalendarWeek",
+          "CalendarCell",
+          "CalendarDay"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/calendar.json",
+        "examples": [
+          "calendar-demo",
+          "calendar-range",
+          "calendar-multiple",
+          "calendar-disabled",
+          "calendar-locale"
+        ]
+      }
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Date Picker",
+      "description": "A button that opens a calendar in a popover to pick a date or a range.",
+      "registryDependencies": ["button", "utils"],
+      "categories": ["inputs"],
+      "files": [
+        {
+          "path": "ui/date-picker/date-picker.ts",
+          "type": "registry:ui",
+          "target": "{ui}/date-picker/date-picker.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DatePickerTrigger"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/date-picker.json",
+        "examples": ["date-picker-demo", "date-picker-range"]
+      }
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Sidebar",
+      "description": "A collapsible side panel for an app's navigation, which becomes a dialog on small screens.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["button", "utils"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/sidebar/sidebar.ts",
+          "type": "registry:ui",
+          "target": "{ui}/sidebar/sidebar.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "SidebarProvider",
+          "Sidebar",
+          "SidebarGap",
+          "SidebarContainer",
+          "SidebarInner",
+          "SidebarTrigger",
+          "SidebarRail",
+          "SidebarInset",
+          "SidebarInput",
+          "SidebarHeader",
+          "SidebarFooter",
+          "SidebarSeparator",
+          "SidebarContent",
+          "SidebarGroup",
+          "SidebarGroupLabel",
+          "SidebarGroupAction",
+          "SidebarGroupContent",
+          "SidebarMenu",
+          "SidebarMenuItem",
+          "sidebarMenuButtonVariants",
+          "SidebarMenuButton",
+          "SidebarMenuAction",
+          "SidebarMenuBadge",
+          "SidebarMenuSkeleton",
+          "SidebarMenuSub",
+          "SidebarMenuSubItem",
+          "SidebarMenuSubButton"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/sidebar.json",
+        "examples": ["sidebar-demo", "sidebar-floating"]
+      }
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Data Table",
+      "description": "A table of rows to sort, search, page through and select, on signals.",
+      "registryDependencies": ["button", "utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/data-table/data-table.ts",
+          "type": "registry:ui",
+          "target": "{ui}/data-table/data-table.ts"
+        },
+        {
+          "path": "lib/data-table.ts",
+          "type": "registry:lib",
+          "target": "{lib}/data-table.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DataTableSortButton", "compareValues", "createDataTable"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/data-table.json",
+        "examples": ["data-table-demo"]
+      }
+    },
+    {
+      "name": "chart",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Chart",
+      "description": "SVG charts you own: bar, line, area, pie and radial, with tooltips and legends.",
+      "registryDependencies": ["utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/chart/chart.ts",
+          "type": "registry:ui",
+          "target": "{ui}/chart/chart.ts"
+        },
+        {
+          "path": "lib/chart.ts",
+          "type": "registry:lib",
+          "target": "{lib}/chart.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "ChartContainer",
+          "ChartPlot",
+          "ChartGrid",
+          "ChartAxis",
+          "ChartCursor",
+          "ChartTooltip",
+          "ChartTooltipLabel",
+          "ChartTooltipList",
+          "ChartTooltipItem",
+          "ChartTooltipIndicator",
+          "ChartTooltipBody",
+          "ChartTooltipName",
+          "ChartTooltipValue",
+          "ChartLegend",
+          "ChartLegendItem",
+          "ChartLegendIndicator",
+          "arcPath",
+          "areaPath",
+          "extent",
+          "linePath",
+          "niceTicks",
+          "pieArcs",
+          "scaleBand",
+          "scaleLinear",
+          "scaleTime",
+          "stack"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/chart.json",
+        "examples": [
+          "chart-bar",
+          "chart-line",
+          "chart-area",
+          "chart-pie",
+          "chart-radial"
+        ]
       }
     },
     {
@@ -4388,6 +4612,339 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": ["CommandDialogExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "calendar-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Calendar demo",
+      "description": "A calendar to choose one date, with today marked.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "icons"],
+      "files": [
+        {
+          "path": "examples/calendar-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/calendar-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CalendarDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "calendar-range",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Calendar range",
+      "description": "Two months side by side to choose a range of days.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "icons"],
+      "files": [
+        {
+          "path": "examples/calendar-range.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/calendar-range.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CalendarRangeExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "calendar-multiple",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Calendar multiple",
+      "description": "Several dates chosen at once.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "icons"],
+      "files": [
+        {
+          "path": "examples/calendar-multiple.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/calendar-multiple.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CalendarMultipleExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "calendar-disabled",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Calendar disabled",
+      "description": "Weekends and past days that can't be chosen.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "icons"],
+      "files": [
+        {
+          "path": "examples/calendar-disabled.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/calendar-disabled.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CalendarDisabledExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "calendar-locale",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Calendar locale",
+      "description": "Month and weekday names in French, with weeks from Monday.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "icons"],
+      "files": [
+        {
+          "path": "examples/calendar-locale.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/calendar-locale.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CalendarLocaleExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "date-picker-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Date Picker demo",
+      "description": "A button that opens a calendar to pick a date, and closes once one is picked.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "date-picker", "icons", "popover"],
+      "files": [
+        {
+          "path": "examples/date-picker-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/date-picker-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DatePickerDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "date-picker-range",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Date Picker range",
+      "description": "A button that opens two months to pick a range of days.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["calendar", "date-picker", "icons", "popover"],
+      "files": [
+        {
+          "path": "examples/date-picker-range.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/date-picker-range.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DatePickerRangeExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "sidebar-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Sidebar demo",
+      "description": "An app shell with a sidebar of grouped links that collapses to icons.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "sidebar"],
+      "files": [
+        {
+          "path": "examples/sidebar-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/sidebar-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SidebarDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "sidebar-floating",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Sidebar floating",
+      "description": "A floating sidebar that slides off-canvas, with a badge and nested links.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "sidebar"],
+      "files": [
+        {
+          "path": "examples/sidebar-floating.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/sidebar-floating.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SidebarFloatingExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "data-table-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Data Table demo",
+      "description": "Payments to sort, search, select and page through, with columns to hide.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": [
+        "button",
+        "checkbox",
+        "data-table",
+        "dropdown-menu",
+        "icons",
+        "input",
+        "table"
+      ],
+      "files": [
+        {
+          "path": "examples/data-table-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/data-table-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["DataTableDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "chart-bar",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Chart bar",
+      "description": "Desktop and mobile visitors by month, as grouped bars you can read with the keyboard.",
+      "registryDependencies": ["chart"],
+      "files": [
+        {
+          "path": "examples/chart-bar.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/chart-bar.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ChartBarExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "chart-line",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Chart line",
+      "description": "Desktop and mobile visitors by month, as two smooth lines.",
+      "registryDependencies": ["chart"],
+      "files": [
+        {
+          "path": "examples/chart-line.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/chart-line.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ChartLineExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "chart-area",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Chart area",
+      "description": "Desktop and mobile visitors by month, as stacked areas.",
+      "registryDependencies": ["chart"],
+      "files": [
+        {
+          "path": "examples/chart-area.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/chart-area.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ChartAreaExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "chart-pie",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Chart pie",
+      "description": "Visitors by browser, as a donut with the total in its middle.",
+      "registryDependencies": ["chart"],
+      "files": [
+        {
+          "path": "examples/chart-pie.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/chart-pie.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ChartPieExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "chart-radial",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Chart radial",
+      "description": "Visitors by browser, as bars around rings.",
+      "registryDependencies": ["chart"],
+      "files": [
+        {
+          "path": "examples/chart-radial.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/chart-radial.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ChartRadialExample"],
         "zoneless": true,
         "ssr": true
       }

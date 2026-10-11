@@ -1,0 +1,31 @@
+{
+  "name": "calendar-range",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Calendar range",
+  "description": "Two months side by side to choose a range of days.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "calendar",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/calendar-range.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/calendar-range.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Calendar,\n  CalendarCaption,\n  CalendarCell,\n  CalendarDay,\n  CalendarGrid,\n  CalendarHeading,\n  CalendarMonth,\n  CalendarMonths,\n  CalendarNav,\n  CalendarNext,\n  CalendarPrevious,\n  CalendarWeek,\n  CalendarWeekday,\n  CalendarWeekdays,\n  type DateRange,\n} from '@/ui/calendar/calendar';\n\n/**\n * Two months side by side to choose a range of days: the first click\n * starts it, the second ends it.\n */\n@Component({\n  selector: 'example-calendar-range',\n  imports: [\n    Calendar,\n    CalendarCaption,\n    CalendarCell,\n    CalendarDay,\n    CalendarGrid,\n    CalendarHeading,\n    CalendarMonth,\n    CalendarMonths,\n    CalendarNav,\n    CalendarNext,\n    CalendarPrevious,\n    CalendarWeek,\n    CalendarWeekday,\n    CalendarWeekdays,\n    NdIcon,\n  ],\n  template: `\n    <div\n      ndCalendar\n      #calendar=\"ndCalendar\"\n      mode=\"range\"\n      [numberOfMonths]=\"2\"\n      [(range)]=\"range\"\n      class=\"rounded-md border shadow-sm\"\n    >\n      <div ndCalendarMonths>\n        <div ndCalendarNav>\n          <button ndCalendarPrevious aria-label=\"Previous month\">\n            <svg ndIcon=\"chevron-left\"></svg>\n          </button>\n          <button ndCalendarNext aria-label=\"Next month\">\n            <svg ndIcon=\"chevron-right\"></svg>\n          </button>\n        </div>\n        @for (month of calendar.months(); track month.key) {\n          <div ndCalendarMonth [month]=\"month\">\n            <div ndCalendarCaption>\n              <div ndCalendarHeading>{{ month.label }}</div>\n            </div>\n            <table ndCalendarGrid>\n              <thead>\n                <tr ndCalendarWeekdays>\n                  @for (weekday of calendar.weekdays(); track weekday.long) {\n                    <th ndCalendarWeekday [weekday]=\"weekday\">\n                      {{ weekday.short }}\n                    </th>\n                  }\n                </tr>\n              </thead>\n              <tbody>\n                @for (week of month.weeks; track week.key) {\n                  <tr ndCalendarWeek>\n                    @for (day of week.days; track day.key) {\n                      <td ndCalendarCell [day]=\"day\">\n                        <button ndCalendarDay [day]=\"day\">\n                          {{ day.label }}\n                        </button>\n                      </td>\n                    }\n                  </tr>\n                }\n              </tbody>\n            </table>\n          </div>\n        }\n      </div>\n    </div>\n  `,\n})\nexport class CalendarRangeExample {\n  protected readonly range = signal<DateRange>({\n    from: new Date(),\n    to: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),\n  });\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CalendarRangeExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

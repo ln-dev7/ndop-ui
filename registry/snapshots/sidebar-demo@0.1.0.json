@@ -1,0 +1,31 @@
+{
+  "name": "sidebar-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Sidebar demo",
+  "description": "An app shell with a sidebar of grouped links that collapses to icons.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "sidebar"
+  ],
+  "files": [
+    {
+      "path": "examples/sidebar-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/sidebar-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Sidebar,\n  SidebarContainer,\n  SidebarContent,\n  SidebarFooter,\n  SidebarGap,\n  SidebarGroup,\n  SidebarGroupContent,\n  SidebarGroupLabel,\n  SidebarHeader,\n  SidebarInner,\n  SidebarInset,\n  SidebarMenu,\n  SidebarMenuButton,\n  SidebarMenuItem,\n  SidebarProvider,\n  SidebarRail,\n  SidebarTrigger,\n} from '@/ui/sidebar/sidebar';\n\n/**\n * An app shell: a sidebar of grouped links that collapses to its icons\n * with the trigger, the rail or Ctrl+B (⌘B), and opens as a dialog on\n * small screens. In an app, drop the classes that keep it in this box,\n * and put `ndSidebarInset` on the page's `main`.\n */\n@Component({\n  selector: 'example-sidebar-demo',\n  imports: [\n    NdIcon,\n    Sidebar,\n    SidebarContainer,\n    SidebarContent,\n    SidebarFooter,\n    SidebarGap,\n    SidebarGroup,\n    SidebarGroupContent,\n    SidebarGroupLabel,\n    SidebarHeader,\n    SidebarInner,\n    SidebarInset,\n    SidebarMenu,\n    SidebarMenuButton,\n    SidebarMenuItem,\n    SidebarProvider,\n    SidebarRail,\n    SidebarTrigger,\n  ],\n  template: `\n    <div\n      ndSidebarProvider\n      [shortcut]=\"null\"\n      class=\"relative min-h-[420px] w-[640px] max-w-full overflow-hidden rounded-lg border\"\n    >\n      <div ndSidebar collapsible=\"icon\">\n        <div ndSidebarGap></div>\n        <div ndSidebarContainer aria-label=\"Main\" class=\"absolute h-full\">\n          <div ndSidebarInner>\n            <div ndSidebarHeader>\n              <span class=\"px-2 text-sm font-semibold\">Acme Inc</span>\n            </div>\n            <div ndSidebarContent>\n              <nav ndSidebarGroup aria-labelledby=\"sidebar-demo-app\">\n                <div ndSidebarGroupLabel id=\"sidebar-demo-app\">Application</div>\n                <div ndSidebarGroupContent>\n                  <ul ndSidebarMenu>\n                    @for (link of links; track link.href) {\n                      <li ndSidebarMenuItem>\n                        <a\n                          ndSidebarMenuButton\n                          [href]=\"link.href\"\n                          [active]=\"link.href === '#home'\"\n                        >\n                          <svg [ndIcon]=\"link.icon\"></svg>\n                          <span>{{ link.label }}</span>\n                        </a>\n                      </li>\n                    }\n                  </ul>\n                </div>\n              </nav>\n            </div>\n            <div ndSidebarFooter>\n              <a ndSidebarMenuButton href=\"#settings\">\n                <svg ndIcon=\"settings\"></svg>\n                <span>Settings</span>\n              </a>\n            </div>\n          </div>\n          <button ndSidebarRail title=\"Toggle sidebar\"></button>\n        </div>\n      </div>\n      <div ndSidebarInset>\n        <header class=\"flex h-12 items-center gap-2 border-b px-4\">\n          <button ndSidebarTrigger>\n            <svg ndIcon=\"panel-left\"></svg>\n            <span class=\"sr-only\">Toggle sidebar</span>\n          </button>\n          <span class=\"text-sm font-medium\">Home</span>\n        </header>\n        <div class=\"p-4 text-sm text-muted-foreground\">Your workspace.</div>\n      </div>\n    </div>\n  `,\n})\nexport class SidebarDemoExample {\n  protected readonly links = [\n    { href: '#home', label: 'Home', icon: 'house' },\n    { href: '#inbox', label: 'Inbox', icon: 'inbox' },\n    { href: '#calendar', label: 'Calendar', icon: 'calendar' },\n    { href: '#search', label: 'Search', icon: 'search' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SidebarDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
