@@ -117,7 +117,9 @@ function describe(
  * with no `aria-label` or `aria-labelledby`: screen readers announce them
  * as just "button" (RFC-0001, ADR-0018). Text inside the button, visually
  * hidden (`sr-only`) or not, names it. Form controls on buttons, such as
- * `button[ndCheckbox]`, are left to `form-control-label`.
+ * `button[ndCheckbox]`, are left to `form-control-label`, and buttons
+ * hidden from assistive technology, such as a combobox's trigger, are
+ * skipped.
  */
 export const iconButtonName = createRule({
   name: 'icon-button-name',
@@ -143,7 +145,10 @@ export const iconButtonName = createRule({
             !matches(element, CATALOG.buttons)) ||
           // Controls on buttons, such as a checkbox, take their name from a
           // label; form-control-label checks that they have one.
-          matches(element, CATALOG.controls)
+          matches(element, CATALOG.controls) ||
+          // Hidden from assistive technology, so nothing announces a name.
+          matches(element, CATALOG.hidden) ||
+          staticValue(attribute(element, 'aria-hidden')) === 'true'
         ) {
           return;
         }

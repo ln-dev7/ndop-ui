@@ -1,0 +1,33 @@
+{
+  "name": "command-dialog",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Command dialog",
+  "description": "A command palette in a dialog, opened with Ctrl+K or Cmd+K.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "command",
+    "dialog",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/command-dialog.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/command-dialog.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Command,\n  CommandEmpty,\n  CommandGroup,\n  CommandGroupHeading,\n  CommandInput,\n  CommandInputWrapper,\n  CommandItem,\n  CommandList,\n  CommandShortcut,\n} from '@/ui/command/command';\nimport {\n  Dialog,\n  DialogContent,\n  DialogDescription,\n  DialogHeader,\n  DialogOverlay,\n  DialogPortal,\n  DialogTitle,\n  DialogTrigger,\n} from '@/ui/dialog/dialog';\n\n/**\n * A command palette in a dialog, opened with its button or with Ctrl+K\n * (⌘K on a Mac). Running a command closes it.\n */\n@Component({\n  selector: 'example-command-dialog',\n  imports: [\n    Button,\n    Command,\n    CommandEmpty,\n    CommandGroup,\n    CommandGroupHeading,\n    CommandInput,\n    CommandInputWrapper,\n    CommandItem,\n    CommandList,\n    CommandShortcut,\n    Dialog,\n    DialogContent,\n    DialogDescription,\n    DialogHeader,\n    DialogOverlay,\n    DialogPortal,\n    DialogTitle,\n    DialogTrigger,\n    NdIcon,\n  ],\n  host: { '(document:keydown)': 'shortcut($event)' },\n  template: `\n    <ng-container ndDialog [(open)]=\"open\">\n      <button ndButton variant=\"outline\" ndDialogTrigger>\n        Open palette <kbd class=\"text-muted-foreground text-xs\">⌘K</kbd>\n      </button>\n      <ng-template ndDialogPortal>\n        <div ndDialogOverlay></div>\n        <div ndDialogContent class=\"overflow-hidden p-0\">\n          <div ndDialogHeader class=\"sr-only\">\n            <h2 ndDialogTitle>Command palette</h2>\n            <p ndDialogDescription>Search for a command to run.</p>\n          </div>\n          <div\n            ndCommand\n            label=\"Commands\"\n            class=\"**:data-[slot=command-input-wrapper]:h-12 **:data-[slot=command-group-heading]:px-2 **:data-[slot=command-group-heading]:font-medium **:data-[slot=command-group-heading]:text-muted-foreground **:data-[slot=command-group]:px-2 **:data-[slot=command-input-wrapper]:[&>svg]:h-5 **:data-[slot=command-input-wrapper]:[&>svg]:w-5 **:data-[slot=command-input]:h-12 **:data-[slot=command-item]:px-2 **:data-[slot=command-item]:py-3 **:data-[slot=command-item]:[&_svg]:h-5 **:data-[slot=command-item]:[&_svg]:w-5\"\n          >\n            <div ndCommandInputWrapper>\n              <svg ndIcon=\"search\"></svg>\n              <input ndCommandInput placeholder=\"Type a command or search…\" />\n            </div>\n            <div ndCommandList>\n              <div ndCommandEmpty>No results found.</div>\n              <div ndCommandGroup>\n                <div ndCommandGroupHeading>Suggestions</div>\n                <div ndCommandItem (triggered)=\"run('Calendar')\">Calendar</div>\n                <div ndCommandItem (triggered)=\"run('Search emoji')\">\n                  Search emoji\n                </div>\n              </div>\n              <div ndCommandGroup>\n                <div ndCommandGroupHeading>Settings</div>\n                <div ndCommandItem (triggered)=\"run('Profile')\">\n                  Profile <span ndCommandShortcut>⌘P</span>\n                </div>\n                <div ndCommandItem (triggered)=\"run('Settings')\">\n                  Settings <span ndCommandShortcut>⌘S</span>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n    <p class=\"text-sm text-muted-foreground\" aria-live=\"polite\">{{ ran() }}</p>\n  `,\n})\nexport class CommandDialogExample {\n  protected readonly open = signal(false);\n  protected readonly ran = signal('');\n\n  /**\n   * Opens or closes the palette for Ctrl+K or ⌘K.\n   *\n   * @param event - A keydown anywhere in the document.\n   */\n  protected shortcut(event: KeyboardEvent): void {\n    if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {\n      event.preventDefault();\n      this.open.update((open) => !open);\n    }\n  }\n\n  /**\n   * Runs a command and closes the palette.\n   *\n   * @param name - The command's name.\n   */\n  protected run(name: string): void {\n    this.ran.set(`Ran ${name}.`);\n    this.open.set(false);\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CommandDialogExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "tabs-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Tabs demo",
+  "description": "Account settings in two tabs, each a card with a form.",
+  "registryDependencies": [
+    "button",
+    "card",
+    "input",
+    "label",
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "examples/tabs-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/tabs-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Card,\n  CardContent,\n  CardDescription,\n  CardFooter,\n  CardHeader,\n  CardTitle,\n} from '@/ui/card/card';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs/tabs';\n\n/**\n * Account settings in two tabs, each a card with a form. The arrow keys\n * move between the tabs; Tab moves on into the shown panel.\n */\n@Component({\n  selector: 'example-tabs-demo',\n  imports: [\n    Button,\n    Card,\n    CardContent,\n    CardDescription,\n    CardFooter,\n    CardHeader,\n    CardTitle,\n    Input,\n    Label,\n    Tabs,\n    TabsContent,\n    TabsList,\n    TabsTrigger,\n  ],\n  template: `\n    <div ndTabs defaultValue=\"account\" class=\"w-sm max-w-full\">\n      <div ndTabsList aria-label=\"Settings\">\n        <button ndTabsTrigger value=\"account\">Account</button>\n        <button ndTabsTrigger value=\"password\">Password</button>\n      </div>\n      <div ndTabsContent value=\"account\">\n        <div ndCard>\n          <div ndCardHeader>\n            <h2 ndCardTitle>Account</h2>\n            <p ndCardDescription>\n              Make changes to your account here. Click save when you're done.\n            </p>\n          </div>\n          <div ndCardContent class=\"grid gap-6\">\n            <div class=\"grid gap-3\">\n              <label ndLabel for=\"tabs-demo-name\">Name</label>\n              <input ndInput id=\"tabs-demo-name\" value=\"Pedro Duarte\" />\n            </div>\n            <div class=\"grid gap-3\">\n              <label ndLabel for=\"tabs-demo-username\">Username</label>\n              <input ndInput id=\"tabs-demo-username\" value=\"@peduarte\" />\n            </div>\n          </div>\n          <div ndCardFooter>\n            <button ndButton>Save changes</button>\n          </div>\n        </div>\n      </div>\n      <div ndTabsContent value=\"password\">\n        <div ndCard>\n          <div ndCardHeader>\n            <h2 ndCardTitle>Password</h2>\n            <p ndCardDescription>\n              Change your password here. After saving, you'll be logged out.\n            </p>\n          </div>\n          <div ndCardContent class=\"grid gap-6\">\n            <div class=\"grid gap-3\">\n              <label ndLabel for=\"tabs-demo-current\">Current password</label>\n              <input ndInput id=\"tabs-demo-current\" type=\"password\" />\n            </div>\n            <div class=\"grid gap-3\">\n              <label ndLabel for=\"tabs-demo-new\">New password</label>\n              <input ndInput id=\"tabs-demo-new\" type=\"password\" />\n            </div>\n          </div>\n          <div ndCardFooter>\n            <button ndButton>Save password</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class TabsDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TabsDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

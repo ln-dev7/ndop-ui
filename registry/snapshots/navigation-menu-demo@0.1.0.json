@@ -1,0 +1,31 @@
+{
+  "name": "navigation-menu-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Navigation Menu demo",
+  "description": "A site's navigation with two panels of links and a top-level link.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "navigation-menu"
+  ],
+  "files": [
+    {
+      "path": "examples/navigation-menu-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/navigation-menu-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  NavigationMenu,\n  NavigationMenuContent,\n  NavigationMenuItem,\n  NavigationMenuLink,\n  NavigationMenuList,\n  NavigationMenuTrigger,\n  navigationMenuTriggerStyle,\n} from '@/ui/navigation-menu/navigation-menu';\n\n/**\n * A site's navigation: two buttons with panels of links, and a top-level\n * link to the current page. Each panel follows its button in the page, so\n * Tab moves into its links.\n */\n@Component({\n  selector: 'example-navigation-menu-demo',\n  imports: [\n    NavigationMenu,\n    NavigationMenuContent,\n    NavigationMenuItem,\n    NavigationMenuLink,\n    NavigationMenuList,\n    NavigationMenuTrigger,\n    NdIcon,\n  ],\n  template: `\n    <nav ndNavigationMenu aria-label=\"Site\">\n      <ul ndNavigationMenuList>\n        <li ndNavigationMenuItem>\n          <button ndNavigationMenuTrigger>\n            Getting started <svg ndIcon=\"chevron-down\"></svg>\n          </button>\n          <div ndNavigationMenuContent>\n            <ul class=\"grid w-[300px] gap-1 md:w-[400px] md:grid-cols-2\">\n              @for (link of guides; track link.href) {\n                <li>\n                  <a ndNavigationMenuLink [href]=\"link.href\">\n                    <span class=\"font-medium\">{{ link.title }}</span>\n                    <span class=\"text-muted-foreground line-clamp-2\">\n                      {{ link.text }}\n                    </span>\n                  </a>\n                </li>\n              }\n            </ul>\n          </div>\n        </li>\n        <li ndNavigationMenuItem>\n          <button ndNavigationMenuTrigger>\n            Components <svg ndIcon=\"chevron-down\"></svg>\n          </button>\n          <div ndNavigationMenuContent>\n            <ul class=\"grid w-[200px] gap-1\">\n              @for (link of components; track link.href) {\n                <li>\n                  <a ndNavigationMenuLink [href]=\"link.href\">{{\n                    link.title\n                  }}</a>\n                </li>\n              }\n            </ul>\n          </div>\n        </li>\n        <li ndNavigationMenuItem>\n          <a ndNavigationMenuLink href=\"#docs\" active [class]=\"triggerStyle\">\n            Docs\n          </a>\n        </li>\n      </ul>\n    </nav>\n  `,\n})\nexport class NavigationMenuDemoExample {\n  protected readonly triggerStyle = navigationMenuTriggerStyle;\n  protected readonly guides = [\n    {\n      href: '#introduction',\n      title: 'Introduction',\n      text: 'Accessible Angular components you copy into your app.',\n    },\n    {\n      href: '#installation',\n      title: 'Installation',\n      text: 'Set up Ndop in a new or existing Angular app.',\n    },\n    {\n      href: '#theming',\n      title: 'Theming',\n      text: 'Colors, radius and fonts, as CSS variables.',\n    },\n    {\n      href: '#forms',\n      title: 'Forms',\n      text: 'Bind Signal Forms, reactive or template-driven forms.',\n    },\n  ];\n  protected readonly components = [\n    { href: '#dialog', title: 'Dialog' },\n    { href: '#select', title: 'Select' },\n    { href: '#tabs', title: 'Tabs' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "NavigationMenuDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

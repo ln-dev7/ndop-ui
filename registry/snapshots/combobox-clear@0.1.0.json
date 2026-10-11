@@ -1,0 +1,31 @@
+{
+  "name": "combobox-clear",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Combobox clear",
+  "description": "A combobox with a button that clears it.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "combobox",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/combobox-clear.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/combobox-clear.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Combobox,\n  ComboboxClear,\n  ComboboxContent,\n  ComboboxControl,\n  ComboboxEmpty,\n  ComboboxInput,\n  ComboboxItem,\n  ComboboxItemIndicator,\n  ComboboxList,\n  ComboboxTrigger,\n} from '@/ui/combobox/combobox';\n\n/**\n * A combobox with a button that clears it, shown in place of the chevron\n * once there is something to clear. Escape clears it from the keyboard.\n */\n@Component({\n  selector: 'example-combobox-clear',\n  imports: [\n    Combobox,\n    ComboboxClear,\n    ComboboxContent,\n    ComboboxControl,\n    ComboboxEmpty,\n    ComboboxInput,\n    ComboboxItem,\n    ComboboxItemIndicator,\n    ComboboxList,\n    ComboboxTrigger,\n    NdIcon,\n  ],\n  template: `\n    <ng-container ndCombobox [(value)]=\"country\">\n      <div ndComboboxControl class=\"w-[240px]\">\n        <input\n          ndComboboxInput\n          aria-label=\"Country\"\n          placeholder=\"Select a country\"\n        />\n        <button ndComboboxTrigger><svg ndIcon=\"chevron-down\"></svg></button>\n        <button ndComboboxClear><svg ndIcon=\"x\"></svg></button>\n      </div>\n      <div ndComboboxContent>\n        <div ndComboboxList>\n          <div ndComboboxEmpty>No country found.</div>\n          @for (name of countries; track name) {\n            <div ndComboboxItem [value]=\"name\">\n              {{ name }}\n              <span ndComboboxItemIndicator><svg ndIcon=\"check\"></svg></span>\n            </div>\n          }\n        </div>\n      </div>\n    </ng-container>\n  `,\n})\nexport class ComboboxClearExample {\n  protected readonly country = signal<string | null>('Cameroon');\n  protected readonly countries = [\n    'Brazil',\n    'Cameroon',\n    'Canada',\n    'France',\n    'Japan',\n    'Nigeria',\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ComboboxClearExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

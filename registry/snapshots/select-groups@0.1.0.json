@@ -1,0 +1,31 @@
+{
+  "name": "select-groups",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Select groups",
+  "description": "A long list of options in labelled groups.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "select"
+  ],
+  "files": [
+    {
+      "path": "examples/select-groups.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/select-groups.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Select,\n  SelectContent,\n  SelectGroup,\n  SelectItem,\n  SelectItemIndicator,\n  SelectItemText,\n  SelectLabel,\n  SelectSeparator,\n  SelectTrigger,\n  SelectValue,\n} from '@/ui/select/select';\n\n/** A long list of time zones in labelled groups, which scrolls. */\n@Component({\n  selector: 'example-select-groups',\n  imports: [\n    NdIcon,\n    Select,\n    SelectContent,\n    SelectGroup,\n    SelectItem,\n    SelectItemIndicator,\n    SelectItemText,\n    SelectLabel,\n    SelectSeparator,\n    SelectTrigger,\n    SelectValue,\n  ],\n  template: `\n    <ng-container ndSelect>\n      <button ndSelectTrigger aria-label=\"Time zone\" class=\"w-[280px]\">\n        <span ndSelectValue placeholder=\"Select a time zone\"></span>\n        <svg ndIcon=\"chevron-down\" class=\"size-4 opacity-50\"></svg>\n      </button>\n      <div ndSelectContent>\n        @for (region of regions; track region.name; let last = $last) {\n          <div ndSelectGroup [attr.aria-labelledby]=\"'select-groups-' + $index\">\n            <div ndSelectLabel [id]=\"'select-groups-' + $index\">\n              {{ region.name }}\n            </div>\n            @for (zone of region.zones; track zone.value) {\n              <div ndSelectItem [value]=\"zone.value\">\n                <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n                <span ndSelectItemText>{{ zone.label }}</span>\n              </div>\n            }\n          </div>\n          @if (!last) {\n            <div ndSelectSeparator></div>\n          }\n        }\n      </div>\n    </ng-container>\n  `,\n})\nexport class SelectGroupsExample {\n  protected readonly regions = [\n    {\n      name: 'North America',\n      zones: [\n        { value: 'est', label: 'Eastern Standard Time (EST)' },\n        { value: 'cst', label: 'Central Standard Time (CST)' },\n        { value: 'mst', label: 'Mountain Standard Time (MST)' },\n        { value: 'pst', label: 'Pacific Standard Time (PST)' },\n      ],\n    },\n    {\n      name: 'Europe and Africa',\n      zones: [\n        { value: 'gmt', label: 'Greenwich Mean Time (GMT)' },\n        { value: 'cet', label: 'Central European Time (CET)' },\n        { value: 'wat', label: 'West Africa Time (WAT)' },\n        { value: 'eat', label: 'East Africa Time (EAT)' },\n      ],\n    },\n    {\n      name: 'Asia',\n      zones: [\n        { value: 'ist', label: 'India Standard Time (IST)' },\n        { value: 'cst-china', label: 'China Standard Time (CST)' },\n        { value: 'jst', label: 'Japan Standard Time (JST)' },\n      ],\n    },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SelectGroupsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

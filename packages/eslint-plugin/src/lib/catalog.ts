@@ -9,6 +9,11 @@ export interface Catalog {
   buttons: string[];
   /** Selectors of form controls, which need a label. */
   controls: string[];
+  /**
+   * Selectors of parts the primitive hides from assistive technology, such
+   * as a combobox's pointer-only buttons, which need no name.
+   */
+  hidden: string[];
   /** Dialog panels, with the title part each must contain. */
   dialogs: { content: string; title: string }[];
   /** Public `@ndop/primitives` entry points, the package root included. */
@@ -60,7 +65,10 @@ function elementsOf(selector: string): string[] {
  *
  * - Buttons: parts on `button` or `a` elements only.
  * - Controls: parts on `input`, `select` or `textarea`, or with a form
- *   control role.
+ *   control role, unless the primitive names them itself (`aria-label` or
+ *   `aria-labelledby` among their ARIA attributes), as a select's listbox
+ *   takes its trigger's label.
+ * - Hidden: parts with `aria-hidden` among their ARIA attributes.
  * - Dialogs: parts with the `dialog` role that are labelled by a title
  *   (`aria-labelledby`), paired with the component's `…Title` part.
  * - Entry points: every export but `package.json` and `internal`, which the
@@ -88,10 +96,17 @@ export function deriveCatalog(
   const controls = parts
     .filter(
       ({ part }) =>
-        elementsOf(part.selector).some((element) =>
+        (elementsOf(part.selector).some((element) =>
           ['input', 'select', 'textarea'].includes(element),
-        ) || CONTROL_ROLES.includes(part.role ?? ''),
+        ) ||
+          CONTROL_ROLES.includes(part.role ?? '')) &&
+        !part.ariaAttributes?.some(
+          (name) => name === 'aria-label' || name === 'aria-labelledby',
+        ),
     )
+    .map(({ part }) => part.selector);
+  const hidden = parts
+    .filter(({ part }) => part.ariaAttributes?.includes('aria-hidden'))
     .map(({ part }) => part.selector);
   const dialogs = parts.flatMap(({ component, part }) => {
     if (
@@ -113,6 +128,7 @@ export function deriveCatalog(
   return {
     buttons: [...new Set(buttons)].sort(),
     controls: [...new Set(controls)].sort(),
+    hidden: [...new Set(hidden)].sort(),
     dialogs: dialogs.sort((a, b) => a.content.localeCompare(b.content)),
     primitiveEntryPoints: primitiveEntryPoints.sort(),
   };

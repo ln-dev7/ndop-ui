@@ -1,0 +1,31 @@
+{
+  "name": "accordion-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Accordion demo",
+  "description": "Frequently asked questions, one open at a time.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "accordion",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/accordion-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/accordion-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Accordion,\n  AccordionContent,\n  AccordionHeader,\n  AccordionItem,\n  AccordionTrigger,\n} from '@/ui/accordion/accordion';\n\n/**\n * Frequently asked questions, one open at a time. The open one closes\n * again on its own button, since the accordion is collapsible.\n */\n@Component({\n  selector: 'example-accordion-demo',\n  imports: [\n    Accordion,\n    AccordionContent,\n    AccordionHeader,\n    AccordionItem,\n    AccordionTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div\n      ndAccordion\n      collapsible\n      defaultValue=\"shipping\"\n      class=\"w-md max-w-full\"\n    >\n      @for (question of questions; track question.value) {\n        <div ndAccordionItem [value]=\"question.value\">\n          <h2 ndAccordionHeader>\n            <button ndAccordionTrigger>\n              {{ question.title }}\n              <svg ndIcon=\"chevron-down\"></svg>\n            </button>\n          </h2>\n          <div ndAccordionContent>{{ question.answer }}</div>\n        </div>\n      }\n    </div>\n  `,\n})\nexport class AccordionDemoExample {\n  protected readonly questions = [\n    {\n      value: 'shipping',\n      title: 'How long does shipping take?',\n      answer:\n        'Orders ship within two business days, and arrive in three to five.',\n    },\n    {\n      value: 'returns',\n      title: 'What is your return policy?',\n      answer: 'Return any item within 30 days of delivery for a full refund.',\n    },\n    {\n      value: 'support',\n      title: 'How do I reach support?',\n      answer: 'Email us any time; we answer within a day.',\n    },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AccordionDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

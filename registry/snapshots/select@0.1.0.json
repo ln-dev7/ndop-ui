@@ -1,0 +1,51 @@
+{
+  "name": "select",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Select",
+  "description": "A button that shows a value and opens a list of options to pick from.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/select/select.ts",
+      "type": "registry:ui",
+      "target": "{ui}/select/select.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdSelect,\n  NdSelectContent,\n  NdSelectGroup,\n  NdSelectItem,\n  NdSelectItemIndicator,\n  NdSelectItemText,\n  NdSelectLabel,\n  NdSelectSeparator,\n  NdSelectTrigger,\n  NdSelectValue,\n} from '@ndop/primitives/select';\nimport { cn } from '@/lib/utils';\n\n/**\n * A select (`@ndop/primitives/select`): a button that shows its value and\n * opens a list of options below it. Put it on an `ng-container`, and bind\n * forms on its trigger.\n *\n * @example\n * ```html\n * <ng-container ndSelect [(value)]=\"fruit\">\n *   <button ndSelectTrigger aria-label=\"Fruit\">\n *     <span ndSelectValue placeholder=\"Select a fruit\"></span>\n *     <svg ndIcon=\"chevron-down\" class=\"opacity-50\"></svg>\n *   </button>\n *   <div ndSelectContent>\n *     <div ndSelectItem value=\"apple\">\n *       <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n *       <span ndSelectItemText>Apple</span>\n *     </div>\n *   </div>\n * </ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndSelect]',\n  hostDirectives: [\n    {\n      directive: NdSelect,\n      inputs: [\n        'value',\n        'defaultValue',\n        'open',\n        'defaultOpen',\n        'disabled',\n        'required',\n        'invalid',\n      ],\n      outputs: ['valueChange', 'openChange'],\n    },\n  ],\n})\nexport class Select {}\n\n/**\n * The button that shows the value and opens the options. `size` is\n * `default` or `sm`. Put the chevron icon in it, last.\n *\n * @example\n * ```html\n * <button ndSelectTrigger id=\"fruit\" size=\"sm\">…</button>\n * ```\n */\n@Directive({\n  selector: 'button[ndSelectTrigger]',\n  hostDirectives: [NdSelectTrigger],\n  host: {\n    'data-slot': 'select-trigger',\n    '[attr.data-size]': 'size()',\n    '[class]': 'classes()',\n  },\n})\nexport class SelectTrigger {\n  /** Height: `default` or `sm`. */\n  readonly size = input<'default' | 'sm'>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      \"flex w-fit items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground\",\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The selected option's text, or `placeholder` while none is selected.\n *\n * @example\n * ```html\n * <span ndSelectValue placeholder=\"Select a fruit\"></span>\n * ```\n */\n@Directive({\n  selector: '[ndSelectValue]',\n  hostDirectives: [{ directive: NdSelectValue, inputs: ['placeholder'] }],\n  host: { 'data-slot': 'select-value' },\n})\nexport class SelectValue {}\n\n/**\n * The list of options, written after the trigger; it opens below the\n * trigger, at least as wide.\n *\n * @example\n * ```html\n * <div ndSelectContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndSelectContent]',\n  hostDirectives: [\n    { directive: NdSelectContent, inputs: ['side', 'align', 'sideOffset'] },\n  ],\n  host: { 'data-slot': 'select-content', '[class]': 'classes()' },\n})\nexport class SelectContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative z-50 max-h-[min(24rem,80vh)] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',\n      'p-1 scroll-my-1',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A heading for a group of options; point the group's `aria-labelledby`\n * at it.\n *\n * @example\n * ```html\n * <div ndSelectLabel id=\"fruits\">Fruits</div>\n * ```\n */\n@Directive({\n  selector: '[ndSelectLabel]',\n  hostDirectives: [NdSelectLabel],\n  host: { 'data-slot': 'select-label', '[class]': 'classes()' },\n})\nexport class SelectLabel {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('px-2 py-1.5 text-xs text-muted-foreground', this.class()),\n  );\n}\n\n/**\n * Groups options; name it with `aria-labelledby`.\n *\n * @example\n * ```html\n * <div ndSelectGroup aria-labelledby=\"fruits\">…</div>\n * ```\n */\n@Directive({\n  selector: '[ndSelectGroup]',\n  hostDirectives: [NdSelectGroup],\n  host: { 'data-slot': 'select-group' },\n})\nexport class SelectGroup {}\n\n/**\n * One option. Put its {@link SelectItemIndicator} first and its\n * {@link SelectItemText} after.\n *\n * @example\n * ```html\n * <div ndSelectItem value=\"apple\">…</div>\n * ```\n */\n@Directive({\n  selector: '[ndSelectItem]',\n  hostDirectives: [\n    { directive: NdSelectItem, inputs: ['value', 'disabled', 'label'] },\n  ],\n  host: { 'data-slot': 'select-item', '[class]': 'classes()' },\n})\nexport class SelectItem {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      \"relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pe-8 ps-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2\",\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The check of the selected option, at its end.\n *\n * @example\n * ```html\n * <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndSelectItemIndicator]',\n  hostDirectives: [NdSelectItemIndicator],\n  host: { 'data-slot': 'select-item-indicator', '[class]': 'classes()' },\n})\nexport class SelectItemIndicator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'absolute end-2 flex size-3.5 items-center justify-center',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The text of an option, which the trigger shows while it's selected.\n *\n * @example\n * ```html\n * <span ndSelectItemText>Apple</span>\n * ```\n */\n@Directive({\n  selector: '[ndSelectItemText]',\n  hostDirectives: [NdSelectItemText],\n  host: { 'data-slot': 'select-item-text' },\n})\nexport class SelectItemText {}\n\n/**\n * A line between groups of options.\n *\n * @example\n * ```html\n * <div ndSelectSeparator></div>\n * ```\n */\n@Directive({\n  selector: '[ndSelectSeparator]',\n  hostDirectives: [NdSelectSeparator],\n  host: { 'data-slot': 'select-separator', '[class]': 'classes()' },\n})\nexport class SelectSeparator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('pointer-events-none -mx-1 my-1 h-px bg-border', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Select",
+      "SelectTrigger",
+      "SelectValue",
+      "SelectContent",
+      "SelectLabel",
+      "SelectGroup",
+      "SelectItem",
+      "SelectItemIndicator",
+      "SelectItemText",
+      "SelectSeparator"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/select.json",
+    "examples": [
+      "select-demo",
+      "select-groups",
+      "select-sizes",
+      "select-disabled"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

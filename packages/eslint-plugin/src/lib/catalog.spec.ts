@@ -6,7 +6,7 @@ import { CATALOG } from './catalog.generated';
 const workspace = join(import.meta.dirname, '../../../..');
 
 describe('deriveCatalog', () => {
-  it('sorts parts into buttons, controls and titled dialogs', () => {
+  it('sorts parts into buttons, controls, hidden parts and titled dialogs', () => {
     expect(
       deriveCatalog(
         [
@@ -30,6 +30,27 @@ describe('deriveCatalog', () => {
             parts: [{ name: 'Textarea', selector: 'textarea[ndTextarea]' }],
           },
           {
+            name: 'select',
+            parts: [
+              {
+                name: 'SelectContent',
+                selector: '[ndSelectContent]',
+                role: 'listbox',
+                ariaAttributes: ['aria-labelledby'],
+              },
+            ],
+          },
+          {
+            name: 'combobox',
+            parts: [
+              {
+                name: 'ComboboxTrigger',
+                selector: 'button[ndComboboxTrigger]',
+                ariaAttributes: ['aria-hidden', 'tabindex'],
+              },
+            ],
+          },
+          {
             name: 'mixed',
             parts: [
               { name: 'Mixed', selector: 'button[ndMixed], div[ndMixed]' },
@@ -39,8 +60,9 @@ describe('deriveCatalog', () => {
         ['.', './switch', './internal', './package.json'],
       ),
     ).toEqual({
-      buttons: [],
+      buttons: ['button[ndComboboxTrigger]'],
       controls: ['[ndSwitch]', 'textarea[ndTextarea]'],
+      hidden: ['button[ndComboboxTrigger]'],
       dialogs: [],
       primitiveEntryPoints: ['@ndop/primitives', '@ndop/primitives/switch'],
     });

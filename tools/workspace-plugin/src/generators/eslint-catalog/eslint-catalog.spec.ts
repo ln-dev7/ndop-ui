@@ -46,6 +46,7 @@ describe('eslint-catalog generator', () => {
     expect(catalog).toEqual({
       buttons: ['button[ndDialogClose]'],
       controls: [],
+      hidden: [],
       dialogs: [{ content: '[ndDialogContent]', title: '[ndDialogTitle]' }],
       primitiveEntryPoints: ['@ndop/primitives', '@ndop/primitives/dialog'],
     });

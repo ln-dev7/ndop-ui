@@ -1,15 +1,16 @@
-import { Directive } from '@angular/core';
+import { computed, Directive, input } from '@angular/core';
 import {
   NdCollapsible,
   NdCollapsibleContent,
   NdCollapsibleTrigger,
 } from '@ndop/primitives/collapsible';
+import { cn } from '@/lib/utils';
 
 /**
  * A collapsible (`@ndop/primitives/collapsible`): a trigger that shows and
- * hides a section of content, which stays in the page. It has no styles of
- * its own; style the trigger and content with other items, such as a ghost
- * Button. `open` is two-way bindable.
+ * hides a section of content, which stays in the page and slides open and
+ * closed. Style the trigger with other items, such as a ghost Button.
+ * `open` is two-way bindable.
  *
  * @example
  * ```html
@@ -49,8 +50,9 @@ export class Collapsible {}
 export class CollapsibleTrigger {}
 
 /**
- * The content a collapsible shows and hides; hidden content leaves the
- * accessibility tree and the tab order.
+ * The content a collapsible shows and hides, sliding open and closed;
+ * hidden content leaves the accessibility tree and the tab order. It clips
+ * its content only while it animates, so focus rings inside it show.
  *
  * @example
  * ```html
@@ -60,6 +62,18 @@ export class CollapsibleTrigger {}
 @Directive({
   selector: '[ndCollapsibleContent]',
   hostDirectives: [NdCollapsibleContent],
-  host: { 'data-slot': 'collapsible-content' },
+  host: { 'data-slot': 'collapsible-content', '[class]': 'classes()' },
 })
-export class CollapsibleContent {}
+export class CollapsibleContent {
+  /** Extra classes, merged last so they win. */
+  readonly class = input('');
+
+  protected readonly classes = computed(() =>
+    cn(
+      'data-animating:overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down',
+      // tw-animate-css's collapsible keyframes read this height.
+      '[--radix-collapsible-content-height:var(--nd-collapsible-content-height)]',
+      this.class(),
+    ),
+  );
+}

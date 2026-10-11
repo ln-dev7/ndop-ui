@@ -1,0 +1,27 @@
+{
+  "name": "resizable-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Resizable demo",
+  "description": "A sidebar beside two stacked panes, each resizable.",
+  "registryDependencies": [
+    "resizable"
+  ],
+  "files": [
+    {
+      "path": "examples/resizable-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/resizable-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  ResizableHandle,\n  ResizablePanel,\n  ResizablePanelGroup,\n} from '@/ui/resizable/resizable';\n\n/**\n * A sidebar beside two stacked panes. Each handle is a separator that the\n * arrow keys or a pointer move.\n */\n@Component({\n  selector: 'example-resizable-demo',\n  imports: [ResizableHandle, ResizablePanel, ResizablePanelGroup],\n  template: `\n    <div\n      ndResizablePanelGroup\n      orientation=\"horizontal\"\n      class=\"max-w-md rounded-lg border md:min-w-[450px]\"\n    >\n      <div ndResizablePanel [defaultSize]=\"50\">\n        <div class=\"flex h-[200px] items-center justify-center p-6\">\n          <span class=\"font-semibold\">One</span>\n        </div>\n      </div>\n      <div ndResizableHandle aria-label=\"Resize one\"></div>\n      <div ndResizablePanel [defaultSize]=\"50\">\n        <div ndResizablePanelGroup orientation=\"vertical\">\n          <div ndResizablePanel [defaultSize]=\"25\">\n            <div class=\"flex h-full items-center justify-center p-6\">\n              <span class=\"font-semibold\">Two</span>\n            </div>\n          </div>\n          <div ndResizableHandle aria-label=\"Resize two\"></div>\n          <div ndResizablePanel [defaultSize]=\"75\">\n            <div class=\"flex h-full items-center justify-center p-6\">\n              <span class=\"font-semibold\">Three</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class ResizableDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ResizableDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

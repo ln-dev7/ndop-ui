@@ -14,6 +14,9 @@ templateTester().run('icon-button-name', iconButtonName as never, {
     '<a href="/"><svg></svg></a>',
     '<button ndButton>@if (saving) { Saving } @else { <svg ndIcon="save"></svg> Save }</button>',
     '<button ndCheckbox id="terms"><span ndCheckboxIndicator><svg ndIcon="check"></svg></span></button>',
+    '<button ndSelectTrigger id="fruit"><span ndSelectValue></span><svg ndIcon="chevron-down"></svg></button>',
+    '<button ndComboboxTrigger><svg ndIcon="chevron-down"></svg></button>',
+    '<button aria-hidden="true" tabindex="-1"><svg ndIcon="x"></svg></button>',
   ],
   invalid: [
     {

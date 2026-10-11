@@ -1,0 +1,31 @@
+{
+  "name": "combobox-multiple",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Combobox multiple",
+  "description": "Several frameworks, chosen as chips.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "combobox",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/combobox-multiple.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/combobox-multiple.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Combobox,\n  ComboboxChip,\n  ComboboxChipRemove,\n  ComboboxChips,\n  ComboboxChipsInput,\n  ComboboxContent,\n  ComboboxEmpty,\n  ComboboxItem,\n  ComboboxItemIndicator,\n  ComboboxList,\n} from '@/ui/combobox/combobox';\n\n/**\n * Several frameworks, chosen as chips. Picking an option toggles it and\n * keeps the list open; Backspace in the empty field removes the last chip.\n */\n@Component({\n  selector: 'example-combobox-multiple',\n  imports: [\n    Combobox,\n    ComboboxChip,\n    ComboboxChipRemove,\n    ComboboxChips,\n    ComboboxChipsInput,\n    ComboboxContent,\n    ComboboxEmpty,\n    ComboboxItem,\n    ComboboxItemIndicator,\n    ComboboxList,\n    NdIcon,\n  ],\n  template: `\n    <ng-container ndCombobox multiple [(values)]=\"chosen\">\n      <div ndComboboxChips class=\"w-xs max-w-full\">\n        @for (value of chosen(); track value) {\n          <span ndComboboxChip [value]=\"value\">\n            {{ labelOf(value) }}\n            <button ndComboboxChipRemove><svg ndIcon=\"x\"></svg></button>\n          </span>\n        }\n        <input\n          ndComboboxChipsInput\n          aria-label=\"Frameworks\"\n          placeholder=\"Add framework\"\n        />\n      </div>\n      <div ndComboboxContent>\n        <div ndComboboxList>\n          <div ndComboboxEmpty>No framework found.</div>\n          @for (option of frameworks; track option.value) {\n            <div ndComboboxItem [value]=\"option.value\">\n              {{ option.label }}\n              <span ndComboboxItemIndicator><svg ndIcon=\"check\"></svg></span>\n            </div>\n          }\n        </div>\n      </div>\n    </ng-container>\n  `,\n})\nexport class ComboboxMultipleExample {\n  protected readonly chosen = signal<readonly string[]>(['angular']);\n  protected readonly frameworks = [\n    { value: 'angular', label: 'Angular' },\n    { value: 'analog', label: 'Analog' },\n    { value: 'astro', label: 'Astro' },\n    { value: 'nuxt', label: 'Nuxt' },\n    { value: 'remix', label: 'Remix' },\n    { value: 'sveltekit', label: 'SvelteKit' },\n  ];\n\n  /**\n   * The label of a chosen framework, for its chip.\n   *\n   * @param value - The framework's value.\n   * @returns Its label.\n   */\n  protected labelOf(value: string): string {\n    return (\n      this.frameworks.find((option) => option.value === value)?.label ?? value\n    );\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ComboboxMultipleExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

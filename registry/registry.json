@@ -21,7 +21,7 @@
     {
       "name": "icons",
       "type": "registry:lib",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "title": "Icons",
       "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
       "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
@@ -764,7 +764,7 @@
     {
       "name": "collapsible",
       "type": "registry:ui",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "title": "Collapsible",
       "description": "Shows and hides a section of content.",
       "dependencies": ["@ndop/primitives"],
@@ -805,7 +805,8 @@
       "ndop": {
         "metadata": "metadata/collapsible.json",
         "examples": ["collapsible-demo", "collapsible-settings"]
-      }
+      },
+      "registryDependencies": ["utils"]
     },
     {
       "name": "checkbox",
@@ -1363,6 +1364,313 @@
       "ndop": {
         "metadata": "metadata/context-menu.json",
         "examples": ["context-menu-demo", "context-menu-checkboxes"]
+      }
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Tabs",
+      "description": "Layered sections of content, shown one at a time.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/tabs/tabs.ts",
+          "type": "registry:ui",
+          "target": "{ui}/tabs/tabs.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Tabs",
+          "tabsListVariants",
+          "TabsList",
+          "TabsTrigger",
+          "TabsContent"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/tabs.json",
+        "examples": ["tabs-demo", "tabs-line", "tabs-vertical"]
+      }
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Accordion",
+      "description": "A stack of headed sections that each show or hide their content.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["data-display"],
+      "files": [
+        {
+          "path": "ui/accordion/accordion.ts",
+          "type": "registry:ui",
+          "target": "{ui}/accordion/accordion.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Accordion",
+          "AccordionItem",
+          "AccordionHeader",
+          "AccordionTrigger",
+          "AccordionContent"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/accordion.json",
+        "examples": ["accordion-demo", "accordion-multiple"]
+      }
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Resizable",
+      "description": "Panels that share space, resized by dragging or with the keyboard.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["layout"],
+      "files": [
+        {
+          "path": "ui/resizable/resizable.ts",
+          "type": "registry:ui",
+          "target": "{ui}/resizable/resizable.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "ResizablePanelGroup",
+          "ResizablePanel",
+          "ResizableHandle",
+          "ResizableHandleGrip"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/resizable.json",
+        "examples": ["resizable-demo", "resizable-handle", "resizable-vertical"]
+      }
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Menubar",
+      "description": "A bar of menus, such as a desktop app's File and Edit menus.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/menubar/menubar.ts",
+          "type": "registry:ui",
+          "target": "{ui}/menubar/menubar.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Menubar",
+          "MenubarTrigger",
+          "MenubarContent",
+          "MenubarSubContent",
+          "MenubarGroup",
+          "MenubarItem",
+          "MenubarCheckboxItem",
+          "MenubarRadioGroup",
+          "MenubarRadioItem",
+          "MenubarItemIndicator",
+          "MenubarLabel",
+          "MenubarSeparator",
+          "MenubarShortcut",
+          "MenubarSubTrigger"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/menubar.json",
+        "examples": ["menubar-demo"]
+      }
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Navigation Menu",
+      "description": "A site's navigation: links and buttons that show panels of links.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/navigation-menu/navigation-menu.ts",
+          "type": "registry:ui",
+          "target": "{ui}/navigation-menu/navigation-menu.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "navigationMenuTriggerStyle",
+          "NavigationMenu",
+          "NavigationMenuList",
+          "NavigationMenuItem",
+          "NavigationMenuTrigger",
+          "NavigationMenuContent",
+          "NavigationMenuLink"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/navigation-menu.json",
+        "examples": ["navigation-menu-demo"]
+      }
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Select",
+      "description": "A button that shows a value and opens a list of options to pick from.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["inputs"],
+      "files": [
+        {
+          "path": "ui/select/select.ts",
+          "type": "registry:ui",
+          "target": "{ui}/select/select.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Select",
+          "SelectTrigger",
+          "SelectValue",
+          "SelectContent",
+          "SelectLabel",
+          "SelectGroup",
+          "SelectItem",
+          "SelectItemIndicator",
+          "SelectItemText",
+          "SelectSeparator"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/select.json",
+        "examples": [
+          "select-demo",
+          "select-groups",
+          "select-sizes",
+          "select-disabled"
+        ]
+      }
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Combobox",
+      "description": "A text field that filters a list of options as the user types.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["button", "utils"],
+      "categories": ["inputs"],
+      "files": [
+        {
+          "path": "ui/combobox/combobox.ts",
+          "type": "registry:ui",
+          "target": "{ui}/combobox/combobox.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Combobox",
+          "ComboboxControl",
+          "ComboboxInput",
+          "ComboboxTrigger",
+          "ComboboxClear",
+          "ComboboxContent",
+          "ComboboxList",
+          "ComboboxItem",
+          "ComboboxItemIndicator",
+          "ComboboxGroup",
+          "ComboboxLabel",
+          "ComboboxEmpty",
+          "ComboboxSeparator",
+          "ComboboxChips",
+          "ComboboxChip",
+          "ComboboxChipRemove",
+          "ComboboxChipsInput"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/combobox.json",
+        "examples": [
+          "combobox-demo",
+          "combobox-clear",
+          "combobox-multiple",
+          "combobox-groups",
+          "combobox-disabled"
+        ]
+      }
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Command",
+      "description": "A search field over a list of commands, filtered as the user types.",
+      "dependencies": ["@ndop/primitives"],
+      "registryDependencies": ["utils"],
+      "categories": ["navigation"],
+      "files": [
+        {
+          "path": "ui/command/command.ts",
+          "type": "registry:ui",
+          "target": "{ui}/command/command.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": [
+          "Command",
+          "CommandInputWrapper",
+          "CommandInput",
+          "CommandList",
+          "CommandEmpty",
+          "CommandGroup",
+          "CommandGroupHeading",
+          "CommandSeparator",
+          "CommandItem",
+          "CommandShortcut"
+        ],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/command.json",
+        "examples": ["command-demo", "command-dialog"]
       }
     },
     {
@@ -3623,6 +3931,463 @@
       "angular": {
         "minVersion": "21.0.0",
         "exports": ["ContextMenuCheckboxesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "tabs-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Tabs demo",
+      "description": "Account settings in two tabs, each a card with a form.",
+      "registryDependencies": ["button", "card", "input", "label", "tabs"],
+      "files": [
+        {
+          "path": "examples/tabs-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/tabs-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TabsDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "tabs-line",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Tabs line",
+      "description": "Tabs underlined instead of raised, with the line variant.",
+      "registryDependencies": ["tabs"],
+      "files": [
+        {
+          "path": "examples/tabs-line.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/tabs-line.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TabsLineExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "tabs-vertical",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Tabs vertical",
+      "description": "Tabs stacked beside their panels, selected with Enter or Space.",
+      "registryDependencies": ["tabs"],
+      "files": [
+        {
+          "path": "examples/tabs-vertical.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/tabs-vertical.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["TabsVerticalExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "accordion-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Accordion demo",
+      "description": "Frequently asked questions, one open at a time.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["accordion", "icons"],
+      "files": [
+        {
+          "path": "examples/accordion-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/accordion-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AccordionDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "accordion-multiple",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Accordion multiple",
+      "description": "Sections that open independently, with one disabled.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["accordion", "icons"],
+      "files": [
+        {
+          "path": "examples/accordion-multiple.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/accordion-multiple.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["AccordionMultipleExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "resizable-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Resizable demo",
+      "description": "A sidebar beside two stacked panes, each resizable.",
+      "registryDependencies": ["resizable"],
+      "files": [
+        {
+          "path": "examples/resizable-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/resizable-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ResizableDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "resizable-handle",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Resizable handle",
+      "description": "A handle with a grip, showing it can be dragged.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "resizable"],
+      "files": [
+        {
+          "path": "examples/resizable-handle.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/resizable-handle.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ResizableHandleExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "resizable-vertical",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Resizable vertical",
+      "description": "Two panes stacked, resized up and down.",
+      "registryDependencies": ["resizable"],
+      "files": [
+        {
+          "path": "examples/resizable-vertical.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/resizable-vertical.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ResizableVerticalExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "menubar-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Menubar demo",
+      "description": "An editor's File, Edit and View menus, with shortcuts, checkboxes, radios and a submenu.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "menubar"],
+      "files": [
+        {
+          "path": "examples/menubar-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/menubar-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["MenubarDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "navigation-menu-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Navigation Menu demo",
+      "description": "A site's navigation with two panels of links and a top-level link.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "navigation-menu"],
+      "files": [
+        {
+          "path": "examples/navigation-menu-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/navigation-menu-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["NavigationMenuDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "select-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Select demo",
+      "description": "A fruit picker with a placeholder.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "label", "select"],
+      "files": [
+        {
+          "path": "examples/select-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/select-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SelectDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "select-groups",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Select groups",
+      "description": "A long list of options in labelled groups.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "select"],
+      "files": [
+        {
+          "path": "examples/select-groups.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/select-groups.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SelectGroupsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "select-sizes",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Select sizes",
+      "description": "The default and small triggers.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "select"],
+      "files": [
+        {
+          "path": "examples/select-sizes.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/select-sizes.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SelectSizesExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "select-disabled",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Select disabled",
+      "description": "A disabled select, and one with a disabled option.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["icons", "select"],
+      "files": [
+        {
+          "path": "examples/select-disabled.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/select-disabled.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["SelectDisabledExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "combobox-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Combobox demo",
+      "description": "A framework picker that filters as you type.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["combobox", "icons", "label"],
+      "files": [
+        {
+          "path": "examples/combobox-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/combobox-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ComboboxDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "combobox-clear",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Combobox clear",
+      "description": "A combobox with a button that clears it.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["combobox", "icons"],
+      "files": [
+        {
+          "path": "examples/combobox-clear.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/combobox-clear.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ComboboxClearExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "combobox-multiple",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Combobox multiple",
+      "description": "Several frameworks, chosen as chips.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["combobox", "icons"],
+      "files": [
+        {
+          "path": "examples/combobox-multiple.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/combobox-multiple.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ComboboxMultipleExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "combobox-groups",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Combobox groups",
+      "description": "Options in labelled groups, with separators.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["combobox", "icons"],
+      "files": [
+        {
+          "path": "examples/combobox-groups.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/combobox-groups.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ComboboxGroupsExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "combobox-disabled",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Combobox disabled",
+      "description": "A disabled combobox, and one with a disabled option.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["combobox", "icons"],
+      "files": [
+        {
+          "path": "examples/combobox-disabled.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/combobox-disabled.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["ComboboxDisabledExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "command-demo",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Command demo",
+      "description": "An inline command list with groups, shortcuts and a disabled command.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["command", "icons"],
+      "files": [
+        {
+          "path": "examples/command-demo.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/command-demo.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CommandDemoExample"],
+        "zoneless": true,
+        "ssr": true
+      }
+    },
+    {
+      "name": "command-dialog",
+      "type": "registry:primitive-usage",
+      "version": "0.1.0",
+      "title": "Command dialog",
+      "description": "A command palette in a dialog, opened with Ctrl+K or Cmd+K.",
+      "dependencies": ["@ndop/core"],
+      "registryDependencies": ["button", "command", "dialog", "icons"],
+      "files": [
+        {
+          "path": "examples/command-dialog.ts",
+          "type": "registry:primitive-usage",
+          "target": "{blocks}/examples/command-dialog.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["CommandDialogExample"],
         "zoneless": true,
         "ssr": true
       }

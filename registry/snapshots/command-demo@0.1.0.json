@@ -1,0 +1,31 @@
+{
+  "name": "command-demo",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Command demo",
+  "description": "An inline command list with groups, shortcuts and a disabled command.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "command",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/command-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/command-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Command,\n  CommandEmpty,\n  CommandGroup,\n  CommandGroupHeading,\n  CommandInput,\n  CommandInputWrapper,\n  CommandItem,\n  CommandList,\n  CommandSeparator,\n  CommandShortcut,\n} from '@/ui/command/command';\n\n/**\n * An inline command list with groups, shortcuts and a disabled command.\n * Focus stays in the search field; the arrow keys move the highlight and\n * Enter runs it.\n */\n@Component({\n  selector: 'example-command-demo',\n  imports: [\n    Command,\n    CommandEmpty,\n    CommandGroup,\n    CommandGroupHeading,\n    CommandInput,\n    CommandInputWrapper,\n    CommandItem,\n    CommandList,\n    CommandSeparator,\n    CommandShortcut,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"grid w-md max-w-full gap-2\">\n      <div ndCommand label=\"Commands\" class=\"rounded-lg border shadow-md\">\n        <div ndCommandInputWrapper>\n          <svg ndIcon=\"search\"></svg>\n          <input ndCommandInput placeholder=\"Type a command or search…\" />\n        </div>\n        <div ndCommandList>\n          <div ndCommandEmpty>No results found.</div>\n          <div ndCommandGroup>\n            <div ndCommandGroupHeading>Suggestions</div>\n            <div ndCommandItem (triggered)=\"run('Calendar')\">Calendar</div>\n            <div\n              ndCommandItem\n              keywords=\"smiley emoji\"\n              (triggered)=\"run('Search emoji')\"\n            >\n              Search emoji\n            </div>\n            <div ndCommandItem disabled>Calculator</div>\n          </div>\n          <div ndCommandSeparator></div>\n          <div ndCommandGroup>\n            <div ndCommandGroupHeading>Settings</div>\n            <div ndCommandItem (triggered)=\"run('Profile')\">\n              Profile <span ndCommandShortcut>⌘P</span>\n            </div>\n            <div ndCommandItem (triggered)=\"run('Billing')\">\n              Billing <span ndCommandShortcut>⌘B</span>\n            </div>\n            <div ndCommandItem (triggered)=\"run('Settings')\">\n              Settings <span ndCommandShortcut>⌘S</span>\n            </div>\n          </div>\n        </div>\n      </div>\n      <p class=\"text-sm text-muted-foreground\" aria-live=\"polite\">\n        {{ ran() }}\n      </p>\n    </div>\n  `,\n})\nexport class CommandDemoExample {\n  protected readonly ran = signal('');\n\n  /**\n   * Reports the command that ran.\n   *\n   * @param name - The command's name.\n   */\n  protected run(name: string): void {\n    this.ran.set(`Ran ${name}.`);\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CommandDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

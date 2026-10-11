@@ -1,0 +1,27 @@
+{
+  "name": "tabs-line",
+  "type": "registry:primitive-usage",
+  "version": "0.1.0",
+  "title": "Tabs line",
+  "description": "Tabs underlined instead of raised, with the line variant.",
+  "registryDependencies": [
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "examples/tabs-line.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/tabs-line.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs/tabs';\n\n/** Tabs underlined instead of raised, with the line variant. */\n@Component({\n  selector: 'example-tabs-line',\n  imports: [Tabs, TabsContent, TabsList, TabsTrigger],\n  template: `\n    <div ndTabs defaultValue=\"overview\" class=\"w-sm max-w-full\">\n      <div ndTabsList variant=\"line\" aria-label=\"Project\">\n        <button ndTabsTrigger value=\"overview\">Overview</button>\n        <button ndTabsTrigger value=\"analytics\">Analytics</button>\n        <button ndTabsTrigger value=\"reports\" disabled>Reports</button>\n      </div>\n      <div ndTabsContent value=\"overview\" class=\"text-sm text-muted-foreground\">\n        Your project at a glance.\n      </div>\n      <div\n        ndTabsContent\n        value=\"analytics\"\n        class=\"text-sm text-muted-foreground\"\n      >\n        Visitors and conversions over time.\n      </div>\n      <div ndTabsContent value=\"reports\" class=\"text-sm text-muted-foreground\">\n        Reports are on the paid plan.\n      </div>\n    </div>\n  `,\n})\nexport class TabsLineExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TabsLineExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
