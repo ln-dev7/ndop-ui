@@ -57,3 +57,18 @@ declare module 'virtual:ndop/primitives' {
     }>
   >;
 }
+
+declare module 'virtual:ndop/blocks' {
+  /** Every block, in the registry's order (ADR-0022). */
+  export const blocks: import('./app/blocks/block-data').BlockSummary[];
+  /** Loads one block's page component, by name. */
+  export const blockComponents: Record<
+    string,
+    () => Promise<import('@angular/core').Type<unknown>>
+  >;
+  /** Loads one block's highlighted code, by name. */
+  export const blockCode: Record<
+    string,
+    () => Promise<{ default: import('./app/blocks/block-data').BlockCode }>
+  >;
+}

@@ -11,11 +11,13 @@
     "src/**/*.d.ts",
     "src/app/pages/**/*.page.ts",
     "src/server/middleware/**/*.ts",
-    "../../registry/examples/*.ts"
+    "../../registry/examples/*.ts",
+    "../../registry/blocks/*/*.ts"
   ],
   "exclude": [
     "**/*.test.ts",
     "**/*.spec.ts",
-    "../../registry/examples/*.spec.ts"
+    "../../registry/examples/*.spec.ts",
+    "../../registry/blocks/**/*.spec.ts"
   ]
 }

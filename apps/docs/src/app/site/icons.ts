@@ -15,7 +15,9 @@ import {
   LucideMoon,
   LucidePencil,
   LucideSearch,
+  LucideSmartphone,
   LucideSun,
+  LucideTablet,
   LucideTerminal,
 } from '@lucide/angular';
 import { provideNdopIcons } from '@ndop/core';
@@ -45,7 +47,9 @@ export function provideDocsIcons(): EnvironmentProviders {
     moon: LucideMoon.icon,
     pencil: LucidePencil.icon,
     search: LucideSearch.icon,
+    smartphone: LucideSmartphone.icon,
     sun: LucideSun.icon,
+    tablet: LucideTablet.icon,
     terminal: LucideTerminal.icon,
   });
 }

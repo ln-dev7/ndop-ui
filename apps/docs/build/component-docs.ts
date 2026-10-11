@@ -40,6 +40,7 @@ import {
   changelogPage,
   previewSnapshots,
 } from './changelog';
+import { blockCode, blockMarkdown, blockSummaries } from './block-docs';
 import { block, inline, partData } from './part-data';
 import {
   primitiveMarkdown,
@@ -47,6 +48,9 @@ import {
   readPrimitives,
 } from './primitive-docs';
 import { searchIndex, type IndexedComponent } from './search-index';
+// By path, for the same reason as the renderer above.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { BLOCK_CATEGORIES } from '../../../registry/categories';
 
 const INDEX_ID = 'virtual:ndop/components';
 const PAGE_PREFIX = 'virtual:ndop/component/';
@@ -55,6 +59,8 @@ const CHANGELOG_PREFIX = 'virtual:ndop/changelog/';
 const SNAPSHOTS_PREFIX = 'virtual:ndop/snapshots/';
 const PRIMITIVES_ID = 'virtual:ndop/primitives';
 const PRIMITIVE_PREFIX = 'virtual:ndop/primitive/';
+const BLOCKS_ID = 'virtual:ndop/blocks';
+const BLOCK_CODE_PREFIX = 'virtual:ndop/block-code/';
 const REPOSITORY = 'https://github.com/ndop-ui/ui';
 
 /** Options of {@link componentDocs}. */
@@ -90,7 +96,9 @@ interface PageTools {
  * build (amendment 6), as is the built registry itself, at `/r/`;
  * `virtual:ndop/primitives` lists the headless primitives and loads each
  * reference page's data from `virtual:ndop/primitive/<name>`, from what
- * `primitives:api` extracted (amendment 12). The
+ * `primitives:api` extracted (amendment 12); `virtual:ndop/blocks` lists
+ * the blocks and loads each one's component and, from
+ * `virtual:ndop/block-code/<name>`, its highlighted code (ADR-0022). The
  * registry must be built first
  * (`registry:build`), which the docs' targets depend on.
  *
@@ -181,10 +189,16 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
           changelogMarkdown(item.name, read),
         ] as const,
     );
+    // Blocks are mostly code, so they stay out of llms-full.txt too.
+    const blocks = blockSummaries(read);
+    const blockTwins = blocks.map(
+      (summary) =>
+        [`/blocks/${summary.name}.md`, blockMarkdown(summary, read)] as const,
+    );
     const markdown = 'text/markdown; charset=utf-8';
     const text = 'text/plain; charset=utf-8';
     return new Map([
-      ...[...twins, ...changelogs].map(
+      ...[...twins, ...changelogs, ...blockTwins].map(
         ([path, body]) => [path, { type: markdown, body }] as const,
       ),
       [
@@ -202,6 +216,11 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
               title: primitive.title,
               url: `/docs/primitives/${primitive.name}`,
               description: primitive.description,
+            })),
+            blocks.map((summary) => ({
+              title: summary.title,
+              url: `/blocks/${summary.name}`,
+              description: summary.description,
             })),
           ),
         },
@@ -269,7 +288,9 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
         id === PRIMITIVES_ID ||
         id.startsWith(PRIMITIVE_PREFIX) ||
         id.startsWith(CHANGELOG_PREFIX) ||
-        id.startsWith(SNAPSHOTS_PREFIX)
+        id.startsWith(SNAPSHOTS_PREFIX) ||
+        id === BLOCKS_ID ||
+        id.startsWith(BLOCK_CODE_PREFIX)
         ? `\0${id}`
         : undefined;
     },
@@ -282,7 +303,44 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             ...read<IndexedComponent>(`metadata/${item.name}.json`),
             title: item.title,
           }));
-        return `export const entries = ${JSON.stringify(searchIndex(options.guides, components))};`;
+        const blocks = blockSummaries(read).map((summary) => ({
+          ...summary,
+          category:
+            BLOCK_CATEGORIES.find((c) => c.slug === summary.category)?.title ??
+            summary.category,
+        }));
+        return `export const entries = ${JSON.stringify(searchIndex(options.guides, components, blocks))};`;
+      }
+      if (id === `\0${BLOCKS_ID}`) {
+        const blocks = blockSummaries(read);
+        return [
+          `export const blocks = ${JSON.stringify(blocks)};`,
+          // By file path: the `@/` alias only resolves from files the
+          // tsconfig covers, which a virtual module is not.
+          `export const blockComponents = {${blocks
+            .map((summary) => {
+              const exported = read<BuiltItem>(`${summary.name}.json`).angular
+                ?.exports?.[0];
+              const file = join(
+                options.workspace,
+                'registry/blocks',
+                summary.name,
+                `${summary.name}.ts`,
+              );
+              return `${JSON.stringify(summary.name)}: () => import(${JSON.stringify(file)}).then((m) => m.${exported})`;
+            })
+            .join(',')}};`,
+          `export const blockCode = {${blocks
+            .map(
+              (summary) =>
+                `${JSON.stringify(summary.name)}: () => import(${JSON.stringify(BLOCK_CODE_PREFIX + summary.name)})`,
+            )
+            .join(',')}};`,
+        ].join('\n');
+      }
+      if (id.startsWith(`\0${BLOCK_CODE_PREFIX}`)) {
+        const name = id.slice(BLOCK_CODE_PREFIX.length + 1);
+        return `export default ${JSON.stringify(await blockCode(name, read, highlight))};`;
       }
       if (id === `\0${INDEX_ID}`) {
         const index = read<{ items: BuiltItem[] }>('index.json');

@@ -60,6 +60,25 @@ export class Preferences {
   }
 
   /**
+   * Follows the preferences another page of the site saves, such as the
+   * gallery around a block's preview frame (ADR-0022): same-origin pages
+   * hear each other's `localStorage` writes through `storage` events.
+   */
+  follow(): void {
+    if (!this.browser) return;
+    addEventListener('storage', (event) => {
+      if (event.key === 'ndop-theme') {
+        const mode = event.newValue;
+        this.theme.set(mode === 'light' || mode === 'dark' ? mode : 'system');
+      } else if (event.key === 'ndop-dir') {
+        const direction = event.newValue === 'rtl' ? 'rtl' : 'ltr';
+        this.root.dir = direction;
+        this.applyDirection(direction);
+      }
+    });
+  }
+
+  /**
    * Switches and saves the text direction.
    *
    * @param direction - The direction.

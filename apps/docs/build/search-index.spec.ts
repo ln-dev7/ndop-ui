@@ -1,4 +1,4 @@
-import { componentEntries, guideEntries } from './search-index';
+import { blockEntry, componentEntries, guideEntries } from './search-index';
 
 describe('guideEntries', () => {
   it('lists the page and its sections, but not step titles or code', () => {
@@ -106,5 +106,25 @@ describe('componentEntries', () => {
     ]);
     expect(entries[0]?.keywords).toEqual(['modal', 'popup']);
     expect(entries[1]?.description).toBe('Whether NdDialog closes on Escape.');
+  });
+});
+
+describe('blockEntry', () => {
+  it('finds a block by its name and category, and links its page', () => {
+    expect(
+      blockEntry({
+        name: 'login-01',
+        title: 'Login 01',
+        description: 'A sign-in form in a `card`.',
+        category: 'Authentication',
+      }),
+    ).toEqual({
+      kind: 'block',
+      title: 'Login 01',
+      context: 'Block · Authentication',
+      description: 'A sign-in form in a card.',
+      keywords: ['login-01', 'authentication'],
+      url: '/blocks/login-01',
+    });
   });
 });

@@ -94,6 +94,12 @@ const SYSTEM = {
                 class="top-auto bottom-0 left-0 max-h-[85vh] max-w-none translate-x-0 translate-y-0 overflow-y-auto rounded-b-none p-6 sm:max-w-none"
               >
                 <h2 ndDialogTitle>Navigation</h2>
+                <!-- The header's own links hide on small screens. -->
+                <nav aria-label="Site" class="my-4 flex gap-2 text-sm">
+                  <a ndButton variant="outline" size="sm" routerLink="/blocks"
+                    >Blocks</a
+                  >
+                </nav>
                 <docs-site-nav />
                 <button ndDialogCloseButton>
                   <svg ndIcon="x"></svg>
@@ -113,6 +119,11 @@ const SYSTEM = {
             routerLink="/docs/getting-started/introduction"
             class="text-muted-foreground hover:text-foreground"
             >Docs</a
+          >
+          <a
+            routerLink="/blocks"
+            class="text-muted-foreground hover:text-foreground"
+            >Blocks</a
           >
         </nav>
 

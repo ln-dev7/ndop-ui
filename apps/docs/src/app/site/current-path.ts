@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
@@ -12,12 +13,15 @@ import { filter, map } from 'rxjs';
  */
 export function injectCurrentPath() {
   const router = inject(Router);
-  const path = () => router.url.split(/[?#]/)[0] ?? '/';
+  const path = (url: string) => url.split(/[?#]/)[0] || '/';
   return toSignal(
     router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
-      map(path),
+      map(() => path(router.url)),
     ),
-    { initialValue: path() },
+    // From the address, not the router: until the first navigation ends,
+    // the router's URL is `/`, and hydration would render that page's
+    // chrome over the server's.
+    { initialValue: path(inject(Location).path()) },
   );
 }

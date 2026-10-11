@@ -120,6 +120,19 @@ describe('llms.txt', () => {
     );
   });
 
+  it('lists blocks last, when there are any', () => {
+    const file = llmsTxt(
+      [],
+      [],
+      [],
+      [{ title: 'Login 01', url: '/blocks/login-01', description: 'A form.' }],
+    );
+    expect(file).toContain(
+      '## Blocks\n\n- [Login 01](https://ndop.dev/blocks/login-01.md): A form.',
+    );
+    expect(llmsTxt([], [])).not.toContain('## Blocks');
+  });
+
   it('puts every twin in llms-full.txt', () => {
     expect(llmsFullTxt(['# A\n', '# B\n'])).toBe('# A\n\n---\n\n# B\n');
   });

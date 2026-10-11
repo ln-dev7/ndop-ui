@@ -128,12 +128,14 @@ export interface LlmsLink {
  * @param guides - The guides, in order.
  * @param components - The components, in order.
  * @param primitives - Headless primitives' reference pages, if any.
+ * @param blocks - Blocks (ADR-0022), if any.
  * @returns The file.
  */
 export function llmsTxt(
   guides: LlmsLink[],
   components: LlmsLink[],
   primitives: LlmsLink[] = [],
+  blocks: LlmsLink[] = [],
 ): string {
   const list = (links: LlmsLink[]) =>
     links
@@ -152,6 +154,7 @@ export function llmsTxt(
       '## Components',
       list(components),
       ...(primitives.length ? ['## Primitives', list(primitives)] : []),
+      ...(blocks.length ? ['## Blocks', list(blocks)] : []),
     ].join('\n\n') + '\n'
   );
 }

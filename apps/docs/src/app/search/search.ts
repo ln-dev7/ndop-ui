@@ -3,6 +3,7 @@ import type { SearchEntry, SearchKind } from './search-entry';
 /** Result groups, in the order the palette shows them. */
 export const GROUPS: readonly { kind: SearchKind; title: string }[] = [
   { kind: 'component', title: 'Components' },
+  { kind: 'block', title: 'Blocks' },
   { kind: 'page', title: 'Guides' },
   { kind: 'heading', title: 'Sections' },
   { kind: 'prop', title: 'Props' },

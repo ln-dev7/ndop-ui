@@ -1,9 +1,15 @@
 /** What a search result is. */
-export type SearchKind = 'page' | 'heading' | 'component' | 'prop' | 'shortcut';
+export type SearchKind =
+  | 'page'
+  | 'heading'
+  | 'component'
+  | 'block'
+  | 'prop'
+  | 'shortcut';
 
 /**
  * One entry of the docs' search index, built at build time from the guides
- * and the components' metadata (ADR-0008).
+ * the components' metadata and the blocks (ADR-0008, ADR-0022).
  */
 export interface SearchEntry {
   /** What it is. */

@@ -7,15 +7,18 @@
    app's source tree. */
 @source '../../../registry/ui';
 @source '../../../registry/examples';
+@source '../../../registry/blocks';
 
 @layer base {
   body {
     -webkit-font-smoothing: antialiased;
   }
   /* No rubber-band pull at the top or bottom of the page on large
-     screens; phones keep their pull-to-refresh. */
+     screens; phones keep their pull-to-refresh. A block's preview page
+     is left out: in the gallery's frame, it would keep the wheel from
+     reaching the gallery. */
   @media (min-width: 64rem) {
-    html {
+    html:not(:has(docs-block-preview-page)) {
       overscroll-behavior-y: none;
     }
   }

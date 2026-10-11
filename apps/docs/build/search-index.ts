@@ -113,17 +113,45 @@ export function componentEntries(component: IndexedComponent): SearchEntry[] {
   ];
 }
 
+/** What the index needs of a block (ADR-0022). */
+export interface IndexedBlock {
+  name: string;
+  title: string;
+  description: string;
+  /** Its gallery category's title, such as `Authentication`. */
+  category: string;
+}
+
+/**
+ * A block's entry: found by its name, its words and its category.
+ *
+ * @param block - The block.
+ * @returns Its entry.
+ */
+export function blockEntry(block: IndexedBlock): SearchEntry {
+  return {
+    kind: 'block',
+    title: block.title,
+    context: `Block · ${block.category}`,
+    description: plainText(block.description),
+    keywords: [block.name, block.category.toLowerCase()],
+    url: `/blocks/${block.name}`,
+  };
+}
+
 /**
  * The whole index: every guide under `guides/<section>/<page>.md`, then
- * every component.
+ * every component, then every block.
  *
  * @param guides - Absolute path of the guides folder.
  * @param components - Every component's metadata.
+ * @param blocks - Every block.
  * @returns The entries.
  */
 export function searchIndex(
   guides: string,
   components: IndexedComponent[],
+  blocks: IndexedBlock[] = [],
 ): SearchEntry[] {
   const pages = readdirSync(guides, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -142,5 +170,6 @@ export function searchIndex(
     ...[...components]
       .sort((a, b) => a.title.localeCompare(b.title))
       .flatMap(componentEntries),
+    ...blocks.map(blockEntry),
   ];
 }
