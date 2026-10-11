@@ -1,6 +1,6 @@
 # ADR-0021: Completing the v1 catalog
 
-- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–3.
+- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–4.
   Deviates from the definition of done for items without behavior
 - Date: 2026-10-08
 - Phase: 6
@@ -190,3 +190,17 @@ Select is 5.94 kB and Combobox 7.96 kB, against the 4 kB default.
 - Select and Combobox get Dialog's 8 kB budget in `tools/size/budgets.json`.
 - Combobox is close to it, so a feature that grows it needs another look,
   such as moving chips into their own part.
+
+## Amendment 4 (2026-10-11): Calendar and Sidebar share Dialog's budget
+
+Status: Accepted (approved by Valery on 2026-10-11).
+
+Measured as amendment 1 decides, Calendar is 5.70 kB, with the date grid's
+keyboard, `Intl` labels, three selection modes and a value accessor, and
+Sidebar 6.89 kB, with the CDK's breakpoints, its mobile dialog with a
+focus trap, and about 25 styled parts. Both are over the 4 kB default.
+
+- Calendar and Sidebar get Dialog's 8 kB budget in
+  `tools/size/budgets.json`.
+- Chart (2.09 kB) and Data Table (1.17 kB), whose libs are files of their
+  items, fit the default, so they need no budget of their own.

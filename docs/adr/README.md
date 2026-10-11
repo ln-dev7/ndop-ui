@@ -20,14 +20,14 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0011](0011-cli-architecture.md)                         | CLI architecture and stack                                | Accepted, with amendment 1     |
 | [0012](0012-registry-source-and-build.md)                | Registry source, build and distribution                   | Accepted, with amendment 1     |
 | [0013](0013-icons-adapter.md)                            | Icons adapter on `@lucide/angular`                        | Accepted                       |
-| [0014](0014-styled-items-and-examples.md)                | Styled items and examples                                 | Accepted, with amendments 1–3  |
+| [0014](0014-styled-items-and-examples.md)                | Styled items and examples                                 | Accepted, with amendments 1–4  |
 | [0015](0015-registry-install-test.md)                    | Registry install test                                     | Accepted                       |
 | [0016](0016-docs-site.md)                                | Docs site architecture and quality gates                  | Accepted, with amendments 1–14 |
 | [0017](0017-agent-context-files.md)                      | Agent context files                                       | Accepted                       |
 | [0018](0018-verify-and-eslint-plugin.md)                 | `ndop verify` and the ESLint plugin                       | Accepted                       |
 | [0019](0019-agent-eval-suite.md)                         | Agent eval suite                                          | Accepted, with amendment 1     |
 | [0020](0020-diff-and-update.md)                          | `ndop diff`, `ndop update` and the update preview         | Accepted, with amendment 1     |
-| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendments 1–3  |
+| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendments 1–4  |
 | [0022](0022-blocks.md)                                   | Blocks and the blocks gallery                             | Accepted                       |
 | [0023](0023-themes-and-theme-studio.md)                  | Themes, the theme studio and the theme gallery            | Accepted                       |
 | [0024](0024-doctor.md)                                   | `ndop doctor`                                             | Accepted                       |
