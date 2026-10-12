@@ -1,6 +1,6 @@
 # ADR-0025: Third-party registries and the shadcn-compatible output
 
-- Status: Accepted (approved by Valery on 2026-10-08)
+- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1
 - Date: 2026-10-08
 - Phase: 6
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Registry spec"
@@ -113,3 +113,28 @@ add` offers to run `init`, so it fails the same way, and `--yes` doesn't
 - URL installs make themes from the studio and other sites one command.
 - shadcn users can install Ndop items without `ndop`, at Ndop's default
   paths, at the cost of the setup steps `init` would do.
+
+## Amendment 1 (2026-10-12): items may import their Ndop dependencies
+
+Status: Accepted by Valery on 2026-10-12.
+
+`ndop build` accepted `@/` imports only of items in the same registry, so a
+third-party item that lists `@ndop/button` in `registryDependencies` could
+install it alongside but not use it in code. A registry of Ndop-based
+components needs to compose Ndop's items, as the template's `widget` does
+with Button.
+
+- `ndop build` fetches each `@ndop/<name>` dependency, and its own
+  dependencies, from the default registry (overridable as for the other
+  commands). Their files count as the item's importable files, and the
+  compile check type-checks against them. Building such a registry needs
+  network access, or a local copy of Ndop's registry.
+- Their npm packages (`@ndop/core`, `@ndop/primitives`, …) must be
+  installed in the registry project for the compile check; the build says
+  which one is missing.
+- Other namespaces stay install-only: importing an `@acme/…` dependency's
+  files fails the build, since the build doesn't know where that registry
+  is. Bare names still mean items of the same registry.
+- `--compat shadcn` points an `@ndop/<name>` dependency at Ndop's compat
+  URL and rewrites imports of its files to relative paths, as for the
+  registry's own items.

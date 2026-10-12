@@ -31,4 +31,4 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0022](0022-blocks.md)                                   | Blocks and the blocks gallery                             | Accepted                       |
 | [0023](0023-themes-and-theme-studio.md)                  | Themes, the theme studio and the theme gallery            | Accepted                       |
 | [0024](0024-doctor.md)                                   | `ndop doctor`                                             | Accepted                       |
-| [0025](0025-third-party-registries-and-shadcn-compat.md) | Third-party registries and the shadcn-compatible output   | Accepted                       |
+| [0025](0025-third-party-registries-and-shadcn-compat.md) | Third-party registries and the shadcn-compatible output   | Accepted, with amendment 1     |
