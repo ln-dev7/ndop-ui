@@ -144,7 +144,79 @@ describe('registrySources', () => {
         '@open': { url: 'https://open.dev/{name}.json' },
       }),
     );
-    expect(() => registrySources({ registries }, undefined, {})).toThrow(
+  });
+
+  it('records an unset variable instead of failing every registry', () => {
+    const sources = registrySources(
+      {
+        registries: {
+          '@acme': {
+            url: 'https://acme.dev/r/{name}.json',
+            headers: { Authorization: 'Bearer ${ACME_TOKEN}' },
+          },
+        },
+      },
+      undefined,
+      {},
+    );
+    expect(sources['@acme']?.missing).toBe('ACME_TOKEN');
+    expect(sources['@ndop']).toEqual({ url: 'https://ndop.dev/r/{name}.json' });
+  });
+});
+
+describe('RegistryClient namespaced registries', () => {
+  const served: Record<string, string> = {
+    'https://acme.dev/r/widget.json': libItem('widget', '1.0.0', [
+      'helper',
+      '@ndop/a',
+    ]),
+    'https://acme.dev/r/helper.json': libItem('helper', '1.0.0'),
+    'r/a.json': libItem('a', '0.2.0'),
+  };
+  const requests: { location: string; headers: Record<string, string> }[] = [];
+  const fetcher = async (location: string, headers: Record<string, string>) => {
+    requests.push({ location, headers });
+    const text = served[location];
+    if (text === undefined) throw new CliError(`No ${location}.`);
+    return text;
+  };
+  const config = {
+    registry: 'r/{name}.json',
+    registries: {
+      '@acme': {
+        url: 'https://acme.dev/r/{name}.json',
+        headers: { Authorization: 'Bearer ${ACME_TOKEN}' },
+      },
+    },
+  };
+
+  it("resolves bare dependencies in the item's registry and @ndop/ ones in the default", async () => {
+    const client = new RegistryClient(
+      registrySources(config, undefined, { ACME_TOKEN: 's3cret' }),
+      fetcher,
+    );
+    const items = await resolveItems(client, [parseRef('@acme/widget')]);
+    expect(items.map(({ ref }) => itemKey(ref))).toEqual([
+      '@acme/helper',
+      '@ndop/a',
+      '@acme/widget',
+    ]);
+    expect(
+      requests.find(({ location }) => location.endsWith('/widget.json'))
+        ?.headers,
+    ).toEqual({ Authorization: 'Bearer s3cret' });
+    expect(
+      requests.find(({ location }) => location === 'r/a.json')?.headers,
+    ).toEqual({});
+  });
+
+  it('names the unset variable only when the registry is used', async () => {
+    const client = new RegistryClient(
+      registrySources(config, undefined, {}),
+      fetcher,
+    );
+    expect((await client.get(parseRef('a'))).name).toBe('a');
+    await expect(client.get(parseRef('@acme/widget'))).rejects.toThrow(
       'Registry @acme needs the ACME_TOKEN environment variable.',
     );
   });

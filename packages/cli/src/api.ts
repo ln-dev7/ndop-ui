@@ -252,15 +252,16 @@ export async function registryMetadata(
     let found = cache.get(key);
     if (!found) {
       const source = sources[registry];
-      found = source
-        ? fetcher(
-            source.url.replaceAll('{name}', `metadata/${name}`),
-            source.headers ?? {},
-          ).then(
-            (text) => JSON.parse(text) as Metadata,
-            () => undefined,
-          )
-        : Promise.resolve(undefined);
+      found =
+        source && !source.missing
+          ? fetcher(
+              source.url.replaceAll('{name}', `metadata/${name}`),
+              source.headers ?? {},
+            ).then(
+              (text) => JSON.parse(text) as Metadata,
+              () => undefined,
+            )
+          : Promise.resolve(undefined);
       cache.set(key, found);
     }
     return found;

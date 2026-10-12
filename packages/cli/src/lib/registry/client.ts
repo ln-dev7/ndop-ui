@@ -59,6 +59,12 @@ export interface RegistrySource {
   url: string;
   /** Request headers, with `${VAR}` already expanded. */
   headers?: Record<string, string>;
+  /**
+   * An environment variable one of the headers needs that isn't set.
+   * Fetching from the registry then fails naming it; other registries
+   * still work.
+   */
+  missing?: string;
 }
 
 /**
@@ -278,11 +284,25 @@ export function versionedUrl(url: string, version: string): string {
  * variable, the `registry` field of `ndop.json` and ndop.dev, plus every
  * namespaced registry in `ndop.json`.
  *
+ * `${VAR}` in a namespaced registry's headers expands from `env`. An unset
+ * variable doesn't fail here, only when an item is fetched from that
+ * registry (see {@link RegistrySource.missing}), so a private registry
+ * without its token doesn't stop installs from the others (ADR-0025).
+ *
  * @param config - The project's `ndop.json`, when there is one.
  * @param override - The `--registry` option.
  * @param env - Environment variables.
  * @returns Sources by namespace.
- * @throws {@link CliError} when a header names an unset variable.
+ *
+ * @example
+ * ```ts
+ * registrySources(
+ *   { registries: { '@acme': { url: 'https://acme.dev/r/{name}.json', headers: { Authorization: 'Bearer ${ACME_TOKEN}' } } } },
+ *   undefined,
+ *   { ACME_TOKEN: 's3cret' },
+ * )['@acme'];
+ * // { url: 'https://acme.dev/r/{name}.json', headers: { Authorization: 'Bearer s3cret' } }
+ * ```
  */
 export function registrySources(
   config: Pick<NdopConfig, 'registry' | 'registries'> | undefined,
@@ -301,26 +321,24 @@ export function registrySources(
   for (const [namespace, entry] of Object.entries(config?.registries ?? {})) {
     if (typeof entry === 'string') {
       sources[namespace] = { url: entry };
-    } else {
-      sources[namespace] = {
-        url: entry.url,
-        headers: Object.fromEntries(
-          Object.entries(entry.headers ?? {}).map(([key, value]) => [
-            key,
-            value.replace(/\$\{(\w+)\}/g, (_match, name: string) => {
-              const expanded = env[name];
-              if (expanded === undefined) {
-                throw new CliError(
-                  `Registry ${namespace} needs the ${name} environment variable.`,
-                  'ndop.json',
-                );
-              }
-              return expanded;
-            }),
-          ]),
-        ),
-      };
+      continue;
     }
+    let missing: string | undefined;
+    const headers = Object.fromEntries(
+      Object.entries(entry.headers ?? {}).map(([key, value]) => [
+        key,
+        value.replace(/\$\{(\w+)\}/g, (_match, name: string) => {
+          const expanded = env[name];
+          if (expanded === undefined) missing ??= name;
+          return expanded ?? '';
+        }),
+      ]),
+    );
+    sources[namespace] = {
+      url: entry.url,
+      ...(entry.headers ? { headers } : {}),
+      ...(missing ? { missing } : {}),
+    };
   }
   return sources;
 }
@@ -382,7 +400,8 @@ export class RegistryClient {
    *
    * @param ref - Which item, and optionally which version.
    * @returns The item, with every file's content.
-   * @throws {@link CliError} for unknown registries, failed requests and
+   * @throws {@link CliError} for unknown registries, registries whose
+   *   headers need an unset environment variable, failed requests and
    *   invalid items.
    */
   get(ref: ItemRef): Promise<RegistryItem> {
@@ -409,6 +428,12 @@ export class RegistryClient {
     if (!source) {
       throw new CliError(
         `Unknown registry ${ref.registry}. Add it to "registries" in ndop.json.`,
+        'ndop.json',
+      );
+    }
+    if (source.missing) {
+      throw new CliError(
+        `Registry ${ref.registry} needs the ${source.missing} environment variable.`,
         'ndop.json',
       );
     }
@@ -522,8 +547,13 @@ export interface ResolvedItem {
 /**
  * Fetches items and, recursively, their `registryDependencies`. An item
  * asked for at a version gets that version even when another item depends
- * on it; dependencies are otherwise fetched at their latest version. A URL
- * item's bare-name dependencies resolve in the default registry
+ * on it; dependencies are otherwise fetched at their latest version.
+ *
+ * A bare name in `registryDependencies` resolves in the registry of the
+ * item that lists it, so a third-party registry's items depend on each
+ * other by name and on Ndop's as `@ndop/<name>`, which always means the
+ * default registry, wherever `--registry` or `NDOP_REGISTRY` points it. A
+ * URL item's bare-name dependencies resolve in the default registry
  * (ADR-0025).
  *
  * @param client - Registry client.
