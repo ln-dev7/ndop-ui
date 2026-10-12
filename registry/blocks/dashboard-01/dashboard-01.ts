@@ -47,9 +47,13 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';
 import { dashboardResource, type DashboardOrderStatus } from './data';
 
-/** The plot's size, in viewBox units. */
-const WIDTH = 600;
-const HEIGHT = 250;
+/**
+ * The plot's size, in viewBox units. The chart spans the page, so its
+ * viewBox is about as wide as it renders on a desktop and its labels keep
+ * their size there.
+ */
+const WIDTH = 1000;
+const HEIGHT = 300;
 /** Room under the plot for the date labels. */
 const AXIS = 24;
 /** About how many date labels fit under the plot. */
