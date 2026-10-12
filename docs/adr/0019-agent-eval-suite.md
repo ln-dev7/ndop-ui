@@ -153,7 +153,7 @@ agent still run on every PR.
 
 ## Amendment 2 (2026-10-12): the suite grows with the catalog
 
-Status: Proposed, pending Valery's approval. It applies the decision's own
+Status: Accepted by Valery on 2026-10-12. It applies the decision's own
 consequence ("each Phase 6 component adds prompts").
 
 - `prompts.json` has 89 prompts. The first 50 are unchanged, so earlier
