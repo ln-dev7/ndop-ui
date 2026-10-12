@@ -1,11 +1,11 @@
 # Agent eval suite
 
 Measures how well a coding agent builds Ndop UI screens, given only the
-Ndop MCP server (RFC-0001's agent accuracy metric, ADR-0019). Each of the 50
-prompts in `prompts.json` goes to headless Claude Code in a fresh copy of a
+Ndop MCP server (RFC-0001's agent accuracy metric, ADR-0019). Each prompt in
+`prompts.json` goes to headless Claude Code in a fresh copy of a
 fixture app; the result passes when `ndop verify` finds no error in the
-agent's files, they use the prompt's components installed from the
-registry, and nothing outside `src/` changed but install files.
+agent's files, they use the prompt's components and blocks installed
+from the registry, and nothing outside `src/` changed but install files.
 
 ## Run it
 

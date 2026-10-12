@@ -489,19 +489,19 @@ The docs site is the product's storefront and must be visibly better than shadcn
 
 Every component, example, block and CLI command is tested the way users will actually use it: installed into a fresh Angular app.
 
-| Layer             | Tooling                                                                            | What it checks                                                      |
-| ----------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Unit              | Vitest (Angular's Vitest builder) + Angular Testing Library                        | State, inputs/models, controlled vs uncontrolled, forms integration |
-| Accessibility     | axe-core + scripted keyboard tests generated from `spec.md`                        | Roles, names, keyboard map, focus return, focus trap                |
-| Visual regression | Playwright screenshots of every example in light, dark and RTL                     | Unintended visual changes; diffs attached to PRs                    |
-| SSR / hydration   | Analog test app rendering each example server-side                                 | No hydration mismatch warnings, no DOM access during SSR            |
-| Zoneless          | Test harness app with `provideZonelessChangeDetection()`                           | Updates render without Zone.js                                      |
-| Registry e2e      | Script: `ng new` → `ndop init` → `ndop add <every item>` → `ng build`              | Every item installs and compiles with default config                |
-| Update e2e        | Fixture repos with realistic local edits, then `ndop update`                       | Clean-merge rate, conflict markers correct, lockfile correct        |
-| CLI               | Vitest with a virtual file system, plus snapshot tests of written files            | Idempotency, dry-run accuracy, AST edits                            |
-| Agent eval        | 50 scripted prompts run against the MCP server; outputs checked with `ndop verify` | Agent accuracy metric                                               |
-| Bundle size       | size-limit per primitive and styled item                                           | Budgets from Success metrics                                        |
-| Docs              | Lighthouse CI, link checker, axe on every route                                    | Docs quality bar                                                    |
+| Layer             | Tooling                                                                                                                                    | What it checks                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Unit              | Vitest (Angular's Vitest builder) + Angular Testing Library                                                                                | State, inputs/models, controlled vs uncontrolled, forms integration |
+| Accessibility     | axe-core + scripted keyboard tests generated from `spec.md`                                                                                | Roles, names, keyboard map, focus return, focus trap                |
+| Visual regression | Playwright screenshots of every example in light, dark and RTL                                                                             | Unintended visual changes; diffs attached to PRs                    |
+| SSR / hydration   | Analog test app rendering each example server-side                                                                                         | No hydration mismatch warnings, no DOM access during SSR            |
+| Zoneless          | Test harness app with `provideZonelessChangeDetection()`                                                                                   | Updates render without Zone.js                                      |
+| Registry e2e      | Script: `ng new` → `ndop init` → `ndop add <every item>` → `ng build`                                                                      | Every item installs and compiles with default config                |
+| Update e2e        | Fixture repos with realistic local edits, then `ndop update`                                                                               | Clean-merge rate, conflict markers correct, lockfile correct        |
+| CLI               | Vitest with a virtual file system, plus snapshot tests of written files                                                                    | Idempotency, dry-run accuracy, AST edits                            |
+| Agent eval        | Scripted prompts (50, plus more for every Phase 6 component and for blocks) run against the MCP server; outputs checked with `ndop verify` | Agent accuracy metric                                               |
+| Bundle size       | size-limit per primitive and styled item                                                                                                   | Budgets from Success metrics                                        |
+| Docs              | Lighthouse CI, link checker, axe on every route                                                                                            | Docs quality bar                                                    |
 
 **CI matrix:** Angular current major and the one before; Node LTS versions; npm, pnpm and bun for the registry e2e; zone and zoneless.
 

@@ -298,5 +298,239 @@
     "prompt": "Add a read-only email field with a label and a note that it can't be changed.",
     "components": ["input", "label"],
     "category": "edge"
+  },
+  {
+    "id": 51,
+    "prompt": "Add a sign-up form with a terms checkbox that must be ticked, and errors shown under each field.",
+    "components": ["checkbox", "form-field", "input", "button"],
+    "category": "form"
+  },
+  {
+    "id": 52,
+    "prompt": "Add a feedback form with a multi-line message field, a 1 to 5 rating as radio buttons, and a submit button.",
+    "components": ["textarea", "radio-group", "form-field", "button"],
+    "category": "form"
+  },
+  {
+    "id": 53,
+    "prompt": "Add notification preferences: switches for email, push and SMS, each with a description.",
+    "components": ["switch", "form-field"],
+    "category": "form"
+  },
+  {
+    "id": 54,
+    "prompt": "Add a country picker that lists countries in a dropdown and shows the chosen one.",
+    "components": ["select", "form-field"],
+    "category": "form"
+  },
+  {
+    "id": 55,
+    "prompt": "Add a searchable framework picker that filters as you type and lets you pick several, shown as removable chips.",
+    "components": ["combobox"],
+    "category": "form"
+  },
+  {
+    "id": 56,
+    "prompt": "Add a volume control slider from 0 to 100 that shows its value.",
+    "components": ["slider", "label"],
+    "category": "form"
+  },
+  {
+    "id": 57,
+    "prompt": "Add a 6-digit one-time code input for verifying a phone number.",
+    "components": ["input-otp", "button"],
+    "category": "form"
+  },
+  {
+    "id": 58,
+    "prompt": "Add a text formatting toolbar with bold, italic and underline toggles and an alignment choice of left, center or right.",
+    "components": ["toggle", "toggle-group"],
+    "category": "form"
+  },
+  {
+    "id": 59,
+    "prompt": "Add a booking form field to pick a check-in date from a calendar popup.",
+    "components": ["date-picker", "form-field"],
+    "category": "form"
+  },
+  {
+    "id": 60,
+    "prompt": "Add an inline calendar where users can select a date range for a report.",
+    "components": ["calendar"],
+    "category": "form"
+  },
+  {
+    "id": 61,
+    "prompt": "Add a 'Delete project' button that asks for confirmation in an alert before deleting.",
+    "components": ["alert-dialog", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 62,
+    "prompt": "Add a side panel that slides in from the right with filters for a product list.",
+    "components": ["sheet", "checkbox", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 63,
+    "prompt": "Add a bottom drawer on mobile with share options.",
+    "components": ["drawer", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 64,
+    "prompt": "Add a user menu on an avatar with Profile, Settings and Log out items.",
+    "components": ["dropdown-menu", "avatar"],
+    "category": "overlay"
+  },
+  {
+    "id": 65,
+    "prompt": "Add a right-click menu on a file card with Rename, Duplicate and Delete.",
+    "components": ["context-menu", "card"],
+    "category": "overlay"
+  },
+  {
+    "id": 66,
+    "prompt": "Add a profile preview that appears when hovering a username link.",
+    "components": ["hover-card", "avatar"],
+    "category": "overlay"
+  },
+  {
+    "id": 67,
+    "prompt": "Show a toast saying 'Changes saved' with an Undo action after a save button is clicked.",
+    "components": ["toast", "button"],
+    "category": "overlay"
+  },
+  {
+    "id": 68,
+    "prompt": "Add a command palette opened with Ctrl+K that searches pages and actions.",
+    "components": ["command", "dialog"],
+    "category": "overlay"
+  },
+  {
+    "id": 69,
+    "prompt": "Add an application menubar with File, Edit and View menus.",
+    "components": ["menubar"],
+    "category": "layout"
+  },
+  {
+    "id": 70,
+    "prompt": "Add a site header navigation with a Products menu that shows links with descriptions.",
+    "components": ["navigation-menu"],
+    "category": "layout"
+  },
+  {
+    "id": 71,
+    "prompt": "Add a breadcrumb trail for Home / Projects / Website redesign, and pagination under a list of 10 pages.",
+    "components": ["breadcrumb", "pagination"],
+    "category": "layout"
+  },
+  {
+    "id": 72,
+    "prompt": "Add tabs for Account and Password settings, each with its own form.",
+    "components": ["tabs", "input", "label", "button"],
+    "category": "layout"
+  },
+  {
+    "id": 73,
+    "prompt": "Add an FAQ section where each question expands to show its answer.",
+    "components": ["accordion"],
+    "category": "layout"
+  },
+  {
+    "id": 74,
+    "prompt": "Add a 'Show more details' toggle that reveals extra order information.",
+    "components": ["collapsible", "button"],
+    "category": "layout"
+  },
+  {
+    "id": 75,
+    "prompt": "Add a two-pane editor whose panes the user can resize by dragging the divider.",
+    "components": ["resizable"],
+    "category": "layout"
+  },
+  {
+    "id": 76,
+    "prompt": "Add a scrollable list of 50 tags in a fixed-height box, and a 16:9 video placeholder.",
+    "components": ["scroll-area", "aspect-ratio"],
+    "category": "layout"
+  },
+  {
+    "id": 77,
+    "prompt": "Add a product card grid where each card has an image area, title, price and an Add to cart button.",
+    "components": ["card", "button", "aspect-ratio"],
+    "category": "layout"
+  },
+  {
+    "id": 78,
+    "prompt": "Add an invoices table with columns for number, status, method and amount, and a total row.",
+    "components": ["table", "badge"],
+    "category": "page"
+  },
+  {
+    "id": 79,
+    "prompt": "Add a users table that can be sorted by name, searched, paged and with rows selectable.",
+    "components": ["data-table", "table", "checkbox", "input"],
+    "category": "page"
+  },
+  {
+    "id": 80,
+    "prompt": "Add a monthly revenue bar chart with a tooltip and a legend.",
+    "components": ["chart"],
+    "category": "page"
+  },
+  {
+    "id": 81,
+    "prompt": "Add an upload progress bar, a loading spinner on a submit button, and skeleton rows while a list loads.",
+    "components": ["progress", "spinner", "skeleton", "button"],
+    "category": "edge"
+  },
+  {
+    "id": 82,
+    "prompt": "Add an empty state for a project list with an icon, a message and a 'Create project' button, and an error alert above it.",
+    "components": ["empty", "alert", "button"],
+    "category": "edge"
+  },
+  {
+    "id": 83,
+    "prompt": "Add an app layout with a collapsible sidebar of navigation links.",
+    "components": ["sidebar"],
+    "category": "layout"
+  },
+  {
+    "id": 84,
+    "prompt": "Add a login page.",
+    "components": ["login-01"],
+    "category": "page"
+  },
+  {
+    "id": 85,
+    "prompt": "Add an analytics dashboard page with stat cards, a visitors chart and recent orders.",
+    "components": ["dashboard-01"],
+    "category": "page"
+  },
+  {
+    "id": 86,
+    "prompt": "Add a notifications settings page with email and push switches and a danger zone to delete the account.",
+    "components": ["settings-02"],
+    "category": "page"
+  },
+  {
+    "id": 87,
+    "prompt": "Add a tasks page with a table users can search, filter by status, sort, page through and select.",
+    "components": ["data-table-01"],
+    "category": "page"
+  },
+  {
+    "id": 88,
+    "prompt": "Add an app shell whose sidebar collapses to icons and opens as a sheet on mobile.",
+    "components": ["sidebar-02"],
+    "category": "page"
+  },
+  {
+    "id": 89,
+    "prompt": "Add a pricing page with three plans and a monthly or yearly toggle.",
+    "components": ["pricing-01"],
+    "category": "page"
   }
 ]

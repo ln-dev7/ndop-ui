@@ -28,7 +28,7 @@ export interface VerifyOutput {
 
 /** What a prompt's result is scored on. */
 export interface ScoreInput {
-  /** Components the prompt requires. */
+  /** Components and blocks the prompt requires. */
   components: readonly string[];
   /** Project-relative paths created, changed or deleted. */
   changed: readonly string[];
@@ -128,7 +128,7 @@ export function score(input: ScoreInput): { passed: boolean; checks: Check[] } {
     (component) =>
       !input.installed.has(component) ||
       !Object.values(input.sources).some((source) =>
-        new RegExp(`/ui/${component}/${component}['"]`).test(source),
+        new RegExp(`/(?:ui|blocks)/${component}/${component}['"]`).test(source),
       ),
   );
   checks.push({

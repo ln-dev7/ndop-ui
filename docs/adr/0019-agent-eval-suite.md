@@ -150,3 +150,20 @@ when Valery starts it: locally with `pnpm nx run agent-eval:eval`, or from
 the Agent eval workflow's manual trigger. There's no weekly schedule. This
 replaces the weekly run in "When it runs"; the tests with the scripted
 agent still run on every PR.
+
+## Amendment 2 (2026-10-12): the suite grows with the catalog
+
+Status: Proposed, pending Valery's approval. It applies the decision's own
+consequence ("each Phase 6 component adds prompts").
+
+- `prompts.json` has 89 prompts. The first 50 are unchanged, so earlier
+  results stay comparable prompt by prompt. Prompts 51–89 cover every
+  Phase 6 component at least once, and six of them (login, dashboard,
+  settings, data table, sidebar, pricing) should lead to a block
+  (ADR-0022).
+- Accuracy is passes divided by the number of prompts run, as the runner
+  already computes it, not by 50.
+- A prompt's `components` may name blocks. A block passes the components
+  check when it's in the lockfile and the agent's files import it from
+  `blocks/<name>/<name>`, as a route does.
+- A unit test fails if a component in the registry has no prompt.

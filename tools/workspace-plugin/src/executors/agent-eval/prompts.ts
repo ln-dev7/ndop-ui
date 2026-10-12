@@ -15,7 +15,7 @@ export interface EvalPrompt {
   id: number;
   /** The one-line request given to the agent. */
   prompt: string;
-  /** Registry components the result must use. */
+  /** Registry components and blocks the result must use. */
   components: string[];
   /** What kind of task it is. */
   category: (typeof CATEGORIES)[number];

@@ -62,6 +62,23 @@ describe('score', () => {
     });
   });
 
+  it('passes a block routed from the app, installed from the registry', () => {
+    const result = score({
+      ...passing,
+      components: ['login-01'],
+      installed: new Set(['login-01', 'button', 'utils']),
+      sources: {
+        'src/app/app.routes.ts':
+          "export const routes = [{ path: 'login', loadComponent: () => import('./blocks/login-01/login-01').then((m) => m.Login01Block) }];",
+      },
+    });
+    expect(result.checks[1]).toEqual({
+      name: 'components',
+      ok: true,
+      detail: 'Uses login-01.',
+    });
+  });
+
   it('fails verify errors and skipped steps', () => {
     const failed = score({
       ...passing,

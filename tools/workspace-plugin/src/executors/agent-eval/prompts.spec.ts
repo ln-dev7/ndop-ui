@@ -5,34 +5,37 @@ import { readPrompts, selectPrompts } from './prompts';
 const workspace = join(import.meta.dirname, '../../../../..');
 
 describe("the suite's prompts", () => {
-  it('has 50 well-formed prompts, the first being the acceptance prompt', async () => {
+  it('has well-formed prompts, the first being the acceptance prompt', async () => {
     const prompts = await readPrompts(
       join(workspace, 'tools/agent-eval/prompts.json'),
     );
-    expect(prompts).toHaveLength(50);
+    expect(prompts.length).toBeGreaterThanOrEqual(50);
     expect(prompts[0]?.prompt).toBe(
       'Add a settings page where users edit their name and email, save, and can delete their account after confirming.',
     );
-    expect(new Set(prompts.map((entry) => entry.prompt)).size).toBe(50);
+    expect(new Set(prompts.map((entry) => entry.prompt)).size).toBe(
+      prompts.length,
+    );
   });
 
-  it('only asks for components the registry has', async () => {
+  it('asks only for registry components and blocks, and covers every component', async () => {
     const registry = JSON.parse(
       readFileSync(join(workspace, 'registry/registry.json'), 'utf-8'),
     ) as { items: { name: string; type: string }[] };
-    const components = new Set(
+    const names = (type: string) =>
       registry.items
-        .filter((item) => item.type === 'registry:ui')
-        .map((item) => item.name),
-    );
+        .filter((item) => item.type === type)
+        .map((item) => item.name);
+    const components = names('registry:ui');
+    const known = new Set([...components, ...names('registry:block')]);
     const prompts = await readPrompts(
       join(workspace, 'tools/agent-eval/prompts.json'),
     );
-    expect(
-      prompts
-        .flatMap((entry) => entry.components)
-        .filter((name) => !components.has(name)),
-    ).toEqual([]);
+    const asked = prompts.flatMap((entry) => entry.components);
+    expect(asked.filter((name) => !known.has(name))).toEqual([]);
+    // RFC-0001's definition of done: every component is covered by the
+    // suite (ADR-0019).
+    expect(components.filter((name) => !asked.includes(name))).toEqual([]);
   });
 });
 
