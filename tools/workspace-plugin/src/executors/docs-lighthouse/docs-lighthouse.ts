@@ -5,6 +5,7 @@ import { serveSite } from '../../utils/serve-site';
 import {
   cpuMultiplier,
   failures,
+  categoryScores,
   median,
   medianRun,
   prerenderedRoutes,
@@ -114,12 +115,7 @@ const docsLighthouse: PromiseExecutor<DocsLighthouseExecutorSchema> = async (
           )
         ];
       if (!result) throw new Error(`No Lighthouse run for ${route}.`);
-      const scores = Object.fromEntries(
-        Object.values(result.lhr.categories).map((category) => [
-          category.title,
-          Math.round((category.score ?? 0) * 100),
-        ]),
-      );
+      const scores = categoryScores(result.lhr);
       results.push({ route, scores });
       await writeFile(
         join(outputDir, reportName(route)),

@@ -9,6 +9,36 @@ export interface RouteScores {
   scores: Record<string, number>;
 }
 
+/** What {@link categoryScores} reads of a Lighthouse result. */
+export interface LighthouseResult {
+  /** Categories by id. */
+  categories: Record<string, { title: string; score: number | null }>;
+  /** Audits by id. */
+  audits: Record<string, { score: number | null } | undefined>;
+}
+
+/**
+ * A route's category scores, 0 to 100. A page that asks search engines
+ * not to index it, such as a block's preview (ADR-0022), has no SEO score:
+ * Lighthouse's SEO category fails that request by design.
+ *
+ * @param result - The Lighthouse result.
+ * @returns Scores by category title.
+ */
+export function categoryScores(
+  result: LighthouseResult,
+): Record<string, number> {
+  const unlisted = result.audits['is-crawlable']?.score === 0;
+  return Object.fromEntries(
+    Object.entries(result.categories)
+      .filter(([id]) => !(unlisted && id === 'seo'))
+      .map(([, category]) => [
+        category.title,
+        Math.round((category.score ?? 0) * 100),
+      ]),
+  );
+}
+
 /**
  * Every prerendered route of a built site: each folder holding an
  * `index.html`.

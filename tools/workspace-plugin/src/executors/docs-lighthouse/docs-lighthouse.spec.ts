@@ -2,6 +2,7 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
+  categoryScores,
   cpuMultiplier,
   failures,
   median,
@@ -50,6 +51,25 @@ describe('shardRoutes', () => {
     expect(() => shardRoutes(routes, '0/3')).toThrow('1/3');
     expect(() => shardRoutes(routes, '4/3')).toThrow();
     expect(() => shardRoutes(routes, 'two')).toThrow();
+  });
+});
+
+describe('categoryScores', () => {
+  const categories = {
+    performance: { title: 'Performance', score: 0.874 },
+    seo: { title: 'SEO', score: 0.6 },
+  };
+
+  it('rounds every category to a percentage', () => {
+    expect(
+      categoryScores({ categories, audits: { 'is-crawlable': { score: 1 } } }),
+    ).toEqual({ Performance: 87, SEO: 60 });
+  });
+
+  it('leaves SEO out for a page that asks not to be indexed', () => {
+    expect(
+      categoryScores({ categories, audits: { 'is-crawlable': { score: 0 } } }),
+    ).toEqual({ Performance: 87 });
   });
 });
 
