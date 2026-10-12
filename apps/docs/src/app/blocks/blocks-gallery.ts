@@ -15,7 +15,12 @@ import { BlockCard } from './block-card';
   imports: [RouterLink, BlockCard],
   host: { class: 'block' },
   template: `
-    <main id="main" class="mx-auto max-w-[1440px] px-4 py-10 lg:px-6">
+    <!-- Named, since each preview frame holds its block's own main. -->
+    <main
+      id="main"
+      aria-labelledby="blocks-title"
+      class="mx-auto max-w-[1440px] px-4 py-10 lg:px-6"
+    >
       @if (block(); as only) {
         <p class="text-sm">
           <a
@@ -24,7 +29,10 @@ import { BlockCard } from './block-card';
             >{{ categoryTitle(only.category) }}</a
           >
         </p>
-        <h1 class="mt-2 text-3xl font-semibold tracking-tight">
+        <h1
+          id="blocks-title"
+          class="mt-2 text-3xl font-semibold tracking-tight"
+        >
           {{ only.title }}
         </h1>
         <p class="mt-2 max-w-2xl text-muted-foreground">
@@ -37,7 +45,7 @@ import { BlockCard } from './block-card';
         }
         <docs-block-card class="mt-6" [block]="only" [heading]="false" />
       } @else if (shown(); as list) {
-        <h1 class="text-3xl font-semibold tracking-tight">
+        <h1 id="blocks-title" class="text-3xl font-semibold tracking-tight">
           {{ category()?.title ?? 'Blocks' }}
         </h1>
         <p class="mt-2 max-w-2xl text-muted-foreground">
@@ -65,7 +73,7 @@ import { BlockCard } from './block-card';
           }
         </div>
       } @else {
-        <h1 class="text-3xl font-semibold tracking-tight">
+        <h1 id="blocks-title" class="text-3xl font-semibold tracking-tight">
           No blocks named {{ slug() }}
         </h1>
         <p class="mt-2">

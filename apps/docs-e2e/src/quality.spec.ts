@@ -45,7 +45,10 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
       for (const colorScheme of ['dark', 'light'] as const) {
         await page.emulateMedia({ colorScheme });
         await open(page, route);
-        const axe = await new AxeBuilder({ page }).analyze();
+        // Frames hold pages the crawl checks on their own, such as block
+        // previews; across frames, axe reads each preview's main as a
+        // second, unnamed main of the gallery.
+        const axe = await new AxeBuilder({ page }).exclude('iframe').analyze();
         expect(
           axe.violations.map(
             (violation) => `${colorScheme} ${violation.id}: ${violation.help}`,
@@ -59,7 +62,9 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
         .evaluateAll((anchors) =>
           anchors.map((anchor) => anchor.getAttribute('href') ?? ''),
         );
-      site.add(links);
+      // A block preview's links are placeholders for the app it would
+      // sit in, such as /login, not pages of this site (ADR-0022).
+      if (!/^\/blocks\/[^/]+\/preview$/.test(route)) site.add(links);
       page.removeAllListeners('console');
       page.removeAllListeners('pageerror');
     });

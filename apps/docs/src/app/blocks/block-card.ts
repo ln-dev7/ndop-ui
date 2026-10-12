@@ -15,6 +15,7 @@ import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import { blockCode } from 'virtual:ndop/blocks';
 import { CodeFrames } from '../site/code-frames';
+import { fitFrameToContent } from '../site/frame-height';
 import { StaticHtml } from '../site/static-html';
 import type { BlockSummary } from './block-data';
 
@@ -252,7 +253,7 @@ export class BlockCard {
 
   protected readonly frameHeight = signal(MIN_HEIGHT);
 
-  private sizer: ResizeObserver | undefined;
+  private stopFitting: (() => void) | undefined;
 
   protected readonly frameWidth = computed(
     () => VIEWPORTS.find((viewport) => viewport.id === this.width())?.width,
@@ -266,25 +267,21 @@ export class BlockCard {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.sizer?.disconnect());
+    inject(DestroyRef).onDestroy(() => this.stopFitting?.());
   }
 
   /**
    * Keeps the frame as tall as the block in it, from when its page loads.
-   * The preview is on the site's own origin, so its document is readable.
    *
    * @param event - The frame's load event.
    */
   protected fitToContent(event: Event): void {
-    const page = (event.target as HTMLIFrameElement).contentDocument;
-    if (!page) return;
-    this.sizer?.disconnect();
-    const root = page.documentElement;
-    this.sizer = new ResizeObserver(() =>
-      this.frameHeight.set(Math.max(MIN_HEIGHT, root.scrollHeight)),
+    this.stopFitting?.();
+    this.stopFitting = fitFrameToContent(
+      event.target as HTMLIFrameElement,
+      MIN_HEIGHT,
+      (height) => this.frameHeight.set(height),
     );
-    this.sizer.observe(root);
-    this.sizer.observe(page.body);
   }
 
   /**
