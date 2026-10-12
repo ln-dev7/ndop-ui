@@ -1,0 +1,36 @@
+{
+  "name": "registry-template",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "tags": ["type:registry"],
+  "implicitDependencies": ["cli", "schema", "registry"],
+  "targets": {
+    "build": {
+      "executor": "@ndop/workspace-plugin:registry-build",
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/packages/cli/src/**/*",
+        "{workspaceRoot}/packages/schema/src/**/*",
+        {
+          "env": "CI"
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.json"
+        }
+      ],
+      "outputs": ["{workspaceRoot}/dist/registry-template"],
+      "options": {
+        "outputPath": "dist/registry-template",
+        "registry": "dist/registry/r/{name}.json",
+        "tsconfig": "tsconfig.base.json"
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": ["registry"]
+        }
+      ]
+    }
+  }
+}

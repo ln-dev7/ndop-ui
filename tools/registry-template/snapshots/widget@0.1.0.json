@@ -1,0 +1,32 @@
+{
+  "name": "widget",
+  "type": "registry:ui",
+  "version": "0.1.0",
+  "title": "Widget",
+  "description": "A card-like panel for one piece of a dashboard, with an Ndop Button as its action.",
+  "registryDependencies": [
+    "@ndop/button"
+  ],
+  "files": [
+    {
+      "path": "ui/widget/widget.ts",
+      "type": "registry:ui",
+      "target": "{ui}/widget/widget.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { Button } from '@/ui/button/button';\n\n/** How strongly a {@link Widget} stands out from the page. */\nexport type WidgetTone = 'default' | 'muted';\n\n/**\n * Classes {@link Widget} applies to its host, by tone; also usable to style\n * another element like a widget.\n */\nexport const widgetClasses: Record<WidgetTone, string> = {\n  default:\n    'flex flex-col items-start gap-3 rounded-xl border bg-card p-4 text-card-foreground shadow-sm',\n  muted:\n    'flex flex-col items-start gap-3 rounded-xl border border-transparent bg-muted p-4 text-foreground',\n};\n\n/**\n * A card-like panel for one piece of a dashboard: a heading, a line or two\n * of text and an action, stacked. It only styles its host, so the host\n * keeps its own semantics: a `section` labelled by its heading, an `li` in\n * a list of widgets.\n *\n * Its action is a {@link WidgetAction}.\n *\n * @example\n * ```html\n * <section sampleWidget aria-labelledby=\"usage\">\n *   <h2 id=\"usage\" class=\"font-medium\">Usage</h2>\n *   <p class=\"text-sm text-muted-foreground\">72% of your quota.</p>\n *   <button sampleWidgetAction size=\"sm\">Upgrade</button>\n * </section>\n * ```\n */\n@Directive({\n  selector: '[sampleWidget]',\n  host: {\n    'data-slot': 'widget',\n    '[attr.data-tone]': 'tone()',\n    '[class]': 'classes()',\n  },\n})\nexport class Widget {\n  /** How strongly it stands out: a card, or a muted panel. */\n  readonly tone = input<WidgetTone>('default');\n\n  /** Extra classes, added last. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    `${widgetClasses[this.tone()]} ${this.class()}`.trim(),\n  );\n}\n\n/**\n * A widget's action: Ndop's Button, which `ndop add @sample/widget`\n * installs with the widget, with its `variant`, `size` and `class` inputs.\n *\n * @example\n * ```html\n * <button sampleWidgetAction variant=\"outline\" size=\"sm\">Upgrade</button>\n * ```\n */\n@Directive({\n  selector: 'button[sampleWidgetAction], a[sampleWidgetAction]',\n  hostDirectives: [{ directive: Button, inputs: ['variant', 'size', 'class'] }],\n})\nexport class WidgetAction {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Widget",
+      "WidgetAction",
+      "widgetClasses"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/widget.json"
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

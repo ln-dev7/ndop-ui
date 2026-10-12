@@ -1,0 +1,31 @@
+{
+  "$schema": "https://ndop.dev/schema/registry.json",
+  "name": "sample",
+  "homepage": "https://github.com/your-org/your-registry",
+  "items": [
+    {
+      "name": "widget",
+      "type": "registry:ui",
+      "version": "0.1.0",
+      "title": "Widget",
+      "description": "A card-like panel for one piece of a dashboard, with an Ndop Button as its action.",
+      "registryDependencies": ["@ndop/button"],
+      "files": [
+        {
+          "path": "ui/widget/widget.ts",
+          "type": "registry:ui",
+          "target": "{ui}/widget/widget.ts"
+        }
+      ],
+      "angular": {
+        "minVersion": "21.0.0",
+        "exports": ["Widget", "WidgetAction", "widgetClasses"],
+        "zoneless": true,
+        "ssr": true
+      },
+      "ndop": {
+        "metadata": "metadata/widget.json"
+      }
+    }
+  ]
+}

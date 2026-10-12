@@ -2,6 +2,9 @@ packages:
   - apps/*
   - packages/*
   - tools/*
+  # A copy of the public template repo, with its own npm dependencies on
+  # the published @ndop/cli; the workspace builds it with its own CLI.
+  - '!tools/registry-template'
 
 saveExact: true
 

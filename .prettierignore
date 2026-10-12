@@ -16,3 +16,4 @@ pnpm-lock.yaml
 
 # Snapshots are compared byte for byte with what ndop build writes.
 /registry/snapshots
+/tools/registry-template/snapshots
