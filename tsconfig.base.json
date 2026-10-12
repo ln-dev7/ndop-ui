@@ -18,6 +18,7 @@
       "@ndop/primitives": ["./packages/primitives/src/index.ts"],
       "@ndop/core": ["./packages/core/src/index.ts"],
       "@ndop/schema": ["./packages/schema/src/index.ts"],
+      "@ndop/schema/theme": ["./packages/schema/src/theme.ts"],
       "@ndop/cli": ["./packages/cli/src/index.ts"],
       "@ndop/cli/api": ["./packages/cli/src/api.ts"],
       "@ndop/mcp": ["./packages/mcp/src/index.ts"],

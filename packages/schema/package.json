@@ -9,5 +9,16 @@
     "ajv-formats": "3.0.1",
     "json-schema-to-ts": "3.1.1",
     "tslib": "^2.3.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./theme": {
+      "types": "./src/theme.d.ts",
+      "default": "./src/theme.js"
+    },
+    "./package.json": "./package.json"
   }
 }
