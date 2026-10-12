@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { registerBuildCommand } from './build/command';
 import { registerAddCommand } from './commands/add';
 import { registerDiffCommand } from './commands/diff';
+import { registerDoctorCommand } from './commands/doctor';
 import {
   nodeEnvironment,
   type CommandEnvironment,
@@ -37,6 +38,7 @@ export function createProgram(
   registerAddCommand(program, environment);
   registerDiffCommand(program, environment);
   registerUpdateCommand(program, environment);
+  registerDoctorCommand(program, environment);
   registerBuildCommand(program);
   registerVerifyCommand(program);
   return program;

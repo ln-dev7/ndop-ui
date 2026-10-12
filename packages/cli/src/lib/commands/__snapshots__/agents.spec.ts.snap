@@ -15,6 +15,7 @@ This app uses [Ndop UI](https://ndop.dev): accessible Angular components install
 4. Style with theme tokens (\`bg-primary\`, \`text-muted-foreground\`, \`border-border\`), never palette colors such as \`bg-zinc-900\`, and with logical utilities (\`ms-\`, \`pe-\`, \`start-\`, \`text-start\`), never \`ml-\`, \`pr-\`, \`left-\` or \`text-left\`.
 5. Change how a component looks in its own file under \`src/app/ui\`. Don't edit \`@ndop/primitives\` or import its private paths.
 6. Run \`npx ndop verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.
+7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`npx ndop doctor --json\`; \`npx ndop doctor --fix\` applies its safe fixes.
 
 ### Installed
 

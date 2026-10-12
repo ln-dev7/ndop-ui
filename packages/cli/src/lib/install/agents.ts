@@ -1,6 +1,7 @@
 import { posix } from 'node:path';
 import type { NdopConfig, NdopLock } from '@ndop/schema';
 import { insertJsonc, parseJsonc } from '../edit/json';
+import { isColorValue } from '../edit/stylesheet';
 import { CliError } from '../errors';
 import { sha256, type PlanBuilder } from '../plan/plan';
 import {
@@ -292,10 +293,7 @@ export function tokenNames(css: string): { colors: string[]; other: string[] } {
     for (const [, name = '', value = ''] of (rule[1] ?? '').matchAll(
       /--([a-z0-9-]+)\s*:\s*([^;]+);/g,
     )) {
-      (/^(oklch|oklab|rgb|hsl|lab|lch|color|#)/.test(value.trim())
-        ? colors
-        : other
-      ).add(name);
+      (isColorValue(value) ? colors : other).add(name);
     }
   }
   return { colors: [...colors].sort(), other: [...other].sort() };
@@ -338,6 +336,7 @@ function guidance(facts: Facts, heading: string): string[] {
       '4. Style with theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`), never palette colors such as `bg-zinc-900`, and with logical utilities (`ms-`, `pe-`, `start-`, `text-start`), never `ml-`, `pr-`, `left-` or `text-left`.',
       `5. Change how a component looks in its own file under \`${config.aliases.ui}\`. Don't edit \`@ndop/primitives\` or import its private paths.`,
       '6. Run `npx ndop verify <files> --json` on the files you changed, fix every problem it reports, and repeat until it passes. If it says `@ndop/verify` is missing, install it as a dev dependency first.',
+      '7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run `npx ndop doctor --json`; `npx ndop doctor --fix` applies its safe fixes.',
     ].join('\n'),
     `${heading} Installed`,
     installed.length

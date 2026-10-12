@@ -1,7 +1,7 @@
 # @ndop/cli
 
-The ndop CLI: `init`, `add`, `verify` and `build` today; `list`, `view`,
-`diff`, `update` and `doctor` come in later phases of
+The ndop CLI: `init`, `add`, `diff`, `update`, `doctor`, `verify` and
+`build` today; `list` and `view` come in later phases of
 [RFC-0001](../../rfcs/0001-ndop-ui.md).
 
 > Not released yet.
@@ -110,6 +110,24 @@ edited and applies only the ones you accept.
 The files it writes must have no uncommitted changes, so `git checkout`
 undoes an update; `--force` skips that check. It takes the same options
 as `add`, and `--json` reports what happened to every file.
+
+## `ndop doctor`
+
+```bash
+npx ndop doctor
+```
+
+Checks the setup (ADR-0024): the Node and Angular versions, the packages
+installed items need, `ndop.json`, the import alias, Tailwind, the tokens
+items use, `provideNdop()` and the icon provider, the lockfile (conflicts,
+missing and edited files, items behind the registry), zoneless and SSR
+support, and the agent files. Each check reports `ok`, `warning` or
+`error`, with a fix. It exits with 1 while any error remains.
+
+`--fix` applies the safe fixes through the same plan as `init` and `add`,
+so `--dry-run` previews them and a second run changes nothing; it never
+edits your components or resolves conflicts. `--offline` skips the checks
+that need the registry, and `--json` prints the checks.
 
 ## Options for `init`, `add` and `update`
 

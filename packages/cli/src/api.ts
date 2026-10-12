@@ -10,6 +10,7 @@ import { dirname, join, resolve } from 'node:path';
 import type { Metadata } from '@ndop/metadata';
 import type { NdopConfig } from '@ndop/schema';
 import { createTwoFilesPatch } from 'diff';
+import { runDoctor, type DoctorResult } from './lib/commands/doctor';
 import { nodeEnvironment } from './lib/commands/environment';
 import { executeWriteCommand, type CommandResult } from './lib/commands/run';
 import { tokenNames } from './lib/install/agents';
@@ -36,6 +37,8 @@ export {
   type RegistrySource,
 } from './lib/registry/client';
 export type { CommandResult } from './lib/commands/run';
+export type { DoctorResult } from './lib/commands/doctor';
+export type { CheckId, CheckStatus, DoctorCheck } from './lib/doctor/doctor';
 
 /**
  * The project root around a folder: the nearest one holding `ndop.json`.
@@ -132,13 +135,16 @@ export interface ProjectContext {
   }[];
   /** The theme's tokens, from the Tailwind stylesheet. */
   tokens: { colors: string[]; other: string[] };
+  /** What `ndop doctor --offline` finds wrong with the setup (ADR-0024). */
+  doctor: DoctorResult;
 }
 
 /**
  * Everything an agent needs to know about a project before writing UI
  * (ADR-0009, `get_project_context`): its configuration and aliases, the
  * installed items and versions, which of their files were edited since
- * they were installed, and the theme's token names.
+ * they were installed, the theme's token names, and the `ndop doctor`
+ * checks, run offline so it stays fast (ADR-0024).
  *
  * @param cwd - A folder inside the project.
  * @returns The project's context.
@@ -171,7 +177,44 @@ export async function projectContext(cwd: string): Promise<ProjectContext> {
     config,
     items,
     tokens: tokenNames((await fs.read(config.tailwind.css)) ?? ''),
+    doctor: await doctor({ cwd: root, offline: true }),
   };
+}
+
+/** What {@link doctor} takes. */
+export interface DoctorApiOptions {
+  /** A folder inside the project. */
+  cwd: string;
+  /** Skip the checks that need the registry. */
+  offline?: boolean;
+  /** Apply the safe fixes. */
+  fix?: boolean;
+  /** With `fix`: plan the fixes, write nothing. */
+  dryRun?: boolean;
+}
+
+/**
+ * Runs `ndop doctor --json` (ADR-0024): checks the project's setup and,
+ * with `fix`, applies the safe fixes, as `--yes` does. A folder without
+ * `ndop.json` is checked as the project root, which the result reports.
+ *
+ * @param options - Project, network and fixes.
+ * @returns The command's JSON result.
+ */
+export async function doctor(options: DoctorApiOptions): Promise<DoctorResult> {
+  const root = await projectRoot(options.cwd).catch(() => resolve(options.cwd));
+  const { result } = await runDoctor(
+    {
+      cwd: root,
+      yes: true,
+      json: true,
+      offline: Boolean(options.offline),
+      fix: Boolean(options.fix),
+      dryRun: Boolean(options.dryRun),
+    },
+    { ...nodeEnvironment(), interactive: false },
+  );
+  return result;
 }
 
 /** A component's metadata, with its registry name. */
