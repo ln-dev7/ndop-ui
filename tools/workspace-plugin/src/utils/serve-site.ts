@@ -4,6 +4,7 @@ import type { AddressInfo } from 'node:net';
 import { extname, join, normalize, sep } from 'node:path';
 import { promisify } from 'node:util';
 import { brotliCompress, constants, gzip } from 'node:zlib';
+import { CUSTOM_THEME_PATH, customThemeResponse } from '@ndop/schema/theme';
 
 const brotli = promisify(brotliCompress);
 const gzipped = promisify(gzip);
@@ -102,7 +103,8 @@ async function resolveFile(
  * the docs (ADR-0016), serves it: routes resolve to their prerendered
  * `index.html`, content types follow the file extension, text is
  * compressed with Brotli or gzip, the site's `_headers` rules apply, and
- * anything else is a 404. The registry install test, the docs' end-to-end
+ * anything else is a 404. Theme URLs (`/r/themes/custom.json?t=…`) are
+ * answered by the same code as the site's Pages Function (ADR-0023). The registry install test, the docs' end-to-end
  * tests and Lighthouse use it.
  *
  * @param folder - Absolute folder to serve.
@@ -136,9 +138,15 @@ export async function serveSite(folder: string, port = 0): Promise<SiteServer> {
     return result;
   };
   const server: Server = createServer(async (request, response) => {
-    const path = decodeURIComponent(
-      new URL(request.url ?? '/', 'http://localhost').pathname,
-    );
+    const url = new URL(request.url ?? '/', 'http://localhost');
+    const path = decodeURIComponent(url.pathname);
+    // Pages doesn't apply `_headers` to a Function's responses, so neither
+    // does this.
+    if (path === CUSTOM_THEME_PATH) {
+      const theme = customThemeResponse(url.searchParams.get('t'));
+      response.writeHead(theme.status, theme.headers).end(theme.body);
+      return;
+    }
     const file = await resolveFile(root, path);
     if (!file) {
       response

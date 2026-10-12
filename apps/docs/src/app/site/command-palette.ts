@@ -243,6 +243,14 @@ export class CommandPalette {
         ),
     },
     {
+      id: 'action-theme-studio',
+      title: 'Open theme studio',
+      context: 'Action',
+      run: () => {
+        void this.router.navigateByUrl('/themes/studio');
+      },
+    },
+    {
       id: 'action-copy-page',
       title: 'Copy page for agent',
       context: 'Action',

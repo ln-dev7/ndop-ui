@@ -41,6 +41,7 @@ import {
   previewSnapshots,
 } from './changelog';
 import { blockCode, blockMarkdown, blockSummaries } from './block-docs';
+import { themeSummaries } from './theme-docs';
 import { block, inline, partData } from './part-data';
 import {
   primitiveMarkdown,
@@ -51,6 +52,13 @@ import { searchIndex, type IndexedComponent } from './search-index';
 // By path, for the same reason as the renderer above.
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { BLOCK_CATEGORIES } from '../../../registry/categories';
+// By path, for the same reason: the theme URL handler shared with the
+// site's Pages Function and `serve-site` (ADR-0023).
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import {
+  CUSTOM_THEME_PATH,
+  customThemeResponse,
+} from '../../../packages/schema/src/theme';
 
 const INDEX_ID = 'virtual:ndop/components';
 const PAGE_PREFIX = 'virtual:ndop/component/';
@@ -61,6 +69,7 @@ const PRIMITIVES_ID = 'virtual:ndop/primitives';
 const PRIMITIVE_PREFIX = 'virtual:ndop/primitive/';
 const BLOCKS_ID = 'virtual:ndop/blocks';
 const BLOCK_CODE_PREFIX = 'virtual:ndop/block-code/';
+const THEMES_ID = 'virtual:ndop/themes';
 const REPOSITORY = 'https://github.com/ndop-ui/ui';
 
 /** Options of {@link componentDocs}. */
@@ -98,7 +107,9 @@ interface PageTools {
  * reference page's data from `virtual:ndop/primitive/<name>`, from what
  * `primitives:api` extracted (amendment 12); `virtual:ndop/blocks` lists
  * the blocks and loads each one's component and, from
- * `virtual:ndop/block-code/<name>`, its highlighted code (ADR-0022). The
+ * `virtual:ndop/block-code/<name>`, its highlighted code (ADR-0022);
+ * `virtual:ndop/themes` lists the themes, and the dev server answers theme
+ * URLs as the site's Pages Function does (ADR-0023). The
  * registry must be built first
  * (`registry:build`), which the docs' targets depend on.
  *
@@ -258,6 +269,16 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const path = request.url?.split(/[?#]/)[0] ?? '';
+        if (path === CUSTOM_THEME_PATH) {
+          const theme = customThemeResponse(
+            new URL(request.url ?? '', 'http://localhost').searchParams.get(
+              't',
+            ),
+          );
+          response.writeHead(theme.status, theme.headers);
+          response.end(theme.body);
+          return;
+        }
         const served = path.startsWith('/r/')
           ? registryFiles()
           : path.endsWith('.md') || path.startsWith('/llms')
@@ -290,7 +311,8 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
         id.startsWith(CHANGELOG_PREFIX) ||
         id.startsWith(SNAPSHOTS_PREFIX) ||
         id === BLOCKS_ID ||
-        id.startsWith(BLOCK_CODE_PREFIX)
+        id.startsWith(BLOCK_CODE_PREFIX) ||
+        id === THEMES_ID
         ? `\0${id}`
         : undefined;
     },
@@ -310,6 +332,9 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             summary.category,
         }));
         return `export const entries = ${JSON.stringify(searchIndex(options.guides, components, blocks))};`;
+      }
+      if (id === `\0${THEMES_ID}`) {
+        return `export const themes = ${JSON.stringify(themeSummaries(read))};`;
       }
       if (id === `\0${BLOCKS_ID}`) {
         const blocks = blockSummaries(read);

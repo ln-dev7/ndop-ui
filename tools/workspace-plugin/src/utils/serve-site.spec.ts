@@ -1,6 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { encodeTheme } from '@ndop/schema/theme';
 import { parseHeaders, serveSite, type SiteServer } from './serve-site';
 
 describe('parseHeaders', () => {
@@ -69,6 +70,27 @@ describe('serveSite', () => {
     const response = await fetch(`${site.url}/r/dialog.json`);
     expect(response.headers.get('content-type')).toBe('application/json');
     expect(await response.json()).toEqual({ name: 'dialog' });
+  });
+
+  it('answers theme URLs as the Pages Function does', async () => {
+    const t = encodeTheme({
+      theme: {},
+      light: { primary: 'oklch(0.5 0.2 260)' },
+      dark: {},
+    });
+    const good = await fetch(`${site.url}/r/themes/custom.json?t=${t}`);
+    expect(good.status).toBe(200);
+    expect(good.headers.get('cache-control')).toBe(
+      'public, max-age=31536000, immutable',
+    );
+    expect(await good.json()).toMatchObject({
+      name: 'custom',
+      type: 'registry:theme',
+      cssVars: { light: { primary: 'oklch(0.5 0.2 260)' } },
+    });
+    const bad = await fetch(`${site.url}/r/themes/custom.json?t=nope`);
+    expect(bad.status).toBe(400);
+    expect(bad.headers.get('content-type')).toContain('text/plain');
   });
 
   it('answers 404 for missing files and paths outside the folder', async () => {

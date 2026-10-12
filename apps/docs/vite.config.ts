@@ -70,6 +70,23 @@ export default defineConfig(() => {
         // Every page is linked from the navigation, so following links
         // from the home page prerenders the whole site.
         prerender: { discover: true, routes: ['/'] },
+        nitro: {
+          prerender: {
+            // Links into the theme studio carry a theme in their query
+            // (ADR-0023); the page itself is prerendered from its plain
+            // link, and a query has no place in a static file's name.
+            // Block previews link to the app routes a block would sit
+            // among, such as /login, which aren't pages of this site
+            // (ADR-0022).
+            ignore: [
+              (route: string) =>
+                route.includes('?') ||
+                !/^\/(?:$|docs(?:\/|$)|blocks(?:\/|$)|themes(?:\/|$))/.test(
+                  route,
+                ),
+            ],
+          },
+        },
       }),
       // Component pages' data, from the built registry (`^build`).
       componentDocs({

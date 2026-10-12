@@ -99,6 +99,9 @@ const SYSTEM = {
                   <a ndButton variant="outline" size="sm" routerLink="/blocks"
                     >Blocks</a
                   >
+                  <a ndButton variant="outline" size="sm" routerLink="/themes"
+                    >Themes</a
+                  >
                 </nav>
                 <docs-site-nav />
                 <button ndDialogCloseButton>
@@ -124,6 +127,11 @@ const SYSTEM = {
             routerLink="/blocks"
             class="text-muted-foreground hover:text-foreground"
             >Blocks</a
+          >
+          <a
+            routerLink="/themes"
+            class="text-muted-foreground hover:text-foreground"
+            >Themes</a
           >
         </nav>
 

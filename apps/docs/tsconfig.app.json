@@ -11,6 +11,7 @@
     "src/**/*.d.ts",
     "src/app/pages/**/*.page.ts",
     "src/server/middleware/**/*.ts",
+    "functions/**/*.ts",
     "../../registry/examples/*.ts",
     "../../registry/blocks/*/*.ts"
   ],

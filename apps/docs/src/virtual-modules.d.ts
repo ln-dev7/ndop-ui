@@ -72,3 +72,8 @@ declare module 'virtual:ndop/blocks' {
     () => Promise<{ default: import('./app/blocks/block-data').BlockCode }>
   >;
 }
+
+declare module 'virtual:ndop/themes' {
+  /** Every theme, in the registry's order (ADR-0023). */
+  export const themes: import('./app/themes/theme-data').ThemeSummary[];
+}
