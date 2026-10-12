@@ -27,8 +27,12 @@ import {
 } from '../install/project-files';
 import { dependencyName, sha256, type PlanBuilder } from '../plan/plan';
 import {
+  itemKey,
+  itemOrigin,
+  lockedRef,
   parseRef,
   resolveItems,
+  versionedUrl,
   type ItemRef,
   type RegistryClient,
   type ResolvedItem,
@@ -101,8 +105,10 @@ export interface FileUpdate {
 
 /** One item `ndop update` touched. */
 export interface ItemUpdate {
-  /** Registry namespace. */
-  registry: string;
+  /** Registry namespace; absent for an item installed by URL. */
+  registry?: string;
+  /** The URL an item installed by URL comes from (ADR-0025). */
+  source?: string;
   /** Item name. */
   name: string;
   /** Version before. */
@@ -161,7 +167,10 @@ export interface PlannedUpdate {
  * are written with markers and keep their old base in the lockfile. New
  * upstream files are created, files upstream dropped are left to the
  * user, theme variables are merged one by one, new npm and registry
- * dependencies are installed, and the agent files are refreshed.
+ * dependencies are installed, and the agent files are refreshed. An item
+ * installed by URL is fetched from that URL again; when its host has no
+ * versioned URL for the merge base, untouched files are replaced and
+ * edited ones kept and reported (ADR-0025).
  *
  * @param builder - The plan being built.
  * @param client - Registry client.
@@ -206,20 +215,27 @@ export async function planUpdate(
 
   const targets: ResolvedItem[] = [];
   for (const ref of refs) {
-    const entry = installed.items[`${ref.registry}/${ref.name}`];
+    const entry = installed.items[itemKey(ref)];
     const item = await client.get(ref);
     if (entry && compareVersions(item.version, entry.version) < 0) {
       throw new CliError(
-        `${ref.registry}/${ref.name} ${item.version} is older than the installed ${entry.version}; ndop update only goes forward.`,
+        `${itemKey(ref)} ${item.version} is older than the installed ${entry.version}; ndop update only goes forward.`,
       );
     }
-    targets.push({ ref: { registry: ref.registry, name: ref.name }, item });
+    targets.push({
+      ref: {
+        registry: ref.registry,
+        name: ref.name,
+        ...(ref.url ? { url: ref.url } : {}),
+      },
+      item,
+    });
   }
 
   const missing = targets.flatMap(({ ref, item }) =>
     (item.registryDependencies ?? [])
       .map((dependency) => parseRef(dependency, ref.registry))
-      .filter((dependency) => !installed.items[keyOf(dependency)]),
+      .filter((dependency) => !installed.items[itemKey(dependency)]),
   );
   const added = missing.length > 0 ? await resolveItems(client, missing) : [];
   if (added.length > 0) {
@@ -234,7 +250,7 @@ export async function planUpdate(
   const compiler = () =>
     (loaded ??= options.angularCompiler?.() ?? Promise.resolve(undefined));
   for (const target of ordered(targets)) {
-    const key = keyOf(target.ref);
+    const key = itemKey(target.ref);
     const entry = lock.items[key];
     if (!entry) continue;
     const pending = entry.files.some((file) => file.version !== undefined);
@@ -296,7 +312,7 @@ function pristineCache(
     Promise<{ item: RegistryItem; files: Map<string, PristineFile> }>
   >();
   return (ref) => {
-    const key = `${keyOf(ref)}@${ref.version ?? 'latest'}`;
+    const key = `${itemKey(ref)}@${ref.version ?? 'latest'}`;
     let entry = cache.get(key);
     if (!entry) {
       entry = client.get(ref).then(async (item) => ({
@@ -328,7 +344,7 @@ async function planItem(
   target: ResolvedItem,
   options: UpdateOptions,
 ): Promise<{ entry: NdopLock['items'][string]; report: ItemUpdate }> {
-  const ref = { registry: entry.registry, name: entry.name };
+  const ref = lockedRef(entry);
   const version = target.item.version;
   const targetFiles = await pristine({ ...ref, version });
   const byRegistryPath = new Map(
@@ -365,9 +381,36 @@ async function planItem(
       );
       continue;
     }
-    const base = (await pristine({ ...ref, version: baseVersion })).files.get(
-      installed.path,
-    );
+    const baseFiles = await baseOf(pristine, { ...ref, version: baseVersion });
+    if (!baseFiles) {
+      const next = targetFiles.files.get(installed.path);
+      if (!next) {
+        report.push({
+          path: installed.path,
+          status: 'kept',
+          note: `${entry.name} ${version} no longer has it; it's yours now.`,
+        });
+        continue;
+      }
+      reached.add(next.path);
+      if (sha256(local) !== installed.sha256) {
+        keep(
+          'kept',
+          `Kept your edits: there's no ${versionedUrl(ref.url ?? '', baseVersion)} to merge with. Bring in ${entry.name} ${version}'s changes by hand, then run ndop update --continue.`,
+        );
+        continue;
+      }
+      if (local !== next.content) {
+        await builder.stage(next.path, next.content, { format: false });
+      }
+      files.push({ path: next.path, sha256: sha256(next.content) });
+      report.push({
+        path: next.path,
+        status: local === next.content ? 'unchanged' : 'replaced',
+      });
+      continue;
+    }
+    const base = baseFiles.files.get(installed.path);
     if (!base) {
       keep(
         'kept',
@@ -492,7 +535,8 @@ async function planItem(
     files.push({ path: file.path, sha256: sha256(file.content) });
   }
 
-  const base = (await pristine({ ...ref, version: entry.version })).item;
+  const base = (await baseOf(pristine, { ...ref, version: entry.version }))
+    ?.item;
   await planStyles(builder, context, base, target.item);
   builder.depend(target.item.dependencies ?? []);
   builder.depend(target.item.devDependencies ?? [], true);
@@ -503,8 +547,8 @@ async function planItem(
     ].map(dependencyName),
   );
   for (const spec of [
-    ...(base.dependencies ?? []),
-    ...(base.devDependencies ?? []),
+    ...(base?.dependencies ?? []),
+    ...(base?.devDependencies ?? []),
   ]) {
     if (!kept.has(dependencyName(spec))) {
       builder.warn(
@@ -513,9 +557,9 @@ async function planItem(
     }
   }
   return {
-    entry: { name: entry.name, registry: entry.registry, version, files },
+    entry: { name: entry.name, ...itemOrigin(ref), version, files },
     report: {
-      registry: entry.registry,
+      ...itemOrigin(ref),
       name: entry.name,
       from: entry.version,
       to: version,
@@ -553,8 +597,7 @@ async function planCodemods(
   run: CodemodRun,
 ): Promise<(Codemod & { files: string[] })[]> {
   const targetFiles = await pristine({
-    registry: entry.registry,
-    name: entry.name,
+    ...lockedRef(entry),
     version: target.item.version,
   });
   const itemFiles = new Set([
@@ -666,20 +709,21 @@ async function mergeFile(
  *
  * @param builder - The plan.
  * @param context - Install context.
- * @param base - The installed version.
+ * @param base - The installed version; unknown for a URL item without
+ *   versioned URLs, when only variables the stylesheet lacks are added.
  * @param target - The version updated to.
  */
 async function planStyles(
   builder: PlanBuilder,
   context: InstallContext,
-  base: RegistryItem,
+  base: RegistryItem | undefined,
   target: RegistryItem,
 ): Promise<void> {
   const cssChanged =
-    target.css && JSON.stringify(target.css) !== JSON.stringify(base.css);
+    target.css && JSON.stringify(target.css) !== JSON.stringify(base?.css);
   const varsChanged =
     target.cssVars &&
-    JSON.stringify(target.cssVars) !== JSON.stringify(base.cssVars);
+    JSON.stringify(target.cssVars) !== JSON.stringify(base?.cssVars);
   if (!cssChanged && !varsChanged) return;
   const stylesheet = context.config.tailwind.css;
   let css = await builder.read(stylesheet);
@@ -691,7 +735,7 @@ async function planStyles(
   }
   if (cssChanged && target.css) css = applyCss(css, target.css);
   if (varsChanged && target.cssVars) {
-    const result = updateCssVars(css, base.cssVars, target.cssVars);
+    const result = updateCssVars(css, base?.cssVars, target.cssVars);
     css = result.css;
     for (const variable of result.kept) {
       builder.warn(
@@ -721,7 +765,7 @@ async function planContinue(
   const before = serializeLock(lock);
   const updates: ItemUpdate[] = [];
   for (const ref of refs) {
-    const entry = lock.items[keyOf(ref)];
+    const entry = lock.items[itemKey(ref)];
     if (!entry?.files.some((file) => file.version !== undefined)) continue;
     const current = await pristine({ ...ref, version: entry.version });
     const report: FileUpdate[] = [];
@@ -757,7 +801,7 @@ async function planContinue(
       }),
     );
     updates.push({
-      registry: entry.registry,
+      ...itemOrigin(ref),
       name: entry.name,
       from: entry.version,
       to: entry.version,
@@ -785,12 +829,12 @@ async function warnOutdated(
   lock: NdopLock,
   targets: readonly ResolvedItem[],
 ): Promise<void> {
-  const updating = new Set(targets.map(({ ref }) => keyOf(ref)));
+  const updating = new Set(targets.map(({ ref }) => itemKey(ref)));
   const checked = new Set<string>();
   for (const { ref, item } of targets) {
     for (const dependency of item.registryDependencies ?? []) {
       const dependencyRef = parseRef(dependency, ref.registry);
-      const key = keyOf(dependencyRef);
+      const key = itemKey(dependencyRef);
       const entry = lock.items[key];
       if (!entry || updating.has(key) || checked.has(key)) continue;
       checked.add(key);
@@ -814,20 +858,42 @@ async function warnOutdated(
  */
 function selected(lock: NdopLock, names: readonly string[]): ItemRef[] {
   if (names.length === 0) {
-    return Object.values(lock.items).map(({ registry, name }) => ({
-      registry,
-      name,
-    }));
+    return Object.values(lock.items).map(lockedRef);
   }
   return names.map((name) => {
     const ref = parseRef(name);
-    if (!lock.items[keyOf(ref)]) {
+    const entry = lock.items[itemKey(ref)];
+    if (!entry) {
       throw new CliError(
-        `${keyOf(ref)} isn't installed. Run ndop add ${name} instead.`,
+        `${itemKey(ref)} isn't installed. Run ndop add ${name} instead.`,
       );
     }
-    return ref;
+    return ref.version
+      ? { ...lockedRef(entry), version: ref.version }
+      : lockedRef(entry);
   });
+}
+
+/**
+ * An item version's pristine files, or `undefined` when a URL item's
+ * version can't be fetched: its host doesn't publish versioned URLs
+ * (ADR-0025).
+ *
+ * @param pristine - Pristine files by version.
+ * @param ref - The item and version.
+ * @returns The item and its files, if there are any to merge with.
+ */
+async function baseOf(
+  pristine: PristineCache,
+  ref: ItemRef,
+): Promise<Awaited<ReturnType<PristineCache>> | undefined> {
+  if (!ref.url) return pristine(ref);
+  try {
+    return await pristine(ref);
+  } catch (error) {
+    if (error instanceof CliError) return undefined;
+    throw error;
+  }
 }
 
 /**
@@ -837,29 +903,21 @@ function selected(lock: NdopLock, names: readonly string[]): ItemRef[] {
  * @returns The same items, dependencies first.
  */
 function ordered(targets: readonly ResolvedItem[]): ResolvedItem[] {
-  const byKey = new Map(targets.map((target) => [keyOf(target.ref), target]));
+  const byKey = new Map(targets.map((target) => [itemKey(target.ref), target]));
   const result: ResolvedItem[] = [];
   const seen = new Set<string>();
   const visit = (target: ResolvedItem) => {
-    const key = keyOf(target.ref);
+    const key = itemKey(target.ref);
     if (seen.has(key)) return;
     seen.add(key);
     for (const dependency of target.item.registryDependencies ?? []) {
-      const found = byKey.get(keyOf(parseRef(dependency, target.ref.registry)));
+      const found = byKey.get(
+        itemKey(parseRef(dependency, target.ref.registry)),
+      );
       if (found) visit(found);
     }
     result.push(target);
   };
   targets.forEach(visit);
   return result;
-}
-
-/**
- * The lockfile key of an item.
- *
- * @param ref - Its reference.
- * @returns `@namespace/name`.
- */
-function keyOf(ref: ItemRef): string {
-  return `${ref.registry}/${ref.name}`;
 }

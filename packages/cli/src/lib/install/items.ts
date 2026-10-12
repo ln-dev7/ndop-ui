@@ -2,7 +2,7 @@ import type { NdopLock } from '@ndop/schema';
 import { applyCss, applyCssVars } from '../edit/stylesheet';
 import { CliError } from '../errors';
 import { dependencyName, sha256, type PlanBuilder } from '../plan/plan';
-import type { ResolvedItem } from '../registry/client';
+import { itemKey, itemOrigin, type ResolvedItem } from '../registry/client';
 import { pristineFile } from './pristine';
 import {
   LOCK_FILE,
@@ -23,7 +23,9 @@ export interface PlanItemsOptions {
  * Stages the installation of resolved items: their files at their alias
  * targets, with `@/` imports rewritten to the project's aliases; their
  * `css` and `cssVars` in the Tailwind stylesheet; their npm dependencies;
- * and their entries in `ndop.lock.json`.
+ * and their entries in `ndop.lock.json`. Any item's `cssVars` are applied,
+ * so a theme, or a shadcn `registry:style` theme, added after `ndop init`
+ * replaces the values init wrote (ADR-0023).
  *
  * A file that exists with other content is kept, and reported as skipped,
  * unless it still matches the hash the lockfile recorded (the user never
@@ -45,7 +47,7 @@ export async function planItems(
   const before = serializeLock(lock);
 
   for (const { ref, item } of items) {
-    const key = `${ref.registry}/${ref.name}`;
+    const key = itemKey(ref);
     const previous = lock.items[key];
     const files: NdopLock['items'][string]['files'] = [];
 
@@ -104,7 +106,7 @@ export async function planItems(
     }
     lock.items[key] = {
       name: ref.name,
-      registry: ref.registry,
+      ...itemOrigin(ref),
       version: item.version,
       files,
     };

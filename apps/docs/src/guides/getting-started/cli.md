@@ -37,6 +37,27 @@ the name, as in `ndop add button@0.1.0`; `update` takes `--force`,
 `--continue` and `--interactive`. For coding agents, `init` takes `--agent`, `--mcp` and
 `--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
 
+## Themes and URLs
+
+`init --theme` and `add` take a name, a namespaced name such as
+`@acme/table`, or the URL of an item's JSON. URLs must use HTTPS, except
+on `localhost`. `theme:` in front of any of them checks that the item is a
+theme:
+
+```bash pm
+npx ndop add theme:https://example.com/r/ocean.json
+```
+
+Adding a theme to a set-up app replaces the theme variables in your
+stylesheet, light and dark. shadcn themes, `registry:style` items with
+`cssVars` such as tweakcn's, install the same way.
+
+`ndop.lock.json` records an item added by URL under that URL. `ndop update`
+fetches the URL again, and merges your edits using
+`<url without .json>@<version>.json` as the base, which `ndop build`
+writes. If the site has no such file, files you didn't edit are replaced,
+and edited ones are kept and reported, for you to update by hand.
+
 ## Your edits are safe
 
 `ndop add` records a hash of every file it writes in `ndop.lock.json`. If

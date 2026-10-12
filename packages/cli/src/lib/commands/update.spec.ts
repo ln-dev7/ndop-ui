@@ -429,6 +429,100 @@ describe('ndop update', () => {
     expect(read(environment, BUTTON)).toBe(original);
   });
 
+  describe('items installed by URL', () => {
+    const URL = 'https://kit.example/r/sizes.json?v=1';
+    const V2 = "export const sizes = {\n  sm: 'h-8',\n  lg: 'h-12',\n};\n";
+    const OTHER = 'src/app/lib/other.ts';
+
+    /**
+     * Installs `sizes` 1.0.0 from {@link URL}, edits `sizes.ts`, then
+     * publishes 2.0.0 there.
+     *
+     * @returns The environment.
+     */
+    async function urlProject(): Promise<Environment> {
+      const environment = testEnvironment(fixture('ng22'));
+      await runNdop(environment, 'init', '--yes');
+      const before = sizes('1.0.0', {
+        'sizes.ts': V1,
+        'other.ts': 'export const other = 1;\n',
+      });
+      environment.urls[URL] = before;
+      await runNdop(environment, 'add', '--yes', URL);
+      edit(environment, SIZES, (text) => `// Mine.\n${text}`);
+      environment.urls[URL] = sizes('2.0.0', {
+        'sizes.ts': V2,
+        'other.ts': 'export const other = 2;\n',
+      });
+      return environment;
+    }
+
+    it('fetches the URL again and merges with its versioned URL', async () => {
+      const environment = await urlProject();
+      environment.urls['https://kit.example/r/sizes@1.0.0.json?v=1'] = sizes(
+        '1.0.0',
+        { 'sizes.ts': V1, 'other.ts': 'export const other = 1;\n' },
+      );
+      const result = await update(environment, URL);
+
+      expect(result.updates).toEqual([
+        {
+          source: URL,
+          name: 'sizes',
+          from: '1.0.0',
+          to: '2.0.0',
+          files: [
+            { path: SIZES, status: 'merged' },
+            { path: OTHER, status: 'replaced' },
+          ],
+        },
+      ]);
+      expect(read(environment, SIZES)).toBe(`// Mine.\n${V2}`);
+      const lock = JSON.parse(read(environment, 'ndop.lock.json'));
+      expect(lock.items[URL]).toEqual({
+        name: 'sizes',
+        source: URL,
+        version: '2.0.0',
+        files: [
+          { path: SIZES, sha256: hash(V2) },
+          { path: OTHER, sha256: hash('export const other = 2;\n') },
+        ],
+      });
+    });
+
+    it('keeps edited files and replaces the rest without a versioned URL', async () => {
+      const environment = await urlProject();
+      const result = await update(environment);
+
+      expect(result.updates[0].files).toEqual([
+        {
+          path: SIZES,
+          status: 'kept',
+          note: "Kept your edits: there's no https://kit.example/r/sizes@1.0.0.json?v=1 to merge with. Bring in sizes 2.0.0's changes by hand, then run ndop update --continue.",
+        },
+        { path: OTHER, status: 'replaced' },
+      ]);
+      expect(read(environment, SIZES)).toBe(`// Mine.\n${V1}`);
+      expect(read(environment, OTHER)).toBe('export const other = 2;\n');
+      const lock = JSON.parse(read(environment, 'ndop.lock.json'));
+      expect(lock.items[URL].version).toBe('2.0.0');
+      expect(lock.items[URL].files[0]).toEqual({
+        path: SIZES,
+        sha256: hash(V1),
+        version: '1.0.0',
+      });
+
+      edit(environment, SIZES, () => `// Mine.\n${V2}`);
+      const recorded = await update(environment, '--continue');
+      expect(recorded.updates[0].files).toEqual([
+        { path: SIZES, status: 'resolved' },
+      ]);
+      expect(
+        JSON.parse(read(environment, 'ndop.lock.json')).items[URL].files[0],
+      ).toEqual({ path: SIZES, sha256: hash(V2) });
+    });
+  });
+
   describe('migrations', () => {
     const v2 = (extra: Partial<RegistryItem> = {}) =>
       sizes(

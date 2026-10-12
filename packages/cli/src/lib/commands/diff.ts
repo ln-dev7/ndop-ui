@@ -151,7 +151,7 @@ function report(items: readonly ItemDiff[]): string {
   }
   const lines: string[] = [];
   for (const item of items) {
-    const key = `${item.registry}/${item.name}`;
+    const key = item.source ?? `${item.registry}/${item.name}`;
     lines.push(
       item.target === item.version
         ? `${pc.bold(key)} ${item.version}, up to date`

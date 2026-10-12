@@ -219,4 +219,170 @@ describe('ndop add', () => {
       'Unknown registry @acme. Add it to "registries" in ndop.json.',
     );
   });
+
+  describe('themes and URLs', () => {
+    const URL = 'https://themes.example/r/ocean.json?t=abc';
+
+    /**
+     * A theme with a light and a dark background.
+     *
+     * @param type - `registry:theme`, or shadcn's `registry:style`.
+     * @param background - Light and dark values.
+     * @returns The item.
+     */
+    function ocean(
+      type: 'registry:theme' | 'registry:style' = 'registry:theme',
+      background: [string, string] = [
+        'oklch(0.98 0.01 230)',
+        'oklch(0.2 0.03 230)',
+      ],
+    ): RegistryItem {
+      return {
+        name: 'ocean',
+        type,
+        version: '1.0.0',
+        title: 'Ocean',
+        description: 'Blue.',
+        cssVars: {
+          light: { background: background[0] },
+          dark: { background: background[1] },
+        },
+      };
+    }
+
+    /**
+     * Every `--background` value in the stylesheet, in order: `:root`,
+     * `.dark`, then the system dark block.
+     *
+     * @param environment - Test environment.
+     * @returns The values.
+     */
+    function backgrounds(environment: ReturnType<typeof testEnvironment>) {
+      const css = environment.project.files.get('src/styles.css') ?? '';
+      return [...css.matchAll(/--background: ([^;]+);/g)].map(
+        (match) => match[1],
+      );
+    }
+
+    it('replaces the theme init wrote, and a rerun changes nothing', async () => {
+      const environment = await initialized();
+      expect(backgrounds(environment)).toEqual([
+        'oklch(1 0 0)',
+        'oklch(0.145 0 0)',
+        'oklch(0.145 0 0)',
+      ]);
+      environment.registry['ocean'] = ocean();
+
+      const result = await add(environment, 'theme:ocean');
+      expect(result.items).toEqual([
+        { registry: '@ndop', name: 'ocean', version: '1.0.0' },
+      ]);
+      expect(backgrounds(environment)).toEqual([
+        'oklch(0.98 0.01 230)',
+        'oklch(0.2 0.03 230)',
+        'oklch(0.2 0.03 230)',
+      ]);
+      const before = new Map(environment.project.files);
+      expect((await add(environment, 'theme:ocean')).files).toEqual([]);
+      expect(environment.project.files).toEqual(before);
+    });
+
+    it('installs a shadcn registry:style theme from a URL the same way', async () => {
+      const environment = await initialized();
+      environment.urls[URL] = ocean('registry:style', ['white', 'black']);
+
+      const result = await add(environment, URL);
+      expect(result.items).toEqual([
+        { source: URL, name: 'ocean', version: '1.0.0' },
+      ]);
+      expect(backgrounds(environment)).toEqual(['white', 'black', 'black']);
+      const lock = JSON.parse(
+        environment.project.files.get('ndop.lock.json') ?? '',
+      );
+      expect(lock.items[URL]).toEqual({
+        name: 'ocean',
+        source: URL,
+        version: '1.0.0',
+        files: [],
+      });
+    });
+
+    it('installs a shadcn item without the fields Ndop requires', async () => {
+      const environment = await initialized();
+      // As shadcn's format allows: no version, title or description.
+      const bare = Object.fromEntries(
+        Object.entries(ocean('registry:style', ['white', 'black'])).filter(
+          ([key]) => !['version', 'title', 'description'].includes(key),
+        ),
+      );
+      environment.urls[URL] = bare as RegistryItem;
+
+      const result = await add(environment, URL);
+      expect(result.items).toEqual([
+        {
+          source: URL,
+          name: 'ocean',
+          version: expect.stringMatching(/^0\.0\.0-[0-9a-f]{8}$/),
+        },
+      ]);
+      expect(backgrounds(environment)).toEqual(['white', 'black', 'black']);
+    });
+
+    it('checks that theme: names a theme', async () => {
+      const environment = await initialized();
+      environment.urls[URL] = ocean('registry:style');
+      expect((await add(environment, `theme:${URL}`)).ok).toBe(true);
+      const { cssVars, ...plain } = ocean('registry:style');
+      environment.urls[URL] = plain;
+      const style = await add(environment, `theme:${URL}`);
+      expect(style.errors[0].message).toBe(
+        `${URL} is a registry:style item, not a theme; drop "theme:" to install it anyway.`,
+      );
+      expect(cssVars).toBeDefined();
+      const lib = await add(environment, 'theme:utils');
+      expect(lib.errors[0].message).toBe(
+        '@ndop/utils is a registry:lib item, not a theme; drop "theme:" to install it anyway.',
+      );
+      environment.urls[URL] = ocean();
+      expect((await add(environment, `theme:${URL}`)).ok).toBe(true);
+    });
+
+    it("installs a URL item's bare-name dependencies from Ndop's registry", async () => {
+      const environment = await initialized();
+      const url = 'http://localhost:4000/r/my-dialog.json';
+      const dialog = environment.registry['dialog'] as RegistryItem;
+      environment.urls[url] = {
+        ...structuredClone(dialog),
+        name: 'my-dialog',
+        files: dialog.files?.map((file) => ({
+          ...file,
+          target: '{ui}/my-dialog/my-dialog.ts',
+        })),
+      };
+
+      const result = await add(environment, url);
+      expect(result.items.map((item: { name: string }) => item.name)).toEqual([
+        'utils',
+        'my-dialog',
+      ]);
+      const lock = JSON.parse(
+        environment.project.files.get('ndop.lock.json') ?? '',
+      );
+      expect(lock.items[url]).toEqual(
+        expect.objectContaining({ name: 'my-dialog', source: url }),
+      );
+      expect(lock.items[url].registry).toBeUndefined();
+      expect(
+        environment.project.files.get('src/app/ui/my-dialog/my-dialog.ts'),
+      ).toBe(dialog.files?.[0]?.content);
+    });
+
+    it('refuses plain HTTP except on this machine', async () => {
+      const environment = await initialized();
+      const result = await add(environment, 'http://themes.example/r/a.json');
+      expect(result.errors[0].message).toBe(
+        "Can't install from http://themes.example/r/a.json: use an https:// URL (http:// works only for localhost).",
+      );
+    });
+  });
 });

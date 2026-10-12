@@ -1,9 +1,13 @@
 import { CliError } from '../errors';
 import {
+  itemKey,
+  lockedRef,
   parseRef,
+  parseRequest,
   registrySources,
   RegistryClient,
   resolveItems,
+  versionedUrl,
 } from './client';
 
 describe('parseRef', () => {
@@ -33,11 +37,71 @@ describe('parseRef', () => {
     expect(() => parseRef('dialog@latest')).toThrow(/isn't a version/);
   });
 
-  it('rejects URLs and other text', () => {
-    expect(() => parseRef('https://x.dev/r/a.json')).toThrow(
-      /by URL isn't supported/,
+  it('reads HTTPS URLs, and HTTP ones on this machine only', () => {
+    expect(parseRef('https://x.dev/r/themes/ocean.json?t=1')).toEqual({
+      registry: '@ndop',
+      name: 'ocean',
+      url: 'https://x.dev/r/themes/ocean.json?t=1',
+    });
+    expect(parseRef('http://localhost:4000/r/a.json').url).toBe(
+      'http://localhost:4000/r/a.json',
     );
+    expect(parseRef('http://127.0.0.1/r/a.json').url).toBe(
+      'http://127.0.0.1/r/a.json',
+    );
+    expect(() => parseRef('http://x.dev/r/a.json')).toThrow(
+      /use an https:\/\/ URL/,
+    );
+    expect(() => parseRef('ftp://x.dev/r/a.json')).toThrow(
+      /use an https:\/\/ URL/,
+    );
+  });
+
+  it('rejects other text', () => {
     expect(() => parseRef('Dialog')).toThrow(CliError);
+  });
+});
+
+describe('parseRequest', () => {
+  it('reads theme: before any reference', () => {
+    expect(parseRequest('theme:ocean')).toEqual({
+      ref: { registry: '@ndop', name: 'ocean' },
+      theme: true,
+    });
+    expect(parseRequest('theme:@acme/ocean').ref).toEqual({
+      registry: '@acme',
+      name: 'ocean',
+    });
+    expect(parseRequest('theme:https://x.dev/ocean.json').ref.url).toBe(
+      'https://x.dev/ocean.json',
+    );
+    expect(parseRequest('ocean').theme).toBe(false);
+  });
+});
+
+describe('item keys', () => {
+  it('keys URL items by URL and the rest by namespace and name', () => {
+    const url = 'https://x.dev/r/ocean.json';
+    expect(itemKey(parseRef('dialog'))).toBe('@ndop/dialog');
+    expect(itemKey(parseRef(url))).toBe(url);
+    expect(lockedRef({ name: 'ocean', source: url })).toEqual({
+      registry: '@ndop',
+      name: 'ocean',
+      url,
+    });
+    expect(lockedRef({ name: 'table', registry: '@acme' })).toEqual({
+      registry: '@acme',
+      name: 'table',
+    });
+  });
+
+  it('puts the version before .json, keeping the query string', () => {
+    expect(versionedUrl('https://x.dev/r/ocean.json?t=1', '1.2.0')).toBe(
+      'https://x.dev/r/ocean@1.2.0.json?t=1',
+    );
+    expect(versionedUrl('https://x.dev/api/theme/ocean', '1.2.0')).toBe(
+      'https://x.dev/api/theme/ocean@1.2.0.json',
+    );
   });
 });
 
@@ -165,5 +229,43 @@ describe('RegistryClient versions', () => {
     await expect(
       resolveItems(client, [parseRef('a@0.1.0'), parseRef('a@0.2.0')]),
     ).rejects.toThrow('@ndop/a is asked for at 0.1.0 and 0.2.0; pick one.');
+  });
+});
+
+describe('RegistryClient URLs', () => {
+  const URL = 'https://x.dev/r/kit.json';
+  const served: Record<string, string> = {
+    [URL]: libItem('my-kit', '2.0.0', ['a']),
+    'https://x.dev/r/kit@1.0.0.json': libItem('my-kit', '1.0.0'),
+    'r/a.json': libItem('a', '0.2.0'),
+  };
+  const client = new RegistryClient(
+    { '@ndop': { url: 'r/{name}.json' } },
+    async (location) => {
+      const text = served[location];
+      if (text === undefined) throw new CliError(`No ${location}.`);
+      return text;
+    },
+  );
+
+  it("names a URL item after the item, with bare dependencies from Ndop's registry", async () => {
+    const items = await resolveItems(client, [parseRef(URL)]);
+    expect(items.map(({ ref }) => ref)).toEqual([
+      { registry: '@ndop', name: 'a' },
+      { registry: '@ndop', name: 'my-kit', url: URL },
+    ]);
+  });
+
+  it('fetches a version from the versioned URL, or the URL when it holds it', async () => {
+    const ref = { registry: '@ndop', name: 'my-kit', url: URL };
+    expect((await client.get({ ...ref, version: '1.0.0' })).version).toBe(
+      '1.0.0',
+    );
+    expect((await client.get({ ...ref, version: '2.0.0' })).version).toBe(
+      '2.0.0',
+    );
+    await expect(client.get({ ...ref, version: '1.5.0' })).rejects.toThrow(
+      "Can't fetch version 1.5.0 of https://x.dev/r/kit.json: No https://x.dev/r/kit@1.5.0.json.",
+    );
   });
 });

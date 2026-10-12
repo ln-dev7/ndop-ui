@@ -6,7 +6,9 @@ import { addProviders } from '../edit/typescript';
 import { CliError } from '../errors';
 import type { PlanBuilder } from '../plan/plan';
 import {
+  assertThemes,
   DEFAULT_NAMESPACE,
+  parseRequest,
   resolveItems,
   type RegistryClient,
   type ResolvedItem,
@@ -56,7 +58,10 @@ export interface Detection {
  * Options for {@link planInit}.
  */
 export interface InitOptions {
-  /** Theme item to install. */
+  /**
+   * Theme item to install: a name, `@namespace/name` or a URL, optionally
+   * after `theme:` (ADR-0023).
+   */
   theme: string;
   /** Angular project to set up, when `angular.json` has several. */
   project?: string;
@@ -298,13 +303,12 @@ export async function planInit(
   builder.depend(['@ndop/core']);
 
   const context: InstallContext = { config, aliasBase };
-  const items = await resolveItems(
-    client,
-    [options.theme, ...BASE_ITEMS].map((name) => ({
-      registry: DEFAULT_NAMESPACE,
-      name,
-    })),
-  );
+  const theme = parseRequest(options.theme);
+  const items = await resolveItems(client, [
+    theme.ref,
+    ...BASE_ITEMS.map((name) => ({ registry: DEFAULT_NAMESPACE, name })),
+  ]);
+  assertThemes([theme], items);
   await planItems(builder, context, items);
 
   const appConfig = (await builder.read(detection.appConfig)) ?? '';

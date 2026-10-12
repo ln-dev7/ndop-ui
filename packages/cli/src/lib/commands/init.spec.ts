@@ -185,6 +185,36 @@ describe('ndop init', () => {
     ).toBe('mem://{name}');
   });
 
+  it('installs a theme from a URL with --theme', async () => {
+    const environment = testEnvironment(fixture('ng22'));
+    const url = 'https://ndop.dev/r/themes/custom.json?t=abc';
+    environment.urls[url] = {
+      name: 'custom',
+      type: 'registry:theme',
+      version: '1.0.0',
+      title: 'Custom',
+      description: 'A studio theme.',
+      cssVars: { light: { background: 'ivory' }, dark: { background: 'navy' } },
+    };
+    const result = await init(environment, '--theme', `theme:${url}`);
+    expect(result.items[0]).toEqual({
+      source: url,
+      name: 'custom',
+      version: '1.0.0',
+    });
+    const css = environment.project.files.get('src/styles.css') ?? '';
+    expect(css).toContain('--background: ivory');
+    expect(css).toContain('--background: navy');
+    const lock = JSON.parse(
+      environment.project.files.get('ndop.lock.json') ?? '',
+    );
+    expect(Object.keys(lock.items)).toEqual([
+      '@ndop/icons',
+      '@ndop/utils',
+      url,
+    ]);
+  });
+
   it('warns when it cannot find the providers array', async () => {
     const files = fixture('ng22');
     files['src/app/app.config.ts'] = 'export const appConfig = makeConfig();\n';

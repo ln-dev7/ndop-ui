@@ -17,7 +17,9 @@ interface AddCommandOptions extends WriteOptions {
  * project's aliases, rewrites their `@/` imports when the aliases differ,
  * adds their styles and npm dependencies, and records versions and hashes
  * in `ndop.lock.json`. Running it again changes nothing. `name@version`
- * installs that version instead of the latest (ADR-0010).
+ * installs that version instead of the latest (ADR-0010). An item can
+ * also come from the URL of its JSON (ADR-0025), and `theme:<item>`
+ * checks that it's a theme (ADR-0023).
  *
  * @param program - The root `ndop` program.
  * @param environment - Injected outside world.
@@ -28,6 +30,7 @@ interface AddCommandOptions extends WriteOptions {
  * npx ndop add dialog --yes
  * npx ndop add @acme/data-table --dry-run
  * npx ndop add button@0.1.0
+ * npx ndop add theme:https://ndop.dev/r/themes/custom.json?t=…
  * ```
  */
 export function registerAddCommand(
@@ -40,7 +43,7 @@ export function registerAddCommand(
       .description('Add registry items to the project.')
       .argument(
         '<items...>',
-        'item names, bare or @namespace/name, with @<version> for a specific version',
+        'item names, bare or @namespace/name, with @<version> for a specific version, or item URLs; theme:<item> checks the item is a theme',
       )
       .option(
         '--overwrite',

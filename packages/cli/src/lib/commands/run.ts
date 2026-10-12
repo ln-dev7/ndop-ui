@@ -6,6 +6,7 @@ import { CliError } from '../errors';
 import { applyPlan } from '../plan/apply';
 import { isEmptyPlan, PlanBuilder, type Plan } from '../plan/plan';
 import {
+  itemOrigin,
   RegistryClient,
   registrySources,
   type ResolvedItem,
@@ -44,7 +45,14 @@ export interface CommandResult {
   /** Whether changes were written and installed. */
   applied: boolean;
   /** Items installed or planned, dependencies first. */
-  items: { registry: string; name: string; version: string }[];
+  items: {
+    /** Its namespace; absent for an item installed by URL. */
+    registry?: string;
+    /** The URL an item installed by URL comes from (ADR-0025). */
+    source?: string;
+    name: string;
+    version: string;
+  }[];
   /** Files created, updated or deleted. */
   files: { path: string; action: 'create' | 'update' | 'delete' }[];
   /** npm packages added. */
@@ -139,7 +147,7 @@ export async function executeWriteCommand(
     finished = await builder.finish();
     Object.assign(result, {
       items: items.map(({ ref, item }) => ({
-        registry: ref.registry,
+        ...itemOrigin(ref),
         name: ref.name,
         version: item.version,
       })),

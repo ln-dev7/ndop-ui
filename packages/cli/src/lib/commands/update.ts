@@ -284,7 +284,7 @@ function table(updates: readonly ItemUpdate[]): string {
   const rows = [
     ['Item', 'From', 'To', 'Clean', 'Merged', 'Conflicts'],
     ...updates.map((update) => [
-      `${update.registry}/${update.name}`,
+      update.source ?? `${update.registry}/${update.name}`,
       update.from,
       update.to,
       count(update, [

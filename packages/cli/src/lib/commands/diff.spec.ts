@@ -204,6 +204,88 @@ describe('ndop diff', () => {
     ]);
   });
 
+  describe('items installed by URL', () => {
+    const URL = 'https://kit.example/r/note.json';
+
+    /**
+     * A one-file `registry:lib` item.
+     *
+     * @param version - Its version.
+     * @param content - Its file.
+     * @returns The item.
+     */
+    function note(version: string, content: string): RegistryItem {
+      return {
+        name: 'note',
+        type: 'registry:lib',
+        version,
+        title: 'Note',
+        description: 'A note.',
+        files: [
+          {
+            path: 'lib/note.ts',
+            type: 'registry:lib',
+            target: '{lib}/note.ts',
+            content,
+          },
+        ],
+      };
+    }
+
+    /**
+     * Installs `note` 1.0.0 from {@link URL}, edits it, then publishes
+     * 2.0.0 there.
+     *
+     * @returns The environment.
+     */
+    async function urlProject() {
+      const environment = testEnvironment(fixture('ng22'));
+      await runNdop(environment, 'init', '--yes');
+      environment.urls[URL] = note('1.0.0', 'export const a = 1;\n');
+      await runNdop(environment, 'add', '--yes', URL);
+      edit(environment, 'src/app/lib/note.ts', (text) => `// Ours.\n${text}`);
+      environment.urls[URL] = note('2.0.0', 'export const a = 2;\n');
+      return environment;
+    }
+
+    it('diffs against the versioned URL', async () => {
+      const environment = await urlProject();
+      environment.urls['https://kit.example/r/note@1.0.0.json'] = note(
+        '1.0.0',
+        'export const a = 1;\n',
+      );
+      const [item] = (await diff(environment, URL)).items;
+      expect(item).toEqual(
+        expect.objectContaining({ source: URL, version: '1.0.0' }),
+      );
+      expect(item.files[0]).toEqual(
+        expect.objectContaining({ local: 'edited', upstream: 'changed' }),
+      );
+      expect(item.files[0].localPatch).toContain('+// Ours.');
+      expect(item.warnings).toEqual([]);
+      const { out } = await runNdop(environment, 'diff', URL);
+      expect(out).toContain(`${URL} 1.0.0 → 2.0.0`);
+    });
+
+    it('still tells what changed without a versioned URL', async () => {
+      const environment = await urlProject();
+      const [item] = (await diff(environment)).items.filter(
+        (entry: { source?: string }) => entry.source === URL,
+      );
+      expect(item.files).toEqual([
+        {
+          path: 'src/app/lib/note.ts',
+          baseVersion: '1.0.0',
+          local: 'edited',
+          upstream: 'changed',
+        },
+      ]);
+      expect(item.warnings).toEqual([
+        "There's no https://kit.example/r/note@1.0.0.json to compare with, so its files show only whether they changed, not how.",
+      ]);
+    });
+  });
+
   it('prints both diffs per file', async () => {
     const environment = await installed('button@0.1.0');
     edit(environment, BUTTON, (text) => `// Ours.\n${text}`);

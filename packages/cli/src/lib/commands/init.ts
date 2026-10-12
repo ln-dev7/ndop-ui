@@ -49,7 +49,11 @@ export function registerInitCommand(
     program
       .command('init')
       .description('Set up an Angular app for Ndop UI.')
-      .option('--theme <name>', 'theme item to install', 'default')
+      .option(
+        '--theme <name>',
+        'theme to install: a name, @namespace/name or the URL of its JSON',
+        'default',
+      )
       .option(
         '--project <name>',
         'Angular project, when angular.json has several',

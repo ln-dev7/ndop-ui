@@ -10,7 +10,11 @@ import {
 import type { InstallContext } from '../install/project-files';
 import { sha256 } from '../plan/plan';
 import {
+  itemKey,
+  itemOrigin,
+  lockedRef,
   parseRef,
+  versionedUrl,
   type ItemRef,
   type RegistryClient,
 } from '../registry/client';
@@ -52,8 +56,10 @@ export interface FileDiff {
 
 /** An installed item compared with its base and a target version. */
 export interface ItemDiff {
-  /** Registry namespace. */
-  registry: string;
+  /** Registry namespace; absent for an item installed by URL. */
+  registry?: string;
+  /** The URL an item installed by URL comes from (ADR-0025). */
+  source?: string;
   /** Item name. */
   name: string;
   /** Installed version. */
@@ -82,7 +88,10 @@ export interface DiffInput {
   lock: NdopLock;
   /** Registry client. */
   client: RegistryClient;
-  /** Items to compare, as `name` or `@namespace/name`; all when empty. */
+  /**
+   * Items to compare, as `name`, `@namespace/name` or the URL an item was
+   * installed from; all when empty.
+   */
   names: readonly string[];
   /** A target version instead of the latest; one item only. */
   to?: string;
@@ -109,8 +118,7 @@ export async function diffItems(input: DiffInput): Promise<ItemDiff[]> {
   const { lock, client } = input;
   const keys = input.names.length
     ? input.names.map((name) => {
-        const ref = parseRef(name);
-        const key = `${ref.registry}/${ref.name}`;
+        const key = itemKey(parseRef(name));
         if (!lock.items[key]) {
           throw new CliError(
             `${key} isn't installed. Run ndop add ${name} first.`,
@@ -125,7 +133,7 @@ export async function diffItems(input: DiffInput): Promise<ItemDiff[]> {
 
   const pristine = new Map<string, Promise<Map<string, PristineFile>>>();
   const files = (ref: ItemRef, item: Promise<RegistryItem>) => {
-    const key = `${ref.registry}/${ref.name}@${ref.version ?? 'latest'}`;
+    const key = `${itemKey(ref)}@${ref.version ?? 'latest'}`;
     let cached = pristine.get(key);
     if (!cached) {
       cached = item.then((fetched) =>
@@ -140,7 +148,7 @@ export async function diffItems(input: DiffInput): Promise<ItemDiff[]> {
   for (const key of keys) {
     const entry = lock.items[key];
     if (!entry) continue;
-    const ref: ItemRef = { registry: entry.registry, name: entry.name };
+    const ref = lockedRef(entry);
     const targetRef: ItemRef = input.to ? { ...ref, version: input.to } : ref;
     const target = await client.get(targetRef);
     if (compareVersions(target.version, entry.version) < 0) {
@@ -159,11 +167,35 @@ export async function diffItems(input: DiffInput): Promise<ItemDiff[]> {
     for (const installed of entry.files) {
       const baseVersion = installed.version ?? entry.version;
       const baseRef = { ...ref, version: baseVersion };
-      const base = (await files(baseRef, client.get(baseRef))).get(
-        installed.path,
-      );
       const text = await input.reader.read(installed.path);
       const local = localState(text, installed.sha256);
+      const baseFiles = await files(baseRef, client.get(baseRef)).catch(
+        (error: unknown) => {
+          // Hosts other than registries may not publish versioned URLs.
+          if (ref.url && error instanceof CliError) return undefined;
+          throw error;
+        },
+      );
+      if (!baseFiles) {
+        const next = targetFiles.get(installed.path);
+        if (next) reached.add(next.path);
+        const message = `There's no ${versionedUrl(ref.url ?? '', baseVersion)} to compare with, so its files show only whether they changed, not how.`;
+        if (!warnings.includes(message)) warnings.push(message);
+        fileDiffs.push({
+          path: installed.path,
+          baseVersion,
+          local,
+          // The lockfile's hash is of the pristine base, so it still tells
+          // whether upstream changed the file.
+          upstream: !next
+            ? 'removed'
+            : sha256(next.content) === installed.sha256
+              ? 'unchanged'
+              : 'changed',
+        });
+        continue;
+      }
+      const base = baseFiles.get(installed.path);
       if (!base) {
         warnings.push(
           `${installed.path} isn't in ${entry.name} ${baseVersion} as this project installs it; its aliases may have changed since.`,
@@ -223,7 +255,7 @@ export async function diffItems(input: DiffInput): Promise<ItemDiff[]> {
     }
 
     diffs.push({
-      registry: entry.registry,
+      ...itemOrigin(ref),
       name: entry.name,
       version: entry.version,
       target: target.version,

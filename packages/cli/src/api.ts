@@ -123,7 +123,10 @@ export interface ProjectContext {
    */
   items: {
     name: string;
-    registry: string;
+    /** Its namespace; absent for an item installed by URL. */
+    registry?: string;
+    /** The URL an item installed by URL comes from (ADR-0025). */
+    source?: string;
     version: string;
     files: { path: string; state: LocalState }[];
   }[];
@@ -151,7 +154,9 @@ export async function projectContext(cwd: string): Promise<ProjectContext> {
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(async (item) => ({
         name: item.name,
-        registry: item.registry,
+        ...(item.source
+          ? { source: item.source }
+          : { registry: item.registry }),
         version: item.version,
         files: await Promise.all(
           item.files.map(async (file) => {
@@ -227,7 +232,13 @@ export async function registryMetadata(
       )
     ).flat();
   return {
-    installed: async () => entries(Object.values((await readLock(fs)).items)),
+    installed: async () =>
+      entries(
+        // Items installed by URL have no registry to serve their metadata.
+        Object.values((await readLock(fs)).items).flatMap(
+          ({ registry, name }) => (registry ? [{ registry, name }] : []),
+        ),
+      ),
     available: async () => {
       const source = sources[DEFAULT_NAMESPACE];
       if (!source) return [];

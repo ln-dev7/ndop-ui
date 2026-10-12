@@ -3,6 +3,7 @@ import { join, relative } from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 import type { RegistryItem } from '@ndop/schema';
 import type { CommandEnvironment } from '../lib/commands/environment';
+import { CliError } from '../lib/errors';
 import type { Installer } from '../lib/plan/apply';
 import type { AngularCompiler } from '../lib/update/codemods';
 import { createProgram } from '../lib/program';
@@ -111,6 +112,11 @@ export interface TestEnvironment extends CommandEnvironment {
    * snapshots.
    */
   registry: Record<string, RegistryItem>;
+  /**
+   * Items served at exact URLs, for installs by URL (ADR-0025), mutable
+   * between runs. Any other http(s) URL answers 404.
+   */
+  urls: Record<string, RegistryItem>;
 }
 
 /**
@@ -146,13 +152,20 @@ export function testEnvironment(
   const project = memoryFs(files);
   const installs: TestEnvironment['installs'] = [];
   const registry = options.registry ?? snapshotRegistry();
+  const urls: Record<string, RegistryItem> = {};
   return {
     project,
     installs,
     registry,
+    urls,
     fs: () => project,
     formatter: async () => options.format ?? noFormat,
     fetcher: () => async (location) => {
+      if (/^https?:\/\//.test(location)) {
+        const item = urls[location];
+        if (!item) throw new CliError(`${location} answered 404 Not Found.`);
+        return JSON.stringify(item);
+      }
       const name = location.replace('mem://', '');
       const item = registry[name] ?? versionOf(registry, name);
       if (!item) {
