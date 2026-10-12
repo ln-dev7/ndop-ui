@@ -2,7 +2,11 @@ import Ajv from 'ajv';
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { registryItemSchema, type RegistryItem } from './registry-item.schema';
-import { toShadcnItem } from './shadcn-compat';
+import {
+  compatDependencyUrl,
+  DEFAULT_COMPAT_BASE_URL,
+  toShadcnItem,
+} from './shadcn-compat';
 
 const root = join(import.meta.dirname, '../..');
 const shadcnItemSchema = JSON.parse(
@@ -17,6 +21,21 @@ const validateShadcnItem = new Ajv({ allErrors: true, strict: false }).compile(
   shadcnItemSchemaBody,
 );
 
+/**
+ * Whether the shadcn CLI (4.21.4, `isUniversalRegistryItem`) installs an
+ * item without a `components.json`.
+ *
+ * @param item - A compat item.
+ * @returns Whether it is universal.
+ */
+function isUniversal(item: Record<string, unknown>): boolean {
+  const files = (item['files'] ?? []) as { type: string; target?: string }[];
+  return (
+    item['type'] === 'registry:item' &&
+    files.every((file) => !!file.target && file.type === 'registry:file')
+  );
+}
+
 const items = readdirSync(join(root, 'fixtures/valid'))
   .filter((file) => file.startsWith('registry-item.'))
   .map((file) => ({
@@ -26,13 +45,19 @@ const items = readdirSync(join(root, 'fixtures/valid'))
     ) as RegistryItem,
   }));
 
-describe('shadcn superset invariant (ADR-0002)', () => {
-  it.each(items)('$file maps to a valid shadcn item', ({ item }) => {
-    const compat = toShadcnItem(item);
+const fixture = (name: string) =>
+  items.find(({ file }) => file === `registry-item.${name}.json`)!.item;
+
+const options = { baseUrl: DEFAULT_COMPAT_BASE_URL };
+
+describe('shadcn superset invariant (ADR-0002, ADR-0025)', () => {
+  it.each(items)('$file maps to a valid universal shadcn item', ({ item }) => {
+    const compat = toShadcnItem(item, options);
     expect(
       validateShadcnItem(compat),
       JSON.stringify(validateShadcnItem.errors),
     ).toBe(true);
+    expect(isUniversal(compat)).toBe(true);
   });
 
   it('keeps the JSON type of every field shared with shadcn', () => {
@@ -57,33 +82,103 @@ describe('shadcn superset invariant (ADR-0002)', () => {
 });
 
 describe('toShadcnItem', () => {
-  const dialogDemo = items.find(
-    ({ file }) => file === 'registry-item.dialog-demo.json',
-  )!.item;
-
-  it('drops Ndop-only fields', () => {
-    const compat = toShadcnItem(dialogDemo);
+  it('drops Ndop-only fields and the styles shadcn skips', () => {
+    const compat = toShadcnItem(fixture('dialog'), options);
     for (const key of [
       'version',
       'angular',
       'migrations',
       'codemods',
       'ndop',
+      'cssVars',
+      'css',
     ]) {
       expect(compat).not.toHaveProperty(key);
     }
   });
 
-  it('maps primitive-usage to block and alias tokens to placeholders', () => {
-    const compat = toShadcnItem(dialogDemo);
-    expect(compat['type']).toBe('registry:block');
+  it('installs files at the default aliases, rewriting their imports', () => {
+    const compat = toShadcnItem(
+      {
+        ...fixture('dialog'),
+        files: [
+          {
+            path: 'ui/dialog/dialog.ts',
+            type: 'registry:ui',
+            target: '{ui}/dialog/dialog.ts',
+            content: "import { cn } from '@/lib/utils';\n",
+          },
+        ],
+      },
+      {
+        ...options,
+        rewriteImports: (path, content) => `// ${path}\n${content}`,
+      },
+    );
+    expect(compat['type']).toBe('registry:item');
     expect(compat['files']).toEqual([
       {
-        path: 'examples/dialog-demo.ts',
-        type: 'registry:block',
-        target: '@components/examples/dialog-demo.ts',
-        content: 'export {};\n',
+        path: 'ui/dialog/dialog.ts',
+        type: 'registry:file',
+        target: '~/src/app/ui/dialog/dialog.ts',
+        content:
+          "// src/app/ui/dialog/dialog.ts\nimport { cn } from '@/lib/utils';\n",
       },
     ]);
+  });
+
+  it('points bare and @ndop registry dependencies at their compat URLs', () => {
+    const compat = toShadcnItem(fixture('dialog'), {
+      baseUrl: 'http://localhost:4400/r/compat/',
+    });
+    expect(compat['registryDependencies']).toEqual([
+      'http://localhost:4400/r/compat/button.json',
+      'https://ndop.dev/r/compat/utils.json',
+    ]);
+    expect(
+      compatDependencyUrl(
+        '@ndop/utils',
+        options.baseUrl,
+        'https://mirror.dev/r/compat/',
+      ),
+    ).toBe('https://mirror.dev/r/compat/utils.json');
+    expect(compatDependencyUrl('@acme/utils', options.baseUrl)).toBe(undefined);
+  });
+
+  it('says what ndop init would do, after the item’s own note', () => {
+    const compat = toShadcnItem(
+      { ...fixture('dialog'), docs: 'Route to it.' },
+      options,
+    );
+    const docs = String(compat['docs']);
+    expect(docs.startsWith('Route to it.\n\nNdop setup')).toBe(true);
+    expect(docs).toContain(`${DEFAULT_COMPAT_BASE_URL}default.json`);
+    expect(docs).toContain("@import '@ndop/core/styles.css';");
+    expect(docs).toContain('provideNdop()');
+    expect(docs).toContain('provideIcons()');
+    expect(docs).toContain('@angular/cdk');
+  });
+
+  it('turns a theme into one stylesheet', () => {
+    const compat = toShadcnItem(
+      {
+        ...fixture('theme-indigo'),
+        css: {
+          '@import "@fontsource-variable/inter"': {},
+          '@layer base': { body: { 'letter-spacing': '-0.01em' } },
+        },
+      },
+      options,
+    );
+    const [file] = compat['files'] as { target: string; content: string }[];
+    expect(file?.target).toBe('~/src/ndop-theme.css');
+    expect(file?.content).toMatch(/^@import '@fontsource-variable\/inter';\n/);
+    expect(file?.content).toContain(
+      ':root {\n  --primary: oklch(0.35 0.15 275);',
+    );
+    expect(file?.content).toContain(
+      '@layer base {\n  body {\n    letter-spacing: -0.01em;\n  }\n}\n',
+    );
+    expect(String(compat['docs'])).not.toContain('@angular/cdk');
   });
 });

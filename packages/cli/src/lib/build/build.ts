@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { extractMetadata } from '@ndop/metadata';
 import {
+  DEFAULT_COMPAT_BASE_URL,
   schemas,
   validate,
   type Registry,
@@ -9,7 +10,13 @@ import {
 } from '@ndop/schema';
 import { themeContrast } from '@ndop/schema/theme';
 import { DOCUMENTED_TYPES, itemChangelog, parseChangelog } from './changelog';
-import { compileFiles, writeScratchTsconfig } from './compile';
+import { compatOutputs, normalizeCompatBaseUrl } from './compat';
+import { compileFiles, missingPackages, writeScratchTsconfig } from './compile';
+import {
+  fetchNdopDependencies,
+  ndopCompatBaseUrl,
+  ndopRegistryUrl,
+} from './ndop-dependencies';
 import { checkExports, checkImports, sourceProject } from './sources';
 import { themeFromCss } from './theme';
 import type {
@@ -42,6 +49,9 @@ const LICENSE_FILE = 'LICENSE.txt';
  * - `<output>/r/LICENSE.txt`: `<root>/LICENSE.txt` as it is, when the
  *   registry has one, so the license and third-party notices of the items
  *   are served with them (ADR-0014, amendment 2).
+ * - with `compat: 'shadcn'`, `<output>/r/compat/<name>.json`: each
+ *   component, block, library and theme as an item the shadcn CLI installs
+ *   without a `components.json` (ADR-0025; see {@link compatOutputs}).
  *
  * A snapshot is written to `<root>/snapshots/<name>@<version>.json` the
  * first time a version is built, and must be committed. If one already
@@ -99,10 +109,23 @@ export async function buildRegistry(
     built.push(await buildItem(item, root, byName, issues));
   }
 
-  const builtByName = new Map(built.map((item) => [item.name, item]));
+  const ndop = await fetchNdopDependencies(
+    built,
+    {
+      root,
+      ...(options.registry ? { registry: options.registry } : {}),
+      ...(options.env ? { env: options.env } : {}),
+      ...(options.fetcher ? { fetcher: options.fetcher } : {}),
+    },
+    issues,
+  );
+  const reachable = new Map<string, RegistryItem>([
+    ...ndop,
+    ...built.map((item) => [item.name, item] as const),
+  ]);
   const project = sourceProject();
   for (const item of built) {
-    issues.push(...checkImports(item, builtByName, project));
+    issues.push(...checkImports(item, reachable, project));
     issues.push(...checkExports(item, project));
   }
 
@@ -117,9 +140,14 @@ export async function buildRegistry(
         .map((file) => file.path)
         .filter((path) => path.endsWith('.ts')),
     );
-    const tsconfig = await writeScratchTsconfig(root, files, options.tsconfig);
+    const tsconfig = await writeScratchTsconfig(root, files, options.tsconfig, [
+      ...ndop.values(),
+    ]);
     try {
       if (wantsCompile) {
+        issues.push(...missingPackages(tsconfig, ndop));
+      }
+      if (wantsCompile && issues.length === 0) {
         const compiled = await compileFiles(root, tsconfig);
         if (compiled.skipped) {
           warnings.push(
@@ -146,6 +174,14 @@ export async function buildRegistry(
 
   const snapshots = await checkSnapshots(built, root, frozen, issues);
   const changelogs = await checkChangelogs(built, root, snapshots.all, issues);
+  const compat = options.compat
+    ? compatFiles(
+        built,
+        options.compatBaseUrl,
+        ndopCompatBaseUrl(ndopRegistryUrl(options)),
+        issues,
+      )
+    : new Map<string, Record<string, unknown>>();
   const reports = built.map((item) => ({
     name: item.name,
     version: item.version,
@@ -185,6 +221,9 @@ export async function buildRegistry(
   for (const [name, content] of changelogs) {
     outputs.set(`r/changelog/${name}.json`, content);
   }
+  for (const [file, content] of compat) {
+    outputs.set(file, json(content));
+  }
   const license = await readOptional(join(root, LICENSE_FILE));
   if (license !== undefined) {
     outputs.set(`r/${LICENSE_FILE}`, license);
@@ -200,6 +239,31 @@ export async function buildRegistry(
     }
   }
   return result({ items: reports, files: [...outputs.keys()] });
+}
+
+/**
+ * The shadcn-compatible output (ADR-0025), after checking the base URL.
+ *
+ * @param built - Built items.
+ * @param baseUrl - The `compatBaseUrl` option.
+ * @param ndopBaseUrl - Where Ndop's own compat items are served.
+ * @param issues - Receives problems.
+ * @returns Each compat file's JSON, by output-relative path.
+ */
+function compatFiles(
+  built: readonly RegistryItem[],
+  baseUrl: string | undefined,
+  ndopBaseUrl: string,
+  issues: BuildIssue[],
+): Map<string, Record<string, unknown>> {
+  const normalized = normalizeCompatBaseUrl(baseUrl ?? DEFAULT_COMPAT_BASE_URL);
+  if (normalized === undefined) {
+    issues.push({
+      message: `The compat base URL "${baseUrl}" must be an absolute http(s) URL.`,
+    });
+    return new Map();
+  }
+  return compatOutputs(built, normalized, issues, ndopBaseUrl);
 }
 
 /**

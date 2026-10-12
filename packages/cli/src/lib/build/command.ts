@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
-import type { Command } from 'commander';
+import { Option, type Command } from 'commander';
+import { DEFAULT_COMPAT_BASE_URL } from '@ndop/schema';
 import { buildRegistry } from './build';
 import { formatBuildResult } from './report';
 
@@ -14,6 +15,9 @@ interface BuildCommandOptions {
   metadata: boolean;
   tsconfig?: string;
   dryRun?: boolean;
+  compat?: 'shadcn';
+  compatBaseUrl: string;
+  registry?: string;
   json?: boolean;
   yes?: boolean;
 }
@@ -30,6 +34,7 @@ interface BuildCommandOptions {
  * ```sh
  * ndop build --cwd registry --output dist/registry
  * ndop build --dry-run --json
+ * ndop build --compat shadcn --compat-base-url https://ui.acme.dev/r/compat/
  * ```
  */
 export function registerBuildCommand(program: Command): Command {
@@ -57,6 +62,21 @@ export function registerBuildCommand(program: Command): Command {
       '--tsconfig <path>',
       'tsconfig the compile check extends, keeping its paths (relative to --cwd)',
     )
+    .addOption(
+      new Option(
+        '--compat <format>',
+        'also write r/compat/<name>.json, items another CLI installs',
+      ).choices(['shadcn']),
+    )
+    .option(
+      '--compat-base-url <url>',
+      'absolute URL r/compat/ is served from, for registryDependencies',
+      DEFAULT_COMPAT_BASE_URL,
+    )
+    .option(
+      '--registry <url>',
+      "Ndop's registry for @ndop/… registryDependencies, a URL or path template containing {name}, paths relative to --cwd (default: NDOP_REGISTRY, then ndop.dev)",
+    )
     .option('--dry-run', 'check everything, write nothing')
     .option('--json', 'print the result as JSON')
     .option('-y, --yes', 'accepted for consistency; build never prompts')
@@ -72,6 +92,10 @@ export function registerBuildCommand(program: Command): Command {
           ? { tsconfig: resolve(root, options.tsconfig) }
           : {}),
         dryRun: Boolean(options.dryRun),
+        ...(options.compat
+          ? { compat: options.compat, compatBaseUrl: options.compatBaseUrl }
+          : {}),
+        ...(options.registry ? { registry: options.registry } : {}),
       });
       const { writeOut = (text: string) => process.stdout.write(text) } =
         program.configureOutput();

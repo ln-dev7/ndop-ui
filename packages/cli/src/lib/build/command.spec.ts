@@ -84,6 +84,39 @@ describe('ndop build', () => {
     expect(process.exitCode).toBeUndefined();
   });
 
+  it('writes shadcn-compatible items with --compat shadcn', async () => {
+    const output = await run(
+      'build',
+      '--cwd',
+      root,
+      '--dry-run',
+      '--json',
+      '--no-compile',
+      '--compat',
+      'shadcn',
+      '--compat-base-url',
+      'http://localhost:4400/r/compat',
+    );
+    expect(JSON.parse(output).files).toContain('r/compat/utils.json');
+  });
+
+  it('refuses a relative compat base URL', async () => {
+    const output = await run(
+      'build',
+      '--cwd',
+      root,
+      '--no-compile',
+      '--compat',
+      'shadcn',
+      '--compat-base-url',
+      '/r/compat/',
+    );
+    expect(output).toContain(
+      'The compat base URL "/r/compat/" must be an absolute http(s) URL.',
+    );
+    expect(process.exitCode).toBe(1);
+  });
+
   it('prints issues and exits with code 1 when the build fails', async () => {
     await rm(join(root, 'lib/utils.ts'));
     const output = await run('build', '--cwd', root, '--no-compile');

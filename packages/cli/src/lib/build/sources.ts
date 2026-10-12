@@ -26,9 +26,12 @@ export function sourceProject(): Project {
  * - relative imports of the item's own files;
  * - `@/` imports of files belonging to the item or to an item in its
  *   `registryDependencies`, installed where the same `@/` path finds them.
+ *   Those can be items of the same registry or `@ndop/<name>` items of
+ *   Ndop's; other namespaces' items are install-only (ADR-0025).
  *
  * @param item - The item, with file contents loaded.
- * @param byName - Every item in the manifest, by name.
+ * @param byName - Every item in the manifest, by name, and every fetched
+ *   Ndop item, by `@ndop/<name>`.
  * @param project - Project from {@link sourceProject}.
  * @returns Issues found; empty when every import is allowed.
  */
@@ -50,6 +53,9 @@ export function checkImports(
       reachable.set(file.path, file);
     }
   }
+  const installOnly = (item.registryDependencies ?? []).filter(
+    (name) => name.startsWith('@') && !name.startsWith('@ndop/'),
+  );
 
   for (const file of item.files ?? []) {
     if (!file.path.endsWith('.ts')) {
@@ -62,6 +68,7 @@ export function checkImports(
         packages,
         ownFiles,
         reachable,
+        installOnly,
       });
       if (problem) {
         issues.push({
@@ -85,6 +92,8 @@ interface ImportScope {
   ownFiles: ReadonlyMap<string, unknown>;
   /** Files of the item and of its registry dependencies, by path. */
   reachable: ReadonlyMap<string, { path: string; target: string }>;
+  /** Namespaced dependencies other than `@ndop/…`, whose files aren't. */
+  installOnly: readonly string[];
 }
 
 /**
@@ -112,7 +121,9 @@ function importProblem(
       .map((candidate) => scope.reachable.get(candidate))
       .find(Boolean);
     if (!target) {
-      return 'is not a file of this item or of its registryDependencies.';
+      return scope.installOnly.length
+        ? `is not a file of this item or of its registryDependencies. Only @ndop registryDependencies can be imported in code; ${scope.installOnly.join(', ')} ${scope.installOnly.length === 1 ? 'is' : 'are'} install-only.`
+        : 'is not a file of this item or of its registryDependencies.';
     }
     // Installed files keep `@/` imports unchanged, which only works when the
     // file lands where the same `@/` path points.

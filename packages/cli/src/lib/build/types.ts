@@ -1,3 +1,5 @@
+import type { Fetcher } from '../registry/client';
+
 /**
  * A problem `ndop build` found. Any issue fails the build.
  */
@@ -46,6 +48,29 @@ export interface BuildOptions {
   tsconfig?: string;
   /** Check everything but write nothing. */
   dryRun?: boolean;
+  /**
+   * Also write `r/compat/<name>.json`, items the shadcn CLI installs
+   * (ADR-0025). Only `shadcn` is supported.
+   */
+  compat?: 'shadcn';
+  /**
+   * Absolute URL the compat items are served from, which their
+   * `registryDependencies` point under. Defaults to
+   * `https://ndop.dev/r/compat/`.
+   */
+  compatBaseUrl?: string;
+  /**
+   * URL or path template, with `{name}`, of the default registry that
+   * `@ndop/<name>` registry dependencies are fetched from, so items can
+   * import their files (ADR-0025). Relative paths resolve from `root`.
+   * Defaults to the `NDOP_REGISTRY` environment variable, then
+   * `https://ndop.dev/r/{name}.json`, as for `ndop add`.
+   */
+  registry?: string;
+  /** Environment variables; `process.env` by default. */
+  env?: Record<string, string | undefined>;
+  /** Reads `@ndop` items; fetches URLs and reads paths by default. */
+  fetcher?: Fetcher;
 }
 
 /**

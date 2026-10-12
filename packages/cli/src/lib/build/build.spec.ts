@@ -1,4 +1,11 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { buildRegistry } from './build';
 import type { BuildOptions } from './types';
@@ -385,6 +392,348 @@ describe('buildRegistry', () => {
     expect(messages).toContain(
       'registryDependencies lists "missing", which isn\'t in the manifest.',
     );
+  });
+
+  describe('shadcn compat', () => {
+    it('writes nothing under r/compat without the option', async () => {
+      await fixture({});
+      const result = await build();
+      expect(result.files.some((file) => file.startsWith('r/compat/'))).toBe(
+        false,
+      );
+    });
+
+    it('writes universal items with relative imports and compat URLs', async () => {
+      await fixture({});
+      const result = await build({
+        compat: 'shadcn',
+        compatBaseUrl: 'http://localhost:4400/r/compat',
+      });
+      expect(result.issues).toEqual([]);
+      expect(result.files).toEqual(
+        expect.arrayContaining([
+          'r/compat/utils.json',
+          'r/compat/badge.json',
+          'r/compat/plain.json',
+        ]),
+      );
+
+      const badge = await readJson('dist/r/compat/badge.json');
+      expect(badge).toEqual({
+        $schema: 'https://ui.shadcn.com/schema/registry-item.json',
+        name: 'badge',
+        title: 'Badge',
+        description: 'A status label.',
+        type: 'registry:item',
+        registryDependencies: ['http://localhost:4400/r/compat/utils.json'],
+        files: [
+          {
+            path: 'ui/badge/badge.ts',
+            type: 'registry:file',
+            target: '~/src/app/ui/badge/badge.ts',
+            content: BADGE.replace("'@/lib/utils'", "'../../lib/utils'"),
+          },
+        ],
+        docs: expect.stringContaining(
+          'npx shadcn add http://localhost:4400/r/compat/default.json http://localhost:4400/r/compat/icons.json',
+        ),
+      });
+      expect((await readJson('dist/r/compat/utils.json'))['files']).toEqual([
+        expect.objectContaining({
+          target: '~/src/app/lib/utils.ts',
+          content: UTILS,
+        }),
+      ]);
+    });
+
+    it('turns a theme into a stylesheet at src/ndop-theme.css', async () => {
+      await fixture({});
+      await build({ compat: 'shadcn' });
+      const theme = await readJson('dist/r/compat/plain.json');
+      expect(theme['dependencies']).toEqual([
+        '@fontsource-variable/geist@^5.3.0',
+      ]);
+      expect(theme).not.toHaveProperty('cssVars');
+      expect(theme['files']).toEqual([
+        {
+          path: 'themes/plain/theme.css',
+          type: 'registry:file',
+          target: '~/src/ndop-theme.css',
+          content: expect.stringContaining(
+            ':root {\n  --background: white;\n}\n\n.dark {\n  --background: black;\n}',
+          ),
+        },
+      ]);
+      expect(String(theme['docs'])).toContain(
+        'https://ndop.dev/r/compat/default.json',
+      );
+    });
+
+    it('leaves examples out', async () => {
+      await fixture({ 'examples/badge-demo.ts': 'export {};\n' }, [
+        ...items(),
+        {
+          name: 'badge-demo',
+          type: 'registry:primitive-usage',
+          version: '1.0.0',
+          title: 'Badge demo',
+          description: 'A badge.',
+          registryDependencies: ['badge'],
+          files: [
+            {
+              path: 'examples/badge-demo.ts',
+              type: 'registry:primitive-usage',
+              target: '{blocks}/examples/badge-demo.ts',
+            },
+          ],
+          angular: { ...ANGULAR, exports: [] },
+        },
+      ]);
+      const result = await build({ compat: 'shadcn' });
+      expect(result.files).not.toContain('r/compat/badge-demo.json');
+    });
+
+    it('fails on a dependency with no compat item', async () => {
+      const external = items();
+      (external[1] as { registryDependencies: string[] }).registryDependencies =
+        ['utils', '@other/thing'];
+      await fixture({}, external);
+      const result = await build({ compat: 'shadcn' });
+      expect(result.ok).toBe(false);
+      expect(result.issues).toEqual([
+        {
+          item: 'badge',
+          message:
+            'registryDependencies lists "@other/thing", which has no shadcn-compatible item: only items of this registry and @ndop/<name> have one.',
+        },
+      ]);
+      expect(result.files).toEqual([]);
+    });
+  });
+
+  describe('@ndop registry dependencies', () => {
+    const MIRROR = 'https://mirror.dev/r/{name}.json';
+
+    const RING = `import { Directive } from '@angular/core';
+import { ringClasses } from '@/lib/ring-utils';
+
+/** Draws a focus ring. */
+@Directive({ selector: '[ndRing]', host: { '[class]': 'classes' } })
+export class Ring {
+  protected readonly classes = ringClasses;
+}
+`;
+
+    const PANEL = `import { Directive } from '@angular/core';
+import { Ring } from '@/ui/ring/ring';
+
+/** A panel with Ndop's focus ring. */
+@Directive({ selector: '[samplePanel]', hostDirectives: [Ring] })
+export class Panel {}
+`;
+
+    const PANEL_FILES = {
+      'ui/panel/panel.ts': PANEL,
+      'changelog/panel.md': '## 1.0.0\n\nFirst release.\n',
+    };
+
+    /**
+     * Ndop's side: `ring`, which depends on `ring-utils`, as built items.
+     *
+     * @param ring - The ring file's text.
+     * @returns Built items by URL.
+     */
+    function ndopRegistry(ring = RING): Map<string, string> {
+      const item = (
+        name: string,
+        type: string,
+        path: string,
+        content: string,
+        extra: Record<string, unknown> = {},
+      ) =>
+        [
+          MIRROR.replace('{name}', name),
+          JSON.stringify({
+            name,
+            type,
+            version: '1.0.0',
+            title: name,
+            description: `Ndop's ${name}.`,
+            files: [
+              {
+                path,
+                type,
+                target: `{${path.split('/')[0]}}/${path.split('/').slice(1).join('/')}`,
+                content,
+              },
+            ],
+            ...extra,
+          }),
+        ] as const;
+      return new Map([
+        item('ring', 'registry:ui', 'ui/ring/ring.ts', ring, {
+          registryDependencies: ['ring-utils'],
+          angular: { ...ANGULAR, exports: ['Ring'] },
+        }),
+        item(
+          'ring-utils',
+          'registry:lib',
+          'lib/ring-utils.ts',
+          "export const ringClasses = 'ring-2';\n",
+        ),
+      ]);
+    }
+
+    /**
+     * A fetcher serving {@link ndopRegistry}, recording what it was asked.
+     *
+     * @param served - Items by URL.
+     * @returns The fetcher and the locations it read.
+     */
+    function fakeFetcher(served: Map<string, string>) {
+      const asked: string[] = [];
+      const fetcher = async (location: string) => {
+        asked.push(location);
+        const text = served.get(location);
+        if (text === undefined) throw new Error('404');
+        return text;
+      };
+      return { fetcher, asked };
+    }
+
+    /**
+     * A registry item that depends on Ndop's ring.
+     *
+     * @param registryDependencies - Its dependencies.
+     * @returns The manifest entry.
+     */
+    function panel(
+      registryDependencies = ['@ndop/ring'],
+    ): Record<string, unknown> {
+      return {
+        name: 'panel',
+        type: 'registry:ui',
+        version: '1.0.0',
+        title: 'Panel',
+        description: 'A panel.',
+        registryDependencies,
+        files: [
+          {
+            path: 'ui/panel/panel.ts',
+            type: 'registry:ui',
+            target: '{ui}/panel/panel.ts',
+          },
+        ],
+        angular: { ...ANGULAR, exports: ['Panel'] },
+      };
+    }
+
+    it('fetches them transitively and type-checks imports of their files', async () => {
+      await fixture(PANEL_FILES, [panel()]);
+      const { fetcher, asked } = fakeFetcher(ndopRegistry());
+      const result = await build({ compile: true, registry: MIRROR, fetcher });
+      expect(result.issues).toEqual([]);
+      expect(asked).toEqual([
+        'https://mirror.dev/r/ring.json',
+        'https://mirror.dev/r/ring-utils.json',
+      ]);
+      expect(
+        (await readdir(root)).filter((name) => name.startsWith('.ndop-build-')),
+      ).toEqual([]);
+    });
+
+    it('reads the registry from NDOP_REGISTRY', async () => {
+      await fixture(PANEL_FILES, [panel()]);
+      const { fetcher, asked } = fakeFetcher(ndopRegistry());
+      await build({ env: { NDOP_REGISTRY: MIRROR }, fetcher });
+      expect(asked[0]).toBe('https://mirror.dev/r/ring.json');
+    });
+
+    it('reports a type error in code using their files', async () => {
+      await fixture(
+        {
+          ...PANEL_FILES,
+          'ui/panel/panel.ts': PANEL.replace(
+            "import { Ring } from '@/ui/ring/ring';",
+            "import { Ring } from '@/ui/ring/ring';\nconst wrong: number = Ring.name;",
+          ),
+        },
+        [panel()],
+      );
+      const { fetcher } = fakeFetcher(ndopRegistry());
+      const result = await build({ compile: true, registry: MIRROR, fetcher });
+      expect(result.issues).toEqual([
+        expect.objectContaining({
+          file: 'ui/panel/panel.ts',
+          message: expect.stringContaining('TS2322'),
+        }),
+      ]);
+    });
+
+    it('names a package their files import that the registry lacks', async () => {
+      await fixture(PANEL_FILES, [panel()]);
+      const { fetcher } = fakeFetcher(
+        ndopRegistry(`import 'not-installed-anywhere/styles';\n${RING}`),
+      );
+      const result = await build({ compile: true, registry: MIRROR, fetcher });
+      expect(result.issues).toEqual([
+        {
+          message:
+            "@ndop/ring imports not-installed-anywhere, which the registry can't resolve. Install it in the registry project, for example with npm install -D not-installed-anywhere.",
+        },
+      ]);
+    });
+
+    it("reports a dependency it can't fetch", async () => {
+      await fixture(PANEL_FILES, [panel(['@ndop/missing'])]);
+      const { fetcher } = fakeFetcher(ndopRegistry());
+      const result = await build({ registry: MIRROR, fetcher });
+      expect(result.issues).toEqual([
+        expect.objectContaining({
+          item: 'panel',
+          message: expect.stringContaining(
+            "Can't fetch its @ndop registryDependencies from https://mirror.dev/r/{name}.json",
+          ),
+        }),
+        expect.objectContaining({ item: 'panel', file: 'ui/panel/panel.ts' }),
+      ]);
+    });
+
+    it('keeps other namespaces install-only', async () => {
+      await fixture(PANEL_FILES, [panel(['@acme/ring'])]);
+      const { fetcher, asked } = fakeFetcher(ndopRegistry());
+      const result = await build({ registry: MIRROR, fetcher });
+      expect(asked).toEqual([]);
+      expect(result.issues).toEqual([
+        {
+          item: 'panel',
+          file: 'ui/panel/panel.ts',
+          message:
+            'Line 2: "@/ui/ring/ring" is not a file of this item or of its registryDependencies. Only @ndop registryDependencies can be imported in code; @acme/ring is install-only.',
+        },
+      ]);
+    });
+
+    it("points compat output at Ndop's compat items", async () => {
+      await fixture(PANEL_FILES, [panel()]);
+      const { fetcher } = fakeFetcher(ndopRegistry());
+      const result = await build({
+        compat: 'shadcn',
+        compatBaseUrl: 'https://acme.dev/r/compat/',
+        registry: MIRROR,
+        fetcher,
+      });
+      expect(result.issues).toEqual([]);
+      const compat = await readJson('dist/r/compat/panel.json');
+      expect(compat['registryDependencies']).toEqual([
+        'https://mirror.dev/r/compat/ring.json',
+      ]);
+      expect(compat['files']).toEqual([
+        expect.objectContaining({
+          content: PANEL.replace("'@/ui/ring/ring'", "'../ring/ring'"),
+        }),
+      ]);
+    });
   });
 
   describe('import rules', () => {

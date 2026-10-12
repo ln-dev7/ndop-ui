@@ -1,10 +1,13 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
+import type { RegistryItem } from '@ndop/schema';
 import { ts } from 'ts-morph';
 import { x } from 'tinyexec';
+import { importSpecifiers } from '../edit/typescript';
+import { packageName } from './theme';
 import type { BuildIssue } from './types';
 
 /**
@@ -40,24 +43,45 @@ const ANGULAR_OPTIONS = {
 export interface ScratchTsconfig {
   /** Absolute path of the tsconfig. */
   path: string;
-  /** Deletes the temporary folder. */
+  /**
+   * Folder the fetched Ndop items' files are written to, under the
+   * registry root, when there are any.
+   */
+  external?: string;
+  /** Deletes the temporary folders. */
   dispose(): Promise<void>;
 }
 
 /**
- * Writes a {@link ScratchTsconfig}.
+ * Writes a {@link ScratchTsconfig}. Files of fetched `@ndop` items
+ * (ADR-0025) are written at their registry paths to a temporary folder
+ * inside the registry root, so their package imports resolve from the
+ * registry's `node_modules` as its own files' do, and `@/` resolves to
+ * that folder after the registry root.
  *
  * @param root - Registry root.
  * @param files - Registry-relative TypeScript files.
  * @param base - Optional tsconfig to extend, keeping its `paths`.
+ * @param external - Fetched Ndop items, with file contents.
  * @returns The tsconfig.
  */
 export async function writeScratchTsconfig(
   root: string,
   files: readonly string[],
   base?: string,
+  external: readonly RegistryItem[] = [],
 ): Promise<ScratchTsconfig> {
   const folder = await mkdtemp(join(tmpdir(), 'ndop-build-'));
+  const externalFiles = external.flatMap((item) => item.files ?? []);
+  const outside =
+    externalFiles.length > 0
+      ? await mkdtemp(join(resolve(root), '.ndop-build-'))
+      : undefined;
+  for (const file of outside ? externalFiles : []) {
+    const target = join(outside ?? '', file.path);
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, file.content ?? '');
+  }
   const path = join(folder, 'tsconfig.json');
   await writeFile(
     path,
@@ -67,7 +91,7 @@ export async function writeScratchTsconfig(
         ...APP_OPTIONS,
         paths: {
           ...(base ? inheritedPaths(resolve(base)) : {}),
-          '@/*': [`${resolve(root)}/*`],
+          '@/*': [`${resolve(root)}/*`, ...(outside ? [`${outside}/*`] : [])],
         },
       },
       files: files.map((file) => resolve(root, file)),
@@ -76,8 +100,57 @@ export async function writeScratchTsconfig(
   );
   return {
     path,
-    dispose: () => rm(folder, { recursive: true, force: true }),
+    ...(outside ? { external: outside } : {}),
+    dispose: async () => {
+      await rm(folder, { recursive: true, force: true });
+      if (outside) await rm(outside, { recursive: true, force: true });
+    },
   };
+}
+
+/**
+ * Checks that every package the fetched Ndop items' files import resolves
+ * from the registry, through its `node_modules` or the `paths` of the
+ * tsconfig it extends, so a missing one is reported by name instead of as
+ * a compiler error (ADR-0025).
+ *
+ * @param tsconfig - The scratch tsconfig, with the fetched files.
+ * @param external - Fetched Ndop items, by `@ndop/<name>`.
+ * @returns One issue per package that doesn't resolve.
+ */
+export function missingPackages(
+  tsconfig: ScratchTsconfig,
+  external: ReadonlyMap<string, RegistryItem>,
+): BuildIssue[] {
+  if (!tsconfig.external) return [];
+  const { config } = ts.readConfigFile(tsconfig.path, ts.sys.readFile);
+  const { options } = ts.parseJsonConfigFileContent(
+    config,
+    ts.sys,
+    dirname(tsconfig.path),
+  );
+  const missing = new Map<string, string>();
+  for (const [key, item] of external) {
+    for (const file of item.files ?? []) {
+      if (!file.path.endsWith('.ts')) continue;
+      const from = join(tsconfig.external, file.path);
+      for (const specifier of importSpecifiers(file.content ?? '')) {
+        if (specifier.startsWith('.') || specifier.startsWith('@/')) continue;
+        const name = packageName(specifier);
+        if (missing.has(name)) continue;
+        const resolved = ts.resolveModuleName(
+          specifier,
+          from,
+          options,
+          ts.sys,
+        ).resolvedModule;
+        if (!resolved) missing.set(name, key);
+      }
+    }
+  }
+  return [...missing].map(([name, key]) => ({
+    message: `${key} imports ${name}, which the registry can't resolve. Install it in the registry project, for example with npm install -D ${name}.`,
+  }));
 }
 
 /**

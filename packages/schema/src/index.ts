@@ -26,7 +26,15 @@ export {
   type RegistryItem,
 } from './lib/registry-item.schema';
 export { registrySchema, type Registry } from './lib/registry.schema';
-export { toShadcnItem } from './lib/shadcn-compat';
+export {
+  COMPAT_ALIASES,
+  COMPAT_THEME_FILE,
+  compatDependencyUrl,
+  DEFAULT_COMPAT_BASE_URL,
+  SHADCN_COMPAT_TYPES,
+  toShadcnItem,
+  type ShadcnCompatOptions,
+} from './lib/shadcn-compat';
 export {
   schemas,
   validate,
