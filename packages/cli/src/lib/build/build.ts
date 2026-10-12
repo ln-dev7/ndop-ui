@@ -7,6 +7,7 @@ import {
   type Registry,
   type RegistryItem,
 } from '@ndop/schema';
+import { themeContrast } from '@ndop/schema/theme';
 import { DOCUMENTED_TYPES, itemChangelog, parseChangelog } from './changelog';
 import { compileFiles, writeScratchTsconfig } from './compile';
 import { checkExports, checkImports, sourceProject } from './sources';
@@ -50,6 +51,8 @@ const LICENSE_FILE = 'LICENSE.txt';
  * `registry:theme` items without `cssVars` read them from
  * `<root>/themes/<name>/theme.css` (see {@link themeFromCss}), so a theme's
  * tokens live in one stylesheet that apps and tests can import directly.
+ * A theme fails the build when a text color in it is under 4.5:1 against
+ * its background, in light or dark (ADR-0023; see {@link contrastProblems}).
  *
  * Nothing is written when any check fails, or with `dryRun`.
  *
@@ -363,6 +366,10 @@ async function buildItem(
     }
   }
 
+  if (item.type === 'registry:theme' && item.cssVars) {
+    contrastProblems(item.cssVars).forEach((problem) => report(problem));
+  }
+
   const checked = validate('registry-item', item);
   if (!checked.valid) {
     checked.issues.forEach((issue) =>
@@ -370,6 +377,38 @@ async function buildItem(
     );
   }
   return item;
+}
+
+/**
+ * The text pairs of a theme under the 4.5:1 WCAG 2 contrast they need, in
+ * light or dark (ADR-0023). A pair is skipped when the theme lacks either
+ * token or a value isn't a color it can read. Lines, rings and chart
+ * colors are left to the theme studio's warnings.
+ *
+ * @param cssVars - The theme's variables.
+ * @returns One message per failing pair, light first.
+ *
+ * @example
+ * ```ts
+ * contrastProblems(item.cssVars);
+ * // ['Light: muted-foreground on muted is 4.34:1; text needs 4.5:1.']
+ * ```
+ */
+export function contrastProblems(
+  cssVars: NonNullable<RegistryItem['cssVars']>,
+): string[] {
+  return themeContrast({
+    light: cssVars.light ?? {},
+    dark: cssVars.dark ?? {},
+  })
+    .filter((result) => result.text && result.ratio !== undefined && !result.ok)
+    .map((result) => {
+      // Rounding down keeps a ratio just under the minimum from printing
+      // as the minimum itself.
+      const ratio = (Math.floor((result.ratio ?? 0) * 100) / 100).toFixed(2);
+      const mode = result.mode === 'light' ? 'Light' : 'Dark';
+      return `${mode}: ${result.foreground} on ${result.background} is ${ratio}:1; text needs ${result.min}:1.`;
+    });
 }
 
 /**

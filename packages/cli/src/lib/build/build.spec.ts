@@ -481,6 +481,49 @@ describe('buildRegistry', () => {
     });
   });
 
+  it('fails a theme whose text is under 4.5:1, in light or dark', async () => {
+    const manifest = items();
+    manifest[2] = {
+      ...manifest[2],
+      cssVars: {
+        light: {
+          background: '#ffffff',
+          foreground: '#777777',
+          // Borders need only 3:1, which the build leaves to the studio.
+          border: '#fafafa',
+          // Without muted, muted-foreground's pair with it is skipped.
+          'muted-foreground': '#111111',
+        },
+        dark: { background: '#000000', foreground: '#ffffff' },
+      },
+    };
+    await fixture({}, manifest);
+    expect((await build()).issues).toEqual([
+      {
+        item: 'plain',
+        message: 'Light: foreground on background is 4.47:1; text needs 4.5:1.',
+      },
+      {
+        item: 'plain',
+        message:
+          'Dark: muted-foreground on background is 1.11:1; text needs 4.5:1.',
+      },
+    ]);
+  });
+
+  it('passes a theme whose text pairs all reach 4.5:1', async () => {
+    const manifest = items();
+    manifest[2] = {
+      ...manifest[2],
+      cssVars: {
+        light: { background: '#ffffff', foreground: '#767676' },
+        dark: { background: '#000000', foreground: '#ffffff' },
+      },
+    };
+    await fixture({}, manifest);
+    expect((await build()).issues).toEqual([]);
+  });
+
   it("requires a block's first category to be a gallery category", async () => {
     const block = {
       name: 'login-01',
