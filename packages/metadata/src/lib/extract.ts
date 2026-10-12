@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { gzipSync } from 'node:zlib';
@@ -494,6 +494,26 @@ function buildPart(
       moduleSpecifier(context, itemFile, host.declaration.name?.text ?? ''),
       specs,
     );
+    // A host directive that is itself a styled item, such as another
+    // registry's Ndop Button (ADR-0025), brings the primitive it composes.
+    if (!ownFiles.has(resolve(hostFile))) {
+      for (const inner of hostDirectives(
+        context,
+        decoratorObject(context, host.declaration),
+      )) {
+        primitives.push(inner.declaration);
+        collectSpec(
+          context,
+          inner.declaration.getSourceFile().fileName,
+          moduleSpecifier(
+            context,
+            hostFile,
+            inner.declaration.name?.text ?? '',
+          ),
+          specs,
+        );
+      }
+    }
     const hostEntry = documentation(context, hostFile).find(
       (candidate) => candidate.name === host.declaration.name?.text,
     ) as DirectiveEntry | undefined;
@@ -1117,7 +1137,8 @@ function applySpec(
 
 /**
  * Measures an item's own code: its files bundled with esbuild, minified
- * and gzipped, with Angular, `@ndop/*` and RxJS external.
+ * and gzipped, with Angular, `@ndop/*`, RxJS and files of other
+ * registries external.
  *
  * @param context - Extraction state.
  * @param files - Registry-relative TypeScript files.
@@ -1154,11 +1175,16 @@ async function measure(
     plugins: [
       {
         // Items import each other through `@/`, as installed apps do.
+        // Another registry's files, such as an `@ndop/<name>` dependency's
+        // (ADR-0025), aren't under the root and aren't this item's code.
         name: 'registry-alias',
         setup(build) {
-          build.onResolve({ filter: /^@\// }, (args) => ({
-            path: `${resolve(context.root, args.path.slice(2))}.ts`,
-          }));
+          build.onResolve({ filter: /^@\// }, (args) => {
+            const path = `${resolve(context.root, args.path.slice(2))}.ts`;
+            return existsSync(path)
+              ? { path }
+              : { path: args.path, external: true };
+          });
         },
       },
     ],
