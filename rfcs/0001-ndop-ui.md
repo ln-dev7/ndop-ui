@@ -628,13 +628,14 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 6 — Catalog, blocks and theme studio (weeks 13–16)
 
-- [ ] Remaining v1 catalog (see Component catalog).
-- [ ] At least 12 blocks across auth, dashboard, settings, data table, sidebar and marketing.
-- [ ] Theme studio with export to CSS, theme URL and JSON; community theme gallery.
-- [ ] `ndop doctor`; namespaced and private registries; a "build your own registry" guide and template repo; shadcn-compat output via ndop build --compat shadcn, with an e2e that installs a compat item through the shadcn CLI.
+- [x] Remaining v1 catalog (see Component catalog).
+- [x] At least 12 blocks across auth, dashboard, settings, data table, sidebar and marketing.
+- [x] Theme studio with export to CSS, theme URL and JSON; community theme gallery.
+- [x] `ndop doctor`; namespaced and private registries; a "build your own registry" guide and template repo; shadcn-compat output via ndop build --compat shadcn, with an e2e that installs a compat item through the shadcn CLI.
 - [x] Third-party notices, before the docs site's first public deploy: a license notice served with the registry (shadcn/ui's MIT terms and any others), acknowledgements in the README, and a shadcn/ui credit on the docs site (ADR-0014, amendments 1 and 2). Registry files carry no notices of their own.
 
 * **Accept when:** an external sample registry installs via `ndop add @sample/widget`, and every block builds in the registry e2e.
+* **Accepted 2026-10-12:** CI green (run 38308231937), with visual regression baselines for every example and block in light, dark and RTL; the registry install test installed `@sample/widget` from a private registry behind a token, with Ndop's button, and built every block on npm, pnpm and bun, Angular 22 and 21. The template repo lives in `tools/registry-template`; publishing its public copy is Valery's step (ADR-0025).
 
 ### Phase 7 — Launch (weeks 17–18)
 
