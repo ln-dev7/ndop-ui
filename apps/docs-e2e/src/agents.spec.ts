@@ -15,8 +15,11 @@ test('llms.txt links a Markdown twin of every page', async ({ request }) => {
     expect(twin.headers()['content-type'], link).toContain('text/markdown');
     expect(await twin.text(), link).toMatch(/^# \S/);
   }
+  // Blocks are mostly code, so llms-full.txt leaves them out (ADR-0022).
   const full = await (await request.get('/llms-full.txt')).text();
-  expect(full.match(/^# /gm)?.length).toBe(links.length);
+  expect(full.match(/^# /gm)?.length).toBe(
+    links.filter((link) => !link.startsWith('/blocks/')).length,
+  );
 });
 
 test('a page links Claude and ChatGPT to its Markdown twin', async ({
