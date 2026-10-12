@@ -6,6 +6,13 @@ uplinks:
   npmjs:
     url: https://registry.npmjs.org/
     maxage: 60m
+    # The install test runs its cases in parallel, each installing a whole
+    # app through this proxy. With the defaults (30s, 2 fails, 5m) two slow
+    # tarballs mark npm offline for five minutes, and every package not yet
+    # cached then 404s.
+    timeout: 2m
+    max_fails: 20
+    fail_timeout: 10s
 
 packages:
   '**':
