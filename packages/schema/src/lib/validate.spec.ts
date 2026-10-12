@@ -32,6 +32,7 @@ const expectedIssuePaths: Record<string, string> = {
   'lock.bad-hash.json': '/items/@ndop~1dialog/files/0/sha256',
   'lock.bad-agent-file-hash.json': '/agentFiles/AGENTS.md',
   'lock.file-version-not-semver.json': '/items/@ndop~1dialog/files/0/version',
+  'lock.no-registry-or-source.json': '/items/@ndop~1dialog',
   'registry-item.codemod-without-selector.json': '/codemods/0',
   'config.unknown-agent.json': '/agents',
   'metadata.undocumented-input.json': '/parts/0/inputs/0/description',

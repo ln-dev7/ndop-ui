@@ -26,17 +26,31 @@ export const lockSchema = {
     lockfileVersion: { const: 1 },
     items: {
       type: 'object',
-      description: 'Keyed by `<registry>/<name>`, for example `@ndop/dialog`.',
+      description:
+        'Keyed by `<registry>/<name>`, for example `@ndop/dialog`, or, for an item installed from a URL (ADR-0025), by that URL as given, query string included.',
       propertyNames: {
-        pattern: '^@[a-z0-9]+(-[a-z0-9]+)*/[a-z0-9]+(-[a-z0-9]+)*$',
+        pattern:
+          '^(@[a-z0-9]+(-[a-z0-9]+)*/[a-z0-9]+(-[a-z0-9]+)*|https?://\\S+)$',
       },
       additionalProperties: {
         type: 'object',
         additionalProperties: false,
-        required: ['name', 'registry', 'version', 'files'],
+        required: ['name', 'version', 'files'],
+        anyOf: [{ required: ['registry'] }, { required: ['source'] }],
         properties: {
           name: { type: 'string', pattern: ITEM_NAME_PATTERN },
-          registry: { type: 'string', pattern: NAMESPACE_PATTERN },
+          registry: {
+            type: 'string',
+            pattern: NAMESPACE_PATTERN,
+            description:
+              'The namespace the item was installed from. Left out for an item installed from a URL, which has `source` instead.',
+          },
+          source: {
+            type: 'string',
+            pattern: '^https?://\\S+$',
+            description:
+              'The URL the item was installed from (ADR-0025). `ndop update` fetches it again, and fetches `<url without .json>@<version>.json` for the merge base.',
+          },
           version: {
             type: 'string',
             pattern: SEMVER_PATTERN,

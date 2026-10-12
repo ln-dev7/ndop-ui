@@ -1,0 +1,11 @@
+{
+  "$schema": "https://ndop.dev/schema/lock.json",
+  "lockfileVersion": 1,
+  "items": {
+    "@ndop/dialog": {
+      "name": "dialog",
+      "version": "1.3.0",
+      "files": []
+    }
+  }
+}
