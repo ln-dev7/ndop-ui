@@ -52,5 +52,7 @@ environment variable:
 }
 ```
 
-The CLI expands `${ACME_TOKEN}` from the environment, and fails with a
-clear message when the variable isn't set.
+The CLI expands `${ACME_TOKEN}` from the environment. Installing from
+`@acme` when the variable isn't set fails with a message naming it; other
+registries keep working. To publish a registry of your own, see
+[Build your own registry](/docs/patterns/build-your-own-registry).

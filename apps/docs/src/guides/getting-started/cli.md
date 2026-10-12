@@ -135,6 +135,42 @@ It exits with code 1 while any error remains, so CI can run it. `--json`
 prints the checks, and `--offline` skips the ones that need the registry,
 such as whether your components are behind it.
 
+## Building a registry
+
+`ndop build` reads `registry.json` in `--cwd` and writes the static
+registry under `r/` in `--output` (`dist/registry` by default). It fails,
+writing nothing, when an item is invalid or doesn't compile. Items that
+list `@ndop/<name>` dependencies can import their files; `ndop build`
+fetches them from `--registry <url>`, else `NDOP_REGISTRY`, else ndop.dev,
+and type-checks against them. See
+[Build your own registry](/docs/patterns/build-your-own-registry).
+
+With `--compat shadcn`, it also writes `r/compat/<name>.json` for every
+component, block, library and theme, which the shadcn CLI installs in an
+Angular app without a `components.json`:
+
+```bash
+npx shadcn add https://ndop.dev/r/compat/dialog.json
+```
+
+Files go where `ndop init` would put them, under `src/app/ui`,
+`src/app/lib` and `src/app/blocks`, with imports between them made
+relative. A theme becomes `src/ndop-theme.css`. shadcn then prints the
+setup `ndop init` would have done: add a theme and the icons, import
+`@ndop/core/styles.css` and the theme in `src/styles.css`, and register
+`provideNdop()` and `provideIcons()`. Updates, aliases and agent files stay
+`ndop` features.
+
+| Option                    | Effect                                                                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `--compat shadcn`         | Also writes the shadcn-compatible items.                                                                                  |
+| `--compat-base-url <url>` | The absolute URL `r/compat/` is served from, which items' dependencies point at. By default `https://ndop.dev/r/compat/`. |
+
+For `--compat shadcn` to build, every dependency in `registryDependencies`
+must be an item of the same registry or `@ndop/<name>`, which points at
+Ndop's compat item. That is `https://ndop.dev/r/compat/<name>.json`, or
+next to the `--registry` URL when it ends in `{name}.json`.
+
 ## Package managers
 
 The CLI installs dependencies with the package manager your project uses,

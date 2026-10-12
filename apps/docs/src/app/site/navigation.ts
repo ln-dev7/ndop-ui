@@ -29,6 +29,7 @@ export interface NavSection {
 /** Content folders shown in the navigation, in order, with their titles. */
 const SECTIONS: [folder: string, title: string][] = [
   ['getting-started', 'Get started'],
+  ['patterns', 'Patterns'],
 ];
 
 /**
