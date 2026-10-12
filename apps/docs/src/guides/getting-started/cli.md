@@ -16,6 +16,7 @@ diffs, and running a command twice changes nothing the second time.
 | `ndop add <items...>`    | Adds components and everything they depend on.                                         |
 | `ndop diff [items...]`   | Shows your changes to installed components, and what changed upstream since.           |
 | `ndop update [items...]` | Updates installed components, merging upstream's changes into your edits.              |
+| `ndop doctor`            | Checks your setup, and fixes what is safe to fix.                                      |
 | `ndop verify [paths...]` | Checks components and pages that use Ndop; see [Verify](/docs/getting-started/verify). |
 | `ndop build`             | For registry authors: validates items and writes the registry.                         |
 
@@ -34,7 +35,9 @@ diffs, and running a command twice changes nothing the second time.
 `init` also takes `--theme <name>` and `--project <name>`; `add` takes
 `--overwrite`, and installs a specific version when you write one after
 the name, as in `ndop add button@0.1.0`; `update` takes `--force`,
-`--continue` and `--interactive`. For coding agents, `init` takes `--agent`, `--mcp` and
+`--continue` and `--interactive`. `doctor` takes the same options, with
+`--dry-run` and `--yes` applying to `--fix`, plus `--offline` and
+`--project`. For coding agents, `init` takes `--agent`, `--mcp` and
 `--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
 
 ## Themes and URLs
@@ -108,6 +111,29 @@ Every component's page links its changelog: what changed in each version,
 what `ndop update` does for it, and the diffs. Its update preview merges
 your copy of a file in the browser, so you can see the result before
 running anything.
+
+## Checking your setup
+
+`ndop doctor` checks everything Ndop relies on and prints each problem with
+its fix: the Node and Angular versions, the packages installed components
+need, `ndop.json`, the `@/` alias, Tailwind, the theme tokens components
+use, `provideNdop()` and the icon provider, the lockfile, zoneless and SSR
+support, and the agent files. It writes nothing:
+
+```bash pm
+npx ndop doctor
+```
+
+`--fix` applies the safe fixes, the same edits `init` and `add` make:
+installing missing packages, adding the `tsconfig.json` path, adding
+missing tokens from your theme, registering the providers and refreshing
+the agent files. Add `--dry-run` to see them as diffs first. It never
+changes your components or resolves conflicts for you, and running it
+again changes nothing.
+
+It exits with code 1 while any error remains, so CI can run it. `--json`
+prints the checks, and `--offline` skips the ones that need the registry,
+such as whether your components are behind it.
 
 ## Package managers
 
