@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+  afterNextRender,
   Component,
   computed,
   DestroyRef,
@@ -151,15 +152,26 @@ type Viewport = (typeof VIEWPORTS)[number]['id'];
         class="preview-backdrop mt-3 overflow-hidden rounded-xl border bg-muted/40"
         [hidden]="current() !== 'preview'"
       >
-        <iframe
-          loading="lazy"
-          class="mx-auto block max-w-full bg-background transition-[width] duration-200 ease-out motion-reduce:transition-none"
-          [style.width]="frameWidth()"
-          [style.height.px]="frameHeight()"
-          [src]="frameSource()"
-          [title]="block().title + ' preview'"
-          (load)="fitToContent($event)"
-        ></iframe>
+        <!-- Made in the browser only: hydration would set the server's
+             src again, which Firefox and Safari take as a new
+             navigation, cancelling the preview's scripts mid-load. -->
+        @if (mounted()) {
+          <iframe
+            loading="lazy"
+            class="mx-auto block max-w-full bg-background transition-[width] duration-200 ease-out motion-reduce:transition-none"
+            [style.width]="frameWidth()"
+            [style.height.px]="frameHeight()"
+            [src]="frameSource()"
+            [title]="block().title + ' preview'"
+            (load)="fitToContent($event)"
+          ></iframe>
+        } @else {
+          <div
+            class="mx-auto max-w-full bg-background"
+            [style.width]="frameWidth()"
+            [style.height.px]="frameHeight()"
+          ></div>
+        }
       </div>
 
       <div
@@ -231,6 +243,9 @@ export class BlockCard {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  /** Whether the first render in the browser has happened. */
+  protected readonly mounted = signal(false);
+
   protected readonly tabs: readonly { id: BlockTab; label: string }[] = [
     { id: 'preview', label: 'Preview' },
     { id: 'code', label: 'Code' },
@@ -268,6 +283,7 @@ export class BlockCard {
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.stopFitting?.());
+    afterNextRender(() => this.mounted.set(true));
   }
 
   /**

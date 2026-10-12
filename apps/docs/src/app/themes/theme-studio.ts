@@ -5,11 +5,9 @@ import {
   computed,
   DestroyRef,
   effect,
-  type ElementRef,
   inject,
   PLATFORM_ID,
   signal,
-  viewChild,
 } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
@@ -397,14 +395,23 @@ const CHANNELS: readonly Channel[] = [
             <div
               class="preview-backdrop overflow-hidden rounded-xl border bg-muted/40"
             >
-              <iframe
-                #frame
-                class="block w-full bg-background"
-                [style.height.px]="frameHeight()"
-                src="/blocks/dashboard-01/preview"
-                title="Sample dashboard in your theme"
-                (load)="frameLoaded()"
-              ></iframe>
+              <!-- Made in the browser only: hydration sets an iframe's src
+                   again, which Firefox and Safari take as a new
+                   navigation, cancelling the dashboard's scripts. -->
+              @if (mounted()) {
+                <iframe
+                  class="block w-full bg-background"
+                  [style.height.px]="frameHeight()"
+                  src="/blocks/dashboard-01/preview"
+                  title="Sample dashboard in your theme"
+                  (load)="frameLoaded($event)"
+                ></iframe>
+              } @else {
+                <div
+                  class="w-full bg-background"
+                  [style.height.px]="frameHeight()"
+                ></div>
+              }
             </div>
           </section>
 
@@ -458,8 +465,9 @@ export class ThemeStudio {
   protected readonly frameHeight = signal(720);
 
   private stopFitting: (() => void) | undefined;
-  private readonly frame =
-    viewChild.required<ElementRef<HTMLIFrameElement>>('frame');
+
+  /** Whether the first render in the browser has happened. */
+  protected readonly mounted = signal(false);
 
   /** The mode the site shows, which is the one being edited. */
   protected readonly mode = computed<ThemeMode>(() => {
@@ -517,15 +525,7 @@ export class ThemeStudio {
       this.from.set(start.from);
       this.problem.set(start.problem);
 
-      // The frame is in the prerendered page, so it may have loaded before
-      // the page hydrated and its load listener existed.
-      const frame = this.frame().nativeElement;
-      if (
-        frame.contentDocument?.readyState === 'complete' &&
-        frame.contentWindow?.location.href !== 'about:blank'
-      ) {
-        this.frameLoaded();
-      }
+      this.mounted.set(true);
 
       const query = matchMedia('(prefers-color-scheme: dark)');
       const follow = (event: { matches: boolean }) =>
@@ -672,9 +672,11 @@ export class ThemeStudio {
    * keeps the frame as tall as the dashboard, so the wheel scrolls the
    * studio. The page is on the site's own origin, so its document is
    * reachable.
+   *
+   * @param event - The frame's load event.
    */
-  protected frameLoaded(): void {
-    const frame = this.frame().nativeElement;
+  protected frameLoaded(event: Event): void {
+    const frame = event.target as HTMLIFrameElement;
     const page = frame.contentDocument;
     if (page) this.frameDocument.set(page);
     this.stopFitting?.();
