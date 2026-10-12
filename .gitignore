@@ -47,5 +47,7 @@ Thumbs.db
 .angular
 
 __screenshots__/
+# The visual regression baselines are committed (ADR-0021).
+!apps/harness-e2e/src/visual/__screenshots__/
 
 vitest.config.*.timestamp*
