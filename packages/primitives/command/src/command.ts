@@ -140,7 +140,7 @@ export class NdCommand {
     'aria-autocomplete': 'list',
     'aria-expanded': 'true',
     '[attr.aria-controls]': 'command.listId',
-    '[attr.aria-activedescendant]': 'command.list.active()?.item.id ?? null',
+    '[attr.aria-activedescendant]': 'command.list.active()?.item?.id ?? null',
     '[attr.aria-label]': 'ownLabel ?? command.label()',
     '[value]': 'command.search()',
     '(input)': 'command.search.set($any($event.target).value)',

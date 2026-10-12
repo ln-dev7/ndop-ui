@@ -588,7 +588,7 @@ export class NdCombobox {
     'aria-autocomplete': 'list',
     '[attr.aria-expanded]': 'combobox.open()',
     '[attr.aria-controls]': 'combobox.listId',
-    '[attr.aria-activedescendant]': 'combobox.list.active()?.item.id ?? null',
+    '[attr.aria-activedescendant]': 'combobox.list.active()?.item?.id ?? null',
     '[attr.aria-required]': 'combobox.required() || null',
     '[attr.aria-invalid]': 'showInvalid() || null',
     '[attr.aria-describedby]': 'describedBy()',
