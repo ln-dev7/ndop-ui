@@ -30,6 +30,19 @@
       "type": "boolean",
       "description": "Extract component metadata into r/metadata and fail on incomplete docs (ADR-0007).",
       "default": true
+    },
+    "compat": {
+      "type": "string",
+      "enum": ["shadcn"],
+      "description": "Also write r/compat/<name>.json, items the shadcn CLI installs (ADR-0025)."
+    },
+    "registry": {
+      "type": "string",
+      "description": "Ndop's registry, which @ndop/<name> registryDependencies are fetched from: a URL template, or a path template relative to the workspace root, containing {name}. Defaults to NDOP_REGISTRY, then https://ndop.dev/r/{name}.json."
+    },
+    "compatBaseUrl": {
+      "type": "string",
+      "description": "Absolute URL r/compat/ is served from, which compat items' registryDependencies point under. Defaults to https://ndop.dev/r/compat/."
     }
   },
   "required": ["outputPath"]

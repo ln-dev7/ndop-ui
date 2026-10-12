@@ -44,6 +44,15 @@ const registryBuild: PromiseExecutor<RegistryBuildExecutorSchema> = async (
     ...(options.tsconfig
       ? { tsconfig: join(context.root, options.tsconfig) }
       : {}),
+    ...(options.compat ? { compat: options.compat } : {}),
+    ...(options.compatBaseUrl ? { compatBaseUrl: options.compatBaseUrl } : {}),
+    ...(options.registry
+      ? {
+          registry: /^[a-z][a-z0-9+.-]*:/i.test(options.registry)
+            ? options.registry
+            : join(context.root, options.registry),
+        }
+      : {}),
   });
   const text = formatBuildResult(result, false).trimEnd();
   if (result.ok) {

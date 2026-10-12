@@ -14,4 +14,13 @@ export interface RegistryBuildExecutorSchema {
   metadata?: boolean;
   /** Type-check items with ngc. */
   compile?: boolean;
+  /** Also write shadcn-compatible items under `r/compat/` (ADR-0025). */
+  compat?: 'shadcn';
+  /**
+   * Ndop's registry for `@ndop/<name>` dependencies: a URL template, or a
+   * path template relative to the workspace root.
+   */
+  registry?: string;
+  /** Absolute URL `r/compat/` is served from. */
+  compatBaseUrl?: string;
 }

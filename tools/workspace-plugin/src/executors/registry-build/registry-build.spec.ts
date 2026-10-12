@@ -47,7 +47,7 @@ describe('registry-build executor', () => {
     });
   });
 
-  it('passes snapshot and compile options through, and reports failure', async () => {
+  it('passes snapshot, compile, compat and registry options through, and reports failure', async () => {
     vi.mocked(buildRegistry).mockResolvedValue(result(false));
     const output = await executor(
       {
@@ -55,6 +55,9 @@ describe('registry-build executor', () => {
         outputPath: 'out',
         frozenSnapshots: true,
         compile: false,
+        compat: 'shadcn',
+        compatBaseUrl: 'https://ui.acme.dev/r/compat/',
+        registry: 'dist/registry/r/{name}.json',
       },
       context,
     );
@@ -64,6 +67,9 @@ describe('registry-build executor', () => {
       output: '/workspace/out',
       frozenSnapshots: true,
       compile: false,
+      compat: 'shadcn',
+      compatBaseUrl: 'https://ui.acme.dev/r/compat/',
+      registry: '/workspace/dist/registry/r/{name}.json',
     });
   });
 });

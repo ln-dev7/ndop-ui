@@ -24,7 +24,8 @@
       ],
       "options": {
         "outputPath": "dist/registry",
-        "tsconfig": "tsconfig.base.json"
+        "tsconfig": "tsconfig.base.json",
+        "compat": "shadcn"
       }
     }
   },
