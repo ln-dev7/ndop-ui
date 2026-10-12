@@ -121,3 +121,18 @@ suite checks it.
   studio (Phase 6) edits the same tokens.
 - Implemented with the default theme registry item in Phase 2, versions
   re-checked then.
+
+## Amendment 2 (2026-10-12): default muted text meets 4.5:1
+
+Status: Accepted by Valery on 2026-10-12.
+
+ADR-0023 makes `ndop build` fail any theme whose text pairs fall under
+WCAG's 4.5:1, so every theme in the gallery is readable. shadcn's neutral
+palette misses one pair: in light mode, `muted-foreground`
+(`oklch(0.556 0 0)`) on `muted` (`oklch(0.97 0 0)`) is 4.34:1.
+
+- **Deviation:** the default theme's light `muted-foreground` is
+  `oklch(0.545 0 0)`, 4.54:1 on `muted` and 4.96:1 on `background`. Every
+  other value stays shadcn's, and the token names are unchanged.
+- The default theme goes to 0.2.0, so `ndop update` delivers the change
+  and keeps a value the user edited.

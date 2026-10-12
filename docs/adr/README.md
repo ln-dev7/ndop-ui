@@ -12,7 +12,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0003](0003-three-way-merge-strategy.md)                 | Three-way merge strategy and structural merge scope       | Accepted, with amendments 1–2  |
 | [0004](0004-primitives-on-aria-and-cdk.md)               | Primitives on `@angular/aria` + CDK, and custom fallbacks | Accepted, with amendments 1–5  |
 | [0005](0005-directive-only-styled-api.md)                | Directive-only styled API                                 | Accepted, with amendments 1–2  |
-| [0006](0006-shadcn-compatible-tokens.md)                 | Token naming compatible with shadcn                       | Accepted, with amendment 1     |
+| [0006](0006-shadcn-compatible-tokens.md)                 | Token naming compatible with shadcn                       | Accepted, with amendments 1–2  |
 | [0007](0007-metadata-extraction.md)                      | Metadata extraction approach                              | Accepted, with amendments 1–2  |
 | [0008](0008-docs-search.md)                              | Docs search on Algolia DocSearch                          | Accepted                       |
 | [0009](0009-mcp-server.md)                               | MCP tool surface and transports                           | Accepted                       |

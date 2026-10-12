@@ -36,9 +36,56 @@
     {
       "name": "default",
       "type": "registry:theme",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Default theme",
       "description": "shadcn's neutral palette with Geist and Geist Mono, in light and dark.",
+      "dependencies": [
+        "@fontsource-variable/geist@^5.3.0",
+        "@fontsource-variable/geist-mono@^5.3.0"
+      ]
+    },
+    {
+      "name": "indigo",
+      "type": "registry:theme",
+      "version": "0.1.0",
+      "title": "Indigo theme",
+      "description": "Ndop's own palette: deep indigo on crisp white, after the royal cloth of Cameroon's Grassfields, in light and dark.",
+      "dependencies": [
+        "@fontsource-variable/geist@^5.3.0",
+        "@fontsource-variable/geist-mono@^5.3.0"
+      ]
+    },
+    {
+      "name": "green",
+      "type": "registry:theme",
+      "version": "0.1.0",
+      "title": "Green theme",
+      "description": "shadcn/ui's green on cool zinc neutrals, deepened so every text pair passes 4.5:1, in light and dark.",
+      "author": "Adapted from shadcn/ui (MIT)",
+      "dependencies": [
+        "@fontsource-variable/geist@^5.3.0",
+        "@fontsource-variable/geist-mono@^5.3.0"
+      ]
+    },
+    {
+      "name": "orange",
+      "type": "registry:theme",
+      "version": "0.1.0",
+      "title": "Orange theme",
+      "description": "shadcn/ui's orange on warm stone neutrals, deepened so every text pair passes 4.5:1, in light and dark.",
+      "author": "Adapted from shadcn/ui (MIT)",
+      "dependencies": [
+        "@fontsource-variable/geist@^5.3.0",
+        "@fontsource-variable/geist-mono@^5.3.0"
+      ]
+    },
+    {
+      "name": "rose",
+      "type": "registry:theme",
+      "version": "0.1.0",
+      "title": "Rose theme",
+      "description": "shadcn/ui's rose on cool zinc neutrals, deepened so every text pair passes 4.5:1, in light and dark.",
+      "author": "Adapted from shadcn/ui (MIT)",
       "dependencies": [
         "@fontsource-variable/geist@^5.3.0",
         "@fontsource-variable/geist-mono@^5.3.0"
@@ -4795,7 +4842,7 @@
     {
       "name": "sidebar-floating",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Sidebar floating",
       "description": "A floating sidebar that slides off-canvas, with a badge and nested links.",
       "dependencies": ["@ndop/core"],

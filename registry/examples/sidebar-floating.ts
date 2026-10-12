@@ -54,10 +54,10 @@ import {
     >
       <div ndSidebar variant="floating">
         <div ndSidebarGap></div>
-        <div ndSidebarContainer aria-label="Docs" class="absolute h-full">
+        <div ndSidebarContainer aria-label="Workspace" class="absolute h-full">
           <div ndSidebarInner>
             <div ndSidebarContent>
-              <nav ndSidebarGroup aria-label="Docs">
+              <nav ndSidebarGroup aria-label="Workspace pages">
                 <div ndSidebarGroupContent>
                   <ul ndSidebarMenu>
                     <li ndSidebarMenuItem>
