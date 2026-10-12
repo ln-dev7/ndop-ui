@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
+import type { DoctorResult } from '@ndop/cli/api';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import {
   projectFixture,
@@ -265,6 +266,27 @@ export class Page {}
     );
     expect(context.text).toContain(
       'Edited since installed: src/app/ui/dialog/dialog.ts (edited).',
+    );
+  });
+
+  it('includes what ndop doctor finds, checked offline', async () => {
+    const context = await call('get_project_context', { cwd: project.root });
+    const doctor = context.structured['doctor'] as DoctorResult;
+    expect(doctor.offline).toBe(true);
+    expect(doctor.ok).toBe(false);
+    expect(doctor.checks.find((check) => check.id === 'lockfile')).toEqual(
+      expect.objectContaining({
+        status: 'warning',
+        details: [
+          'src/app/ui/dialog/dialog.ts was edited since it was installed.',
+        ],
+      }),
+    );
+    expect(context.text).toContain(
+      'ndop doctor found problems with the setup; fix them before writing UI (npx ndop doctor --fix applies the safe fixes):',
+    );
+    expect(context.text).toContain(
+      "- Angular (error): package.json doesn't depend on @angular/core.",
     );
   });
 

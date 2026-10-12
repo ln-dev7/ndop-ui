@@ -8,6 +8,7 @@ import {
   projectContext,
   projectRoot,
   registryMetadata,
+  type DoctorResult,
 } from '@ndop/cli/api';
 import type { Metadata } from '@ndop/metadata';
 import { verify, type StepName, type VerifyResult } from '@ndop/verify';
@@ -364,7 +365,7 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
     {
       title: 'Get project context',
       description:
-        "What's set up in the user's app: ndop.json (aliases, registry), the installed items and versions, which of their files the user edited or still have conflicts from ndop update, and the theme's token names. Call it first.",
+        "What's set up in the user's app: ndop.json (aliases, registry), the installed items and versions, which of their files the user edited or still have conflicts from ndop update, the theme's token names, and what ndop doctor finds wrong with the setup. Call it first.",
       inputSchema: z.object({ cwd: cwdInput }),
       outputSchema: z.looseObject({ root: z.string() }),
       annotations: readOnly,
@@ -394,6 +395,7 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
               ? `ndop update left conflict markers in ${conflicted.join(', ')}: resolve them, then run npx ndop update --continue.`
               : '',
             `Color tokens: ${context.tokens.colors.join(', ')}.`,
+            ...doctorLines(context.doctor),
           ]
             .filter(Boolean)
             .join('\n'),
@@ -694,4 +696,23 @@ async function result(
       isError: true,
     };
   }
+}
+
+/**
+ * What `ndop doctor` found, for an agent: one line per check that isn't
+ * `ok`, with its fix.
+ *
+ * @param result - The doctor result.
+ * @returns The lines; none when every check is `ok`.
+ */
+function doctorLines(result: DoctorResult): string[] {
+  const found = result.checks.filter((check) => check.status !== 'ok');
+  if (found.length === 0) return [];
+  return [
+    'ndop doctor found problems with the setup; fix them before writing UI (npx ndop doctor --fix applies the safe fixes):',
+    ...found.map(
+      (check) =>
+        `- ${check.title} (${check.status}): ${check.message}${check.details ? ` ${check.details.join(' ')}` : ''}${check.fix ? ` Fix: ${check.fix}` : ''}`,
+    ),
+  ];
 }
