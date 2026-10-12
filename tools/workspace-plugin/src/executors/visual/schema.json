@@ -14,6 +14,10 @@
       "description": "Rewrite the baselines instead of comparing with them.",
       "default": false
     },
+    "grep": {
+      "type": "string",
+      "description": "Only the tests whose title matches this regular expression, such as `dashboard-01`, to check or update a few baselines."
+    },
     "image": {
       "type": "string",
       "description": "Playwright Docker image; its version must match the installed @playwright/test.",

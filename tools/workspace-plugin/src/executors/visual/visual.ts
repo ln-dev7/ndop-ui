@@ -107,6 +107,7 @@ export function playwrightArgs(options: VisualExecutorSchema): string[] {
     '--config',
     options.config,
     ...(options.update ? ['--update-snapshots'] : []),
+    ...(options.grep ? ['--grep', options.grep] : []),
   ];
 }
 

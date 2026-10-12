@@ -4,6 +4,8 @@ export interface VisualExecutorSchema {
   config: string;
   /** Rewrite the baselines. */
   update?: boolean;
+  /** Only the tests whose title matches this regular expression. */
+  grep?: string;
   /** Playwright Docker image. */
   image?: string;
   /** Host port of the browser server. */

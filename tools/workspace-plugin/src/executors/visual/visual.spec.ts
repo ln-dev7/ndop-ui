@@ -27,6 +27,12 @@ describe('visual executor', () => {
       'c.mts',
       '--update-snapshots',
     ]);
+    expect(playwrightArgs({ config: 'c.mts', grep: 'login-01' })).toEqual([
+      '--config',
+      'c.mts',
+      '--grep',
+      'login-01',
+    ]);
   });
 
   it("connects to the remote browser and exposes the host's localhost", () => {
