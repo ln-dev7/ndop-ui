@@ -1,7 +1,9 @@
 import {
   applyCss,
   applyCssVars,
+  definedTokens,
   ensureImports,
+  isColorValue,
   updateCssVars,
 } from './stylesheet';
 
@@ -87,5 +89,23 @@ describe('updateCssVars', () => {
   it('leaves the stylesheet untouched when nothing changed upstream', () => {
     const vars = { light: { brand: 'red' }, dark: { brand: 'maroon' } };
     expect(updateCssVars(css, vars, vars)).toEqual({ css, kept: [] });
+  });
+});
+
+describe('definedTokens', () => {
+  it('reads the custom properties of the top-level :root and .dark rules', () => {
+    const css = `:root {\n  --primary: oklch(0.2 0 0);\n  color: red;\n}\n.dark { --primary: oklch(0.9 0 0); }\n@media print { :root { --primary: black; } }\n`;
+    expect(definedTokens(css)).toEqual({
+      light: { primary: 'oklch(0.2 0 0)' },
+      dark: { primary: 'oklch(0.9 0 0)' },
+    });
+  });
+});
+
+describe('isColorValue', () => {
+  it('tells colors from other values', () => {
+    expect(isColorValue(' oklch(0.2 0 0)')).toBe(true);
+    expect(isColorValue('#fff')).toBe(true);
+    expect(isColorValue('0.5rem')).toBe(false);
   });
 });

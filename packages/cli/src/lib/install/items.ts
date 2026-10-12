@@ -128,7 +128,9 @@ export async function planItems(
  * @returns Specs such as `@angular/cdk@^21.0.0`; none when the Angular
  *   version can't be read.
  */
-async function angularPeers(builder: PlanBuilder): Promise<string[]> {
+export async function angularPeers(
+  builder: Pick<PlanBuilder, 'read'>,
+): Promise<string[]> {
   const manifest = JSON.parse((await builder.read('package.json')) ?? '{}') as {
     dependencies?: Record<string, string>;
   };

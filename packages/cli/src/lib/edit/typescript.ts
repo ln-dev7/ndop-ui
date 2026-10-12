@@ -1,10 +1,12 @@
 import { posix } from 'node:path';
 import {
+  type ArrayLiteralExpression,
   IndentationText,
   Node,
   Project,
   QuoteKind,
   type SourceFile,
+  ts,
 } from 'ts-morph';
 
 /**
@@ -54,22 +56,8 @@ export function addProviders(
   providers: readonly ProviderCall[],
 ): string | undefined {
   const source = parse(path, text);
-  const declarations = source.getVariableDeclarations();
-  const config =
-    declarations.find((declaration) => declaration.getName() === 'appConfig') ??
-    declarations.find((declaration) =>
-      declaration.getTypeNode()?.getText().includes('ApplicationConfig'),
-    );
-  const literal = config?.getInitializer();
-  if (!literal || !Node.isObjectLiteralExpression(literal)) {
-    return undefined;
-  }
-  const property = literal.getProperty('providers');
-  const array =
-    property && Node.isPropertyAssignment(property)
-      ? property.getInitializer()
-      : undefined;
-  if (!array || !Node.isArrayLiteralExpression(array)) {
+  const array = providersArray(source);
+  if (!array) {
     return undefined;
   }
 
@@ -87,6 +75,54 @@ export function addProviders(
     addNamedImport(source, provider.name, provider.module);
   }
   return source.getFullText();
+}
+
+/**
+ * The functions called in the `providers` array of an `ApplicationConfig`
+ * object literal, as {@link addProviders} finds it.
+ *
+ * @param path - Project-relative path of the file.
+ * @param text - File text.
+ * @returns The called names, such as `provideNdop`, or `undefined` when
+ *   the file has no `providers` array literal.
+ */
+export function providerCalls(
+  path: string,
+  text: string,
+): string[] | undefined {
+  return providersArray(parse(path, text))
+    ?.getElements()
+    .flatMap((element) =>
+      Node.isCallExpression(element) ? [element.getExpression().getText()] : [],
+    );
+}
+
+/**
+ * Finds the `providers` array literal of the app config: the `appConfig`
+ * variable, or else one typed `ApplicationConfig`.
+ *
+ * @param source - The parsed file.
+ * @returns The array, or `undefined`.
+ */
+function providersArray(
+  source: SourceFile,
+): ArrayLiteralExpression | undefined {
+  const declarations = source.getVariableDeclarations();
+  const config =
+    declarations.find((declaration) => declaration.getName() === 'appConfig') ??
+    declarations.find((declaration) =>
+      declaration.getTypeNode()?.getText().includes('ApplicationConfig'),
+    );
+  const literal = config?.getInitializer();
+  if (!literal || !Node.isObjectLiteralExpression(literal)) {
+    return undefined;
+  }
+  const property = literal.getProperty('providers');
+  const array =
+    property && Node.isPropertyAssignment(property)
+      ? property.getInitializer()
+      : undefined;
+  return array && Node.isArrayLiteralExpression(array) ? array : undefined;
 }
 
 /**
@@ -142,6 +178,26 @@ export function rewriteSpecifiers(
     }
   }
   return changed ? source.getFullText() : text;
+}
+
+/**
+ * The module specifiers a file imports or re-exports, statically or with
+ * dynamic `import()`. Specifiers in strings and comments, such as code in
+ * a TSDoc example, aren't counted.
+ *
+ * @param text - File text.
+ * @returns The specifiers, in order, once each.
+ */
+export function importSpecifiers(text: string): string[] {
+  // TypeScript's import scanner, without building a program: doctor runs
+  // it on every installed file.
+  return [
+    ...new Set(
+      ts
+        .preProcessFile(text, true, true)
+        .importedFiles.map((file) => file.fileName),
+    ),
+  ];
 }
 
 /**

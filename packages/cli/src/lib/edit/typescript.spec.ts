@@ -1,5 +1,7 @@
 import {
   addProviders,
+  importSpecifiers,
+  providerCalls,
   relativeSpecifier,
   rewriteSpecifiers,
 } from './typescript';
@@ -42,5 +44,34 @@ describe('relativeSpecifier', () => {
   it('drops the extension and adds ./', () => {
     expect(relativeSpecifier('src/a/b.ts', 'src/a/c.ts')).toBe('./c');
     expect(relativeSpecifier('src/a/b.ts', 'src/lib/index.ts')).toBe('../lib');
+  });
+});
+
+describe('providerCalls', () => {
+  it('lists the functions called in the providers array', () => {
+    expect(
+      providerCalls(
+        'app.config.ts',
+        'export const appConfig = { providers: [provideNdop(), routes, provideIcons()] };\n',
+      ),
+    ).toEqual(['provideNdop', 'provideIcons']);
+    expect(
+      providerCalls('app.config.ts', 'export const appConfig = build();\n'),
+    ).toBeUndefined();
+  });
+});
+
+describe('importSpecifiers', () => {
+  it('lists imports and re-exports, not code in comments', () => {
+    const source = `import { a } from '@angular/core';
+export { b } from './b';
+/** \`import { c } from 'nowhere';\` */
+const d = () => import('@angular/cdk/a11y');
+`;
+    expect(importSpecifiers(source)).toEqual([
+      '@angular/core',
+      './b',
+      '@angular/cdk/a11y',
+    ]);
   });
 });

@@ -86,6 +86,7 @@ export class PlanBuilder {
   private readonly staged = new Map<string, string | null>();
   private readonly dependencies = new Set<string>();
   private readonly devDependencies = new Set<string>();
+  private readonly replacements = new Set<string>();
   private readonly skipped: SkippedFile[] = [];
   private readonly warnings: string[] = [];
 
@@ -153,14 +154,17 @@ export class PlanBuilder {
 
   /**
    * Requires npm packages; ones the project's `package.json` already lists
-   * are dropped when the plan is finished.
+   * are dropped when the plan is finished, unless `replace` is set.
    *
    * @param specs - `name` or `name@range`.
    * @param dev - Whether they are dev dependencies.
+   * @param replace - Install them even when listed, to move a package to
+   *   another version.
    */
-  depend(specs: readonly string[], dev = false): void {
+  depend(specs: readonly string[], dev = false, replace = false): void {
     for (const spec of specs) {
       (dev ? this.devDependencies : this.dependencies).add(spec);
+      if (replace) this.replacements.add(spec);
     }
   }
 
@@ -204,7 +208,12 @@ export class PlanBuilder {
     }
     const installed = await this.installedPackages();
     const missing = (specs: Set<string>) =>
-      [...specs].filter((spec) => !installed.has(dependencyName(spec))).sort();
+      [...specs]
+        .filter(
+          (spec) =>
+            this.replacements.has(spec) || !installed.has(dependencyName(spec)),
+        )
+        .sort();
     return {
       files,
       dependencies: missing(this.dependencies),

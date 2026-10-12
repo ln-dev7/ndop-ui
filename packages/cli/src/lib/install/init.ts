@@ -25,7 +25,7 @@ import {
 } from './project-files';
 
 /** Oldest Angular major Ndop supports (RFC-0001: current and previous). */
-const MIN_ANGULAR_MAJOR = 21;
+export const MIN_ANGULAR_MAJOR = 21;
 
 /** Items `ndop init` installs besides the theme (ADR-0011). */
 const BASE_ITEMS = ['utils', 'icons'];
@@ -204,7 +204,9 @@ export async function detectProject(
  * @returns A version or range.
  * @throws {@link CliError} when the project doesn't depend on Angular.
  */
-async function readAngularVersion(builder: PlanBuilder): Promise<string> {
+export async function readAngularVersion(
+  builder: PlanBuilder,
+): Promise<string> {
   const installed = await builder.read(
     'node_modules/@angular/core/package.json',
   );
@@ -265,23 +267,7 @@ export async function planInit(
   };
   await builder.stage(CONFIG_FILE, `${JSON.stringify(config, null, 2)}\n`);
 
-  const prefix = aliasPrefix(config.importAlias ?? '@/');
-  let aliasBase = await readAliasBase(builder, prefix);
-  if (aliasBase === undefined) {
-    aliasBase = posix.dirname(config.aliases.ui);
-    const tsconfig = await builder.read('tsconfig.json');
-    if (tsconfig === undefined) {
-      throw new CliError('No tsconfig.json to add the path alias to.');
-    }
-    await builder.stage(
-      'tsconfig.json',
-      setJsonc(
-        tsconfig,
-        ['compilerOptions', 'paths', `${prefix}*`],
-        [`./${aliasBase}/*`],
-      ),
-    );
-  }
+  const aliasBase = await planAliasPath(builder, config);
 
   if (!detection.tailwind) {
     const file =
@@ -311,24 +297,10 @@ export async function planInit(
   assertThemes([theme], items);
   await planItems(builder, context, items);
 
-  const appConfig = (await builder.read(detection.appConfig)) ?? '';
-  const edited = addProviders(detection.appConfig, appConfig, [
-    { name: 'provideNdop', module: '@ndop/core' },
-    {
-      name: 'provideIcons',
-      module: projectSpecifier(
-        context,
-        detection.appConfig,
-        posix.join(config.aliases.lib, 'icons'),
-      ),
-    },
-  ]);
-  if (edited === undefined) {
+  if (!(await planProviders(builder, context, detection.appConfig))) {
     builder.warn(
       `Couldn't find the providers array in ${detection.appConfig}. Add provideNdop() from @ndop/core and provideIcons() from your icons file by hand.`,
     );
-  } else {
-    await builder.stage(detection.appConfig, edited);
   }
   await planAgentFiles(builder, config, aliasBase);
   await ignoreVerifyOutput(builder);
@@ -350,6 +322,76 @@ export async function planInit(
     );
   }
   return { detection, items };
+}
+
+/**
+ * Maps the import alias in `tsconfig.json` to the folder above
+ * `aliases.ui`, unless it is mapped already.
+ *
+ * @param builder - The plan.
+ * @param config - The project's configuration.
+ * @returns The folder the alias points at.
+ * @throws {@link CliError} when there's no `tsconfig.json`.
+ */
+export async function planAliasPath(
+  builder: PlanBuilder,
+  config: NdopConfig,
+): Promise<string> {
+  const prefix = aliasPrefix(config.importAlias ?? '@/');
+  const existing = await readAliasBase(builder, prefix);
+  if (existing !== undefined) return existing;
+  const aliasBase = posix.dirname(config.aliases.ui);
+  const tsconfig = await builder.read('tsconfig.json');
+  if (tsconfig === undefined) {
+    throw new CliError('No tsconfig.json to add the path alias to.');
+  }
+  await builder.stage(
+    'tsconfig.json',
+    setJsonc(
+      tsconfig,
+      ['compilerOptions', 'paths', `${prefix}*`],
+      [`./${aliasBase}/*`],
+    ),
+  );
+  return aliasBase;
+}
+
+/** The providers `ndop init` registers, by function name. */
+export const NDOP_PROVIDERS = ['provideNdop', 'provideIcons'] as const;
+
+/**
+ * Registers `provideNdop()` from `@ndop/core` and `provideIcons()` from the
+ * project's icons file in the app config, with their imports; calls
+ * already there are kept.
+ *
+ * @param builder - The plan.
+ * @param context - Where the icons file is, and how to import it.
+ * @param appConfig - Path of `app.config.ts`.
+ * @param names - Which of the two to register; both by default.
+ * @returns Whether the file has a `providers` array to edit.
+ */
+export async function planProviders(
+  builder: PlanBuilder,
+  context: InstallContext,
+  appConfig: string,
+  names: readonly (typeof NDOP_PROVIDERS)[number][] = NDOP_PROVIDERS,
+): Promise<boolean> {
+  const modules = {
+    provideNdop: '@ndop/core',
+    provideIcons: projectSpecifier(
+      context,
+      appConfig,
+      posix.join(context.config.aliases.lib, 'icons'),
+    ),
+  };
+  const edited = addProviders(
+    appConfig,
+    (await builder.read(appConfig)) ?? '',
+    names.map((name) => ({ name, module: modules[name] })),
+  );
+  if (edited === undefined) return false;
+  await builder.stage(appConfig, edited);
+  return true;
 }
 
 /**

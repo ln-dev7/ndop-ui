@@ -179,6 +179,50 @@ export function applyCssVars(
 }
 
 /**
+ * Whether a custom property's value is a color, as theme colors are
+ * written: a color function or a hex value.
+ *
+ * @param value - The declared value.
+ * @returns True for colors.
+ */
+export function isColorValue(value: string): boolean {
+  return /^(oklch|oklab|rgb|hsl|lab|lch|color|#)/.test(value.trim());
+}
+
+/**
+ * The custom properties a stylesheet's top-level `:root` and `.dark`
+ * rules define, which is where a theme's tokens live (ADR-0006).
+ *
+ * @param css - Stylesheet text.
+ * @returns Values by name without `--`, for each mode.
+ */
+export function definedTokens(css: string): {
+  light: Record<string, string>;
+  dark: Record<string, string>;
+} {
+  const tokens = { light: {}, dark: {} } as {
+    light: Record<string, string>;
+    dark: Record<string, string>;
+  };
+  for (const node of postcss.parse(css).nodes) {
+    if (node.type !== 'rule') continue;
+    const mode =
+      node.selector === ':root'
+        ? 'light'
+        : node.selector === '.dark'
+          ? 'dark'
+          : undefined;
+    if (!mode) continue;
+    for (const child of node.nodes) {
+      if (child.type === 'decl' && child.prop.startsWith('--')) {
+        tokens[mode][child.prop.slice(2)] = child.value;
+      }
+    }
+  }
+  return tokens;
+}
+
+/**
  * Updates a theme's tokens from one version of an item to another, one
  * variable at a time (ADR-0020): a variable upstream changed is updated
  * when the stylesheet still has the old value, a new one is added, and one
