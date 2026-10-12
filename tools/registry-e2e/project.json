@@ -13,7 +13,8 @@
     "verify",
     "eslint-plugin",
     "metadata",
-    "merge"
+    "merge",
+    "registry-template"
   ],
   "targets": {
     "e2e": {
@@ -57,6 +58,16 @@
             "packageManager": "pnpm",
             "angular": "21.2.24",
             "all": true
+          },
+          {
+            "packageManager": "npm",
+            "angular": "22.2.1",
+            "shadcn": true
+          },
+          {
+            "packageManager": "npm",
+            "angular": "22.2.1",
+            "registries": true
           }
         ]
       }

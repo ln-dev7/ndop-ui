@@ -24,6 +24,8 @@ import {
   installableItems,
 } from './scenario';
 import { withLocalPackages } from '../../utils/local-packages';
+import { runShadcnCase } from './shadcn';
+import { runRegistriesCase } from './registries';
 
 /**
  * Outcome of one case.
@@ -48,7 +50,10 @@ interface CaseResult {
  * installs `button@0.1.0`, edits it, runs `ndop update` and builds the app
  * again (ADR-0020). A case with `all` then installs every component,
  * example and block in the registry and builds the app, outside the
- * budget.
+ * budget. A case with `shadcn` installs the item through the shadcn CLI
+ * instead (ADR-0025; see {@link runShadcnCase}). A case with `registries`
+ * installs `@sample/widget` from `tools/registry-template`, served behind
+ * a token (ADR-0025; see {@link runRegistriesCase}).
  *
  * @param options - Cases, budget and paths.
  * @param context - Nx executor context.
@@ -92,6 +97,31 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
     async ({ env, version }) => {
       const done: CaseResult[] = [];
       for (const installCase of cases) {
+        if (installCase.shadcn) {
+          done.push(
+            await runShadcnCase(installCase, {
+              workDir,
+              env,
+              item,
+              registryPath: join(
+                context.root,
+                options.registryPath ?? 'dist/registry',
+              ),
+            }),
+          );
+          continue;
+        }
+        if (installCase.registries) {
+          done.push(
+            await runRegistriesCase(installCase, {
+              workDir,
+              env,
+              version,
+              template: join(context.root, 'tools/registry-template'),
+            }),
+          );
+          continue;
+        }
         done.push(
           await runCase(installCase, {
             workDir,
@@ -111,9 +141,7 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
     if (result.error) {
       logger.error(`✗ ${result.id}: ${result.error}`);
     } else {
-      logger.info(
-        `✓ ${result.id}: ndop init to built app in ${result.seconds}s`,
-      );
+      logger.info(`✓ ${result.id}: new app to built app in ${result.seconds}s`);
     }
   }
   logger.info(`Logs: ${workDir}`);

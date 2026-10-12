@@ -24,5 +24,25 @@ and serves `dist/registry` over HTTP. Then, for each case in
    Button file, `ndop update button`, which must merge the edit with
    upstream's changes, and the build again (ADR-0020).
 
+The case marked `shadcn` (`npm-ng22-shadcn`) installs without `ndop`
+(ADR-0025): it serves `dist/registry/r/compat` with its URLs pointed at a
+local server, runs `npx shadcn@4.21.4 add <local>/r/compat/dialog.json
+--yes` in the new app with no `components.json`, checks that the item and
+its dependencies were written and the setup note printed, applies the
+note's steps (adds the theme and icons, imports the styles, registers
+`provideNdop()` and `provideIcons()`), routes to a page using Dialog and
+builds the app.
+
+The case marked `registries` (`npm-ng22-registries`) is Phase 6's
+acceptance test for third-party registries (ADR-0025): after `ndop init`,
+it copies `tools/registry-template`, points its `@ndop/cli` at the
+published version, builds it with its own `npm run build`, and serves it
+behind a bearer token. It adds `"@sample": { "url": ".../{name}.json",
+"headers": { "Authorization": "Bearer ${SAMPLE_TOKEN}" } }` to `ndop.json`,
+checks that `ndop add @sample/widget` without `SAMPLE_TOKEN` fails naming
+it, then runs it with the token, which also installs `button` from Ndop's
+registry, checks the lockfile, imports a page using both and builds the
+app.
+
 Apps and one log per case end up in `tmp/registry-e2e`. bun must be on the
 `PATH` for the bun case.

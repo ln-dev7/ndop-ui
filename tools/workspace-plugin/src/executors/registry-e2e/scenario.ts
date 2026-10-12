@@ -28,6 +28,17 @@ export interface InstallCase {
    * build the app (RFC-0001's definition of done; ADR-0022).
    */
   all?: boolean;
+  /**
+   * Install the item through the pinned shadcn CLI from the registry's
+   * shadcn-compatible output instead of `ndop`, and build (ADR-0025).
+   */
+  shadcn?: boolean;
+  /**
+   * Instead of the main scenario, after `ndop init`: build
+   * `tools/registry-template`, serve it behind a bearer token and install
+   * `@sample/widget` from it (ADR-0025).
+   */
+  registries?: boolean;
 }
 
 /** The item types the `all` step installs. */
@@ -110,13 +121,16 @@ export function updateProblems(result: UpdateJson, merged: string): string[] {
 }
 
 /**
- * Short, stable name of a case, such as `pnpm-ng21`.
+ * Short, stable name of a case, such as `pnpm-ng21`, or `npm-ng22-shadcn`
+ * and `npm-ng22-registries` for the shadcn-compat and registries cases.
  *
  * @param installCase - The case.
  * @returns Its name, also used as its folder.
  */
 export function caseId(installCase: InstallCase): string {
-  return `${installCase.packageManager}-ng${installCase.angular.split('.')[0]}`;
+  const id = `${installCase.packageManager}-ng${installCase.angular.split('.')[0]}`;
+  if (installCase.shadcn) return `${id}-shadcn`;
+  return installCase.registries ? `${id}-registries` : id;
 }
 
 /**

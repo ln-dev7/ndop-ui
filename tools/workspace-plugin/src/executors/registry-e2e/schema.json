@@ -26,6 +26,14 @@
           "all": {
             "type": "boolean",
             "description": "Also add every component, example and block in the registry and build again (ADR-0022)."
+          },
+          "shadcn": {
+            "type": "boolean",
+            "description": "Add the item with the pinned shadcn CLI from r/compat/ instead of ndop, apply its setup note and build (ADR-0025)."
+          },
+          "registries": {
+            "type": "boolean",
+            "description": "Instead of the main scenario, build tools/registry-template, serve it behind a bearer token, add @sample to ndop.json and install @sample/widget, with Ndop's button, then build (ADR-0025)."
           }
         },
         "required": ["packageManager", "angular"]
