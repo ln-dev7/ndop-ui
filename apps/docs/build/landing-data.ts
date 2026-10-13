@@ -54,40 +54,46 @@ const LANDING_BLOCKS = [
  * @returns Every line of both, in order, the changed ones marked.
  */
 export function lineDiff(before: string[], after: string[]): DemoLine[] {
-  const lengths = Array.from({ length: before.length + 1 }, () =>
-    new Array<number>(after.length + 1).fill(0),
-  );
+  // lengths[i * width + j]: the common subsequence's length from i and j on.
+  const width = after.length + 1;
+  const lengths = new Array<number>((before.length + 1) * width).fill(0);
+  const at = (i: number, j: number) => lengths[i * width + j] ?? 0;
   for (let i = before.length - 1; i >= 0; i--) {
     for (let j = after.length - 1; j >= 0; j--) {
-      lengths[i]![j] =
+      lengths[i * width + j] =
         before[i] === after[j]
-          ? lengths[i + 1]![j + 1]! + 1
-          : Math.max(lengths[i + 1]![j]!, lengths[i]![j + 1]!);
+          ? at(i + 1, j + 1) + 1
+          : Math.max(at(i + 1, j), at(i, j + 1));
     }
   }
   const lines: DemoLine[] = [];
   let i = 0;
   let j = 0;
   while (i < before.length || j < after.length) {
-    if (i < before.length && j < after.length && before[i] === after[j]) {
-      lines.push({ text: before[i]! });
+    const old = before[i];
+    const next = after[j];
+    if (old !== undefined && next !== undefined && old === next) {
+      lines.push({ text: old });
       i++;
       j++;
     } else if (
-      j < after.length &&
-      (i === before.length || lengths[i]![j + 1]! >= lengths[i + 1]![j]!)
+      next !== undefined &&
+      (old === undefined || at(i, j + 1) >= at(i + 1, j))
     ) {
-      lines.push({ text: after[j]!, kind: 'add' });
+      lines.push({ text: next, kind: 'add' });
       j++;
-    } else {
-      lines.push({ text: before[i]!, kind: 'remove' });
+    } else if (old !== undefined) {
+      lines.push({ text: old, kind: 'remove' });
       i++;
     }
   }
   // A replaced line reads best as the old one, then the new one.
   for (let k = 0; k < lines.length - 1; k++) {
-    if (lines[k]!.kind === 'add' && lines[k + 1]!.kind === 'remove') {
-      [lines[k], lines[k + 1]] = [lines[k + 1]!, lines[k]!];
+    const line = lines[k];
+    const following = lines[k + 1];
+    if (line?.kind === 'add' && following?.kind === 'remove') {
+      lines[k] = following;
+      lines[k + 1] = line;
     }
   }
   return lines;
