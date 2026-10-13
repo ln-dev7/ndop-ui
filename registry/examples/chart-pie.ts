@@ -3,6 +3,7 @@ import {
   arcPath,
   type ChartConfig,
   ChartContainer,
+  ChartLabel,
   ChartLegend,
   ChartLegendIndicator,
   ChartLegendItem,
@@ -26,6 +27,7 @@ import {
   selector: 'example-chart-pie',
   imports: [
     ChartContainer,
+    ChartLabel,
     ChartLegend,
     ChartLegendIndicator,
     ChartLegendItem,
@@ -47,31 +49,38 @@ import {
       <figcaption id="chart-pie-caption" class="text-sm font-medium">
         Visitors by browser, June 2026
       </figcaption>
-      <svg
-        ndChartPlot
-        viewBox="-125 -125 250 250"
-        [xs]="indexes"
-        trackPointer="false"
-        [(active)]="active"
-        aria-labelledby="chart-pie-caption"
-        aria-describedby="chart-pie-hint"
-      >
-        @for (slice of slices; track slice.index) {
-          <path
-            [attr.d]="arcPath(slice, 60, active() === slice.index ? 110 : 100)"
-            [attr.fill]="'var(--color-' + data[slice.index]?.browser + ')'"
-            class="stroke-background"
-            stroke-width="2"
-            (pointerenter)="active.set(slice.index)"
-          />
-        }
-        <text text-anchor="middle" class="fill-foreground text-3xl font-bold">
-          {{ total }}
-        </text>
-        <text y="24" text-anchor="middle" class="fill-muted-foreground">
-          Visitors
-        </text>
-      </svg>
+      <div class="relative w-full">
+        <svg
+          ndChartPlot
+          viewBox="-125 -125 250 250"
+          [xs]="indexes"
+          trackPointer="false"
+          [(active)]="active"
+          aria-labelledby="chart-pie-caption"
+          aria-describedby="chart-pie-hint"
+        >
+          @for (slice of slices; track slice.index) {
+            <path
+              [attr.d]="
+                arcPath(slice, 60, active() === slice.index ? 110 : 100)
+              "
+              [attr.fill]="'var(--color-' + data[slice.index]?.browser + ')'"
+              class="stroke-background"
+              stroke-width="2"
+              (pointerenter)="active.set(slice.index)"
+            />
+          }
+        </svg>
+        <div
+          ndChartLabel
+          class="top-1/2 left-1/2 flex -translate-y-1/2 flex-col items-center"
+        >
+          <span class="text-3xl font-bold text-foreground tabular-nums">{{
+            total
+          }}</span>
+          <span class="text-muted-foreground">Visitors</span>
+        </div>
+      </div>
       @if (current(); as row) {
         <div ndChartTooltip class="left-1/2 top-8">
           <div ndChartTooltipList>

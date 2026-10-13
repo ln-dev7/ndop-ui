@@ -6,6 +6,7 @@ import {
   ChartContainer,
   ChartCursor,
   ChartGrid,
+  ChartLabel,
   ChartLegend,
   ChartLegendIndicator,
   ChartLegendItem,
@@ -24,9 +25,7 @@ import {
 
 /** The plot's size, in viewBox units. */
 const WIDTH = 500;
-const HEIGHT = 250;
-/** Room under the plot for the month labels. */
-const AXIS = 24;
+const HEIGHT = 225;
 
 /**
  * Desktop and mobile visitors by month, as stacked areas: mobile sits on
@@ -40,6 +39,7 @@ const AXIS = 24;
     ChartContainer,
     ChartCursor,
     ChartGrid,
+    ChartLabel,
     ChartLegend,
     ChartLegendIndicator,
     ChartLegendItem,
@@ -94,17 +94,25 @@ const AXIS = 24;
             [attr.x1]="(left() * width) / 100"
             [attr.x2]="(left() * width) / 100"
             y1="0"
-            [attr.y2]="height - axis"
+            [attr.y2]="height"
           />
         }
-        <g ndChartAxis text-anchor="middle">
-          @for (row of data; track row.month; let i = $index) {
-            <text [attr.x]="xs[i]" [attr.y]="height - 6">
-              {{ row.month.slice(0, 3) }}
-            </text>
-          }
-        </g>
       </svg>
+      <div ndChartAxis>
+        @for (
+          row of data;
+          track row.month;
+          let i = $index, first = $first, last = $last
+        ) {
+          <span
+            ndChartLabel
+            [style.left.%]="((xs[i] ?? 0) / width) * 100"
+            [align]="first ? 'left' : last ? 'right' : 'center'"
+          >
+            {{ row.month.slice(0, 3) }}
+          </span>
+        }
+      </div>
       @if (current(); as row) {
         <div ndChartTooltip [style.left.%]="left()">
           <div ndChartTooltipLabel>{{ row.month }}</div>
@@ -167,7 +175,6 @@ const AXIS = 24;
 export class ChartAreaExample {
   protected readonly width = WIDTH;
   protected readonly height = HEIGHT;
-  protected readonly axis = AXIS;
   protected readonly keys = ['desktop', 'mobile'] as const;
   protected readonly config: ChartConfig = {
     desktop: { label: 'Desktop', color: 'var(--chart-1)' },
@@ -211,7 +218,7 @@ export class ChartAreaExample {
 
   protected readonly y = scaleLinear(
     [0, Math.max(...(this.stacked[1] ?? []).map(([, top]) => top))],
-    [HEIGHT - AXIS, 8],
+    [HEIGHT, 8],
   );
 
   protected readonly areas = computed(() => {

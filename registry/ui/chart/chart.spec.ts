@@ -16,7 +16,13 @@ import {
   registrySource,
   shadcnClassStrings,
 } from '../../testing/shadcn-parity';
-import { ChartContainer, ChartPlot, ChartTooltipIndicator } from './chart';
+import {
+  ChartAxis,
+  ChartContainer,
+  ChartLabel,
+  ChartPlot,
+  ChartTooltipIndicator,
+} from './chart';
 
 /**
  * shadcn's classes as Ndop writes them. Its container styles Recharts'
@@ -72,6 +78,26 @@ describe('Chart', () => {
     expect(chart.style.getPropertyValue('--color-desktop')).toBe(
       'var(--chart-1)',
     );
+  });
+
+  it('places HTML axis labels, hidden from screen readers', async () => {
+    @Component({
+      imports: [ChartAxis, ChartLabel],
+      template: `<div ndChartAxis data-testid="axis">
+        <span ndChartLabel [style.left.%]="25">Jan</span>
+        <span ndChartLabel [style.left.%]="100" align="right">Jun</span>
+      </div>`,
+    })
+    class Host {}
+    await render(Host);
+    expect(screen.getByTestId('axis').getAttribute('aria-hidden')).toBe('true');
+    const label = screen.getByText('Jan');
+    expect(label.style.left).toBe('25%');
+    expect(label.classList).toContain('absolute');
+    expect(label.classList).toContain('-translate-x-1/2');
+    const end = screen.getByText('Jun');
+    expect(end.classList).toContain('-translate-x-full');
+    expect(end.classList).not.toContain('-translate-x-1/2');
   });
 
   it('moves the active point with the keyboard', async () => {

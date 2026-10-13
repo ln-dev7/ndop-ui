@@ -1883,7 +1883,7 @@
     {
       "name": "chart",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Chart",
       "description": "SVG charts you own: bar, line, area, pie and radial, with tooltips and legends.",
       "registryDependencies": ["utils"],
@@ -1907,6 +1907,7 @@
           "ChartPlot",
           "ChartGrid",
           "ChartAxis",
+          "ChartLabel",
           "ChartCursor",
           "ChartTooltip",
           "ChartTooltipLabel",
@@ -4894,7 +4895,7 @@
     {
       "name": "chart-bar",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Chart bar",
       "description": "Desktop and mobile visitors by month, as grouped bars you can read with the keyboard.",
       "registryDependencies": ["chart"],
@@ -4915,7 +4916,7 @@
     {
       "name": "chart-line",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Chart line",
       "description": "Desktop and mobile visitors by month, as two smooth lines.",
       "registryDependencies": ["chart"],
@@ -4936,7 +4937,7 @@
     {
       "name": "chart-area",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Chart area",
       "description": "Desktop and mobile visitors by month, as stacked areas.",
       "registryDependencies": ["chart"],
@@ -4957,7 +4958,7 @@
     {
       "name": "chart-pie",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Chart pie",
       "description": "Visitors by browser, as a donut with the total in its middle.",
       "registryDependencies": ["chart"],
@@ -5077,7 +5078,7 @@
     {
       "name": "dashboard-01",
       "type": "registry:block",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "title": "Dashboard 01",
       "description": "A dashboard of stat cards, an area chart and a table of recent orders.",
       "dependencies": ["@ndop/core"],
@@ -5115,7 +5116,7 @@
     {
       "name": "dashboard-02",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "title": "Dashboard 02",
       "description": "An analytics dashboard with tabs for overview, reports and notifications.",
       "dependencies": ["@ndop/core"],

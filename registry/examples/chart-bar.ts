@@ -4,6 +4,7 @@ import {
   ChartContainer,
   ChartCursor,
   ChartGrid,
+  ChartLabel,
   ChartLegend,
   ChartLegendIndicator,
   ChartLegendItem,
@@ -23,9 +24,7 @@ import {
 
 /** The plot's size, in viewBox units. */
 const WIDTH = 500;
-const HEIGHT = 250;
-/** Room under the plot for the month labels. */
-const AXIS = 24;
+const HEIGHT = 225;
 
 /**
  * Desktop and mobile visitors by month, as grouped bars. The chart is one
@@ -39,6 +38,7 @@ const AXIS = 24;
     ChartContainer,
     ChartCursor,
     ChartGrid,
+    ChartLabel,
     ChartLegend,
     ChartLegendIndicator,
     ChartLegendItem,
@@ -86,7 +86,7 @@ const AXIS = 24;
             [attr.x]="x(row.month) - x.step * 0.1"
             y="0"
             [attr.width]="x.bandwidth + x.step * 0.2"
-            [attr.height]="height - axis"
+            [attr.height]="height"
           />
         }
         @for (row of data; track row.month) {
@@ -107,14 +107,14 @@ const AXIS = 24;
             fill="var(--color-mobile)"
           />
         }
-        <g ndChartAxis text-anchor="middle">
-          @for (row of data; track row.month; let i = $index) {
-            <text [attr.x]="centers[i]" [attr.y]="height - 6">
-              {{ row.month.slice(0, 3) }}
-            </text>
-          }
-        </g>
       </svg>
+      <div ndChartAxis>
+        @for (row of data; track row.month; let i = $index) {
+          <span ndChartLabel [style.left.%]="((centers[i] ?? 0) / width) * 100">
+            {{ row.month.slice(0, 3) }}
+          </span>
+        }
+      </div>
       @if (current(); as row) {
         <div ndChartTooltip [style.left.%]="left()">
           <div ndChartTooltipLabel>{{ row.month }}</div>
@@ -176,7 +176,6 @@ const AXIS = 24;
 export class ChartBarExample {
   protected readonly width = WIDTH;
   protected readonly height = HEIGHT;
-  protected readonly axis = AXIS;
   protected readonly keys = ['desktop', 'mobile'] as const;
   protected readonly config: ChartConfig = {
     desktop: { label: 'Desktop', color: 'var(--chart-1)' },
@@ -197,7 +196,7 @@ export class ChartBarExample {
   );
   protected readonly y = scaleLinear(
     [0, Math.max(...this.data.map((row) => Math.max(row.desktop, row.mobile)))],
-    [HEIGHT - AXIS, 8],
+    [HEIGHT, 8],
   );
   protected readonly bar = this.x.bandwidth / 2;
   protected readonly centers = this.data.map(

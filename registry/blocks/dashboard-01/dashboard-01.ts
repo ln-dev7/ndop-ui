@@ -19,6 +19,7 @@ import {
   ChartContainer,
   ChartCursor,
   ChartGrid,
+  ChartLabel,
   ChartLegend,
   ChartLegendIndicator,
   ChartLegendItem,
@@ -48,16 +49,37 @@ import { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';
 import { dashboardResource, type DashboardOrderStatus } from './data';
 
 /**
- * The plot's size, in viewBox units. The chart spans the page, so its
- * viewBox is about as wide as it renders on a desktop and its labels keep
- * their size there.
+ * The plot's size, in viewBox units. It spans the card at a fixed height,
+ * stretched with `preserveAspectRatio="none"`, so these set only the
+ * units of its scales.
  */
-const WIDTH = 1000;
-const HEIGHT = 300;
-/** Room under the plot for the date labels. */
-const AXIS = 24;
-/** About how many date labels fit under the plot. */
-const LABELS = 6;
+const WIDTH = 600;
+const HEIGHT = 250;
+/** The most date labels that fit under the plot. */
+const LABELS = 5;
+
+/**
+ * Which of `count` days to label: the first, the last and evenly spaced
+ * ones between, at most `max`. Days are whole, so most counts can't be
+ * split exactly; it takes the most labels whose days are each within 5%
+ * of a step from even spacing, which a reader sees as even.
+ *
+ * @param count - How many days the chart shows.
+ * @param max - The most labels that fit.
+ * @returns The days' indexes, ascending.
+ */
+function labelIndexes(count: number, max: number): number[] {
+  for (let labels = Math.min(max, count); labels > 2; labels--) {
+    const step = (count - 1) / (labels - 1);
+    const indexes = Array.from({ length: labels }, (_, i) =>
+      Math.round(i * step),
+    );
+    if (indexes.every((index, i) => Math.abs(index - i * step) <= step / 20)) {
+      return indexes;
+    }
+  }
+  return count > 1 ? [0, count - 1] : count === 1 ? [0] : [];
+}
 
 /** The ranges the chart can show, in days. */
 const RANGES = [
@@ -97,6 +119,7 @@ const STATUS_VARIANTS: Record<DashboardOrderStatus, BadgeVariant> = {
     ChartContainer,
     ChartCursor,
     ChartGrid,
+    ChartLabel,
     ChartLegend,
     ChartLegendIndicator,
     ChartLegendItem,
@@ -220,7 +243,7 @@ const STATUS_VARIANTS: Record<DashboardOrderStatus, BadgeVariant> = {
         </div>
         <div ndCardContent>
           @if (data.isLoading()) {
-            <div ndSkeleton class="aspect-[12/5] w-full"></div>
+            <div ndSkeleton class="h-62 w-full"></div>
           } @else {
             <figure
               ndChartContainer
@@ -233,6 +256,8 @@ const STATUS_VARIANTS: Record<DashboardOrderStatus, BadgeVariant> = {
               <svg
                 ndChartPlot
                 [attr.viewBox]="'0 0 ' + width + ' ' + height"
+                preserveAspectRatio="none"
+                class="h-56"
                 [xs]="xs()"
                 [(active)]="active"
                 aria-labelledby="dashboard-01-chart-caption"
@@ -254,6 +279,7 @@ const STATUS_VARIANTS: Record<DashboardOrderStatus, BadgeVariant> = {
                     [attr.fill]="'var(--color-' + key + ')'"
                     fill-opacity="0.4"
                     [attr.stroke]="'var(--color-' + key + ')'"
+                    vector-effect="non-scaling-stroke"
                   />
                 }
                 @if (active() !== null) {
@@ -262,17 +288,25 @@ const STATUS_VARIANTS: Record<DashboardOrderStatus, BadgeVariant> = {
                     [attr.x1]="(left() * width) / 100"
                     [attr.x2]="(left() * width) / 100"
                     y1="0"
-                    [attr.y2]="height - axis"
+                    [attr.y2]="height"
                   />
                 }
-                <g ndChartAxis text-anchor="middle">
-                  @for (tick of labels(); track tick.index) {
-                    <text [attr.x]="xs()[tick.index]" [attr.y]="height - 6">
-                      {{ tick.date | date: 'MMM d' : 'UTC' }}
-                    </text>
-                  }
-                </g>
               </svg>
+              <div ndChartAxis>
+                @for (
+                  tick of labels();
+                  track tick.index;
+                  let first = $first, last = $last
+                ) {
+                  <span
+                    ndChartLabel
+                    [style.left.%]="((xs()[tick.index] ?? 0) / width) * 100"
+                    [align]="first ? 'left' : last ? 'right' : 'center'"
+                  >
+                    {{ tick.date | date: 'MMM d' : 'UTC' }}
+                  </span>
+                }
+              </div>
               @if (current(); as row) {
                 <div ndChartTooltip [style.left.%]="left()">
                   <div ndChartTooltipLabel>
@@ -414,7 +448,6 @@ const STATUS_VARIANTS: Record<DashboardOrderStatus, BadgeVariant> = {
 export class Dashboard01Block {
   protected readonly width = WIDTH;
   protected readonly height = HEIGHT;
-  protected readonly axis = AXIS;
   protected readonly ranges = RANGES;
   protected readonly statusVariants = STATUS_VARIANTS;
   protected readonly keys = ['desktop', 'mobile'] as const;
@@ -449,10 +482,10 @@ export class Dashboard01Block {
 
   protected readonly labels = computed(() => {
     const rows = this.visitors();
-    const step = Math.max(1, Math.ceil(rows.length / LABELS));
-    return rows.flatMap((row, index) =>
-      index % step === 0 ? [{ index, date: row.date }] : [],
-    );
+    return labelIndexes(rows.length, LABELS).flatMap((index) => {
+      const row = rows[index];
+      return row ? [{ index, date: row.date }] : [];
+    });
   });
 
   /** Mobile stacked on desktop: each value's bottom and top. */
@@ -466,7 +499,7 @@ export class Dashboard01Block {
   protected readonly y = computed(() =>
     scaleLinear(
       [0, Math.max(1, ...(this.stacked()[1] ?? []).map(([, top]) => top))],
-      [HEIGHT - AXIS, 8],
+      [HEIGHT, 8],
     ),
   );
 

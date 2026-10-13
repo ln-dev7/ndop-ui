@@ -17,6 +17,7 @@ import {
   ChartContainer,
   ChartCursor,
   ChartGrid,
+  ChartLabel,
   ChartLegend,
   ChartLegendIndicator,
   ChartLegendItem,
@@ -47,9 +48,7 @@ import { analyticsResource, type AnalyticsNotificationKind } from './data';
 
 /** The plot's size, in viewBox units. */
 const WIDTH = 500;
-const HEIGHT = 250;
-/** Room under the plot for the month labels. */
-const AXIS = 24;
+const HEIGHT = 225;
 
 /** Each notification kind's icon. */
 const KIND_ICONS: Record<AnalyticsNotificationKind, string> = {
@@ -83,6 +82,7 @@ const KIND_ICONS: Record<AnalyticsNotificationKind, string> = {
     ChartContainer,
     ChartCursor,
     ChartGrid,
+    ChartLabel,
     ChartLegend,
     ChartLegendIndicator,
     ChartLegendItem,
@@ -221,7 +221,7 @@ const KIND_ICONS: Record<AnalyticsNotificationKind, string> = {
                           [attr.x]="x()(row.month) - x().step * 0.1"
                           y="0"
                           [attr.width]="x().bandwidth + x().step * 0.2"
-                          [attr.height]="height - axis"
+                          [attr.height]="height"
                         />
                       }
                       @for (row of months(); track row.month) {
@@ -242,18 +242,17 @@ const KIND_ICONS: Record<AnalyticsNotificationKind, string> = {
                           fill="var(--color-inStore)"
                         />
                       }
-                      <g ndChartAxis text-anchor="middle">
-                        @for (
-                          row of months();
-                          track row.month;
-                          let i = $index
-                        ) {
-                          <text [attr.x]="centers()[i]" [attr.y]="height - 6">
-                            {{ row.month.slice(0, 3) }}
-                          </text>
-                        }
-                      </g>
                     </svg>
+                    <div ndChartAxis>
+                      @for (row of months(); track row.month; let i = $index) {
+                        <span
+                          ndChartLabel
+                          [style.left.%]="((centers()[i] ?? 0) / width) * 100"
+                        >
+                          {{ row.month.slice(0, 3) }}
+                        </span>
+                      }
+                    </div>
                     @if (current(); as row) {
                       <div ndChartTooltip [style.left.%]="left()">
                         <div ndChartTooltipLabel>{{ row.month }}</div>
@@ -495,7 +494,6 @@ const KIND_ICONS: Record<AnalyticsNotificationKind, string> = {
 export class Dashboard02Block {
   protected readonly width = WIDTH;
   protected readonly height = HEIGHT;
-  protected readonly axis = AXIS;
   protected readonly kindIcons = KIND_ICONS;
   protected readonly keys = ['online', 'inStore'] as const;
   protected readonly config: ChartConfig = {
@@ -531,7 +529,7 @@ export class Dashboard02Block {
           ...this.months().map((row) => Math.max(row.online, row.inStore)),
         ),
       ],
-      [HEIGHT - AXIS, 8],
+      [HEIGHT, 8],
     ),
   );
 

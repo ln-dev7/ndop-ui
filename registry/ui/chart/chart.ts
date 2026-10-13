@@ -52,7 +52,8 @@ export type ChartConfig = Record<
  * ```html
  * <figure ndChartContainer [config]="config">
  *   <figcaption>Visitors</figcaption>
- *   <svg ndChartPlot viewBox="0 0 500 250">…</svg>
+ *   <svg ndChartPlot viewBox="0 0 500 225">…</svg>
+ *   <div ndChartAxis>…</div>
  * </figure>
  * ```
  */
@@ -98,9 +99,16 @@ export class ChartContainer {
  * it `xs`, each point's horizontal position in `viewBox` units, and name
  * it with `aria-label` or `aria-labelledby`.
  *
+ * It spans the chart's width at its `viewBox`'s aspect ratio, so a
+ * position in `viewBox` units is the same percentage of the plot's box,
+ * where the HTML labels and the tooltip go. For a fixed height instead,
+ * set one with a class and `preserveAspectRatio="none"`, and give your
+ * lines and outlines `vector-effect="non-scaling-stroke"` so they keep
+ * their width, as the grid and cursor do.
+ *
  * @example
  * ```html
- * <svg ndChartPlot viewBox="0 0 500 250" [xs]="xs()" [(active)]="active" aria-label="Visitors by month">…</svg>
+ * <svg ndChartPlot viewBox="0 0 500 225" [xs]="xs()" [(active)]="active" aria-label="Visitors by month">…</svg>
  * ```
  */
 @Directive({
@@ -139,7 +147,7 @@ export class ChartPlot {
 
   protected readonly classes = computed(() =>
     cn(
-      'h-full w-full rounded-md outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/50',
+      'block h-auto w-full rounded-md outline-hidden focus-visible:ring-[3px] focus-visible:ring-ring/50',
       this.class(),
     ),
   );
@@ -216,7 +224,8 @@ export class ChartPlot {
 }
 
 /**
- * The grid lines behind the data, on a `g`.
+ * The grid lines behind the data, on a `g`. They stay a pixel wide
+ * whatever the plot's size.
  *
  * @example
  * ```html
@@ -232,33 +241,94 @@ export class ChartGrid {
   readonly class = input('');
 
   protected readonly classes = computed(() =>
-    cn('[&_line]:stroke-border/50', this.class()),
+    cn(
+      '[&_line]:stroke-border/50 [&_line]:[vector-effect:non-scaling-stroke]',
+      this.class(),
+    ),
   );
 }
 
 /**
- * An axis' labels, on a `g`.
+ * The x axis' labels, in a band under the plot. They're HTML rather than
+ * SVG text, so they keep their size at every width instead of scaling
+ * with the plot. Put a `ChartLabel` in it for each tick, at the tick's
+ * position across the plot in percent. Screen readers skip it: the
+ * chart's table holds the same labels.
  *
  * @example
  * ```html
- * <g ndChartAxis>…<text>Jan</text></g>
+ * <div ndChartAxis>
+ *   <span ndChartLabel [style.left.%]="(x / width) * 100">Jan</span>
+ * </div>
  * ```
  */
 @Directive({
   selector: '[ndChartAxis]',
-  host: { 'data-slot': 'chart-axis', '[class]': 'classes()' },
+  host: {
+    'data-slot': 'chart-axis',
+    'aria-hidden': 'true',
+    '[class]': 'classes()',
+  },
 })
 export class ChartAxis {
   /** Extra classes, merged last so they win. */
   readonly class = input('');
 
   protected readonly classes = computed(() =>
-    cn('[&_text]:fill-muted-foreground', this.class()),
+    cn('relative h-4 text-muted-foreground', this.class()),
   );
 }
 
 /**
- * The marker of the active data point: a line, or a band behind bars.
+ * A label at a point of the chart, such as an axis tick or a value, in
+ * HTML so it keeps its size at every width. It sits at its `left`, a
+ * percentage of the plot's width, centered on it by default; a label at
+ * the plot's edge aligns `left` or `right` instead, so it stays within
+ * the plot. In a `ChartAxis` it sits at the top of the band. Over the
+ * plot, put the plot and the label in a `relative` box and set its `top`
+ * too, centering it with `-translate-y-1/2`.
+ *
+ * Like the plot, it isn't mirrored in right-to-left layouts, so it's
+ * placed with `left` and aligns to physical sides, not `start` and `end`.
+ *
+ * @example
+ * ```html
+ * <span ndChartLabel [style.left.%]="0" align="left">Jan</span>
+ * <span ndChartLabel [style.left.%]="50">Apr</span>
+ * <span ndChartLabel [style.left.%]="100" align="right">Jun</span>
+ * ```
+ */
+@Directive({
+  selector: '[ndChartLabel]',
+  host: {
+    'data-slot': 'chart-label',
+    '[attr.data-align]': 'align()',
+    '[class]': 'classes()',
+  },
+})
+export class ChartLabel {
+  /**
+   * Which of its sides is at its `left`: `center` for its middle, `left`
+   * for its left edge (it extends right), `right` for its right edge.
+   */
+  readonly align = input<'center' | 'left' | 'right'>('center');
+
+  /** Extra classes, merged last so they win. */
+  readonly class = input('');
+
+  protected readonly classes = computed(() =>
+    cn(
+      'pointer-events-none absolute top-0 whitespace-nowrap',
+      this.align() === 'center' && '-translate-x-1/2',
+      this.align() === 'right' && '-translate-x-full',
+      this.class(),
+    ),
+  );
+}
+
+/**
+ * The marker of the active data point: a line, which stays a pixel
+ * wide whatever the plot's size, or a band behind bars.
  *
  * @example
  * ```html
@@ -283,7 +353,7 @@ export class ChartCursor {
 
   protected readonly classes = computed(() =>
     cn(
-      'pointer-events-none data-[kind=band]:fill-muted data-[kind=line]:stroke-border',
+      'pointer-events-none data-[kind=band]:fill-muted data-[kind=line]:stroke-border data-[kind=line]:[vector-effect:non-scaling-stroke]',
       this.class(),
     ),
   );
