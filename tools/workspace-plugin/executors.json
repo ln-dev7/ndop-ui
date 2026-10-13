@@ -54,6 +54,16 @@
       "implementation": "./src/executors/docs-smoke/docs-smoke",
       "schema": "./src/executors/docs-smoke/schema.json",
       "description": "Check a deployed docs site: trailing-slash redirects, the 404 page, the registry index, a theme URL and the service worker (ADR-0028)."
+    },
+    "release-bootstrap": {
+      "implementation": "./src/executors/release-bootstrap/release-bootstrap",
+      "schema": "./src/executors/release-bootstrap/schema.json",
+      "description": "The one-time npm bootstrap before the first release: pack 0.0.0 placeholders of the packages not on npm yet and print the npm publish and npm trust commands; publish and trust only when asked (ADR-0028)."
+    },
+    "release-version": {
+      "implementation": "./src/executors/release-version/release-version",
+      "schema": "./src/executors/release-version/schema.json",
+      "description": "Version the npm packages for a release with changeset version, then pin the registry template to the new version (ADR-0028)."
     }
   }
 }

@@ -6,7 +6,19 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "ignore": [],
-  "fixed": [],
+  "fixed": [
+    [
+      "@ndop/cli",
+      "@ndop/core",
+      "@ndop/primitives",
+      "@ndop/schema",
+      "@ndop/metadata",
+      "@ndop/merge",
+      "@ndop/verify",
+      "@ndop/mcp",
+      "@ndop/eslint-plugin"
+    ]
+  ],
   "linked": [],
   "updateInternalDependencies": "patch",
   "privatePackages": { "version": false, "tag": false }

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Release bootstrap",
+  "description": "The one-time npm bootstrap before the first release (ADR-0028): pack a 0.0.0 placeholder of every package in the Changesets fixed group that isn't on npm yet, and print the npm publish and npm trust commands. Publishes and adds trusted publishers only when asked.",
+  "type": "object",
+  "properties": {
+    "publish": {
+      "type": "boolean",
+      "description": "Publish the placeholders with npm publish, which asks for your second factor. Without it, nothing is published.",
+      "default": false
+    },
+    "trust": {
+      "type": "boolean",
+      "description": "Add each package's trusted publisher with npm trust github (npm 11.15.0 or later), which asks for your second factor.",
+      "default": false
+    },
+    "version": {
+      "type": "string",
+      "description": "The placeholders' version, below the first release.",
+      "default": "0.0.0"
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Folder for the placeholders and their tarballs, relative to the workspace root. It is emptied first.",
+      "default": "tmp/release-bootstrap"
+    },
+    "packagesDir": {
+      "type": "string",
+      "description": "Folder holding the packages, one per subfolder, relative to the workspace root.",
+      "default": "packages"
+    },
+    "repository": {
+      "type": "string",
+      "description": "The GitHub repository allowed to publish, as owner/name.",
+      "default": "ndop-ui/ui"
+    },
+    "workflow": {
+      "type": "string",
+      "description": "File name of the workflow allowed to publish, in .github/workflows.",
+      "default": "release.yml"
+    },
+    "environment": {
+      "type": "string",
+      "description": "GitHub environment of the publishing job; an empty string allows any.",
+      "default": "npm"
+    }
+  },
+  "required": []
+}

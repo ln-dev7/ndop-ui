@@ -9,6 +9,14 @@
         "config": ".verdaccio/config.yml",
         "storage": "tmp/local-registry/storage"
       }
+    },
+    "release-version": {
+      "executor": "@ndop/workspace-plugin:release-version",
+      "cache": false
+    },
+    "release-bootstrap": {
+      "executor": "@ndop/workspace-plugin:release-bootstrap",
+      "cache": false
     }
   }
 }

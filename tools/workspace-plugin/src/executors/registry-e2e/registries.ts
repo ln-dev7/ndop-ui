@@ -323,7 +323,7 @@ export async function runRegistriesCase(
     log: join(settings.workDir, `${id}.log`),
   };
   const ndop = (args: string[]) =>
-    execCommand(packageManager, `ndop@${settings.version}`, args);
+    execCommand(packageManager, `@ndop/cli@${settings.version}`, args);
   logger.info(`Running ${id}…`);
   try {
     await run(

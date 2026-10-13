@@ -140,10 +140,10 @@ export type CommandLine = [command: string, args: string[]];
 
 /**
  * How a user of each package manager runs a package's bin without
- * installing it, as `npx ndop init` does for npm.
+ * installing it, as `npx @ndop/cli init` does for npm.
  *
  * @param packageManager - The package manager.
- * @param spec - Package spec, such as `ndop@1.0.0`.
+ * @param spec - Package spec, such as `@ndop/cli@1.0.0`.
  * @param args - Arguments for the bin.
  * @returns The command line.
  */

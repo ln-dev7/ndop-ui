@@ -5,7 +5,6 @@
   "tags": ["type:e2e"],
   "implicitDependencies": [
     "cli",
-    "ndop",
     "core",
     "primitives",
     "schema",
@@ -24,7 +23,6 @@
           "target": "build",
           "projects": [
             "cli",
-            "ndop",
             "core",
             "primitives",
             "schema",

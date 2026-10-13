@@ -15,6 +15,14 @@ uplinks:
     fail_timeout: 10s
 
 packages:
+  # Ndop's own packages come only from what the test publishes, never from
+  # npm, so a package the test failed to publish can't be replaced by a
+  # released one.
+  '@ndop/*':
+    access: $all
+    publish: $all
+    unpublish: $all
+
   '**':
     # give all users (including non-authenticated users) full access
     # because it is a local registry

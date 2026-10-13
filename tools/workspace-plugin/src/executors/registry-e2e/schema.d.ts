@@ -18,4 +18,6 @@ export interface RegistryE2eExecutorSchema {
   workDir?: string;
   /** Target that starts Verdaccio. */
   localRegistryTarget?: string;
+  /** Output of `changeset pack` whose tarballs to test, instead of dist. */
+  packDir?: string;
 }

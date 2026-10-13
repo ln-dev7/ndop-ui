@@ -76,7 +76,7 @@ export async function prepareFixture(
     { ...at, cwd: options.workDir },
   );
   await run(
-    execCommand('pnpm', `ndop@${options.version}`, [
+    execCommand('pnpm', `@ndop/cli@${options.version}`, [
       'init',
       '--yes',
       '--agent',
@@ -91,7 +91,7 @@ export async function prepareFixture(
   // the root component.
   await writeFile(join(template, 'src/app/app.html'), '<router-outlet />\n');
   for (const spec of [
-    `ndop@${options.version}`,
+    `@ndop/cli@${options.version}`,
     `@ndop/mcp@${options.version}`,
   ]) {
     await run(addDevCommand('pnpm', spec), at);
@@ -210,7 +210,12 @@ export async function verifyFiles(
   const output = await run(
     [
       process.execPath,
-      [join(copy, 'node_modules/ndop/bin.js'), 'verify', ...files, '--json'],
+      [
+        join(copy, 'node_modules/@ndop/cli/main.js'),
+        'verify',
+        ...files,
+        '--json',
+      ],
     ],
     { cwd: copy, env, log, allowFailure: true },
   );

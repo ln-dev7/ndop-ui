@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "tags": ["type:e2e"],
-  "implicitDependencies": ["cli", "ndop", "mcp", "verify", "registry"],
+  "implicitDependencies": ["cli", "mcp", "verify", "registry"],
   "targets": {
     "eval": {
       "executor": "@ndop/workspace-plugin:agent-eval",
@@ -12,7 +12,6 @@
           "target": "build",
           "projects": [
             "cli",
-            "ndop",
             "core",
             "primitives",
             "schema",

@@ -41,19 +41,21 @@ interface CaseResult {
 
 /**
  * The registry install test (ADR-0015). Against unpublished Ndop, from
- * {@link withLocalPackages}, it creates, for each case, an app with
- * `ng new` and times `ndop init`, `ndop add <item>` and the app's build
- * against the budget. It checks the agent context files (ADR-0017), init
- * having run with `--agent claude-code --mcp` over a team note in
- * `AGENTS.md`. Then it runs `ndop add <item> --json` again and checks
- * that the plan is empty and no file changed. A case with `update` also
- * installs `button@0.1.0`, edits it, runs `ndop update` and builds the app
- * again (ADR-0020). A case with `all` then installs every component,
- * example and block in the registry and builds the app, outside the
- * budget. A case with `shadcn` installs the item through the shadcn CLI
- * instead (ADR-0025; see {@link runShadcnCase}). A case with `registries`
- * installs `@sample/widget` from `tools/registry-template`, served behind
- * a token (ADR-0025; see {@link runRegistriesCase}).
+ * {@link withLocalPackages}, or with `packDir` against the exact tarballs
+ * the Release workflow is about to publish (ADR-0028), it creates, for each
+ * case, an app with `ng new` and times `ndop init`, `ndop add <item>` and
+ * the app's build against the budget, running `@ndop/cli` as users do
+ * (ADR-0031). It checks the agent context files (ADR-0017), init having run
+ * with `--agent claude-code --mcp` over a team note in `AGENTS.md`. Then it
+ * runs `ndop add <item> --json` again and checks that the plan is empty and
+ * no file changed. A case with `update` also installs `button@0.1.0`, edits
+ * it, runs `ndop update` and builds the app again (ADR-0020). A case with
+ * `all` then installs every component, example and block in the registry
+ * and builds the app, outside the budget. A case with `shadcn` installs the
+ * item through the shadcn CLI instead (ADR-0025; see
+ * {@link runShadcnCase}). A case with `registries` installs
+ * `@sample/widget` from `tools/registry-template`, served behind a token
+ * (ADR-0025; see {@link runRegistriesCase}).
  *
  * @param options - Cases, budget and paths.
  * @param context - Nx executor context.
@@ -93,6 +95,7 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
         ? { localRegistryTarget: options.localRegistryTarget }
         : {}),
       ...(options.registryPath ? { registryPath: options.registryPath } : {}),
+      ...(options.packDir ? { packDir: options.packDir } : {}),
     },
     async ({ env, version }) => {
       const done: CaseResult[] = [];
@@ -158,7 +161,7 @@ interface CaseSettings {
   workDir: string;
   /** Environment pointing every tool at the local registries. */
   env: NodeJS.ProcessEnv;
-  /** Version the `ndop` package was published under. */
+  /** Version the `@ndop/*` packages were published under. */
   version: string;
   /** Item to add. */
   item: string;
@@ -185,7 +188,7 @@ async function runCase(
   const log = join(settings.workDir, `${id}.log`);
   const options = { cwd: app, env: settings.env, log };
   const ndop = (args: string[]) =>
-    execCommand(packageManager, `ndop@${settings.version}`, args);
+    execCommand(packageManager, `@ndop/cli@${settings.version}`, args);
   logger.info(`Running ${id}…`);
   try {
     await run(

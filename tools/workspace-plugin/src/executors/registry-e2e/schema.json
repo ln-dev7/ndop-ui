@@ -68,6 +68,10 @@
       "type": "string",
       "description": "Target that starts Verdaccio.",
       "default": "@ndop/source:local-registry"
+    },
+    "packDir": {
+      "type": "string",
+      "description": "Output of changeset pack (publish-plan.json and packages/), relative to the workspace root or absolute. Its tarballs are published to Verdaccio at their own version instead of the dist packages at a unique prerelease, so the Release workflow tests what it publishes (ADR-0028)."
     }
   },
   "required": ["cases"]

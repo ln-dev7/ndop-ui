@@ -35,17 +35,17 @@ describe('commands', () => {
   });
 
   it('runs bins the way each package manager does', () => {
-    expect(execCommand('npm', 'ndop@1.0.0', ['init'])).toEqual([
+    expect(execCommand('npm', '@ndop/cli@1.0.0', ['init'])).toEqual([
       'npx',
-      ['--yes', 'ndop@1.0.0', 'init'],
+      ['--yes', '@ndop/cli@1.0.0', 'init'],
     ]);
-    expect(execCommand('pnpm', 'ndop@1.0.0', ['init'])).toEqual([
+    expect(execCommand('pnpm', '@ndop/cli@1.0.0', ['init'])).toEqual([
       'pnpm',
-      ['dlx', 'ndop@1.0.0', 'init'],
+      ['dlx', '@ndop/cli@1.0.0', 'init'],
     ]);
-    expect(execCommand('bun', 'ndop@1.0.0', ['init'])).toEqual([
+    expect(execCommand('bun', '@ndop/cli@1.0.0', ['init'])).toEqual([
       'bunx',
-      ['ndop@1.0.0', 'init'],
+      ['@ndop/cli@1.0.0', 'init'],
     ]);
     expect(runScriptCommand('bun', 'build')).toEqual(['bun', ['run', 'build']]);
   });

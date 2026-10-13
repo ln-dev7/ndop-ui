@@ -1,6 +1,9 @@
-import { join } from 'node:path';
+import { spawn } from 'node:child_process';
+import { mkdir, readFile, rm } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import { startLocalRegistry } from '@nx/js/plugins/jest/local-registry';
-import { releasePublish, releaseVersion } from 'nx/release';
+import { releaseVersion } from 'nx/release';
+import { releasePackages } from './release-packages';
 import { serveSite } from './serve-site';
 
 /** What {@link withLocalPackages} gives the code it runs. */
@@ -23,16 +26,77 @@ export interface LocalPackagesOptions {
   localRegistryTarget?: string;
   /** Built registry folder, relative to the root. */
   registryPath?: string;
+  /**
+   * Output of `changeset pack` (its `publish-plan.json` and `packages/`),
+   * relative to the root or absolute. When set, these exact tarballs are
+   * published, at their own version, instead of the dist packages at a
+   * unique prerelease: the Release workflow tests what it then publishes
+   * (ADR-0028).
+   */
+  packDir?: string;
+}
+
+/** A packed package. */
+export interface PackedRelease {
+  /** Package name. */
+  name: string;
+  /** Its version. */
+  version: string;
+  /** Path of the tarball: relative to the pack folder in a publish plan. */
+  tarball: string;
 }
 
 /**
- * Runs code against unpublished Ndop (ADR-0015): versions every `@ndop/*`
- * dist package with a unique prerelease, so no package-manager cache can
- * serve an older build, publishes them to a local Verdaccio, and serves
- * the built registry over HTTP, stopping both afterwards. Dist manifests
- * keep the version; the next build restores them.
+ * Lists the tarballs of a `changeset pack` output, from its
+ * `publish-plan.json`: a list of chunks, each a list of releases, of which
+ * those of kind `publish` carry a tarball.
  *
- * @param options - Workspace root, prerelease tag and paths.
+ * @param plan - The text of `publish-plan.json`.
+ * @returns Each tarball, in publishing order.
+ * @throws If the plan isn't version 1, or a release has no tarball.
+ */
+export function packedReleases(plan: string): PackedRelease[] {
+  const parsed = JSON.parse(plan) as {
+    version?: number;
+    plan?: {
+      kind: string;
+      name: string;
+      version: string;
+      tarball?: { path: string };
+    }[][];
+  };
+  if (parsed.version !== 1 || !Array.isArray(parsed.plan)) {
+    throw new Error('Expected a version 1 Changesets publish plan.');
+  }
+  return parsed.plan
+    .flat()
+    .filter((release) => release.kind === 'publish')
+    .map((release) => {
+      if (!release.tarball) {
+        throw new Error(
+          `${release.name}@${release.version} has no tarball; pass the output of changeset pack.`,
+        );
+      }
+      return {
+        name: release.name,
+        version: release.version,
+        tarball: release.tarball.path,
+      };
+    });
+}
+
+/**
+ * Runs code against unpublished Ndop (ADR-0015). By default it versions
+ * every `@ndop/*` dist package with a unique prerelease, so no
+ * package-manager cache can serve an older build, and packs each one as
+ * the release does, with `pnpm pack` from its source folder
+ * (`publishConfig.directory` points at dist); dist manifests keep the
+ * version, and the next build restores them. With `packDir`, it takes
+ * those tarballs instead. Either way it publishes the tarballs to a local
+ * Verdaccio and serves the built registry over HTTP, stopping both
+ * afterwards.
+ *
+ * @param options - Workspace root, prerelease tag, paths and tarballs.
  * @param run - The code, given the version and environment.
  * @returns What the code returns.
  */
@@ -40,17 +104,16 @@ export async function withLocalPackages<T>(
   options: LocalPackagesOptions,
   run: (packages: LocalPackages) => Promise<T>,
 ): Promise<T> {
-  const version = `0.0.0-${options.tag}.${Date.now()}`;
-  // Before the registry starts: the configured pre-version build would
-  // otherwise resolve its tools through Verdaccio.
-  await releaseVersion({
-    specifier: version,
-    stageChanges: false,
-    gitCommit: false,
-    gitTag: false,
-    firstRelease: true,
-    versionActionsOptionsOverrides: { skipLockFileUpdate: true },
-  });
+  const packed = options.packDir
+    ? await packedOutput(resolve(options.root, options.packDir))
+    : await packDist(options.root, options.tag);
+  const versions = [...new Set(packed.map((release) => release.version))];
+  const [version] = versions;
+  if (version === undefined || versions.length !== 1) {
+    throw new Error(
+      `Expected one version across the packed packages, found ${versions.length}.`,
+    );
+  }
   const stopRegistry = await startLocalRegistry({
     localRegistryTarget:
       options.localRegistryTarget ?? '@ndop/source:local-registry',
@@ -61,7 +124,9 @@ export async function withLocalPackages<T>(
     join(options.root, options.registryPath ?? 'dist/registry'),
   );
   try {
-    await releasePublish({ firstRelease: true, outputStyle: 'static' });
+    for (const release of packed) {
+      await publishTarball(release.tarball, options.root);
+    }
     const registryUrl = `${server.url}/r/{name}.json`;
     const env: NodeJS.ProcessEnv = {
       ...process.env,
@@ -80,4 +145,99 @@ export async function withLocalPackages<T>(
     await server.close();
     stopRegistry();
   }
+}
+
+/**
+ * The tarballs of a `changeset pack` output.
+ *
+ * @param packDir - Absolute path of the output.
+ * @returns Each tarball, with an absolute path.
+ */
+async function packedOutput(packDir: string): Promise<PackedRelease[]> {
+  return packedReleases(
+    await readFile(join(packDir, 'publish-plan.json'), 'utf-8'),
+  ).map((release) => ({
+    ...release,
+    tarball: join(packDir, release.tarball),
+  }));
+}
+
+/**
+ * Versions the release's dist packages with a unique prerelease, then packs
+ * each into `tmp/local-packages`.
+ *
+ * @param root - Workspace root.
+ * @param tag - Prefix of the prerelease.
+ * @returns Each tarball, with an absolute path.
+ */
+async function packDist(root: string, tag: string): Promise<PackedRelease[]> {
+  const version = `0.0.0-${tag}.${Date.now()}`;
+  // Before the registry starts: the configured pre-version build would
+  // otherwise resolve its tools through Verdaccio.
+  await releaseVersion({
+    specifier: version,
+    stageChanges: false,
+    gitCommit: false,
+    gitTag: false,
+    firstRelease: true,
+    versionActionsOptionsOverrides: { skipLockFileUpdate: true },
+  });
+  const out = join(root, 'tmp/local-packages');
+  await rm(out, { recursive: true, force: true });
+  await mkdir(out, { recursive: true });
+  const packed: PackedRelease[] = [];
+  for (const { name, dir } of await releasePackages(root)) {
+    const tarball = join(
+      out,
+      `${name.replace(/^@/, '').replace('/', '-')}-${version}.tgz`,
+    );
+    await runPnpm(['pack', '--out', tarball], join(root, dir));
+    packed.push({ name, version, tarball });
+  }
+  return packed;
+}
+
+/**
+ * Publishes a tarball to the local registry with pnpm, the tool
+ * `changeset publish` uses in this workspace, so the test publishes the way
+ * the release does.
+ *
+ * @param tarball - Absolute path of the tarball.
+ * @param cwd - Working folder.
+ * @returns Resolves once published.
+ * @throws With pnpm's output, if it fails.
+ */
+function publishTarball(tarball: string, cwd: string): Promise<void> {
+  return runPnpm(
+    ['publish', tarball, '--access', 'public', '--no-git-checks'],
+    cwd,
+  );
+}
+
+/**
+ * Runs pnpm with the current environment, which points it at the local
+ * registry once that has started.
+ *
+ * @param args - pnpm's arguments.
+ * @param cwd - Working folder.
+ * @returns Resolves when it succeeds.
+ * @throws With pnpm's output, if it fails.
+ */
+function runPnpm(args: string[], cwd: string): Promise<void> {
+  return new Promise((done, fail) => {
+    const child = spawn('pnpm', args, {
+      cwd,
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let output = '';
+    child.stdout.on('data', (chunk: Buffer) => (output += chunk.toString()));
+    child.stderr.on('data', (chunk: Buffer) => (output += chunk.toString()));
+    child.on('error', fail);
+    child.on('close', (code) =>
+      code === 0
+        ? done()
+        : fail(new Error(`pnpm ${args.join(' ')} failed:\n${output}`)),
+    );
+  });
 }

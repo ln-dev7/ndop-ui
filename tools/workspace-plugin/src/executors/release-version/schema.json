@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Release version",
+  "description": "Version the npm packages for a release (ADR-0028): run changeset version, then pin the registry template's @ndop/* dev dependencies to the new version.",
+  "type": "object",
+  "properties": {
+    "versionSource": {
+      "type": "string",
+      "description": "package.json of a package in the fixed group, whose version every package shares, relative to the workspace root.",
+      "default": "packages/cli/package.json"
+    },
+    "template": {
+      "type": "string",
+      "description": "The registry template's package.json, relative to the workspace root.",
+      "default": "tools/registry-template/package.json"
+    }
+  },
+  "required": []
+}
