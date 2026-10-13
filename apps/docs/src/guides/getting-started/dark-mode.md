@@ -12,6 +12,9 @@ colors.
 ## Choosing the starting scheme
 
 ```ts title="src/app/app.config.ts"
+import { ApplicationConfig } from '@angular/core';
+import { provideNdop } from '@ndop/core';
+
 export const appConfig: ApplicationConfig = {
   providers: [provideNdop({ theme: 'system' })],
 };
@@ -25,11 +28,22 @@ alone, without any script.
 
 Inject `NdopTheme` and call `set`:
 
-```ts
-private readonly theme = inject(NdopTheme);
+```ts title="src/app/theme-toggle.ts"
+import { Component, inject } from '@angular/core';
+import { NdopTheme } from '@ndop/core';
+import { Button } from '@/ui/button/button';
 
-toggle() {
-  this.theme.set(this.theme.mode() === 'dark' ? 'light' : 'dark');
+@Component({
+  selector: 'app-theme-toggle',
+  imports: [Button],
+  template: `<button ndButton variant="outline" (click)="toggle()">Toggle theme</button>`,
+})
+export class ThemeToggle {
+  private readonly theme = inject(NdopTheme);
+
+  protected toggle(): void {
+    this.theme.set(this.theme.mode() === 'dark' ? 'light' : 'dark');
+  }
 }
 ```
 

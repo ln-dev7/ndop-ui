@@ -82,7 +82,7 @@ Ndop also has components Material doesn't: [Command](/docs/components/command),
 
 With Material, the dialog is a component that a service opens:
 
-```angular-html title="delete-dialog.html"
+```angular-html title="delete-dialog.html" nocheck="Angular Material's markup"
 <h2 mat-dialog-title>Delete project?</h2>
 <mat-dialog-content>Its tasks are deleted for everyone.</mat-dialog-content>
 <mat-dialog-actions align="end">
@@ -94,26 +94,41 @@ With Material, the dialog is a component that a service opens:
 With Ndop, a confirmation is an [Alert Dialog](/docs/components/alert-dialog)
 in the page that asks:
 
-```angular-html
-<ng-container ndAlertDialog>
-  <button ndButton variant="destructive" ndAlertDialogTrigger>Delete project</button>
-  <ng-template ndAlertDialogPortal>
-    <div ndAlertDialogOverlay></div>
-    <div ndAlertDialogContent>
-      <div ndAlertDialogHeader>
-        <h2 ndAlertDialogTitle>Delete project?</h2>
-        <p ndAlertDialogDescription>Its tasks are deleted for everyone.</p>
-      </div>
-      <div ndAlertDialogFooter>
-        <button ndAlertDialogCancel>Cancel</button>
-        <button ndAlertDialogAction variant="destructive" (click)="remove()">Delete</button>
-      </div>
-    </div>
-  </ng-template>
-</ng-container>
+```ts title="delete-project.ts"
+import { Component, output } from '@angular/core';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger } from '@/ui/alert-dialog/alert-dialog';
+import { Button } from '@/ui/button/button';
+
+@Component({
+  selector: 'app-delete-project',
+  imports: [AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Button],
+  template: `
+    <ng-container ndAlertDialog>
+      <button ndButton variant="destructive" ndAlertDialogTrigger>Delete project</button>
+      <ng-template ndAlertDialogPortal>
+        <div ndAlertDialogOverlay></div>
+        <div ndAlertDialogContent>
+          <div ndAlertDialogHeader>
+            <h2 ndAlertDialogTitle>Delete project?</h2>
+            <p ndAlertDialogDescription>Its tasks are deleted for everyone.</p>
+          </div>
+          <div ndAlertDialogFooter>
+            <button ndAlertDialogCancel>Cancel</button>
+            <button ndAlertDialogAction variant="destructive" (click)="deleted.emit()">Delete</button>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
+  `,
+})
+export class DeleteProject {
+  readonly deleted = output();
+}
 ```
 
-Both buttons close the dialog, and focus returns to the trigger.
+Both buttons close the dialog, and focus returns to the trigger. Where
+Material's caller reads the result from `afterClosed()`, the page listens
+to `(deleted)`.
 
 ## Theming
 

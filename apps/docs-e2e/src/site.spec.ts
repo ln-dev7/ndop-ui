@@ -157,3 +157,17 @@ test('a mapping table fits a phone without widening the page', async ({
     375,
   );
 });
+
+test('an opted-out block shows its file name and never its nocheck', async ({
+  page,
+}) => {
+  await open(page, '/docs/getting-started/migrating-from-angular-material');
+  const block = page.locator('figure.code-frame', {
+    hasText: 'mat-dialog-title',
+  });
+  await expect(block.locator('.code-frame-title')).toHaveText(
+    'delete-dialog.html',
+  );
+  await expect(page.locator('main')).not.toContainText('nocheck');
+  expect(await page.content()).not.toContain('nocheck');
+});

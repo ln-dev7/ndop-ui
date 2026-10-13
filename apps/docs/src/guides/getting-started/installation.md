@@ -84,8 +84,9 @@ npx ndop add default utils icons
 In the app's `app.config.ts`:
 
 ```ts title="apps/my-app/src/app/app.config.ts"
+import { ApplicationConfig } from '@angular/core';
 import { provideNdop } from '@ndop/core';
-import { provideIcons } from './lib/icons';
+import { provideIcons } from '@/lib/icons';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideNdop(), provideIcons()],

@@ -79,6 +79,7 @@ can be items of the same registry or Ndop's: an item that lists
 Ndop's registry. The template's widget does, for its action:
 
 ```ts title="ui/widget/widget.ts"
+import { Directive } from '@angular/core';
 import { Button } from '@/ui/button/button';
 
 @Directive({
