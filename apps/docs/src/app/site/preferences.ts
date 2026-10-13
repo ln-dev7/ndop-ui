@@ -3,6 +3,13 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { NdopTheme, type NdopThemeMode } from '@ndop/core';
 
+/**
+ * The browser's and the installed app's bar color in each scheme, as
+ * `index.html` sets it: the brand's indigo, or the dark header's
+ * background (ADR-0027).
+ */
+const BAR_COLORS = { light: '#1E3170', dark: '#0a0a0a' } as const;
+
 /** Text direction of the whole site. */
 export type Direction = 'ltr' | 'rtl';
 
@@ -14,7 +21,8 @@ export type Direction = 'ltr' | 'rtl';
 @Injectable({ providedIn: 'root' })
 export class Preferences {
   private readonly theme = inject(NdopTheme);
-  private readonly root = inject(DOCUMENT).documentElement;
+  private readonly document = inject(DOCUMENT);
+  private readonly root = this.document.documentElement;
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly currentDirection = signal<Direction>('ltr');
   private readonly directionality = inject(Directionality);
@@ -34,6 +42,7 @@ export class Preferences {
     if (!this.browser) return;
     const saved = this.read('ndop-theme');
     if (saved === 'light' || saved === 'dark') this.theme.set(saved);
+    this.paintBars();
     this.applyDirection(this.root.dir === 'rtl' ? 'rtl' : 'ltr');
   }
 
@@ -44,6 +53,7 @@ export class Preferences {
    */
   setMode(mode: NdopThemeMode): void {
     this.theme.set(mode);
+    this.paintBars();
     this.write('ndop-theme', mode);
   }
 
@@ -70,6 +80,7 @@ export class Preferences {
       if (event.key === 'ndop-theme') {
         const mode = event.newValue;
         this.theme.set(mode === 'light' || mode === 'dark' ? mode : 'system');
+        this.paintBars();
       } else if (event.key === 'ndop-dir') {
         const direction = event.newValue === 'rtl' ? 'rtl' : 'ltr';
         this.root.dir = direction;
@@ -101,6 +112,22 @@ export class Preferences {
     if (this.directionality.value !== direction) {
       this.directionality.valueSignal.set(direction);
       this.directionality.change.emit(direction);
+    }
+  }
+
+  /**
+   * Gives the browser's bars the scheme the site shows: by default each
+   * `theme-color` tag applies under its own system scheme, but a scheme
+   * chosen on the site holds under both.
+   */
+  private paintBars(): void {
+    if (!this.browser) return;
+    const mode = this.mode();
+    for (const meta of this.document.querySelectorAll<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    )) {
+      const scheme = meta.media.includes('dark') ? 'dark' : 'light';
+      meta.content = BAR_COLORS[mode === 'system' ? scheme : mode];
     }
   }
 

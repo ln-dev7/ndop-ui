@@ -19,6 +19,8 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/ui/tooltip/tooltip';
+import { InstallApp } from './install';
+import { LogoMark } from './logo-mark';
 import { Preferences } from './preferences';
 import { CommandPalette } from './command-palette';
 import { SiteNav } from './site-nav';
@@ -39,8 +41,9 @@ const SYSTEM = {
 
 /**
  * The sticky site header: the logo, primary links, the search palette,
- * the theme and direction toggles, and, on small screens, a button that
- * opens the navigation in a bottom sheet. Its controls hydrate when first
+ * the theme and direction toggles, "Install app" when the browser offers
+ * it, and, on small screens, a button that opens the navigation in a
+ * bottom sheet, where installation is offered instead. Its controls hydrate when first
  * needed.
  */
 @Component({
@@ -63,6 +66,7 @@ const SYSTEM = {
     TooltipContent,
     SiteNav,
     CommandPalette,
+    LogoMark,
   ],
   template: `
     <header
@@ -94,15 +98,59 @@ const SYSTEM = {
                 class="top-auto bottom-0 left-0 max-h-[85vh] max-w-none translate-x-0 translate-y-0 overflow-y-auto rounded-b-none p-6 sm:max-w-none"
               >
                 <h2 ndDialogTitle>Navigation</h2>
-                <!-- The header's own links hide on small screens. -->
-                <nav aria-label="Site" class="my-4 flex gap-2 text-sm">
-                  <a ndButton variant="outline" size="sm" routerLink="/blocks"
-                    >Blocks</a
+                <div class="my-4 flex items-center gap-2">
+                  <!-- The header's own links hide on small screens. -->
+                  <nav aria-label="Site" class="flex gap-2 text-sm">
+                    <a ndButton variant="outline" size="sm" routerLink="/blocks"
+                      >Blocks</a
+                    >
+                    <a ndButton variant="outline" size="sm" routerLink="/themes"
+                      >Themes</a
+                    >
+                  </nav>
+                  @if (installer.available()) {
+                    <button
+                      ndButton
+                      variant="outline"
+                      size="sm"
+                      class="ms-auto"
+                      (click)="installer.install()"
+                    >
+                      <svg ndIcon="download"></svg>
+                      Install app
+                    </button>
+                  }
+                </div>
+                @if (installer.iosHint()) {
+                  <!-- iOS Safari has no install prompt (ADR-0027). -->
+                  <aside
+                    aria-label="Install"
+                    class="mb-4 flex items-start gap-3 rounded-lg border bg-muted/40 p-3 text-sm"
                   >
-                  <a ndButton variant="outline" size="sm" routerLink="/themes"
-                    >Themes</a
-                  >
-                </nav>
+                    <p class="flex-1 pt-0.5 text-muted-foreground">
+                      Install Ndop UI: tap Share
+                      <svg
+                        ndIcon="share"
+                        class="inline size-4 align-[-0.1875rem] text-foreground"
+                      ></svg
+                      >, then
+                      <span
+                        class="font-medium whitespace-nowrap text-foreground"
+                        >Add to Home Screen</span
+                      >.
+                    </p>
+                    <button
+                      ndButton
+                      variant="ghost"
+                      size="icon-sm"
+                      class="-me-1 -mt-1 shrink-0"
+                      aria-label="Dismiss"
+                      (click)="installer.dismissHint()"
+                    >
+                      <svg ndIcon="x"></svg>
+                    </button>
+                  </aside>
+                }
                 <docs-site-nav />
                 <button ndDialogCloseButton>
                   <svg ndIcon="x"></svg>
@@ -113,7 +161,14 @@ const SYSTEM = {
           </ng-container>
         }
 
-        <a routerLink="/" class="me-4 font-semibold tracking-tight">Ndop UI</a>
+        <a
+          routerLink="/"
+          class="me-4 flex items-center gap-2 font-semibold tracking-tight"
+        >
+          <!-- 1px up centers the leaf on the capitals. -->
+          <docs-logo-mark class="h-5 -translate-y-px" />
+          Ndop UI
+        </a>
         <nav
           aria-label="Main"
           class="hidden items-center gap-4 text-sm md:flex"
@@ -158,6 +213,25 @@ const SYSTEM = {
           <!-- Soon after load, so the icon and label follow a saved
                scheme the server couldn't know. -->
           @defer (on immediate; hydrate on idle) {
+            <!-- Small screens offer it in the navigation sheet. -->
+            @if (installer.available()) {
+              <ng-container ndTooltip>
+                <button
+                  ndButton
+                  ndTooltipTrigger
+                  variant="ghost"
+                  size="icon"
+                  class="hidden lg:inline-flex"
+                  aria-label="Install app"
+                  (click)="installer.install()"
+                >
+                  <svg ndIcon="monitor-down"></svg>
+                </button>
+                <ng-template ndTooltipPortal>
+                  <div ndTooltipContent>Install app</div>
+                </ng-template>
+              </ng-container>
+            }
             <ng-container ndTooltip>
               <button
                 ndButton
@@ -197,6 +271,7 @@ const SYSTEM = {
 })
 export class SiteHeader {
   protected readonly preferences = inject(Preferences);
+  protected readonly installer = inject(InstallApp);
 
   /** Whether the small-screen navigation sheet is open. */
   protected readonly navigationOpen = signal(false);

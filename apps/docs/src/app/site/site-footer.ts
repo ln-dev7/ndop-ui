@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LogoMark } from './logo-mark';
 
 /** Where Ndop UI's source lives. */
 const REPOSITORY = 'https://github.com/ndop-ui/ui';
@@ -7,18 +8,22 @@ const REPOSITORY = 'https://github.com/ndop-ui/ui';
 const LINK = 'font-medium underline underline-offset-4 hover:text-foreground';
 
 /**
- * The site footer on every page: who built Ndop UI and where its source
+ * The site footer on every page: Ndop's mark (ADR-0026), who built Ndop UI and where its source
  * is, and the credit to shadcn/ui, whose styles and default palette the
  * registry items adapt, with a link to the registry's license and
  * notices (ADR-0014, amendment 2).
  */
 @Component({
   selector: 'docs-site-footer',
+  imports: [LogoMark],
   template: `
     <footer>
       <div
         class="mx-auto max-w-[1440px] px-4 py-6 text-center text-sm text-balance text-muted-foreground lg:px-6"
       >
+        <div class="mb-3 flex justify-center">
+          <docs-logo-mark class="h-6" />
+        </div>
         <p>
           Built by
           <a href="https://github.com/valerymelou" [class]="link"

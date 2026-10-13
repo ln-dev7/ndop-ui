@@ -8,7 +8,9 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { angularServerMode } from '../../tools/workspace-plugin/src/vite/angular-server-mode';
 import { deferScripts } from '../../tools/workspace-plugin/src/vite/defer-scripts';
 import { inlineCss } from '../../tools/workspace-plugin/src/vite/inline-css';
+import { brandAssets } from './build/brand-assets';
 import { componentDocs } from './build/component-docs';
+import { serviceWorker } from './build/service-worker';
 import {
   COLOR_REPLACEMENTS,
   LANGUAGES,
@@ -19,6 +21,11 @@ import { headingIdsExtension } from './src/markdown/heading-ids';
 import { stepsExtension } from './src/markdown/steps';
 
 const workspace = join(import.meta.dirname, '../..');
+
+// The Latin files of the two fonts every page uses (Geist and Geist Mono);
+// the other subsets load only when text needs them. Pages preload them, and
+// the service worker saves them at install.
+const PAGE_FONTS = [/geist-(mono-)?latin-wght-normal-/];
 
 export default defineConfig(() => {
   return {
@@ -69,7 +76,9 @@ export default defineConfig(() => {
         },
         // Every page is linked from the navigation, so following links
         // from the home page prerenders the whole site.
-        prerender: { discover: true, routes: ['/'] },
+        // The offline page is linked from nowhere: the service worker
+        // answers with it (ADR-0027).
+        prerender: { discover: true, routes: ['/', '/offline'] },
         nitro: {
           prerender: {
             // Links into the theme studio carry a theme in their query
@@ -81,7 +90,7 @@ export default defineConfig(() => {
             ignore: [
               (route: string) =>
                 route.includes('?') ||
-                !/^\/(?:$|docs(?:\/|$)|blocks(?:\/|$)|themes(?:\/|$))/.test(
+                !/^\/(?:$|offline$|docs(?:\/|$)|blocks(?:\/|$)|themes(?:\/|$))/.test(
                   route,
                 ),
             ],
@@ -93,16 +102,20 @@ export default defineConfig(() => {
         workspace,
         guides: join(import.meta.dirname, 'src/guides'),
       }),
+      // Icons and the web app manifest, from the logo's masters.
+      brandAssets(join(import.meta.dirname, 'brand')),
+      // `/sw.js`, which precaches what the app needs to start offline.
+      serviceWorker({
+        source: join(import.meta.dirname, 'src/service-worker/worker.ts'),
+        pages: ['/', '/offline'],
+        files: PAGE_FONTS,
+      }),
       angularServerMode(),
       // Tailwind's Vite plugin rewrites the url()s of stylesheets it
       // inlines, such as Fontsource's font files; its PostCSS plugin left
       // them relative to the inlined file, so the built site had no fonts.
       tailwindcss(),
-      inlineCss({
-        // The Latin files of the two fonts every page uses (Geist and
-        // Geist Mono); the other subsets load only when text needs them.
-        preloadFonts: [/geist-(mono-)?latin-wght-normal-/],
-      }),
+      inlineCss({ preloadFonts: PAGE_FONTS }),
       deferScripts(),
       // The base config covers workspace files outside the app, such as
       // the registry items the docs render.

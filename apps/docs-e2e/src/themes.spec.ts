@@ -169,9 +169,13 @@ test('the studio passes axe and logs nothing in both modes', async ({
     await expect(page.getByRole('main')).toHaveCount(1);
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     // Switching modes fades the colors; axe would measure them halfway.
+    // An animation the switch cancels rejects instead of finishing, and is
+    // just as done.
     await page.evaluate(() =>
       Promise.all(
-        document.getAnimations().map((animation) => animation.finished),
+        document
+          .getAnimations()
+          .map((animation) => animation.finished.catch(() => undefined)),
       ),
     );
     const axe = await new AxeBuilder({ page }).analyze();

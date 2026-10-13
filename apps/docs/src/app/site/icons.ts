@@ -12,13 +12,16 @@ import {
   LucideLanguages,
   LucideMenu,
   LucideMonitor,
+  LucideMonitorDown,
   LucideMoon,
   LucidePencil,
   LucideSearch,
+  LucideShare,
   LucideSmartphone,
   LucideSun,
   LucideTablet,
   LucideTerminal,
+  LucideWifiOff,
 } from '@lucide/angular';
 import { provideNdopIcons } from '@ndop/core';
 import { ndopIcons } from '@/lib/icons';
@@ -44,12 +47,15 @@ export function provideDocsIcons(): EnvironmentProviders {
     languages: LucideLanguages.icon,
     menu: LucideMenu.icon,
     monitor: LucideMonitor.icon,
+    'monitor-down': LucideMonitorDown.icon,
     moon: LucideMoon.icon,
     pencil: LucidePencil.icon,
     search: LucideSearch.icon,
+    share: LucideShare.icon,
     smartphone: LucideSmartphone.icon,
     sun: LucideSun.icon,
     tablet: LucideTablet.icon,
     terminal: LucideTerminal.icon,
+    'wifi-off': LucideWifiOff.icon,
   });
 }

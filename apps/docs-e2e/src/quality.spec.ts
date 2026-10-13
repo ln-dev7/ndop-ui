@@ -15,6 +15,8 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
   // its budget grows with each route it finds.
   test.setTimeout(10 * 60_000);
   const site = new SiteMap('/');
+  // Linked from nowhere: the service worker answers with it (ADR-0027).
+  site.add(['/offline']);
 
   for (let route = site.next(); route !== undefined; route = site.next()) {
     test.setTimeout(test.info().timeout + 10_000);

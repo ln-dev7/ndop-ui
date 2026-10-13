@@ -9,10 +9,30 @@
       name="description"
       content="Accessible Angular components you own and can still update, built for you and your agent."
     />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Icons and the manifest are generated from the logo at build time
+         (build/brand-assets.ts). The SVG favicon wins where supported. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- The browser's and the installed app's bars: indigo, or the dark
+         header's background in dark mode (ADR-0027). The app follows a
+         scheme chosen on the site (site/preferences.ts). -->
+    <meta
+      name="theme-color"
+      content="#1E3170"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0a0a0a"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta name="apple-mobile-web-app-title" content="Ndop" />
     <link rel="stylesheet" href="/src/styles.css" />
     <!-- Applies the saved theme and direction before the first paint, so a
-         prerendered page never flashes; the app re-applies them on boot. -->
+         prerendered page never flashes; the app re-applies them on boot.
+         Also keeps an install prompt that fires before the app boots. -->
     <script>
       try {
         var root = document.documentElement;
@@ -23,6 +43,14 @@
         }
         if (localStorage.getItem('ndop-dir') === 'rtl') root.dir = 'rtl';
       } catch (e) {}
+      // Chrome offers installation once, possibly before the app has
+      // booted; the event is kept for the header's "Install app"
+      // (site/install.ts) instead of the browser's own prompt.
+      addEventListener('beforeinstallprompt', function (event) {
+        event.preventDefault();
+        window.ndopInstallPrompt = event;
+        dispatchEvent(new Event('ndop:installable'));
+      });
     </script>
   </head>
   <body>

@@ -16,12 +16,13 @@ import { withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
 import { provideNdop } from '@ndop/core';
 import { provideDocsIcons } from './site/icons';
+import { provideOfflineReading } from './site/offline';
 import { Preferences } from './site/preferences';
 
 /**
  * Application providers shared by the browser and server builds: file-based
  * routing with view transitions and anchor scrolling, hydration, Ndop's
- * theme and the docs' icons.
+ * theme, the docs' icons and, in production, the service worker.
  */
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -40,6 +41,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([requestContextInterceptor])),
     provideNdop({ theme: 'system' }),
     provideDocsIcons(),
+    provideOfflineReading(),
     provideAppInitializer(() => {
       // Marks the page once it has hydrated and settled, which production
       // builds don't log, so tests and audits can wait for it. Parts that
