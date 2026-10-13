@@ -315,7 +315,9 @@ export function unknownDirectives(
 }
 
 /**
- * Finds `ndop add` arguments and `/docs/components/<name>` links that name
+ * Finds `ndop add` arguments, run through the package as
+ * `npx @ndop/cli add` (ADR-0031) or as the installed `ndop` bin, and
+ * `/docs/components/<name>` links that name
  * no item of Ndop's registry; a `theme:` argument must name a theme.
  * Options, placeholders, namespaced items and URLs are skipped: they name
  * nothing in Ndop's own registry.
@@ -332,23 +334,23 @@ export function unknownItems(
 ): GuideIssue[] {
   return markdown.split('\n').flatMap((text, index) => {
     const at = { guide, line: index + 1 };
-    const added = [...text.matchAll(/ndop add ([^\n`]+)/g)].flatMap(
-      ([, args = '']) =>
-        args
-          .split(/\s+/)
-          .filter((arg) => arg && !/^(-|<|@)|:\/\//.test(arg))
-          .filter((arg) => {
-            const name = arg.replace(/^theme:/, '').replace(/@[\d.]+$/, '');
-            return !(
-              items.has(name) &&
-              (!arg.startsWith('theme:') ||
-                items.get(name) === 'registry:theme')
-            );
-          })
-          .map((arg) => ({
-            ...at,
-            message: `ndop add ${arg}: no such item in Ndop's registry.`,
-          })),
+    const added = [
+      ...text.matchAll(/(?:@ndop\/cli|\bndop) add ([^\n`]+)/g),
+    ].flatMap(([, args = '']) =>
+      args
+        .split(/\s+/)
+        .filter((arg) => arg && !/^(-|<|@)|:\/\//.test(arg))
+        .filter((arg) => {
+          const name = arg.replace(/^theme:/, '').replace(/@[\d.]+$/, '');
+          return !(
+            items.has(name) &&
+            (!arg.startsWith('theme:') || items.get(name) === 'registry:theme')
+          );
+        })
+        .map((arg) => ({
+          ...at,
+          message: `ndop add ${arg}: no such item in Ndop's registry.`,
+        })),
     );
     const linked = [...text.matchAll(/\(\/docs\/components\/([\w-]+)\)/g)]
       .filter(([, name = '']) => !items.has(name))

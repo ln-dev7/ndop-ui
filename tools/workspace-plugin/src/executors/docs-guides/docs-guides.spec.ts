@@ -245,8 +245,9 @@ describe('unknownItems', () => {
       unknownItems(
         'a.md',
         [
-          'npx ndop add button theme:rose @acme/table --yes',
-          'npx ndop add buton theme:button',
+          'npx @ndop/cli add button theme:rose @acme/table --yes',
+          'npx @ndop/cli add buton theme:button',
+          'Once installed, `ndop add crd` works too.',
           '[Button](/docs/components/button), [Card](/docs/components/crd)',
         ].join('\n'),
         items,
@@ -254,7 +255,8 @@ describe('unknownItems', () => {
     ).toEqual([
       "2: ndop add buton: no such item in Ndop's registry.",
       "2: ndop add theme:button: no such item in Ndop's registry.",
-      "3: /docs/components/crd: no such item in Ndop's registry.",
+      "3: ndop add crd: no such item in Ndop's registry.",
+      "4: /docs/components/crd: no such item in Ndop's registry.",
     ]);
   });
 });
