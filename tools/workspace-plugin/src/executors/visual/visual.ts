@@ -1,5 +1,5 @@
 import { spawn, type SpawnOptions } from 'node:child_process';
-import { createConnection } from 'node:net';
+import { get } from 'node:http';
 import { logger, type PromiseExecutor } from '@nx/devkit';
 import type { VisualExecutorSchema } from './schema';
 
@@ -42,7 +42,7 @@ const visual: PromiseExecutor<VisualExecutorSchema> = async (
     return { success: false };
   }
   try {
-    await waitForPort(port, 120_000);
+    await waitForServer(port, 120_000);
     const code = await exec(
       'pnpm',
       ['exec', 'playwright', 'test', ...playwrightArgs(options)],
@@ -146,29 +146,34 @@ function exec(
 }
 
 /**
- * Waits until something listens on a local port; the server in the
- * container may first download Playwright's npm package.
+ * Waits until the browser server answers HTTP on a local port; the server
+ * in the container may first download Playwright's npm package. A TCP
+ * connection isn't enough: Docker's port proxy accepts connections as soon
+ * as the container starts, then resets them until the server listens.
  *
  * @param port - The port.
  * @param timeout - Milliseconds to wait.
- * @returns Resolves once it accepts a connection.
+ * @returns Resolves once it answers a request.
  * @throws When it doesn't within the timeout.
  */
-async function waitForPort(port: number, timeout: number): Promise<void> {
+async function waitForServer(port: number, timeout: number): Promise<void> {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
-    const open = await new Promise<boolean>((resolve) => {
-      const socket = createConnection({ port, host: '127.0.0.1' });
-      socket.once('connect', () => {
-        socket.end();
-        resolve(true);
-      });
-      socket.once('error', () => resolve(false));
+    const ready = await new Promise<boolean>((resolve) => {
+      const request = get(
+        { port, host: '127.0.0.1', path: '/' },
+        (response) => {
+          response.resume();
+          resolve(true);
+        },
+      );
+      request.once('error', () => resolve(false));
+      request.setTimeout(2_000, () => request.destroy());
     });
-    if (open) return;
+    if (ready) return;
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  throw new Error(`Nothing listened on port ${port} within ${timeout} ms.`);
+  throw new Error(`Nothing answered on port ${port} within ${timeout} ms.`);
 }
 
 export default visual;
