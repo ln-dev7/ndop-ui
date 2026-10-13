@@ -7,7 +7,6 @@ import {
   type Type,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Badge } from '@/ui/badge/badge';
@@ -22,6 +21,7 @@ import { KeyboardTable } from '../../../components/keyboard-table';
 import { CodeFrames } from '../../../site/code-frames';
 import { Navigation } from '../../../site/navigation';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
+import { PageMeta } from '../../../site/page-meta';
 
 /** A component page's data with its examples' components. */
 interface LoadedPage {
@@ -416,8 +416,7 @@ export default class ComponentPage {
     requireSync: true,
   });
   private readonly navigation = inject(Navigation);
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly meta = inject(PageMeta);
 
   protected readonly h2 = H2;
   protected readonly h3 = H3;
@@ -433,10 +432,10 @@ export default class ComponentPage {
     loader: async ({ params }) => {
       const loaded = await loadPage(params.name);
       if (loaded) {
-        this.title.setTitle(`${loaded.data.title} · Ndop UI`);
-        this.meta.updateTag({
-          name: 'description',
-          content: loaded.data.description,
+        this.meta.set({
+          title: loaded.data.title,
+          description: loaded.data.description,
+          path: `/docs/components/${params.name}`,
         });
       }
       return loaded;

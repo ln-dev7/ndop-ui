@@ -1,6 +1,5 @@
 import { Component, computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Badge } from '@/ui/badge/badge';
@@ -11,6 +10,7 @@ import { KeyboardTable } from '../../../components/keyboard-table';
 import { CodeFrames } from '../../../site/code-frames';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
 import { StaticHtml } from '../../../site/static-html';
+import { PageMeta } from '../../../site/page-meta';
 
 /** Classes of the section headings (`h2`). */
 const H2 = 'scroll-mt-20 text-xl font-semibold tracking-tight';
@@ -153,8 +153,7 @@ export default class PrimitivePage {
   private readonly params = toSignal(inject(ActivatedRoute).paramMap, {
     requireSync: true,
   });
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly meta = inject(PageMeta);
 
   protected readonly h2 = H2;
   protected readonly h3 = H3;
@@ -166,8 +165,11 @@ export default class PrimitivePage {
       const load = primitivePages[params.name];
       if (!load) return undefined;
       const data = (await load()).default;
-      this.title.setTitle(`${data.title} primitive · Ndop UI`);
-      this.meta.updateTag({ name: 'description', content: data.description });
+      this.meta.set({
+        title: `${data.title} primitive`,
+        description: data.description,
+        path: `/docs/primitives/${params.name}`,
+      });
       return data;
     },
   });

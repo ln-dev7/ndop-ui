@@ -1,6 +1,5 @@
 import { Component, computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { CodeFrames } from '../../../site/code-frames';
@@ -10,6 +9,7 @@ import { injectCurrentPath } from '../../../site/current-path';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
 import { PageActions } from '../../../site/page-actions';
 import { StaticHtml } from '../../../site/static-html';
+import { PageMeta } from '../../../site/page-meta';
 
 /**
  * Decodes the character references Markdown rendering produces in heading
@@ -124,8 +124,7 @@ export default class ContentPage {
   });
   private readonly navigation = inject(Navigation);
   protected readonly path = injectCurrentPath();
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly meta = inject(PageMeta);
 
   /** The page's Markdown, already rendered to HTML at build time. */
   protected readonly page = resource({
@@ -136,10 +135,10 @@ export default class ContentPage {
     loader: async ({ params }) => {
       const guide = await loadGuide(params.section, params.page);
       if (guide) {
-        this.title.setTitle(`${guide.attributes.title} · Ndop UI`);
-        this.meta.updateTag({
-          name: 'description',
-          content: guide.attributes.description,
+        this.meta.set({
+          title: guide.attributes.title,
+          description: guide.attributes.description,
+          path: `/docs/${params.section}/${params.page}`,
         });
       }
       return guide;

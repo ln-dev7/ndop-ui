@@ -9,7 +9,6 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import {
@@ -50,6 +49,7 @@ import {
   type ThemeMode,
 } from './studio-theme';
 import { ThemeExports } from './theme-exports';
+import { PageMeta } from '../site/page-meta';
 
 /** How long the URL waits for edits to stop before it follows them. */
 const URL_DELAY = 300;
@@ -504,11 +504,11 @@ export class ThemeStudio {
   constructor() {
     const destroyRef = inject(DestroyRef);
     destroyRef.onDestroy(() => this.stopFitting?.());
-    inject(Title).setTitle('Theme studio · Ndop UI');
-    inject(Meta).updateTag({
-      name: 'description',
-      content:
+    inject(PageMeta).set({
+      title: 'Theme studio',
+      description:
         'Make an Ndop UI theme: edit its colors in OKLCH with contrast checks, its radius, fonts and density, and export it as CSS, a theme URL or design tokens.',
+      path: '/themes/studio',
     });
 
     // The URL is read once the page has hydrated, so the server's render,

@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
+import { PageMeta } from '../site/page-meta';
 import { RouterLink } from '@angular/router';
 import { BLOCK_CATEGORIES } from '@/categories';
 import { blocks } from 'virtual:ndop/blocks';
@@ -117,17 +117,17 @@ export class BlocksGallery {
   });
 
   constructor() {
-    const title = inject(Title);
-    const meta = inject(Meta);
+    const meta = inject(PageMeta);
     effect(() => {
       const block = this.block();
       const name = block?.title ?? this.category()?.title;
-      title.setTitle(name ? `${name} · Blocks · Ndop UI` : 'Blocks · Ndop UI');
-      meta.updateTag({
-        name: 'description',
-        content:
+      meta.set({
+        title: name ?? 'Blocks',
+        ...(name ? { section: 'Blocks' } : {}),
+        description:
           block?.description ??
           'Pages and sections built from Ndop UI components, to copy into your Angular app.',
+        path: this.slug() ? `/blocks/${this.slug()}` : '/blocks',
       });
     });
   }

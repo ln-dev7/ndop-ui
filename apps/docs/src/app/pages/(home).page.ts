@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AccessibilitySection } from '../landing/accessibility-section';
 import { AgentsSection } from '../landing/agents-section';
 import { BlocksSection } from '../landing/blocks-section';
@@ -7,6 +7,7 @@ import { Hero } from '../landing/hero';
 import { MergeSection } from '../landing/merge-section';
 import { ProofSection } from '../landing/proof-section';
 import { Showcase } from '../landing/showcase';
+import { PageMeta } from '../site/page-meta';
 
 /**
  * Landing page (`/`), ADR-0026 and its amendment 1: the hero and the
@@ -38,4 +39,13 @@ import { Showcase } from '../landing/showcase';
     </main>
   `,
 })
-export default class HomePage {}
+export default class HomePage {
+  constructor() {
+    inject(PageMeta).set({
+      title: 'Ndop UI',
+      description:
+        'Accessible Angular components you own and can still update, built for you and your agent.',
+      path: '/',
+    });
+  }
+}

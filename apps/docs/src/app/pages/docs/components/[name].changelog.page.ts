@@ -1,6 +1,5 @@
 import { Component, computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Badge } from '@/ui/badge/badge';
@@ -10,6 +9,7 @@ import { UpdatePreview } from '../../../components/update-preview';
 import { CodeFrames } from '../../../site/code-frames';
 import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
 import { StaticHtml } from '../../../site/static-html';
+import { PageMeta } from '../../../site/page-meta';
 
 /** Classes of the section headings (`h2`). */
 const H2 = 'scroll-mt-20 text-xl font-semibold tracking-tight';
@@ -138,8 +138,7 @@ export default class ChangelogPage {
   private readonly params = toSignal(inject(ActivatedRoute).paramMap, {
     requireSync: true,
   });
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly meta = inject(PageMeta);
 
   protected readonly h2 = H2;
   protected readonly id = versionId;
@@ -151,10 +150,10 @@ export default class ChangelogPage {
       const load = changelogs[params.name];
       if (!load) return undefined;
       const data = (await load()).default;
-      this.title.setTitle(`${data.title} changelog · Ndop UI`);
-      this.meta.updateTag({
-        name: 'description',
-        content: `Every version of the ${data.title} component, what ndop update does for each, and the diffs.`,
+      this.meta.set({
+        title: `${data.title} changelog`,
+        description: `Every version of the ${data.title} component, what ndop update does for each, and the diffs.`,
+        path: `/docs/components/${params.name}/changelog`,
       });
       return data;
     },

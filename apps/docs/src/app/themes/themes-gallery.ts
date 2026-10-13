@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, inject, PLATFORM_ID, signal } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
+import { PageMeta } from '../site/page-meta';
 import { RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
@@ -112,11 +112,11 @@ export class ThemesGallery {
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor() {
-    inject(Title).setTitle('Themes · Ndop UI');
-    inject(Meta).updateTag({
-      name: 'description',
-      content:
+    inject(PageMeta).set({
+      title: 'Themes',
+      description:
         'Themes for Ndop UI, previewed in light and dark, to install with the CLI or edit in the theme studio.',
+      path: '/themes',
     });
   }
 

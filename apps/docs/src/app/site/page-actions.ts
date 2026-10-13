@@ -5,9 +5,7 @@ import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import { commandFor, type PackageManager } from '../../highlight/shiki';
 import { savedPackageManager } from './code-frames';
-
-/** Where the docs are published; prompts link the live twins. */
-const SITE = 'https://ndop.dev';
+import { SITE } from './page-meta';
 
 /** The menu opens below its button, aligned to the button's end. */
 const BELOW_END: ConnectedPosition[] = [

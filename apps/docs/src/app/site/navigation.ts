@@ -2,6 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { COMPONENT_GROUPS } from '@/categories';
 import { components } from 'virtual:ndop/components';
 import { primitives } from 'virtual:ndop/primitives';
+import { GUIDE_SECTIONS } from './guide-sections';
 import { guideEntries } from './guides';
 
 /**
@@ -26,12 +27,6 @@ export interface NavSection {
   links: NavLink[];
 }
 
-/** Content folders shown in the navigation, in order, with their titles. */
-const SECTIONS: [folder: string, title: string][] = [
-  ['getting-started', 'Get started'],
-  ['patterns', 'Patterns'],
-];
-
 /**
  * The docs navigation, built from the front matter of the guides in
  * `src/guides/<section>/<page>.md`, then the components from the built
@@ -46,7 +41,7 @@ export class Navigation {
 
   /** Sections with their links. */
   readonly sections = computed<NavSection[]>(() => [
-    ...SECTIONS.map(([folder, title]) => ({
+    ...GUIDE_SECTIONS.map(([folder, title]) => ({
       title,
       links: this.guides
         .filter((guide) => guide.section === folder)
