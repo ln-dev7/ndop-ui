@@ -91,6 +91,7 @@
     },
     "test": {
       "executor": "@analogjs/vitest-angular:test",
+      "inputs": ["default", "^default", "{workspaceRoot}/ROADMAP.md"],
       "options": {
         "config": "vite.config.ts"
       },
