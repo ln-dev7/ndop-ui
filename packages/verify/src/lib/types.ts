@@ -77,6 +77,6 @@ export interface VerifyOptions {
   skip?: StepName[];
   /** Angular project, when `angular.json` has several applications. */
   project?: string;
-  /** The command that installs an item, for fixes; `npx ndop add <name>` by default. */
+  /** The command that installs an item, for fixes; `npx @ndop/cli add <name>` by default. */
   addCommand?: (name: string) => string;
 }

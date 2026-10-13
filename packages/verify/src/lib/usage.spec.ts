@@ -72,7 +72,7 @@ describe('checkUsage', () => {
         line: 10,
         column: 15,
         message: "ndCard is part of the card component, which isn't installed.",
-        fix: 'npx ndop add card',
+        fix: 'npx @ndop/cli add card',
       },
       expect.objectContaining({
         rule: 'usage/unknown-selector',

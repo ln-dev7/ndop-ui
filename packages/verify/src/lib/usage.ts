@@ -193,7 +193,7 @@ export function checkUsage(
   templates: readonly TemplateSource[],
   installed: readonly ComponentDoc[],
   available: readonly ComponentDoc[],
-  addCommand: (name: string) => string = (name) => `npx ndop add ${name}`,
+  addCommand: (name: string) => string = (name) => `npx @ndop/cli add ${name}`,
 ): Problem[] {
   const parts = partsOf(installed);
   const installedNames = new Set(installed.map((doc) => doc.name));
