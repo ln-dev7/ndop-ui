@@ -1,0 +1,221 @@
+name: Release
+
+# ADR-0028: releases the npm packages with Changesets, from master, once CI
+# has passed on the commit.
+#
+# - While changesets are pending, it opens or updates the version pull
+#   request ("chore(repo): version packages"), which bumps the fixed group of nine packages and
+#   writes their changelogs (`nx run @ndop/source:release-version`).
+# - Once it is merged and no changesets are left, it builds
+#   and packs the packages that aren't on npm yet, runs the registry
+#   install test against those exact tarballs, then publishes them with
+#   npm provenance through trusted publishing (OIDC), so no npm token is
+#   stored. It then pushes a git tag and a GitHub release per package.
+#
+# Like the Deploy workflow, it runs on workflow_run after CI, which on a
+# push to master runs every check of every project, so a red commit is
+# never released. workflow_run runs this file as it is on master, with
+# master's code, and fork pull requests can't reach it.
+#
+# Setup (CONTRIBUTING.md, "Releasing"): the one-time npm bootstrap and each
+# package's trusted publisher, the `npm` environment, and "Allow GitHub
+# Actions to create and approve pull requests".
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
+
+# Each job asks for what it needs.
+permissions: {}
+
+concurrency:
+  group: release
+  # A release in progress always finishes; the newest waiting run is next.
+  cancel-in-progress: false
+
+jobs:
+  select-mode:
+    name: Select mode
+    # workflow_run's branch filter matches a branch named master in a fork
+    # too, so this also checks the event and the repository.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.select-mode.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select-mode.outputs.publish-plan-artifact-id }}
+    steps:
+      # The commit CI passed, even if master has moved on since.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      # No dependency cache in this workflow: a cache written by another
+      # workflow mustn't reach the jobs that push and publish.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - run: pnpm install --frozen-lockfile
+
+      # `version` with changesets pending, `publish` with packages whose
+      # version isn't on npm yet, otherwise `none`.
+      - id: select-mode
+        uses: changesets/action/select-mode@v2
+
+  version:
+    name: Version packages
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'version'
+    runs-on: ubuntu-latest
+    permissions:
+      # The release branch's commit, pushed through the GitHub API.
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: changesets/action/version@v2
+        with:
+          script: pnpm nx run @ndop/source:release-version
+          commit-message: 'chore(repo): version packages'
+          pr-title: 'chore(repo): version packages'
+          pr-base-branch: master
+
+  pack:
+    name: Pack
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - run: pnpm install --frozen-lockfile
+
+      # Each package publishes its dist folder (publishConfig.directory).
+      - run: pnpm nx run-many -t build -p cli core primitives schema metadata merge verify mcp eslint-plugin
+
+      # pnpm packs each dist folder and replaces workspace: ranges with the
+      # released version.
+      - id: pack
+        uses: changesets/action/pack@v2
+        with:
+          publish-plan-artifact-id: ${{ needs.select-mode.outputs.publish-plan-artifact-id }}
+
+  # ADR-0015's install test, as in CI, but against the tarballs the pack
+  # job uploaded and the publish job publishes, served by Verdaccio at the
+  # release's version.
+  install-test:
+    name: Install test
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.11'
+
+      - run: pnpm install --frozen-lockfile
+
+      # ndop verify's playwright-core uses the same browser build as the
+      # workspace's Playwright.
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.pack.outputs.pack-dir-artifact-id }}
+          path: ${{ runner.temp }}/pack
+          merge-multiple: true
+
+      - run: pnpm nx e2e registry-e2e --packDir="$RUNNER_TEMP/pack"
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-install-test-logs
+          path: tmp/registry-e2e/*.log
+          if-no-files-found: ignore
+
+  publish:
+    name: Publish
+    needs: [pack, install-test]
+    runs-on: ubuntu-latest
+    # Each package's trusted publisher on npm names this environment, so
+    # only this job can publish; required reviewers on it would add an
+    # approval step.
+    environment: npm
+    permissions:
+      # Git tags and GitHub releases.
+      contents: write
+      # The OIDC token npm exchanges for a short-lived publish token.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - run: pnpm install --frozen-lockfile
+
+      # `changeset publish --from-pack-dir` with pnpm, which publishes
+      # through trusted publishing and attaches provenance on its own
+      # (public repository, public packages), then a git tag and a GitHub
+      # release per package.
+      - uses: changesets/action/publish@v2
+        with:
+          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}

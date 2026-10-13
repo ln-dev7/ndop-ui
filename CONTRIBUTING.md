@@ -153,3 +153,111 @@ pnpm exec wrangler pages project create ndop --production-branch=master
 To try a build locally with the Function as Pages runs it, run
 `pnpm nx serve-pages docs` (http://localhost:8788), then
 `pnpm nx smoke docs --url=http://localhost:8788`.
+
+## Releasing
+
+Releases follow [ADR-0028](docs/adr/0028-release-and-deploy.md).
+
+### npm packages
+
+The nine public packages, `@ndop/cli`, `@ndop/core`, `@ndop/primitives`,
+`@ndop/schema`, `@ndop/metadata`, `@ndop/merge`, `@ndop/verify`,
+`@ndop/mcp` and `@ndop/eslint-plugin`, form one Changesets **fixed** group
+(`.changeset/config.json`): they always release together, at one
+version. Each publishes its build output, `dist/packages/<name>`
+(`publishConfig.directory`), and pnpm replaces their `workspace:^`
+ranges with `^<version>` when it packs them.
+
+`packages/ndop`, the unscoped `ndop` alias of `@ndop/cli`, is private and
+not released: npm refused the name ([ADR-0031](docs/adr/0031-cli-entry-point.md)).
+If npm releases it, make it public, add it to the fixed group and to the
+build list below, and document `npx ndop` as an alternative to
+`npx @ndop/cli`.
+
+1. A pull request that changes a published package adds a changeset with
+   `pnpm changeset`, written for the package's users.
+2. Once CI passes on master, the Release workflow
+   (`.github/workflows/release.yml`) opens or updates the version pull
+   request, "chore(repo): version packages". It runs
+   `pnpm nx run @ndop/source:release-version`: `changeset version` bumps
+   the group and writes each package's `CHANGELOG.md`, and the registry
+   template's `@ndop/*` dev dependencies move to the new version.
+   GitHub doesn't run workflows on pull requests that a workflow opened,
+   so close and reopen it to run CI on it.
+3. Merging it releases. Once CI passes on that commit, the workflow builds
+   and packs the packages whose version isn't on npm, runs the registry
+   install test against those exact tarballs
+   (`pnpm nx e2e registry-e2e --packDir=<folder>`), then publishes them in
+   the `npm` environment through npm's trusted publishing, with
+   provenance and no npm token. It then pushes a git tag and a GitHub
+   release per package, such as `@ndop/cli@1.0.0`.
+
+To rehearse locally, without publishing:
+`pnpm nx run-many -t build -p cli core primitives schema metadata merge verify mcp eslint-plugin`,
+then `pnpm changeset pack --out-dir tmp/pack` and
+`pnpm nx e2e registry-e2e --packDir=tmp/pack`.
+
+### Registry items
+
+Items keep their own versions (ADR-0012). The `item-release` generator
+sets the new version and adds the changelog section; `{previous}` in the
+notes stands for each item's version before:
+
+```bash
+pnpm nx g @ndop/workspace-plugin:item-release button --bump=minor --notes="Adds an xs size." --dry-run
+```
+
+Then build the registry with `pnpm nx build registry`, outside CI, and
+commit the new snapshots in `registry/snapshots`: they are the merge bases
+of `ndop update` (ADR-0010).
+
+### One-time setup
+
+npm lets a trusted publisher be added only to a package that exists
+([npm trust](https://docs.npmjs.com/cli/v11/commands/npm-trust)), so each
+package is first published once by hand, as a placeholder. This needs npm
+11.15.0 or later, and two-factor authentication on the npm account that
+owns the `ndop` organization.
+
+1. In the repository's Settings, Actions, General, turn on "Allow GitHub
+   Actions to create and approve pull requests". The `npm` environment is
+   created on the first publish; add required reviewers to it under
+   Settings, Environments if a release should wait for an approval.
+2. Log in with `npm login`, then pack the placeholders and read the
+   commands it prints:
+
+   ```bash
+   pnpm nx run @ndop/source:release-bootstrap
+   ```
+
+   It packs `0.0.0` of every package that isn't on npm yet into
+   `tmp/release-bootstrap`: its name, license and repository, and the
+   note "Placeholder; the first release is 1.0.0.". Nothing is published.
+
+3. Publish them and add the trusted publishers. npm asks for your second
+   factor in the terminal:
+
+   ```bash
+   pnpm nx run @ndop/source:release-bootstrap --publish --trust
+   ```
+
+   `--trust` runs, for each package,
+   `npm trust github <package> --file release.yml --repo ndop-ui/ui --env npm --allow-publish --yes`.
+   On npmjs.com instead, each package's Settings, Trusted publishing,
+   GitHub Actions takes:
+
+   | Field                | Value         |
+   | -------------------- | ------------- |
+   | Organization or user | `ndop-ui`     |
+   | Repository           | `ui`          |
+   | Workflow filename    | `release.yml` |
+   | Environment name     | `npm`         |
+
+4. Merge the version pull request within two days: npm requires a new
+   trusted publisher's first publish to happen within two days of its
+   creation.
+5. Optionally, under each package's Settings, Publishing access, choose
+   "Require two-factor authentication and disallow tokens"; trusted
+   publishing isn't affected. Once 1.0.0 is out, deprecate the
+   placeholders, for example
+   `npm deprecate "@ndop/cli@0.0.0" "Placeholder; install 1.0.0 or later."`.
