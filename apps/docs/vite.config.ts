@@ -10,6 +10,7 @@ import { deferScripts } from '../../tools/workspace-plugin/src/vite/defer-script
 import { inlineCss } from '../../tools/workspace-plugin/src/vite/inline-css';
 import { blockThumbnails } from './build/block-thumbnails';
 import { brandAssets } from './build/brand-assets';
+import { ogImages } from './build/og-images';
 import { componentDocs } from './build/component-docs';
 import { serviceWorker } from './build/service-worker';
 import {
@@ -82,8 +83,9 @@ export default defineConfig(() => {
         prerender: { discover: true, routes: ['/', '/offline'] },
         nitro: {
           hooks: {
-            // Block thumbnails for the landing page (ADR-0026), from the
-            // previews just prerendered into Analog's public output.
+            // Block thumbnails for the landing page and OG images
+            // (ADR-0026), from the pages just prerendered into Analog's
+            // public output.
             'prerender:done': async () => {
               const { taken, cached } = await blockThumbnails({
                 workspace,
@@ -91,6 +93,15 @@ export default defineConfig(() => {
               });
               console.log(
                 `Block thumbnails: ${taken} taken, ${cached} from the cache`,
+              );
+              // OG images for every indexed page (ADR-0026, "OG images").
+              const started = Date.now();
+              const og = await ogImages({
+                workspace,
+                site: join(workspace, 'dist/apps/docs/analog/public'),
+              });
+              console.log(
+                `OG images: ${og.taken} rendered, ${og.cached} from the cache, ${og.examples} examples shot, in ${Math.round((Date.now() - started) / 1000)}s`,
               );
             },
           },

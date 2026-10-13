@@ -55,6 +55,7 @@ const TYPES: Record<string, string> = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.webp': 'image/webp',
+  '.jpg': 'image/jpeg',
   '.woff2': 'font/woff2',
   '.ico': 'image/x-icon',
   '.webmanifest': 'application/manifest+json',
@@ -62,12 +63,14 @@ const TYPES: Record<string, string> = {
 
 /**
  * Serves a built static site on a free loopback port, answering a route
- * with its `index.html` as the host does.
+ * with its `index.html` as the host does, for photographing its pages.
  *
  * @param dir - The site's files.
  * @returns The server and its origin.
  */
-async function serve(dir: string): Promise<{ server: Server; origin: string }> {
+export async function serveSite(
+  dir: string,
+): Promise<{ server: Server; origin: string }> {
   const server = createServer((request, response) => {
     const path = normalize(
       decodeURIComponent(new URL(request.url ?? '/', 'http://x').pathname),
@@ -136,7 +139,7 @@ export async function screenshotPages(
   if (missing.length > 0) {
     mkdirSync(options.cache, { recursive: true });
     const { chromium } = await import('@playwright/test');
-    const { server, origin } = await serve(options.dir);
+    const { server, origin } = await serveSite(options.dir);
     const browser = await chromium.launch();
     try {
       for (const shot of missing) {
