@@ -4,6 +4,7 @@ import { insertJsonc, parseJsonc } from '../edit/json';
 import { isColorValue } from '../edit/stylesheet';
 import { CliError } from '../errors';
 import { sha256, type PlanBuilder } from '../plan/plan';
+import { RUN_CLI } from '../run-command';
 import {
   aliasPrefix,
   LOCK_FILE,
@@ -330,18 +331,18 @@ function guidance(facts: Facts, heading: string): string[] {
     'This app uses [Ndop UI](https://ndop.dev): accessible Angular components installed as source files you own. The ndop CLI writes this section and refreshes it on `ndop add`; keep your own notes outside it.',
     `${heading} Workflow`,
     [
-      '1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run `npx ndop add <name>`; never copy component code by hand.',
+      `1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run \`${RUN_CLI} add <name>\`; never copy component code by hand.`,
       `2. Before using a component, ${docs}. Use its selectors, inputs and nesting exactly; never guess an API.`,
       '3. Give every form field a visible label with the `label` component (`<label ndLabel>`); a placeholder or `aria-label` alone is not a label.',
       '4. Style with theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`), never palette colors such as `bg-zinc-900`, and with logical utilities (`ms-`, `pe-`, `start-`, `text-start`), never `ml-`, `pr-`, `left-` or `text-left`.',
       `5. Change how a component looks in its own file under \`${config.aliases.ui}\`. Don't edit \`@ndop/primitives\` or import its private paths.`,
-      '6. Run `npx ndop verify <files> --json` on the files you changed, fix every problem it reports, and repeat until it passes. If it says `@ndop/verify` is missing, install it as a dev dependency first.',
-      '7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run `npx ndop doctor --json`; `npx ndop doctor --fix` applies its safe fixes.',
+      `6. Run \`${RUN_CLI} verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.`,
+      `7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`${RUN_CLI} doctor --json\`; \`${RUN_CLI} doctor --fix\` applies its safe fixes.`,
     ].join('\n'),
     `${heading} Installed`,
     installed.length
       ? `${installed.join(', ')}.`
-      : 'Nothing yet; add components with `npx ndop add <name>`.',
+      : `Nothing yet; add components with \`${RUN_CLI} add <name>\`.`,
     `Components are in ${folder(config.aliases.ui)}, helpers in ${folder(config.aliases.lib)} and blocks in ${folder(config.aliases.blocks)}.`,
     `${heading} Tokens`,
     tokens.colors.length || tokens.other.length
@@ -361,7 +362,7 @@ function guidance(facts: Facts, heading: string): string[] {
     `${heading} MCP server`,
     config.mcp
       ? 'The `ndop` MCP server is set up for this project: `get_project_context` describes it, `search_components` finds components, `get_component` documents one, `list_blocks` and `get_block` offer whole sections, `add_items` installs them, and `verify` checks your files.'
-      : 'To let your agent search and read the Ndop docs directly, run `npx ndop init --mcp`.',
+      : `To let your agent search and read the Ndop docs directly, run \`${RUN_CLI} init --mcp\`.`,
   ];
 }
 

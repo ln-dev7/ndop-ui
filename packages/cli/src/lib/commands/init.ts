@@ -36,9 +36,9 @@ const AGENT_LABELS: Record<Agent, string> = {
  *
  * @example
  * ```sh
- * npx ndop init --yes
- * npx ndop init --dry-run --json
- * npx ndop init --agent claude-code --mcp
+ * npx @ndop/cli init --yes
+ * npx @ndop/cli init --dry-run --json
+ * npx @ndop/cli init --agent claude-code --mcp
  * ```
  */
 export function registerInitCommand(

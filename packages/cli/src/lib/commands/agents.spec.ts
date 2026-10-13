@@ -111,7 +111,7 @@ describe('agent context files', () => {
     expect(before).toContain(
       'read `https://ndop.dev/docs/components/<name>.md`',
     );
-    expect(before).toContain('run `npx ndop init --mcp`');
+    expect(before).toContain('run `npx @ndop/cli init --mcp`');
 
     await ndop(environment, 'add', 'dialog');
     expect(environment.project.files.get('AGENTS.md')).toContain(

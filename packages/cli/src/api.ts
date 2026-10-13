@@ -17,6 +17,7 @@ import { tokenNames } from './lib/install/agents';
 import { planAdd } from './lib/install/add';
 import { CONFIG_FILE, readConfig, readLock } from './lib/install/project-files';
 import { nodeFs } from './lib/project/fs';
+import { RUN_CLI } from './lib/run-command';
 import { localState, type LocalState } from './lib/update/diff';
 import {
   DEFAULT_NAMESPACE,
@@ -25,6 +26,7 @@ import {
 } from './lib/registry/client';
 
 export { CliError } from './lib/errors';
+export { RUN_CLI } from './lib/run-command';
 export {
   DEFAULT_NAMESPACE,
   DEFAULT_REGISTRY_URL,
@@ -56,7 +58,7 @@ export async function projectRoot(cwd: string): Promise<string> {
     if (found) return folder;
     if (dirname(folder) === folder) {
       throw new Error(
-        `No ndop.json in ${resolve(cwd)} or above; run npx ndop init in the app first.`,
+        `No ndop.json in ${resolve(cwd)} or above; run ${RUN_CLI} init in the app first.`,
       );
     }
   }

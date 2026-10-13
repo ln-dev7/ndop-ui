@@ -104,8 +104,8 @@ async function addDevCommand(cwd: string, name: string): Promise<string> {
  *
  * @example
  * ```sh
- * npx ndop verify src/app/settings --json
- * npx ndop verify src/app --skip render
+ * npx @ndop/cli verify src/app/settings --json
+ * npx @ndop/cli verify src/app --skip render
  * ```
  */
 export function registerVerifyCommand(program: Command): Command {

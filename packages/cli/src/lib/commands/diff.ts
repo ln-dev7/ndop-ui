@@ -41,8 +41,8 @@ export interface DiffResult {
  *
  * @example
  * ```sh
- * npx ndop diff
- * npx ndop diff button --to 0.2.0 --json
+ * npx @ndop/cli diff
+ * npx @ndop/cli diff button --to 0.2.0 --json
  * ```
  */
 export function registerDiffCommand(

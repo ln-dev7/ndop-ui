@@ -27,10 +27,10 @@ interface AddCommandOptions extends WriteOptions {
  *
  * @example
  * ```sh
- * npx ndop add dialog --yes
- * npx ndop add @acme/data-table --dry-run
- * npx ndop add button@0.1.0
- * npx ndop add theme:https://ndop.dev/r/themes/custom.json?t=…
+ * npx @ndop/cli add dialog --yes
+ * npx @ndop/cli add @acme/data-table --dry-run
+ * npx @ndop/cli add button@0.1.0
+ * npx @ndop/cli add theme:https://ndop.dev/r/themes/custom.json?t=…
  * ```
  */
 export function registerAddCommand(

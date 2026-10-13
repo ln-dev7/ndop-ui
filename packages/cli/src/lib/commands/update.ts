@@ -44,9 +44,9 @@ interface UpdateCommandOptions extends WriteOptions {
  *
  * @example
  * ```sh
- * npx ndop update
- * npx ndop update button@0.2.0 --dry-run
- * npx ndop update --continue
+ * npx @ndop/cli update
+ * npx @ndop/cli update button@0.2.0 --dry-run
+ * npx @ndop/cli update --continue
  * ```
  */
 export function registerUpdateCommand(

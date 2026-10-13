@@ -202,9 +202,9 @@ export async function runDoctor(
  *
  * @example
  * ```sh
- * npx ndop doctor
- * npx ndop doctor --fix --dry-run
- * npx ndop doctor --offline --json
+ * npx @ndop/cli doctor
+ * npx @ndop/cli doctor --fix --dry-run
+ * npx @ndop/cli doctor --offline --json
  * ```
  */
 export function registerDoctorCommand(
