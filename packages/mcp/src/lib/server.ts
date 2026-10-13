@@ -8,6 +8,7 @@ import {
   projectContext,
   projectRoot,
   registryMetadata,
+  RUN_CLI,
   type DoctorResult,
 } from '@ndop/cli/api';
 import type { Metadata } from '@ndop/metadata';
@@ -341,8 +342,8 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
             `# ${item.title}`,
             item.description,
             registryDependencies.length
-              ? `Install with: npx ndop add ${name} (adds ${registryDependencies.join(', ')}).`
-              : `Install with: npx ndop add ${name}.`,
+              ? `Install with: ${RUN_CLI} add ${name} (adds ${registryDependencies.join(', ')}).`
+              : `Install with: ${RUN_CLI} add ${name}.`,
             ...files.map(
               (file) =>
                 `\`${file.target}\`:\n\n\`\`\`ts\n${file.content}\n\`\`\``,
@@ -392,7 +393,7 @@ export function createNdopServer(options: NdopServerOptions): McpServer {
               ? `Edited since installed: ${edited.join(', ')}.`
               : '',
             conflicted.length
-              ? `ndop update left conflict markers in ${conflicted.join(', ')}: resolve them, then run npx ndop update --continue.`
+              ? `ndop update left conflict markers in ${conflicted.join(', ')}: resolve them, then run ${RUN_CLI} update --continue.`
               : '',
             `Color tokens: ${context.tokens.colors.join(', ')}.`,
             ...doctorLines(context.doctor),
@@ -709,7 +710,7 @@ function doctorLines(result: DoctorResult): string[] {
   const found = result.checks.filter((check) => check.status !== 'ok');
   if (found.length === 0) return [];
   return [
-    'ndop doctor found problems with the setup; fix them before writing UI (npx ndop doctor --fix applies the safe fixes):',
+    `ndop doctor found problems with the setup; fix them before writing UI (${RUN_CLI} doctor --fix applies the safe fixes):`,
     ...found.map(
       (check) =>
         `- ${check.title} (${check.status}): ${check.message}${check.details ? ` ${check.details.join(' ')}` : ''}${check.fix ? ` Fix: ${check.fix}` : ''}`,

@@ -168,7 +168,7 @@ describe('the Ndop MCP server', () => {
         dependencies: ['@ndop/primitives', '@ndop/core'],
       }),
     );
-    expect(result.text).toContain('npx ndop add settings-form');
+    expect(result.text).toContain('npx @ndop/cli add settings-form');
   });
 
   it('serves component docs and tokens as resources', async () => {
@@ -283,7 +283,7 @@ export class Page {}
       }),
     );
     expect(context.text).toContain(
-      'ndop doctor found problems with the setup; fix them before writing UI (npx ndop doctor --fix applies the safe fixes):',
+      'ndop doctor found problems with the setup; fix them before writing UI (npx @ndop/cli doctor --fix applies the safe fixes):',
     );
     expect(context.text).toContain(
       "- Angular (error): package.json doesn't depend on @angular/core.",
@@ -300,7 +300,7 @@ export class Page {}
     try {
       const context = await call('get_project_context', { cwd: project.root });
       expect(context.text).toContain(
-        'ndop update left conflict markers in src/app/ui/dialog/dialog.ts: resolve them, then run npx ndop update --continue.',
+        'ndop update left conflict markers in src/app/ui/dialog/dialog.ts: resolve them, then run npx @ndop/cli update --continue.',
       );
     } finally {
       await writeFile(path, original);
