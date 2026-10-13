@@ -74,6 +74,11 @@
   & table {
     @apply w-full border-collapse text-sm;
   }
+  /* Long names such as mat-button-toggle-group would otherwise hold a
+     table wider than a phone's column and widen the whole page. */
+  & td code {
+    overflow-wrap: anywhere;
+  }
   & th,
   & td {
     @apply border-b px-3 py-2 text-start align-top;

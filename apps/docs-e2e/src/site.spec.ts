@@ -138,3 +138,22 @@ test('guides write numbered steps with :::steps', async ({ page }) => {
   // Code inside a step is highlighted like any other block.
   await expect(steps.first().locator('figure.code-frame')).toBeVisible();
 });
+
+test('a mapping table fits a phone without widening the page', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await open(page, '/docs/getting-started/migrating-from-angular-material');
+  const table = page.locator('.prose table').first();
+  await expect(table).toContainText('mat-button-toggle-group');
+  const column = await page
+    .locator('.prose')
+    .first()
+    .evaluate((element) => element.clientWidth);
+  expect(
+    await table.evaluate((element) => element.getBoundingClientRect().width),
+  ).toBeLessThanOrEqual(column);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    375,
+  );
+});
