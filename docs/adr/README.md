@@ -17,7 +17,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0008](0008-docs-search.md)                              | Docs search on Algolia DocSearch                          | Accepted                       |
 | [0009](0009-mcp-server.md)                               | MCP tool surface and transports                           | Accepted                       |
 | [0010](0010-lockfile-and-update-safety.md)               | Lockfile format and update safety rules                   | Accepted                       |
-| [0011](0011-cli-architecture.md)                         | CLI architecture and stack                                | Accepted, with amendment 1     |
+| [0011](0011-cli-architecture.md)                         | CLI architecture and stack                                | Accepted, with amendments 1–2  |
 | [0012](0012-registry-source-and-build.md)                | Registry source, build and distribution                   | Accepted, with amendment 1     |
 | [0013](0013-icons-adapter.md)                            | Icons adapter on `@lucide/angular`                        | Accepted                       |
 | [0014](0014-styled-items-and-examples.md)                | Styled items and examples                                 | Accepted, with amendments 1–5  |
@@ -34,6 +34,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0025](0025-third-party-registries-and-shadcn-compat.md) | Third-party registries and the shadcn-compatible output   | Accepted, with amendment 1     |
 | [0026](0026-brand-and-landing-page.md)                   | Brand, landing page and OG images                         | Accepted, with amendments 1–2  |
 | [0027](0027-installable-docs.md)                         | Installable docs (favicons and PWA)                       | Accepted                       |
-| [0028](0028-release-and-deploy.md)                       | The 1.0.0 release and the docs deployment                 | Accepted                       |
+| [0028](0028-release-and-deploy.md)                       | The 1.0.0 release and the docs deployment                 | Accepted, with amendment 1     |
 | [0029](0029-launch.md)                                   | Launch checklist and success metrics                      | Accepted                       |
 | [0030](0030-compiled-guide-code.md)                      | Compiled guide code                                       | Accepted                       |
+| [0031](0031-cli-entry-point.md)                          | `@ndop/cli` as the CLI's entry point                      | Accepted                       |

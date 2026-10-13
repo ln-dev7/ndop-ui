@@ -69,3 +69,10 @@ Cloudflare account and DocSearch's application are Valery's steps.
 - Every PR gets a reviewable docs preview.
 - Two RFC items, the hosted MCP endpoint and the version switcher, move to
   the roadmap.
+
+## Amendment 1 (2026-10-13): nine packages
+
+Status: Accepted by Valery on 2026-10-13 (ADR-0031).
+
+npm refused the `ndop` name, so the release's fixed group is the nine
+`@ndop/*` packages; `ndop` is private and leaves the release.

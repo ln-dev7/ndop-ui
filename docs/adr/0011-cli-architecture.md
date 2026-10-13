@@ -134,3 +134,11 @@ Implementing `init` and `add` settled points this ADR left open:
    until a later phase needs it, since the lockfile keys items by
    namespace.
 7. **The lockfile names the default registry `@ndop`.**
+
+## Amendment 2 (2026-10-13): no `ndop` package
+
+Status: Accepted by Valery on 2026-10-13 (ADR-0031).
+
+npm refused the `ndop` name. The CLI runs as `npx @ndop/cli <command>`,
+and as `ndop` once installed; the `ndop` package is private and isn't
+published.

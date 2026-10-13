@@ -122,7 +122,7 @@ The bar: a developer goes from `ng new` to a themed, accessible, production-qual
 
 | Metric                  | Target                                                                                                                                                           | How it's measured                                                                   |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Time to first component | < 2 min from `npx ndop init`                                                                                                                                     | Scripted e2e run in CI on a fresh `ng new` app                                      |
+| Time to first component | < 2 min from `npx @ndop/cli init` (ADR-0031)                                                                                                                     | Scripted e2e run in CI on a fresh `ng new` app                                      |
 | Clean update rate       | ≥ 90% of `ndop update` runs with no conflicts                                                                                                                    | Fixture suite of realistic local edits                                              |
 | Accessibility           | 0 axe violations; full keyboard spec per component                                                                                                               | Automated a11y tests                                                                |
 | Docs performance        | Lighthouse ≥ 95 in accessibility, best practices and SEO on every page; performance ≥ 95 and LCP < 1.5 s on landing, component, block and guide pages (ADR-0029) | Lighthouse CI                                                                       |
@@ -154,15 +154,15 @@ The two top layers are copied into the user's repo; the two bottom layers update
 
 **Packages and apps**
 
-| Package / app                    | Distribution                         | Responsibility                                                                |
-| -------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
-| `@ndop/primitives`               | npm, semver                          | Headless directives: state, keyboard, focus, ARIA, overlay wiring. No styles. |
-| `@ndop/core`                     | npm, semver                          | `cn()`, `variants()`, token helpers, `provideNdop()` config, icons adapter    |
-| `registry/` (styled UI + blocks) | Copied in by the CLI                 | Tailwind-styled directives/components, examples, blocks                       |
-| `ndop` (CLI)                     | npm, `npx ndop` + `ng add @ndop/cli` | init, add, diff, update, doctor, verify, build                                |
-| `@ndop/mcp`                      | npm, `npx @ndop/mcp`                 | MCP server over the registry and metadata                                     |
-| `@ndop/metadata`                 | Build-time tool                      | Extracts component APIs from compiled code into `metadata.json`               |
-| `apps/docs`                      | Website                              | Analog-based docs, theme studio, llms.txt                                     |
+| Package / app                    | Distribution                                         | Responsibility                                                                |
+| -------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `@ndop/primitives`               | npm, semver                                          | Headless directives: state, keyboard, focus, ARIA, overlay wiring. No styles. |
+| `@ndop/core`                     | npm, semver                                          | `cn()`, `variants()`, token helpers, `provideNdop()` config, icons adapter    |
+| `registry/` (styled UI + blocks) | Copied in by the CLI                                 | Tailwind-styled directives/components, examples, blocks                       |
+| `@ndop/cli` (CLI `ndop`)         | npm, `npx @ndop/cli` + `ng add @ndop/cli` (ADR-0031) | init, add, diff, update, doctor, verify, build                                |
+| `@ndop/mcp`                      | npm, `npx @ndop/mcp`                                 | MCP server over the registry and metadata                                     |
+| `@ndop/metadata`                 | Build-time tool                                      | Extracts component APIs from compiled code into `metadata.json`               |
+| `apps/docs`                      | Website                                              | Analog-based docs, theme studio, llms.txt                                     |
 
 **Dependency rules (MUST, enforced by Nx module boundaries)**
 
@@ -450,7 +450,7 @@ The docs site is the product's storefront and must be visibly better than shadcn
 
 1. **Header:** name, one-sentence description, badges (version, primitive pattern, SSR, zoneless, bundle size in gzip), and action buttons: Copy install command, Copy page for agent, Open in StackBlitz, View source, Report issue.
 2. **Hero preview:** the main example rendered live in a resizable frame with Preview / Code tabs, a light/dark toggle, an RTL toggle and a viewport width switcher (mobile, tablet, desktop). The frame is isolated so docs styles never leak in.
-3. **Install:** CLI tab (`npx ndop add dialog`) and Manual tab (files to copy, deps to install), both with one-click copy.
+3. **Install:** CLI tab (`npx @ndop/cli add dialog`, ADR-0031) and Manual tab (files to copy, deps to install), both with one-click copy.
 4. **Usage:** the smallest correct import and template.
 5. **Playground:** none; every variant and meaningful state is an example instead (ADR-0016, amendment 13).
 6. **Examples:** every example is a real file in the registry, compiled and tested in CI; each has preview, code, a short "when to use this" line and its own deep link.
