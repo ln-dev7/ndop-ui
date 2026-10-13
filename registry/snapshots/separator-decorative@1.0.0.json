@@ -1,0 +1,27 @@
+{
+  "name": "separator-decorative",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Separator decorative",
+  "description": "A decorative separator, hidden from assistive technology because the headings already divide the content.",
+  "registryDependencies": [
+    "separator"
+  ],
+  "files": [
+    {
+      "path": "examples/separator-decorative.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/separator-decorative.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Separator } from '@/ui/separator/separator';\n\n/**\n * A decorative separator, hidden from assistive technology because the\n * headings already divide the content.\n */\n@Component({\n  selector: 'example-separator-decorative',\n  imports: [Separator],\n  template: `\n    <section class=\"max-w-sm text-sm\">\n      <h2 class=\"font-medium\">Account</h2>\n      <p class=\"text-muted-foreground\">Name, email and password.</p>\n      <div ndSeparator decorative class=\"my-4\"></div>\n      <h2 class=\"font-medium\">Notifications</h2>\n      <p class=\"text-muted-foreground\">Email and push preferences.</p>\n    </section>\n  `,\n})\nexport class SeparatorDecorativeExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SeparatorDecorativeExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

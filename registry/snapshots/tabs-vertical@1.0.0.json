@@ -1,0 +1,27 @@
+{
+  "name": "tabs-vertical",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Tabs vertical",
+  "description": "Tabs stacked beside their panels, selected with Enter or Space.",
+  "registryDependencies": [
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "examples/tabs-vertical.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/tabs-vertical.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs/tabs';\n\n/**\n * Tabs stacked beside their panels. With manual activation, the arrow\n * keys only move focus; Enter or Space shows the focused tab's panel.\n */\n@Component({\n  selector: 'example-tabs-vertical',\n  imports: [Tabs, TabsContent, TabsList, TabsTrigger],\n  template: `\n    <div\n      ndTabs\n      defaultValue=\"general\"\n      orientation=\"vertical\"\n      activationMode=\"manual\"\n      class=\"w-md max-w-full\"\n    >\n      <div ndTabsList aria-label=\"Preferences\">\n        <button ndTabsTrigger value=\"general\">General</button>\n        <button ndTabsTrigger value=\"notifications\">Notifications</button>\n        <button ndTabsTrigger value=\"privacy\">Privacy</button>\n      </div>\n      <div ndTabsContent value=\"general\" class=\"text-sm\">\n        Language, time zone and start page.\n      </div>\n      <div ndTabsContent value=\"notifications\" class=\"text-sm\">\n        Email and push notifications.\n      </div>\n      <div ndTabsContent value=\"privacy\" class=\"text-sm\">\n        Who can see your profile and activity.\n      </div>\n    </div>\n  `,\n})\nexport class TabsVerticalExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TabsVerticalExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

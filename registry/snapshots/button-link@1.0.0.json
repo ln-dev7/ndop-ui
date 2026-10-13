@@ -1,0 +1,27 @@
+{
+  "name": "button-link",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Button link",
+  "description": "The `link` variant: a button that looks like a text link.",
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "examples/button-link.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/button-link.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\n\n/** The `link` variant: a button that looks like a text link. */\n@Component({\n  selector: 'example-button-link',\n  imports: [Button],\n  template: `<button ndButton variant=\"link\">Link</button>`,\n})\nexport class ButtonLinkExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ButtonLinkExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

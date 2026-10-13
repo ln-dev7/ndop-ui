@@ -1,0 +1,31 @@
+{
+  "name": "alert-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Alert demo",
+  "description": "A success message with an icon.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "alert",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/alert-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/alert-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Alert, AlertDescription, AlertTitle } from '@/ui/alert/alert';\n\n/** A success message with an icon, shown with the page. */\n@Component({\n  selector: 'example-alert-demo',\n  imports: [Alert, AlertDescription, AlertTitle, NdIcon],\n  template: `\n    <div ndAlert role=\"none\" class=\"max-w-md\">\n      <svg ndIcon=\"circle-check\"></svg>\n      <div ndAlertTitle>Your changes have been saved</div>\n      <div ndAlertDescription>\n        Everyone on the team sees the new settings right away.\n      </div>\n    </div>\n  `,\n})\nexport class AlertDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AlertDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

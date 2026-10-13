@@ -1,0 +1,28 @@
+{
+  "name": "switch-form",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Switch form",
+  "description": "A settings card of switches bound to a Signal Forms model.",
+  "registryDependencies": [
+    "form-field",
+    "switch"
+  ],
+  "files": [
+    {
+      "path": "examples/switch-form.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/switch-form.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { disabled, form, FormField } from '@angular/forms/signals';\nimport {\n  Field,\n  FieldContent,\n  FieldDescription,\n  FieldGroup,\n  FieldLabel,\n  FieldLegend,\n  FieldSet,\n} from '@/ui/form-field/form-field';\nimport { Switch, SwitchThumb } from '@/ui/switch/switch';\n\n/**\n * Email settings as switches bound to a Signal Forms model, each saved as\n * soon as it changes; security emails can't be turned off.\n */\n@Component({\n  selector: 'example-switch-form',\n  imports: [\n    Field,\n    FieldContent,\n    FieldDescription,\n    FieldGroup,\n    FieldLabel,\n    FieldLegend,\n    FieldSet,\n    FormField,\n    Switch,\n    SwitchThumb,\n  ],\n  template: `\n    <fieldset ndFieldSet class=\"w-full max-w-md\">\n      <legend ndFieldLegend>Email notifications</legend>\n      <div ndFieldGroup>\n        <div ndField orientation=\"horizontal\" class=\"rounded-lg border p-4\">\n          <div ndFieldContent>\n            <label ndFieldLabel for=\"switch-form-marketing\">\n              Marketing emails\n            </label>\n            <p ndFieldDescription>\n              Receive emails about new products, features and more.\n            </p>\n          </div>\n          <button\n            ndSwitch\n            id=\"switch-form-marketing\"\n            [formField]=\"settings.marketing\"\n          >\n            <span ndSwitchThumb></span>\n          </button>\n        </div>\n        <div ndField orientation=\"horizontal\" class=\"rounded-lg border p-4\">\n          <div ndFieldContent>\n            <label ndFieldLabel for=\"switch-form-security\">\n              Security emails\n            </label>\n            <p ndFieldDescription>\n              Receive emails about your account security.\n            </p>\n          </div>\n          <button\n            ndSwitch\n            id=\"switch-form-security\"\n            [formField]=\"settings.security\"\n          >\n            <span ndSwitchThumb></span>\n          </button>\n        </div>\n      </div>\n    </fieldset>\n  `,\n})\nexport class SwitchFormExample {\n  protected readonly model = signal({ marketing: false, security: true });\n\n  protected readonly settings = form(this.model, (path) => {\n    disabled(path.security);\n  });\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SwitchFormExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

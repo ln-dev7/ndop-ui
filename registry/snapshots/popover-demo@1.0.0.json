@@ -1,0 +1,30 @@
+{
+  "name": "popover-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Popover demo",
+  "description": "A popover holding a small dimensions form.",
+  "registryDependencies": [
+    "button",
+    "input",
+    "label",
+    "popover"
+  ],
+  "files": [
+    {
+      "path": "examples/popover-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/popover-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\nimport {\n  Popover,\n  PopoverPortal,\n  PopoverTrigger,\n  PopoverContent,\n  PopoverDescription,\n  PopoverHeader,\n  PopoverTitle,\n} from '@/ui/popover/popover';\n\n/** A popover holding a small dimensions form. */\n@Component({\n  selector: 'example-popover-demo',\n  imports: [\n    Popover,\n    PopoverTrigger,\n    PopoverPortal,\n    PopoverContent,\n    PopoverHeader,\n    PopoverTitle,\n    PopoverDescription,\n    Button,\n    Input,\n    Label,\n  ],\n  template: `\n    <ng-container ndPopover>\n      <button ndButton ndPopoverTrigger variant=\"outline\">Open popover</button>\n      <ng-template ndPopoverPortal>\n        <div ndPopoverContent class=\"w-80\" aria-labelledby=\"popover-demo-title\">\n          <div class=\"grid gap-4\">\n            <div ndPopoverHeader>\n              <h4 ndPopoverTitle id=\"popover-demo-title\">Dimensions</h4>\n              <p ndPopoverDescription>Set the dimensions for the layer.</p>\n            </div>\n            <div class=\"grid gap-2\">\n              @for (field of fields; track field.id) {\n                <div class=\"grid grid-cols-3 items-center gap-4\">\n                  <label ndLabel [for]=\"field.id\">{{ field.label }}</label>\n                  <input\n                    ndInput\n                    [id]=\"field.id\"\n                    [value]=\"field.value\"\n                    class=\"col-span-2 h-8\"\n                  />\n                </div>\n              }\n            </div>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class PopoverDemoExample {\n  protected readonly fields = [\n    { id: 'popover-demo-width', label: 'Width', value: '100%' },\n    { id: 'popover-demo-max-width', label: 'Max. width', value: '300px' },\n    { id: 'popover-demo-height', label: 'Height', value: '25px' },\n    { id: 'popover-demo-max-height', label: 'Max. height', value: 'none' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "PopoverDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "scroll-area-horizontal",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Scroll Area horizontal",
+  "description": "A row of artworks that scrolls sideways.",
+  "registryDependencies": [
+    "aspect-ratio",
+    "scroll-area"
+  ],
+  "files": [
+    {
+      "path": "examples/scroll-area-horizontal.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/scroll-area-horizontal.ts",
+      "content": "import { Component } from '@angular/core';\nimport { AspectRatio } from '@/ui/aspect-ratio/aspect-ratio';\nimport { ScrollArea } from '@/ui/scroll-area/scroll-area';\n\n/** A row of artworks that scrolls sideways. */\n@Component({\n  selector: 'example-scroll-area-horizontal',\n  imports: [AspectRatio, ScrollArea],\n  template: `\n    <div\n      ndScrollArea\n      orientation=\"horizontal\"\n      class=\"w-full max-w-md rounded-md border whitespace-nowrap\"\n      aria-label=\"Artworks\"\n    >\n      <ul class=\"flex w-max gap-4 p-4\">\n        @for (artwork of artworks; track artwork.title) {\n          <li class=\"w-36 shrink-0\">\n            <figure>\n              <div\n                ndAspectRatio\n                [ratio]=\"3 / 4\"\n                class=\"rounded-md bg-muted\"\n              ></div>\n              <figcaption class=\"pt-2 text-xs text-muted-foreground\">\n                By\n                <span class=\"font-semibold text-foreground\">{{\n                  artwork.artist\n                }}</span>\n              </figcaption>\n            </figure>\n          </li>\n        }\n      </ul>\n    </div>\n  `,\n})\nexport class ScrollAreaHorizontalExample {\n  protected readonly artworks = [\n    { title: 'Ripple', artist: 'Ornella Binni' },\n    { title: 'Stillness', artist: 'Tom Byrom' },\n    { title: 'Drift', artist: 'Vladimir Malyavko' },\n    { title: 'Haze', artist: 'Ahmed Saeed' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ScrollAreaHorizontalExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

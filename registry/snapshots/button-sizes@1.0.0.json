@@ -1,0 +1,30 @@
+{
+  "name": "button-sizes",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Button sizes",
+  "description": "Button sizes, including an icon-only button with an accessible name.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "examples/button-sizes.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/button-sizes.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\n\n/** Button sizes, including an icon-only button with an accessible name. */\n@Component({\n  selector: 'example-button-sizes',\n  imports: [Button, NdIcon],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-2\">\n      <button ndButton variant=\"outline\" size=\"xs\">Extra small</button>\n      <button ndButton variant=\"outline\" size=\"sm\">Small</button>\n      <button ndButton variant=\"outline\">Default</button>\n      <button ndButton variant=\"outline\" size=\"lg\">Large</button>\n      <button ndButton variant=\"outline\" size=\"icon\" aria-label=\"Dismiss\">\n        <svg ndIcon=\"x\"></svg>\n      </button>\n    </div>\n  `,\n})\nexport class ButtonSizesExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ButtonSizesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

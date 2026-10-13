@@ -1,0 +1,31 @@
+{
+  "name": "context-menu-checkboxes",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Context Menu checkboxes",
+  "description": "Checkbox items on a right click, for showing and hiding layers.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "context-menu",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/context-menu-checkboxes.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/context-menu-checkboxes.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  ContextMenuCheckboxItem,\n  ContextMenuContent,\n  ContextMenuItemIndicator,\n  ContextMenuTrigger,\n} from '@/ui/context-menu/context-menu';\n\n/**\n * Checkbox items on a right click, for showing and hiding a map's\n * layers, which the area reflects.\n */\n@Component({\n  selector: 'example-context-menu-checkboxes',\n  imports: [\n    ContextMenuCheckboxItem,\n    ContextMenuContent,\n    ContextMenuItemIndicator,\n    ContextMenuTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div\n      [ndContextMenuTrigger]=\"layers\"\n      tabindex=\"0\"\n      aria-label=\"Map\"\n      class=\"grid h-[150px] w-[300px] place-content-center gap-1 rounded-md border text-center text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50\"\n    >\n      <span>Map</span>\n      <span class=\"text-muted-foreground\">\n        {{ traffic() ? 'Traffic' : '' }} {{ transit() ? 'Transit' : '' }}\n      </span>\n    </div>\n    <ng-template #layers>\n      <div ndContextMenuContent class=\"w-44\">\n        <div ndContextMenuCheckboxItem [(checked)]=\"traffic\">\n          <span ndContextMenuItemIndicator><svg ndIcon=\"check\"></svg></span>\n          Traffic\n        </div>\n        <div ndContextMenuCheckboxItem [(checked)]=\"transit\">\n          <span ndContextMenuItemIndicator><svg ndIcon=\"check\"></svg></span>\n          Transit\n        </div>\n      </div>\n    </ng-template>\n  `,\n})\nexport class ContextMenuCheckboxesExample {\n  protected readonly traffic = signal(true);\n  protected readonly transit = signal(false);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ContextMenuCheckboxesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

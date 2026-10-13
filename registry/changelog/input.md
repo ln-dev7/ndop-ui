@@ -1,5 +1,9 @@
 # Input
 
+## 1.0.0
+
+Stable release; no code changes since 0.1.4.
+
 ## 0.1.4
 
 Adds the `input-disabled` example: a disabled input. The files are unchanged.

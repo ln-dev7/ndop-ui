@@ -1,0 +1,28 @@
+{
+  "name": "label-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Label disabled",
+  "description": "A label that dims with its disabled input.",
+  "registryDependencies": [
+    "input",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/label-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/label-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/** A label that dims with its disabled input. */\n@Component({\n  selector: 'example-label-disabled',\n  imports: [Label, Input],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <label ndLabel for=\"label-disabled-plan\">Plan</label>\n      <input ndInput id=\"label-disabled-plan\" value=\"Team\" disabled />\n    </div>\n  `,\n})\nexport class LabelDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "LabelDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "skeleton-card",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Skeleton card",
+  "description": "A card that shows skeletons while its content loads.",
+  "registryDependencies": [
+    "button",
+    "card",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "examples/skeleton-card.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/skeleton-card.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Card,\n  CardContent,\n  CardDescription,\n  CardHeader,\n  CardTitle,\n} from '@/ui/card/card';\nimport { Skeleton } from '@/ui/skeleton/skeleton';\n\n/**\n * A card that shows skeletons while its content loads, and marks itself\n * busy so screen readers wait for the real content.\n */\n@Component({\n  selector: 'example-skeleton-card',\n  imports: [\n    Button,\n    Card,\n    CardContent,\n    CardDescription,\n    CardHeader,\n    CardTitle,\n    Skeleton,\n  ],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-4\">\n      <section\n        ndCard\n        aria-labelledby=\"skeleton-card-title\"\n        [attr.aria-busy]=\"loading()\"\n      >\n        <div ndCardHeader>\n          <h2 ndCardTitle id=\"skeleton-card-title\">Weekly report</h2>\n          @if (loading()) {\n            <div ndSkeleton class=\"h-4 w-40\"></div>\n          } @else {\n            <p ndCardDescription>October 2 to October 8</p>\n          }\n        </div>\n        <div ndCardContent class=\"grid gap-2\">\n          @if (loading()) {\n            <div ndSkeleton class=\"h-24 w-full\"></div>\n            <div ndSkeleton class=\"h-4 w-3/4\"></div>\n          } @else {\n            <p class=\"text-3xl font-semibold\">1,284 visits</p>\n            <p class=\"text-sm text-muted-foreground\">Up 12% on last week.</p>\n          }\n        </div>\n      </section>\n      <button\n        ndButton\n        variant=\"outline\"\n        class=\"justify-self-start\"\n        (click)=\"loading.set(!loading())\"\n      >\n        {{ loading() ? 'Show content' : 'Show loading' }}\n      </button>\n    </div>\n  `,\n})\nexport class SkeletonCardExample {\n  protected readonly loading = signal(true);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SkeletonCardExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

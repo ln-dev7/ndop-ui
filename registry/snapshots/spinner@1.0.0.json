@@ -1,0 +1,37 @@
+{
+  "name": "spinner",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Spinner",
+  "description": "Shows that something is loading.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "ui/spinner/spinner.ts",
+      "type": "registry:ui",
+      "target": "{ui}/spinner/spinner.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/**\n * A spinning loading indicator, announced as a status. Put the loading\n * icon inside it: the icon stays hidden from assistive technology, and the\n * spinner carries the name.\n *\n * @example\n * ```html\n * <span ndSpinner><svg ndIcon=\"loader-circle\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndSpinner]',\n  host: {\n    'data-slot': 'spinner',\n    role: 'status',\n    '[attr.aria-label]': 'label()',\n    '[class]': 'classes()',\n  },\n})\nexport class Spinner {\n  /** What is loading, read by screen readers. */\n  readonly label = input('Loading');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('size-4 animate-spin', 'inline-flex [&>svg]:size-full', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Spinner"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/spinner.json",
+    "examples": [
+      "spinner-demo",
+      "spinner-button"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "menubar-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Menubar demo",
+  "description": "An editor's File, Edit and View menus, with shortcuts, checkboxes, radios and a submenu.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "menubar"
+  ],
+  "files": [
+    {
+      "path": "examples/menubar-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/menubar-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Menubar,\n  MenubarCheckboxItem,\n  MenubarContent,\n  MenubarGroup,\n  MenubarItem,\n  MenubarItemIndicator,\n  MenubarRadioGroup,\n  MenubarRadioItem,\n  MenubarSeparator,\n  MenubarShortcut,\n  MenubarSubContent,\n  MenubarSubTrigger,\n  MenubarTrigger,\n} from '@/ui/menubar/menubar';\n\n/**\n * An editor's File, Edit, View and Profiles menus, with shortcuts, a\n * disabled item, a submenu, checkbox items and a radio group. The menubar\n * is one tab stop; the arrow keys move between its menus.\n */\n@Component({\n  selector: 'example-menubar-demo',\n  imports: [\n    Menubar,\n    MenubarCheckboxItem,\n    MenubarContent,\n    MenubarGroup,\n    MenubarItem,\n    MenubarItemIndicator,\n    MenubarRadioGroup,\n    MenubarRadioItem,\n    MenubarSeparator,\n    MenubarShortcut,\n    MenubarSubContent,\n    MenubarSubTrigger,\n    MenubarTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"grid justify-items-start gap-2\">\n      <div ndMenubar aria-label=\"Editor\">\n        <div [ndMenubarTrigger]=\"file\">File</div>\n        <div [ndMenubarTrigger]=\"edit\">Edit</div>\n        <div [ndMenubarTrigger]=\"view\">View</div>\n        <div [ndMenubarTrigger]=\"profiles\">Profiles</div>\n      </div>\n      <p class=\"text-sm text-muted-foreground\" aria-live=\"polite\">\n        {{ chosen() }}\n      </p>\n    </div>\n    <ng-template #file>\n      <div ndMenubarContent>\n        <div ndMenubarItem (triggered)=\"choose('New tab')\">\n          New tab <span ndMenubarShortcut>⌘T</span>\n        </div>\n        <div ndMenubarItem (triggered)=\"choose('New window')\">\n          New window <span ndMenubarShortcut>⌘N</span>\n        </div>\n        <div ndMenubarItem disabled>New incognito window</div>\n        <div ndMenubarSeparator></div>\n        <div [ndMenubarSubTrigger]=\"share\">\n          Share\n          <svg\n            ndIcon=\"chevron-right\"\n            class=\"ms-auto size-4 rtl:rotate-180\"\n          ></svg>\n        </div>\n        <div ndMenubarSeparator></div>\n        <div ndMenubarItem (triggered)=\"choose('Print')\">\n          Print… <span ndMenubarShortcut>⌘P</span>\n        </div>\n      </div>\n    </ng-template>\n    <ng-template #share>\n      <div ndMenubarSubContent>\n        <div ndMenubarItem (triggered)=\"choose('Email link')\">Email link</div>\n        <div ndMenubarItem (triggered)=\"choose('Messages')\">Messages</div>\n        <div ndMenubarItem (triggered)=\"choose('Notes')\">Notes</div>\n      </div>\n    </ng-template>\n    <ng-template #edit>\n      <div ndMenubarContent>\n        <div ndMenubarItem (triggered)=\"choose('Undo')\">\n          Undo <span ndMenubarShortcut>⌘Z</span>\n        </div>\n        <div ndMenubarItem (triggered)=\"choose('Redo')\">\n          Redo <span ndMenubarShortcut>⇧⌘Z</span>\n        </div>\n        <div ndMenubarSeparator></div>\n        <div ndMenubarItem (triggered)=\"choose('Cut')\">Cut</div>\n        <div ndMenubarItem (triggered)=\"choose('Copy')\">Copy</div>\n        <div ndMenubarItem (triggered)=\"choose('Paste')\">Paste</div>\n      </div>\n    </ng-template>\n    <ng-template #view>\n      <div ndMenubarContent>\n        <div ndMenubarCheckboxItem [(checked)]=\"bookmarks\">\n          <span ndMenubarItemIndicator><svg ndIcon=\"check\"></svg></span>\n          Always show bookmarks bar\n        </div>\n        <div ndMenubarCheckboxItem [(checked)]=\"fullUrls\">\n          <span ndMenubarItemIndicator><svg ndIcon=\"check\"></svg></span>\n          Always show full URLs\n        </div>\n        <div ndMenubarSeparator></div>\n        <div ndMenubarItem inset (triggered)=\"choose('Reload')\">\n          Reload <span ndMenubarShortcut>⌘R</span>\n        </div>\n        <div ndMenubarItem inset disabled>\n          Force reload <span ndMenubarShortcut>⇧⌘R</span>\n        </div>\n        <div ndMenubarSeparator></div>\n        <div ndMenubarItem inset (triggered)=\"choose('Toggle full screen')\">\n          Toggle full screen\n        </div>\n      </div>\n    </ng-template>\n    <ng-template #profiles>\n      <div ndMenubarContent>\n        <div ndMenubarRadioGroup aria-label=\"Profile\" [(value)]=\"profile\">\n          @for (name of names; track name) {\n            <div ndMenubarRadioItem [value]=\"name\">\n              <span ndMenubarItemIndicator>\n                <svg ndIcon=\"circle\" class=\"size-2 fill-current\"></svg>\n              </span>\n              {{ name }}\n            </div>\n          }\n        </div>\n        <div ndMenubarSeparator></div>\n        <div ndMenubarGroup aria-label=\"Manage\">\n          <div ndMenubarItem inset (triggered)=\"choose('Edit profiles')\">\n            Edit…\n          </div>\n          <div ndMenubarItem inset (triggered)=\"choose('Add profile')\">\n            Add profile…\n          </div>\n        </div>\n      </div>\n    </ng-template>\n  `,\n})\nexport class MenubarDemoExample {\n  protected readonly chosen = signal('');\n  protected readonly bookmarks = signal(false);\n  protected readonly fullUrls = signal(true);\n  protected readonly profile = signal<string | null>('Benoit');\n  protected readonly names = ['Andy', 'Benoit', 'Luis'];\n\n  /**\n   * Reports what was chosen.\n   *\n   * @param action - The item's name.\n   */\n  protected choose(action: string): void {\n    this.chosen.set(`Chose ${action}.`);\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "MenubarDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "input-otp-pattern",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Input OTP pattern",
+  "description": "A code of letters and digits.",
+  "registryDependencies": [
+    "input-otp",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/input-otp-pattern.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-otp-pattern.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  InputOtp,\n  InputOtpGroup,\n  InputOtpInput,\n  InputOtpSlot,\n} from '@/ui/input-otp/input-otp';\nimport { Label } from '@/ui/label/label';\n\n/**\n * A recovery code of capital letters and digits: `allow` keeps them, and\n * the text keyboard opens on phones.\n */\n@Component({\n  selector: 'example-input-otp-pattern',\n  imports: [InputOtp, InputOtpGroup, InputOtpInput, InputOtpSlot, Label],\n  template: `\n    <div class=\"grid gap-2\">\n      <label ndLabel for=\"input-otp-pattern-code\">Recovery code</label>\n      <div ndInputOtp [length]=\"6\" allow=\"[A-Z0-9]\" inputMode=\"text\">\n        <input\n          ndInputOtpInput\n          id=\"input-otp-pattern-code\"\n          autocapitalize=\"characters\"\n        />\n        <div ndInputOtpGroup>\n          @for (index of [0, 1, 2, 3, 4, 5]; track index) {\n            <div ndInputOtpSlot [index]=\"index\"></div>\n          }\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class InputOtpPatternExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputOtpPatternExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

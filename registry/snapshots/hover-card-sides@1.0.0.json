@@ -1,0 +1,28 @@
+{
+  "name": "hover-card-sides",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Hover Card sides",
+  "description": "Cards on each side of their links.",
+  "registryDependencies": [
+    "button",
+    "hover-card"
+  ],
+  "files": [
+    {
+      "path": "examples/hover-card-sides.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/hover-card-sides.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  HoverCardContent,\n  HoverCard,\n  HoverCardPortal,\n  HoverCardTrigger,\n} from '@/ui/hover-card/hover-card';\n\n/**\n * Cards on each side of their links; they flip when there's no room.\n * `start` and `end` swap in right-to-left layouts.\n */\n@Component({\n  selector: 'example-hover-card-sides',\n  imports: [\n    Button,\n    HoverCardContent,\n    HoverCard,\n    HoverCardPortal,\n    HoverCardTrigger,\n  ],\n  template: `\n    <div class=\"flex flex-wrap gap-2\">\n      @for (side of sides; track side) {\n        <ng-container ndHoverCard>\n          <a\n            ndButton\n            variant=\"outline\"\n            ndHoverCardTrigger\n            class=\"capitalize\"\n            [href]=\"'#' + side\"\n          >\n            {{ side }} side\n          </a>\n          <ng-template ndHoverCardPortal>\n            <div ndHoverCardContent [side]=\"side\">\n              <p class=\"text-sm\">This card opens on the {{ side }} side.</p>\n            </div>\n          </ng-template>\n        </ng-container>\n      }\n    </div>\n  `,\n})\nexport class HoverCardSidesExample {\n  protected readonly sides = ['top', 'end', 'bottom', 'start'] as const;\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "HoverCardSidesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

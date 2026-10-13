@@ -1,0 +1,28 @@
+{
+  "name": "scroll-area-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Scroll Area demo",
+  "description": "A list of tags that scrolls vertically.",
+  "registryDependencies": [
+    "scroll-area",
+    "separator"
+  ],
+  "files": [
+    {
+      "path": "examples/scroll-area-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/scroll-area-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { ScrollArea } from '@/ui/scroll-area/scroll-area';\nimport { Separator } from '@/ui/separator/separator';\n\n/** A list of tags that scrolls vertically in a fixed height. */\n@Component({\n  selector: 'example-scroll-area-demo',\n  imports: [ScrollArea, Separator],\n  template: `\n    <div ndScrollArea class=\"h-72 w-48 rounded-md border\" aria-label=\"Tags\">\n      <div class=\"p-4\">\n        <h2 class=\"mb-4 text-sm leading-none font-medium\">Tags</h2>\n        @for (tag of tags; track tag; let last = $last) {\n          <div class=\"text-sm\">{{ tag }}</div>\n          @if (!last) {\n            <div ndSeparator decorative class=\"my-2\"></div>\n          }\n        }\n      </div>\n    </div>\n  `,\n})\nexport class ScrollAreaDemoExample {\n  protected readonly tags = Array.from(\n    { length: 30 },\n    (_, index) => `v1.2.0-beta.${30 - index}`,\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ScrollAreaDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

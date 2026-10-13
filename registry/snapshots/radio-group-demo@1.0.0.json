@@ -1,0 +1,32 @@
+{
+  "name": "radio-group-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Radio Group demo",
+  "description": "Three options with labels, one chosen by default.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "label",
+    "radio-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/radio-group-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/radio-group-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Label } from '@/ui/label/label';\nimport {\n  RadioGroup,\n  RadioGroupIndicator,\n  RadioGroupItem,\n} from '@/ui/radio-group/radio-group';\n\n/** Three options with labels, one chosen by default. */\n@Component({\n  selector: 'example-radio-group-demo',\n  imports: [Label, NdIcon, RadioGroup, RadioGroupIndicator, RadioGroupItem],\n  template: `\n    <div ndRadioGroup aria-label=\"Density\" defaultValue=\"comfortable\">\n      @for (option of options; track option.value) {\n        <div class=\"flex items-center gap-3\">\n          <button\n            ndRadioGroupItem\n            [value]=\"option.value\"\n            [id]=\"'radio-group-demo-' + option.value\"\n          >\n            <span ndRadioGroupIndicator><svg ndIcon=\"circle\"></svg></span>\n          </button>\n          <label ndLabel [for]=\"'radio-group-demo-' + option.value\">\n            {{ option.label }}\n          </label>\n        </div>\n      }\n    </div>\n  `,\n})\nexport class RadioGroupDemoExample {\n  protected readonly options = [\n    { value: 'default', label: 'Default' },\n    { value: 'comfortable', label: 'Comfortable' },\n    { value: 'compact', label: 'Compact' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "RadioGroupDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

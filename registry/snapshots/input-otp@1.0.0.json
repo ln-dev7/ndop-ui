@@ -1,0 +1,46 @@
+{
+  "name": "input-otp",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Input OTP",
+  "description": "Enters a one-time code, digit by digit, in one field that autofill and screen readers understand.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/input-otp/input-otp.ts",
+      "type": "registry:ui",
+      "target": "{ui}/input-otp/input-otp.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdInputOtp,\n  NdInputOtpGroup,\n  NdInputOtpInput,\n  NdInputOtpSeparator,\n  NdInputOtpSlot,\n} from '@ndop/primitives/input-otp';\nimport { cn } from '@/lib/utils';\n\n/**\n * A one-time code input (`@ndop/primitives/input-otp`): one native\n * `input[ndInputOtpInput]` holds the code, invisible over the slots that\n * draw it. Set `length`, bind it with `[(value)]` or any forms library on\n * this element, and name the input with a label or `aria-label`.\n *\n * @example\n * ```html\n * <div ndInputOtp [length]=\"6\" [(value)]=\"code\">\n *   <input ndInputOtpInput aria-label=\"Verification code\" />\n *   <div ndInputOtpGroup>\n *     @for (index of [0, 1, 2, 3, 4, 5]; track index) {\n *       <div ndInputOtpSlot [index]=\"index\"></div>\n *     }\n *   </div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndInputOtp]',\n  hostDirectives: [\n    {\n      directive: NdInputOtp,\n      inputs: [\n        'value',\n        'defaultValue',\n        'length',\n        'allow',\n        'inputMode',\n        'disabled',\n        'invalid',\n      ],\n      outputs: ['valueChange', 'completed'],\n    },\n  ],\n  host: { 'data-slot': 'input-otp', '[class]': 'classes()' },\n})\nexport class InputOtp {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex items-center gap-2 has-disabled:opacity-50',\n      'relative w-fit',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The native input of an {@link InputOtp}: transparent and stretched over\n * the slots, so clicking them focuses it.\n *\n * @example\n * ```html\n * <input ndInputOtpInput aria-label=\"Verification code\" />\n * ```\n */\n@Directive({\n  selector: 'input[ndInputOtpInput]',\n  hostDirectives: [{ directive: NdInputOtpInput, inputs: ['id'] }],\n  host: { 'data-slot': 'input-otp-input', '[class]': 'classes()' },\n})\nexport class InputOtpInput {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'absolute inset-0 z-20 size-full bg-transparent text-transparent caret-transparent outline-none selection:bg-transparent disabled:cursor-not-allowed',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A row of {@link InputOtpSlot}s that join into one box.\n *\n * @example\n * ```html\n * <div ndInputOtpGroup>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndInputOtpGroup]',\n  hostDirectives: [NdInputOtpGroup],\n  host: { 'data-slot': 'input-otp-group', '[class]': 'classes()' },\n})\nexport class InputOtpGroup {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex items-center', this.class()),\n  );\n}\n\n/**\n * One character of an {@link InputOtp}, ringed while it's where the next\n * one goes, with a blinking caret while that slot is empty.\n *\n * @example\n * ```html\n * <div ndInputOtpSlot [index]=\"0\"></div>\n * ```\n */\n@Directive({\n  selector: '[ndInputOtpSlot]',\n  hostDirectives: [{ directive: NdInputOtpSlot, inputs: ['index'] }],\n  host: { 'data-slot': 'input-otp-slot', '[class]': 'classes()' },\n})\nexport class InputOtpSlot {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative flex h-9 w-9 items-center justify-center border-y border-e border-input text-sm shadow-xs transition-all outline-none first:rounded-s-md first:border-s last:rounded-e-md data-invalid:border-destructive data-active:z-10 data-active:border-ring data-active:ring-[3px] data-active:ring-ring/50 data-active:data-invalid:border-destructive data-active:data-invalid:ring-destructive/20 dark:bg-input/30 dark:data-active:data-invalid:ring-destructive/40',\n      'data-caret:after:pointer-events-none data-caret:after:absolute data-caret:after:h-4 data-caret:after:w-px data-caret:after:animate-caret-blink data-caret:after:bg-foreground data-caret:after:duration-1000',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A separator between groups of slots. Put a minus icon inside.\n *\n * @example\n * ```html\n * <div ndInputOtpSeparator><svg ndIcon=\"minus\"></svg></div>\n * ```\n */\n@Directive({\n  selector: '[ndInputOtpSeparator]',\n  hostDirectives: [NdInputOtpSeparator],\n  host: { 'data-slot': 'input-otp-separator' },\n})\nexport class InputOtpSeparator {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputOtp",
+      "InputOtpInput",
+      "InputOtpGroup",
+      "InputOtpSlot",
+      "InputOtpSeparator"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/input-otp.json",
+    "examples": [
+      "input-otp-demo",
+      "input-otp-pattern",
+      "input-otp-verify",
+      "input-otp-disabled"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

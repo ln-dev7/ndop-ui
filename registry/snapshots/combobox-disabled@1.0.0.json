@@ -1,0 +1,31 @@
+{
+  "name": "combobox-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Combobox disabled",
+  "description": "A disabled combobox, and one with a disabled option.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "combobox",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/combobox-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/combobox-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Combobox,\n  ComboboxContent,\n  ComboboxControl,\n  ComboboxEmpty,\n  ComboboxInput,\n  ComboboxItem,\n  ComboboxList,\n  ComboboxTrigger,\n} from '@/ui/combobox/combobox';\n\n/**\n * A disabled combobox, and one with a disabled option, which the arrow\n * keys skip.\n */\n@Component({\n  selector: 'example-combobox-disabled',\n  imports: [\n    Combobox,\n    ComboboxContent,\n    ComboboxControl,\n    ComboboxEmpty,\n    ComboboxInput,\n    ComboboxItem,\n    ComboboxList,\n    ComboboxTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-4\">\n      <ng-container ndCombobox disabled>\n        <div ndComboboxControl class=\"w-[200px]\">\n          <input\n            ndComboboxInput\n            aria-label=\"Team\"\n            placeholder=\"Select a team\"\n          />\n          <button ndComboboxTrigger><svg ndIcon=\"chevron-down\"></svg></button>\n        </div>\n        <div ndComboboxContent>\n          <div ndComboboxList>\n            <div ndComboboxEmpty>No team found.</div>\n            <div ndComboboxItem value=\"design\">Design</div>\n          </div>\n        </div>\n      </ng-container>\n      <ng-container ndCombobox>\n        <div ndComboboxControl class=\"w-[200px]\">\n          <input\n            ndComboboxInput\n            aria-label=\"Region\"\n            placeholder=\"Select a region\"\n          />\n          <button ndComboboxTrigger><svg ndIcon=\"chevron-down\"></svg></button>\n        </div>\n        <div ndComboboxContent>\n          <div ndComboboxList>\n            <div ndComboboxEmpty>No region found.</div>\n            <div ndComboboxItem value=\"africa\">Africa</div>\n            <div ndComboboxItem value=\"europe\">Europe</div>\n            <div ndComboboxItem value=\"antarctica\" disabled>\n              Antarctica (unavailable)\n            </div>\n          </div>\n        </div>\n      </ng-container>\n    </div>\n  `,\n})\nexport class ComboboxDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ComboboxDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

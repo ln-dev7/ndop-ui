@@ -1,0 +1,28 @@
+{
+  "name": "popover-placement",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Popover placement",
+  "description": "Popovers on each logical side, with a close button inside. `start` and `end` follow the text direction.",
+  "registryDependencies": [
+    "button",
+    "popover"
+  ],
+  "files": [
+    {
+      "path": "examples/popover-placement.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/popover-placement.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Popover,\n  PopoverClose,\n  PopoverPortal,\n  PopoverTrigger,\n  PopoverContent,\n} from '@/ui/popover/popover';\n\n/**\n * Popovers on each logical side, with a close button inside. `start` and\n * `end` follow the text direction.\n */\n@Component({\n  selector: 'example-popover-placement',\n  imports: [\n    Popover,\n    PopoverTrigger,\n    PopoverPortal,\n    PopoverClose,\n    PopoverContent,\n    Button,\n  ],\n  template: `\n    <div class=\"flex flex-wrap gap-2\">\n      @for (placement of placements; track placement.side) {\n        <ng-container ndPopover>\n          <button ndButton ndPopoverTrigger variant=\"outline\">\n            {{ placement.side }}\n          </button>\n          <ng-template ndPopoverPortal>\n            <div\n              ndPopoverContent\n              class=\"w-56\"\n              [side]=\"placement.side\"\n              [align]=\"placement.align\"\n              [attr.aria-label]=\"'Placed ' + placement.side\"\n            >\n              <p class=\"mb-3\">Placed on the {{ placement.side }} side.</p>\n              <button ndButton ndPopoverClose size=\"sm\" variant=\"secondary\">\n                Done\n              </button>\n            </div>\n          </ng-template>\n        </ng-container>\n      }\n    </div>\n  `,\n})\nexport class PopoverPlacementExample {\n  protected readonly placements = [\n    { side: 'top', align: 'center' },\n    { side: 'end', align: 'start' },\n    { side: 'bottom', align: 'center' },\n    { side: 'start', align: 'start' },\n  ] as const;\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "PopoverPlacementExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

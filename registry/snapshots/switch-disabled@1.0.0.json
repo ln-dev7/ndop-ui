@@ -1,0 +1,28 @@
+{
+  "name": "switch-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Switch disabled",
+  "description": "Disabled switches, on and off.",
+  "registryDependencies": [
+    "label",
+    "switch"
+  ],
+  "files": [
+    {
+      "path": "examples/switch-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/switch-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Label } from '@/ui/label/label';\nimport { Switch, SwitchThumb } from '@/ui/switch/switch';\n\n/** Disabled switches, on and off. */\n@Component({\n  selector: 'example-switch-disabled',\n  imports: [Label, Switch, SwitchThumb],\n  template: `\n    <div class=\"flex flex-col gap-4\">\n      <div class=\"flex items-center gap-2\">\n        <button ndSwitch id=\"switch-disabled-off\" disabled>\n          <span ndSwitchThumb></span>\n        </button>\n        <label ndLabel for=\"switch-disabled-off\">Beta features</label>\n      </div>\n      <div class=\"flex items-center gap-2\">\n        <button\n          ndSwitch\n          id=\"switch-disabled-on\"\n          disabled\n          [defaultChecked]=\"true\"\n        >\n          <span ndSwitchThumb></span>\n        </button>\n        <label ndLabel for=\"switch-disabled-on\">Managed by your admin</label>\n      </div>\n    </div>\n  `,\n})\nexport class SwitchDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SwitchDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

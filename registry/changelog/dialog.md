@@ -1,5 +1,9 @@
 # Dialog
 
+## 1.0.0
+
+Stable release; no code changes since 0.2.0.
+
 ## 0.2.0
 
 Every part of the item is now its own directive without the `Nd` prefix, which is kept for the headless primitives. Renames `NdDialog` to `Dialog`, `NdDialogClose` to `DialogClose`, `NdDialogPortal` to `DialogPortal` and `NdDialogTrigger` to `DialogTrigger`. Selectors and inputs are unchanged, and `ndop update` renames the imports and their uses in your code.

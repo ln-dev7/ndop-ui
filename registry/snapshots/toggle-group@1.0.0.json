@@ -1,0 +1,46 @@
+{
+  "name": "toggle-group",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Toggle Group",
+  "description": "A set of toggle buttons of which one or several are pressed, such as text alignment or formatting.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils",
+    "toggle"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/toggle-group/toggle-group.ts",
+      "type": "registry:ui",
+      "target": "{ui}/toggle-group/toggle-group.ts",
+      "content": "import {\n  computed,\n  Directive,\n  inject,\n  input,\n  numberAttribute,\n} from '@angular/core';\nimport {\n  NdToggleGroup,\n  NdToggleGroupItem,\n} from '@ndop/primitives/toggle-group';\nimport {\n  toggleVariants,\n  type ToggleSize,\n  type ToggleVariant,\n} from '@/ui/toggle/toggle';\nimport { cn } from '@/lib/utils';\n\n/**\n * A group of toggle buttons (`@ndop/primitives/toggle-group`): one pressed\n * at most (`type=\"single\"`, the default) or any number\n * (`type=\"multiple\"`). Arrow keys move between items. Its value is always\n * an array of the pressed items' values. Name it with `aria-label`. Its\n * `variant` and `size` apply to every item; with `spacing` 0 (the default)\n * the items join into one bar.\n *\n * @example\n * ```html\n * <div ndToggleGroup type=\"multiple\" aria-label=\"Text formatting\" [(value)]=\"formatting\">\n *   <button ndToggleGroupItem value=\"bold\" aria-label=\"Toggle bold\"><svg ndIcon=\"bold\"></svg></button>\n *   <button ndToggleGroupItem value=\"italic\" aria-label=\"Toggle italic\"><svg ndIcon=\"italic\"></svg></button>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndToggleGroup]',\n  hostDirectives: [\n    {\n      directive: NdToggleGroup,\n      inputs: ['value', 'defaultValue', 'type', 'orientation', 'disabled'],\n      outputs: ['valueChange'],\n    },\n  ],\n  host: {\n    'data-slot': 'toggle-group',\n    '[attr.data-variant]': 'variant()',\n    '[attr.data-size]': 'size()',\n    '[attr.data-spacing]': 'spacing()',\n    '[style.--gap]': 'spacing()',\n    '[class]': 'classes()',\n  },\n})\nexport class ToggleGroup {\n  /** Visual style of every item. */\n  readonly variant = input<ToggleVariant>('default');\n\n  /** Size of every item. */\n  readonly size = input<ToggleSize>('default');\n\n  /**\n   * Space between items, in Tailwind spacing units; 0 joins them into one\n   * bar.\n   */\n  readonly spacing = input(0, { transform: numberAttribute });\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs',\n      'data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * One toggle button of a {@link ToggleGroup}, styled like a Toggle with the\n * group's variant and size.\n *\n * @example\n * ```html\n * <button ndToggleGroupItem value=\"bold\" aria-label=\"Toggle bold\">\n *   <svg ndIcon=\"bold\"></svg>\n * </button>\n * ```\n */\n@Directive({\n  selector: 'button[ndToggleGroupItem]',\n  hostDirectives: [\n    { directive: NdToggleGroupItem, inputs: ['value', 'disabled'] },\n  ],\n  host: {\n    'data-slot': 'toggle-group-item',\n    '[attr.data-variant]': 'resolvedVariant()',\n    '[attr.data-size]': 'resolvedSize()',\n    '[attr.data-spacing]': 'group.spacing()',\n    '[class]': 'classes()',\n  },\n})\nexport class ToggleGroupItem {\n  /** Visual style, when the group doesn't set one. */\n  readonly variant = input<ToggleVariant>();\n\n  /** Size, when the group doesn't set one. */\n  readonly size = input<ToggleSize>();\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly group = inject(ToggleGroup);\n\n  protected readonly resolvedVariant = computed(\n    () => this.variant() ?? this.group.variant(),\n  );\n\n  protected readonly resolvedSize = computed(\n    () => this.size() ?? this.group.size(),\n  );\n\n  protected readonly classes = computed(() =>\n    cn(\n      toggleVariants({\n        variant: this.resolvedVariant(),\n        size: this.resolvedSize(),\n      }),\n      'w-auto min-w-0 shrink-0 px-3 focus:z-10 focus-visible:z-10',\n      'data-[spacing=0]:rounded-none data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-s-md data-[spacing=0]:last:rounded-e-md data-[spacing=0]:data-[variant=outline]:border-s-0 data-[spacing=0]:data-[variant=outline]:first:border-s',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroup",
+      "ToggleGroupItem"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/toggle-group.json",
+    "examples": [
+      "toggle-group-demo",
+      "toggle-group-single",
+      "toggle-group-sizes",
+      "toggle-group-spacing",
+      "toggle-group-vertical",
+      "toggle-group-disabled"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

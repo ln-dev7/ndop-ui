@@ -1,0 +1,31 @@
+{
+  "name": "toggle-group-sizes",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Toggle Group sizes",
+  "description": "The small and large sizes.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "toggle-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-group-sizes.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-group-sizes.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';\n\n/** The small and large sizes. */\n@Component({\n  selector: 'example-toggle-group-sizes',\n  imports: [NdIcon, ToggleGroup, ToggleGroupItem],\n  template: `\n    <div class=\"flex flex-col items-start gap-4\">\n      @for (size of sizes; track size) {\n        <div\n          ndToggleGroup\n          type=\"multiple\"\n          variant=\"outline\"\n          [size]=\"size\"\n          [attr.aria-label]=\"'Text formatting, ' + size\"\n        >\n          <button ndToggleGroupItem value=\"bold\" aria-label=\"Toggle bold\">\n            <svg ndIcon=\"bold\"></svg>\n          </button>\n          <button ndToggleGroupItem value=\"italic\" aria-label=\"Toggle italic\">\n            <svg ndIcon=\"italic\"></svg>\n          </button>\n          <button\n            ndToggleGroupItem\n            value=\"underline\"\n            aria-label=\"Toggle underline\"\n          >\n            <svg ndIcon=\"underline\"></svg>\n          </button>\n        </div>\n      }\n    </div>\n  `,\n})\nexport class ToggleGroupSizesExample {\n  protected readonly sizes = ['sm', 'lg'] as const;\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroupSizesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

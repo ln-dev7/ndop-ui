@@ -1,0 +1,31 @@
+{
+  "name": "accordion-multiple",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Accordion multiple",
+  "description": "Sections that open independently, with one disabled.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "accordion",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/accordion-multiple.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/accordion-multiple.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Accordion,\n  AccordionContent,\n  AccordionHeader,\n  AccordionItem,\n  AccordionTrigger,\n} from '@/ui/accordion/accordion';\n\n/**\n * Sections that open independently, with `multiple`. One is disabled,\n * and the open sections are bound to a signal.\n */\n@Component({\n  selector: 'example-accordion-multiple',\n  imports: [\n    Accordion,\n    AccordionContent,\n    AccordionHeader,\n    AccordionItem,\n    AccordionTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div ndAccordion multiple [(value)]=\"open\" class=\"w-md max-w-full\">\n      <div ndAccordionItem value=\"profile\">\n        <h2 ndAccordionHeader>\n          <button ndAccordionTrigger>\n            Profile <svg ndIcon=\"chevron-down\"></svg>\n          </button>\n        </h2>\n        <div ndAccordionContent>Your name, photo and bio.</div>\n      </div>\n      <div ndAccordionItem value=\"billing\" disabled>\n        <h2 ndAccordionHeader>\n          <button ndAccordionTrigger>\n            Billing <svg ndIcon=\"chevron-down\"></svg>\n          </button>\n        </h2>\n        <div ndAccordionContent>Managed by your organization.</div>\n      </div>\n      <div ndAccordionItem value=\"security\">\n        <h2 ndAccordionHeader>\n          <button ndAccordionTrigger>\n            Security <svg ndIcon=\"chevron-down\"></svg>\n          </button>\n        </h2>\n        <div ndAccordionContent>Password and two-factor authentication.</div>\n      </div>\n    </div>\n  `,\n})\nexport class AccordionMultipleExample {\n  protected readonly open = signal<readonly string[]>(['profile', 'security']);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AccordionMultipleExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,41 @@
+{
+  "name": "progress",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Progress",
+  "description": "Displays how far a task has got.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "ui/progress/progress.ts",
+      "type": "registry:ui",
+      "target": "{ui}/progress/progress.ts",
+      "content": "import { computed, Directive, inject, input } from '@angular/core';\nimport {\n  ND_PROGRESS,\n  NdProgress,\n  NdProgressIndicator,\n} from '@ndop/primitives/progress';\nimport { cn } from '@/lib/utils';\n\n/**\n * A progress bar (`@ndop/primitives/progress`): how far a task has got,\n * from 0 to `max`, or indeterminate while `value` is `null`. Give it a\n * name with `aria-label` or `aria-labelledby`, and put a\n * `ndProgressIndicator` inside.\n *\n * @example\n * ```html\n * <div ndProgress [value]=\"uploaded()\" aria-label=\"Upload\">\n *   <div ndProgressIndicator></div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndProgress]',\n  hostDirectives: [{ directive: NdProgress, inputs: ['value', 'max'] }],\n  host: { 'data-slot': 'progress', '[class]': 'classes()' },\n})\nexport class Progress {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative h-2 w-full overflow-hidden rounded-full bg-primary/20',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The filled part of a progress bar. It fills from the start side, so\n * from the right in right-to-left layouts, and pulses across the whole\n * bar while indeterminate.\n *\n * @example\n * ```html\n * <div ndProgressIndicator></div>\n * ```\n */\n@Directive({\n  selector: '[ndProgressIndicator]',\n  hostDirectives: [NdProgressIndicator],\n  host: {\n    'data-slot': 'progress-indicator',\n    '[style.width.%]': 'progress.percent()',\n    '[class]': 'classes()',\n  },\n})\nexport class ProgressIndicator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly progress = inject(ND_PROGRESS);\n\n  protected readonly classes = computed(() =>\n    cn(\n      'h-full flex-1 bg-primary transition-all',\n      'data-[state=indeterminate]:w-full data-[state=indeterminate]:animate-pulse',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Progress",
+      "ProgressIndicator"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/progress.json",
+    "examples": [
+      "progress-demo",
+      "progress-upload"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "sidebar-floating",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Sidebar floating",
+  "description": "A floating sidebar that slides off-canvas, with a badge and nested links.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "sidebar"
+  ],
+  "files": [
+    {
+      "path": "examples/sidebar-floating.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/sidebar-floating.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Sidebar,\n  SidebarContainer,\n  SidebarContent,\n  SidebarGap,\n  SidebarGroup,\n  SidebarGroupContent,\n  SidebarInner,\n  SidebarInset,\n  SidebarMenu,\n  SidebarMenuBadge,\n  SidebarMenuButton,\n  SidebarMenuItem,\n  SidebarMenuSub,\n  SidebarMenuSubButton,\n  SidebarMenuSubItem,\n  SidebarProvider,\n  SidebarTrigger,\n} from '@/ui/sidebar/sidebar';\n\n/**\n * A floating sidebar that slides off-canvas, with an unread count and\n * nested links. Collapsed, it's inert, so its links leave the tab order.\n */\n@Component({\n  selector: 'example-sidebar-floating',\n  imports: [\n    NdIcon,\n    Sidebar,\n    SidebarContainer,\n    SidebarContent,\n    SidebarGap,\n    SidebarGroup,\n    SidebarGroupContent,\n    SidebarInner,\n    SidebarInset,\n    SidebarMenu,\n    SidebarMenuBadge,\n    SidebarMenuButton,\n    SidebarMenuItem,\n    SidebarMenuSub,\n    SidebarMenuSubButton,\n    SidebarMenuSubItem,\n    SidebarProvider,\n    SidebarTrigger,\n  ],\n  template: `\n    <div\n      ndSidebarProvider\n      [shortcut]=\"null\"\n      class=\"relative min-h-[420px] w-[640px] max-w-full overflow-hidden rounded-lg border\"\n    >\n      <div ndSidebar variant=\"floating\">\n        <div ndSidebarGap></div>\n        <div ndSidebarContainer aria-label=\"Workspace\" class=\"absolute h-full\">\n          <div ndSidebarInner>\n            <div ndSidebarContent>\n              <nav ndSidebarGroup aria-label=\"Workspace pages\">\n                <div ndSidebarGroupContent>\n                  <ul ndSidebarMenu>\n                    <li ndSidebarMenuItem>\n                      <a ndSidebarMenuButton href=\"#inbox\" active>\n                        <svg ndIcon=\"inbox\"></svg>\n                        <span>Inbox</span>\n                      </a>\n                      <div ndSidebarMenuBadge>24</div>\n                    </li>\n                    <li ndSidebarMenuItem>\n                      <a ndSidebarMenuButton href=\"#guides\">\n                        <svg ndIcon=\"folder-open\"></svg>\n                        <span>Guides</span>\n                      </a>\n                      <ul ndSidebarMenuSub>\n                        <li ndSidebarMenuSubItem>\n                          <a ndSidebarMenuSubButton href=\"#installation\">\n                            Installation\n                          </a>\n                        </li>\n                        <li ndSidebarMenuSubItem>\n                          <a ndSidebarMenuSubButton href=\"#theming\">Theming</a>\n                        </li>\n                      </ul>\n                    </li>\n                  </ul>\n                </div>\n              </nav>\n            </div>\n          </div>\n        </div>\n      </div>\n      <div ndSidebarInset>\n        <header class=\"flex h-12 items-center gap-2 px-4\">\n          <button ndSidebarTrigger>\n            <svg ndIcon=\"panel-left\"></svg>\n            <span class=\"sr-only\">Toggle sidebar</span>\n          </button>\n        </header>\n        <div class=\"p-4 text-sm text-muted-foreground\">Inbox</div>\n      </div>\n    </div>\n  `,\n})\nexport class SidebarFloatingExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SidebarFloatingExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

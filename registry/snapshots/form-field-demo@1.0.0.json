@@ -1,0 +1,29 @@
+{
+  "name": "form-field-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Form Field demo",
+  "description": "A sign-up form whose fields describe themselves and show errors once touched.",
+  "registryDependencies": [
+    "button",
+    "form-field",
+    "input"
+  ],
+  "files": [
+    {
+      "path": "examples/form-field-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/form-field-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport {\n  email,\n  form,\n  FormField,\n  minLength,\n  required,\n} from '@angular/forms/signals';\nimport { Button } from '@/ui/button/button';\nimport {\n  Field,\n  FieldDescription,\n  FieldError,\n  FieldGroup,\n  FieldLabel,\n  FieldSeparator,\n  FieldSeparatorContent,\n} from '@/ui/form-field/form-field';\nimport { Input } from '@/ui/input/input';\n\n/**\n * A sign-up form in Signal Forms. Each field's input is described by its\n * help text and, once it's invalid and has been left, by its errors, which\n * appear and are announced then.\n */\n@Component({\n  selector: 'example-form-field-demo',\n  imports: [\n    Button,\n    Field,\n    FieldDescription,\n    FieldError,\n    FieldGroup,\n    FieldLabel,\n    FieldSeparator,\n    FieldSeparatorContent,\n    FormField,\n    Input,\n  ],\n  template: `\n    <form class=\"w-full max-w-sm\" (submit)=\"submit($event)\">\n      <div ndFieldGroup>\n        <div ndField>\n          <label ndFieldLabel for=\"form-field-demo-email\">Email</label>\n          <input\n            ndInput\n            id=\"form-field-demo-email\"\n            type=\"email\"\n            autocomplete=\"email\"\n            [formField]=\"signup.email\"\n          />\n          <p ndFieldDescription>We'll never share your email.</p>\n          <div ndFieldError>\n            @for (error of signup.email().errors(); track error.kind) {\n              <p>{{ error.message }}</p>\n            }\n          </div>\n        </div>\n        <div ndField>\n          <label ndFieldLabel for=\"form-field-demo-password\">Password</label>\n          <input\n            ndInput\n            id=\"form-field-demo-password\"\n            type=\"password\"\n            autocomplete=\"new-password\"\n            [formField]=\"signup.password\"\n          />\n          <p ndFieldDescription>At least 12 characters.</p>\n          <div ndFieldError>\n            @for (error of signup.password().errors(); track error.kind) {\n              <p>{{ error.message }}</p>\n            }\n          </div>\n        </div>\n        <button ndButton type=\"submit\">Create account</button>\n        <div ndFieldSeparator>\n          <span ndFieldSeparatorContent>Or</span>\n        </div>\n        <button ndButton type=\"button\" variant=\"outline\">\n          Continue with a passkey\n        </button>\n      </div>\n    </form>\n  `,\n})\nexport class FormFieldDemoExample {\n  protected readonly model = signal({ email: '', password: '' });\n\n  protected readonly signup = form(this.model, (path) => {\n    required(path.email, { message: 'Enter your email.' });\n    email(path.email, { message: 'Enter an email like ada@example.com.' });\n    required(path.password, { message: 'Choose a password.' });\n    minLength(path.password, 12, {\n      message: 'Use at least 12 characters.',\n    });\n  });\n\n  /**\n   * Marks the fields touched, so errors show, instead of reloading.\n   *\n   * @param event - The form's submit event.\n   */\n  protected submit(event: Event): void {\n    event.preventDefault();\n    this.signup().markAsTouched();\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "FormFieldDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

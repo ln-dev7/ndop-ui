@@ -1,0 +1,28 @@
+{
+  "name": "alert-dialog-small",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Alert Dialog small",
+  "description": "The small size: a short question with side-by-side buttons.",
+  "registryDependencies": [
+    "alert-dialog",
+    "button"
+  ],
+  "files": [
+    {
+      "path": "examples/alert-dialog-small.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/alert-dialog-small.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  AlertDialogAction,\n  AlertDialogCancel,\n  AlertDialogContent,\n  AlertDialogFooter,\n  AlertDialogHeader,\n  AlertDialogOverlay,\n  AlertDialogTitle,\n  AlertDialogDescription,\n  AlertDialog,\n  AlertDialogPortal,\n  AlertDialogTrigger,\n} from '@/ui/alert-dialog/alert-dialog';\nimport { Button } from '@/ui/button/button';\n\n/** The small size: a short question with side-by-side buttons. */\n@Component({\n  selector: 'example-alert-dialog-small',\n  imports: [\n    AlertDialogAction,\n    AlertDialogCancel,\n    AlertDialogContent,\n    AlertDialogDescription,\n    AlertDialogFooter,\n    AlertDialogHeader,\n    AlertDialogOverlay,\n    AlertDialogTitle,\n    Button,\n    AlertDialog,\n    AlertDialogPortal,\n    AlertDialogTrigger,\n  ],\n  template: `\n    <ng-container ndAlertDialog>\n      <button ndButton variant=\"outline\" ndAlertDialogTrigger>\n        Discard draft\n      </button>\n      <ng-template ndAlertDialogPortal>\n        <div ndAlertDialogOverlay></div>\n        <div ndAlertDialogContent size=\"sm\">\n          <div ndAlertDialogHeader>\n            <h2 ndAlertDialogTitle>Discard draft?</h2>\n            <p ndAlertDialogDescription>Your changes will be lost.</p>\n          </div>\n          <div ndAlertDialogFooter>\n            <button ndAlertDialogCancel>Cancel</button>\n            <button ndAlertDialogAction>Discard</button>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class AlertDialogSmallExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AlertDialogSmallExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

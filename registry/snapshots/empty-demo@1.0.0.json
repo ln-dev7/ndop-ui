@@ -1,0 +1,32 @@
+{
+  "name": "empty-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Empty State demo",
+  "description": "No projects yet, with actions to create one.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "empty",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/empty-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/empty-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Empty,\n  EmptyContent,\n  EmptyDescription,\n  EmptyHeader,\n  EmptyMedia,\n  EmptyTitle,\n} from '@/ui/empty/empty';\n\n/** No projects yet, with actions to create one. */\n@Component({\n  selector: 'example-empty-demo',\n  imports: [\n    Button,\n    Empty,\n    EmptyContent,\n    EmptyDescription,\n    EmptyHeader,\n    EmptyMedia,\n    EmptyTitle,\n    NdIcon,\n  ],\n  template: `\n    <div ndEmpty class=\"border\">\n      <div ndEmptyHeader>\n        <div ndEmptyMedia variant=\"icon\"><svg ndIcon=\"folder-open\"></svg></div>\n        <h2 ndEmptyTitle>No projects yet</h2>\n        <p ndEmptyDescription>\n          You haven't created a project yet. Start by creating your first one.\n        </p>\n      </div>\n      <div ndEmptyContent>\n        <div class=\"flex gap-2\">\n          <button ndButton>Create project</button>\n          <button ndButton variant=\"outline\">Import project</button>\n        </div>\n        <a ndButton variant=\"link\" href=\"#docs\" size=\"sm\"\n          >Read about projects</a\n        >\n      </div>\n    </div>\n  `,\n})\nexport class EmptyDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "EmptyDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

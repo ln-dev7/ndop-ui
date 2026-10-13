@@ -1,0 +1,62 @@
+{
+  "name": "collapsible",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Collapsible",
+  "description": "Shows and hides a section of content.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "categories": [
+    "data-display"
+  ],
+  "files": [
+    {
+      "path": "ui/collapsible/collapsible.ts",
+      "type": "registry:ui",
+      "target": "{ui}/collapsible/collapsible.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdCollapsible,\n  NdCollapsibleContent,\n  NdCollapsibleTrigger,\n} from '@ndop/primitives/collapsible';\nimport { cn } from '@/lib/utils';\n\n/**\n * A collapsible (`@ndop/primitives/collapsible`): a trigger that shows and\n * hides a section of content, which stays in the page and slides open and\n * closed. Style the trigger with other items, such as a ghost Button.\n * `open` is two-way bindable.\n *\n * @example\n * ```html\n * <div ndCollapsible [(open)]=\"open\">\n *   <button ndButton variant=\"ghost\" ndCollapsibleTrigger>Show more</button>\n *   <div ndCollapsibleContent>…</div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndCollapsible]',\n  hostDirectives: [\n    {\n      directive: NdCollapsible,\n      inputs: ['open', 'defaultOpen', 'disabled'],\n      outputs: ['openChange'],\n    },\n  ],\n  host: { 'data-slot': 'collapsible' },\n})\nexport class Collapsible {}\n\n/**\n * The button that shows and hides its collapsible's content, with\n * `aria-expanded` and `aria-controls`.\n *\n * @example\n * ```html\n * <button ndButton variant=\"ghost\" ndCollapsibleTrigger>Show more</button>\n * ```\n */\n@Directive({\n  selector: 'button[ndCollapsibleTrigger]',\n  hostDirectives: [NdCollapsibleTrigger],\n  host: { 'data-slot': 'collapsible-trigger' },\n})\nexport class CollapsibleTrigger {}\n\n/**\n * The content a collapsible shows and hides, sliding open and closed;\n * hidden content leaves the accessibility tree and the tab order. It clips\n * its content only while it animates, so focus rings inside it show.\n *\n * @example\n * ```html\n * <div ndCollapsibleContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndCollapsibleContent]',\n  hostDirectives: [NdCollapsibleContent],\n  host: { 'data-slot': 'collapsible-content', '[class]': 'classes()' },\n})\nexport class CollapsibleContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'data-animating:overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down',\n      // tw-animate-css's collapsible keyframes read this height.\n      '[--radix-collapsible-content-height:var(--nd-collapsible-content-height)]',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Collapsible",
+      "CollapsibleTrigger",
+      "CollapsibleContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "codemods": [
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdCollapsible",
+      "to": "Collapsible"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdCollapsibleTrigger",
+      "to": "CollapsibleTrigger"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdCollapsibleContent",
+      "to": "CollapsibleContent"
+    }
+  ],
+  "ndop": {
+    "metadata": "metadata/collapsible.json",
+    "examples": [
+      "collapsible-demo",
+      "collapsible-settings"
+    ]
+  },
+  "registryDependencies": [
+    "utils"
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

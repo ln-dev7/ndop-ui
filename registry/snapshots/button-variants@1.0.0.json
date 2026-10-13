@@ -1,0 +1,27 @@
+{
+  "name": "button-variants",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Button variants",
+  "description": "Every Button variant, side by side.",
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "examples/button-variants.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/button-variants.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\n\n/** Every Button variant, side by side. */\n@Component({\n  selector: 'example-button-variants',\n  imports: [Button],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-2\">\n      <button ndButton>Default</button>\n      <button ndButton variant=\"secondary\">Secondary</button>\n      <button ndButton variant=\"outline\">Outline</button>\n      <button ndButton variant=\"ghost\">Ghost</button>\n      <button ndButton variant=\"destructive\">Destructive</button>\n      <button ndButton variant=\"link\">Link</button>\n    </div>\n  `,\n})\nexport class ButtonVariantsExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ButtonVariantsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

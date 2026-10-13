@@ -1,0 +1,28 @@
+{
+  "name": "input-with-button",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Input with button",
+  "description": "An input and a button on one row, as in a newsletter sign-up.",
+  "registryDependencies": [
+    "button",
+    "input"
+  ],
+  "files": [
+    {
+      "path": "examples/input-with-button.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-with-button.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport { Input } from '@/ui/input/input';\n\n/** An input and a button on one row, as in a newsletter sign-up. */\n@Component({\n  selector: 'example-input-with-button',\n  imports: [Input, Button],\n  template: `\n    <form\n      class=\"flex w-full max-w-sm items-center gap-2\"\n      (submit)=\"$event.preventDefault()\"\n    >\n      <input ndInput type=\"email\" placeholder=\"Email\" aria-label=\"Email\" />\n      <button ndButton type=\"submit\" variant=\"outline\">Subscribe</button>\n    </form>\n  `,\n})\nexport class InputWithButtonExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputWithButtonExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

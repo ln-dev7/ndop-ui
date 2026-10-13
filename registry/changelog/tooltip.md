@@ -1,5 +1,9 @@
 # Tooltip
 
+## 1.0.0
+
+Stable release; no code changes since 0.2.0.
+
 ## 0.2.0
 
 Every part of the item is now its own directive without the `Nd` prefix, which is kept for the headless primitives. Renames `NdTooltip` to `Tooltip`, `NdTooltipPortal` to `TooltipPortal` and `NdTooltipTrigger` to `TooltipTrigger`. Selectors and inputs are unchanged, and `ndop update` renames the imports and their uses in your code.

@@ -1,0 +1,38 @@
+{
+  "name": "date-picker",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Date Picker",
+  "description": "A button that opens a calendar in a popover to pick a date or a range.",
+  "registryDependencies": [
+    "button",
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/date-picker/date-picker.ts",
+      "type": "registry:ui",
+      "target": "{ui}/date-picker/date-picker.ts",
+      "content": "import { booleanAttribute, computed, Directive, input } from '@angular/core';\nimport { buttonVariants } from '@/ui/button/button';\nimport { cn } from '@/lib/utils';\n\n/**\n * The button of a date picker: an outline button that shows the chosen\n * date, or a muted placeholder while `empty`. Put it on the trigger of a\n * Popover whose content holds a Calendar; opening focuses the chosen day.\n *\n * @example\n * ```html\n * <ng-container ndPopover>\n *   <button ndPopoverTrigger ndDatePickerTrigger [empty]=\"!date()\">\n *     <svg ndIcon=\"calendar\"></svg>\n *     {{ date() ? (date() | date: 'longDate') : 'Pick a date' }}\n *   </button>\n *   <ng-template ndPopoverPortal>\n *     <div ndPopoverContent align=\"start\" class=\"w-auto p-0\">…</div>\n *   </ng-template>\n * </ng-container>\n * ```\n */\n@Directive({\n  selector: 'button[ndDatePickerTrigger]',\n  host: {\n    type: 'button',\n    'data-slot': 'date-picker-trigger',\n    '[attr.data-empty]': 'empty()',\n    '[class]': 'classes()',\n  },\n})\nexport class DatePickerTrigger {\n  /** Whether no date is chosen yet, which mutes the placeholder text. */\n  readonly empty = input(false, { transform: booleanAttribute });\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({ variant: 'outline' }),\n      'w-[240px] justify-start text-start font-normal data-[empty=true]:text-muted-foreground',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DatePickerTrigger"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/date-picker.json",
+    "examples": [
+      "date-picker-demo",
+      "date-picker-range"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

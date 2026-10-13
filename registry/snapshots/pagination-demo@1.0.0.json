@@ -1,0 +1,31 @@
+{
+  "name": "pagination-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Pagination demo",
+  "description": "Links to pages, with the current one marked.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "pagination",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/pagination-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/pagination-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Pagination,\n  PaginationContent,\n  PaginationEllipsis,\n  PaginationItem,\n  PaginationLink,\n  PaginationNext,\n  PaginationPrevious,\n} from '@/ui/pagination/pagination';\n\n/** Links to pages, with the current one marked. */\n@Component({\n  selector: 'example-pagination-demo',\n  imports: [\n    NdIcon,\n    Pagination,\n    PaginationContent,\n    PaginationEllipsis,\n    PaginationItem,\n    PaginationLink,\n    PaginationNext,\n    PaginationPrevious,\n  ],\n  template: `\n    <nav ndPagination>\n      <ul ndPaginationContent>\n        <li ndPaginationItem>\n          <a ndPaginationPrevious href=\"#page-1\">\n            <svg ndIcon=\"chevron-left\"></svg>\n            <span class=\"hidden sm:block\">Previous</span>\n          </a>\n        </li>\n        <li ndPaginationItem><a ndPaginationLink href=\"#page-1\">1</a></li>\n        <li ndPaginationItem>\n          <a ndPaginationLink href=\"#page-2\" active>2</a>\n        </li>\n        <li ndPaginationItem><a ndPaginationLink href=\"#page-3\">3</a></li>\n        <li ndPaginationItem>\n          <span ndPaginationEllipsis><svg ndIcon=\"ellipsis\"></svg></span>\n        </li>\n        <li ndPaginationItem>\n          <a ndPaginationNext href=\"#page-3\">\n            <span class=\"hidden sm:block\">Next</span>\n            <svg ndIcon=\"chevron-right\"></svg>\n          </a>\n        </li>\n      </ul>\n    </nav>\n  `,\n})\nexport class PaginationDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "PaginationDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

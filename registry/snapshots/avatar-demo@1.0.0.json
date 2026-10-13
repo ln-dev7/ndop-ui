@@ -1,0 +1,27 @@
+{
+  "name": "avatar-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Avatar demo",
+  "description": "An avatar with an image, and one that falls back to initials.",
+  "registryDependencies": [
+    "avatar"
+  ],
+  "files": [
+    {
+      "path": "examples/avatar-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/avatar-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar/avatar';\n\n/**\n * A picture kept with the code, so the example loads nothing from the\n * network. Use your users' image URLs.\n */\nconst PICTURE =\n  'data:image/svg+xml,' +\n  encodeURIComponent(\n    '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"><rect width=\"32\" height=\"32\" fill=\"#a5b4fc\"/><circle cx=\"16\" cy=\"13\" r=\"6\" fill=\"#4338ca\"/><path d=\"M5 32a11 11 0 0 1 22 0z\" fill=\"#4338ca\"/></svg>',\n  );\n\n/** An avatar with an image, and one that falls back to initials. */\n@Component({\n  selector: 'example-avatar-demo',\n  imports: [Avatar, AvatarFallback, AvatarImage],\n  template: `\n    <div class=\"flex items-center gap-4\">\n      <span ndAvatar>\n        <img ndAvatarImage [src]=\"picture\" alt=\"Ada Lovelace\" />\n        <span ndAvatarFallback>AL</span>\n      </span>\n      <span ndAvatar size=\"lg\">\n        <img ndAvatarImage alt=\"Grace Hopper\" />\n        <span ndAvatarFallback>GH</span>\n      </span>\n      <span ndAvatar size=\"sm\">\n        <span ndAvatarFallback>KJ</span>\n      </span>\n    </div>\n  `,\n})\nexport class AvatarDemoExample {\n  protected readonly picture = PICTURE;\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AvatarDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

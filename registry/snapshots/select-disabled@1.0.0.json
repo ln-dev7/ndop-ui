@@ -1,0 +1,31 @@
+{
+  "name": "select-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Select disabled",
+  "description": "A disabled select, and one with a disabled option.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "select"
+  ],
+  "files": [
+    {
+      "path": "examples/select-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/select-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectItemIndicator,\n  SelectItemText,\n  SelectTrigger,\n  SelectValue,\n} from '@/ui/select/select';\n\n/**\n * A disabled select, and one with a disabled option, which the arrow keys\n * skip.\n */\n@Component({\n  selector: 'example-select-disabled',\n  imports: [\n    NdIcon,\n    Select,\n    SelectContent,\n    SelectItem,\n    SelectItemIndicator,\n    SelectItemText,\n    SelectTrigger,\n    SelectValue,\n  ],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-4\">\n      <ng-container ndSelect disabled>\n        <button ndSelectTrigger aria-label=\"Plan\" class=\"w-[180px]\">\n          <span ndSelectValue placeholder=\"Select a plan\"></span>\n          <svg ndIcon=\"chevron-down\" class=\"size-4 opacity-50\"></svg>\n        </button>\n        <div ndSelectContent>\n          <div ndSelectItem value=\"free\">\n            <span ndSelectItemText>Free</span>\n          </div>\n        </div>\n      </ng-container>\n      <ng-container ndSelect>\n        <button ndSelectTrigger aria-label=\"Seats\" class=\"w-[180px]\">\n          <span ndSelectValue placeholder=\"Select seats\"></span>\n          <svg ndIcon=\"chevron-down\" class=\"size-4 opacity-50\"></svg>\n        </button>\n        <div ndSelectContent>\n          <div ndSelectItem value=\"1\">\n            <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n            <span ndSelectItemText>1 seat</span>\n          </div>\n          <div ndSelectItem value=\"5\">\n            <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n            <span ndSelectItemText>5 seats</span>\n          </div>\n          <div ndSelectItem value=\"unlimited\" disabled>\n            <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n            <span ndSelectItemText>Unlimited (Enterprise)</span>\n          </div>\n        </div>\n      </ng-container>\n    </div>\n  `,\n})\nexport class SelectDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SelectDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

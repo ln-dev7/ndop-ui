@@ -1,0 +1,27 @@
+{
+  "name": "table-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Table demo",
+  "description": "Invoices with a caption and a total.",
+  "registryDependencies": [
+    "table"
+  ],
+  "files": [
+    {
+      "path": "examples/table-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/table-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Table,\n  TableBody,\n  TableCaption,\n  TableCell,\n  TableContainer,\n  TableFooter,\n  TableHead,\n  TableHeader,\n  TableRow,\n} from '@/ui/table/table';\n\n/** Recent invoices, named by a caption, with a total in the footer. */\n@Component({\n  selector: 'example-table-demo',\n  imports: [\n    Table,\n    TableBody,\n    TableCaption,\n    TableCell,\n    TableContainer,\n    TableFooter,\n    TableHead,\n    TableHeader,\n    TableRow,\n  ],\n  template: `\n    <div ndTableContainer>\n      <table ndTable>\n        <caption ndTableCaption>\n          A list of your recent invoices.\n        </caption>\n        <thead ndTableHeader>\n          <tr ndTableRow>\n            <th ndTableHead scope=\"col\" class=\"w-24\">Invoice</th>\n            <th ndTableHead scope=\"col\">Status</th>\n            <th ndTableHead scope=\"col\">Method</th>\n            <th ndTableHead scope=\"col\" class=\"text-end\">Amount</th>\n          </tr>\n        </thead>\n        <tbody ndTableBody>\n          @for (invoice of invoices; track invoice.id) {\n            <tr ndTableRow>\n              <th ndTableHead scope=\"row\">{{ invoice.id }}</th>\n              <td ndTableCell>{{ invoice.status }}</td>\n              <td ndTableCell>{{ invoice.method }}</td>\n              <td ndTableCell class=\"text-end\">{{ invoice.amount }}</td>\n            </tr>\n          }\n        </tbody>\n        <tfoot ndTableFooter>\n          <tr ndTableRow>\n            <th ndTableHead scope=\"row\" colspan=\"3\">Total</th>\n            <td ndTableCell class=\"text-end\">$1,750.00</td>\n          </tr>\n        </tfoot>\n      </table>\n    </div>\n  `,\n})\nexport class TableDemoExample {\n  protected readonly invoices = [\n    { id: 'INV001', status: 'Paid', method: 'Credit card', amount: '$250.00' },\n    { id: 'INV002', status: 'Pending', method: 'PayPal', amount: '$150.00' },\n    {\n      id: 'INV003',\n      status: 'Unpaid',\n      method: 'Bank transfer',\n      amount: '$350.00',\n    },\n    { id: 'INV004', status: 'Paid', method: 'Credit card', amount: '$450.00' },\n    { id: 'INV005', status: 'Paid', method: 'PayPal', amount: '$550.00' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TableDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

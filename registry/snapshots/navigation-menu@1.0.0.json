@@ -1,0 +1,45 @@
+{
+  "name": "navigation-menu",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Navigation Menu",
+  "description": "A site's navigation: links and buttons that show panels of links.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "navigation"
+  ],
+  "files": [
+    {
+      "path": "ui/navigation-menu/navigation-menu.ts",
+      "type": "registry:ui",
+      "target": "{ui}/navigation-menu/navigation-menu.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdNavigationMenu,\n  NdNavigationMenuContent,\n  NdNavigationMenuItem,\n  NdNavigationMenuLink,\n  NdNavigationMenuList,\n  NdNavigationMenuTrigger,\n} from '@ndop/primitives/navigation-menu';\nimport { cn } from '@/lib/utils';\n\n/**\n * Classes of a navigation menu's buttons; give them to a top-level link so\n * it looks like one.\n */\nexport const navigationMenuTriggerStyle =\n  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-[color,box-shadow] outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-accent/50 data-[state=open]:text-accent-foreground data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent';\n\n/**\n * A site's navigation (`@ndop/primitives/navigation-menu`): links, and\n * buttons that show panels of links below them. Each panel stays after its\n * button in the page, so its links render on the server. Put it on a `nav`\n * named with `aria-label`.\n *\n * @example\n * ```html\n * <nav ndNavigationMenu aria-label=\"Main\">\n *   <ul ndNavigationMenuList>\n *     <li ndNavigationMenuItem>\n *       <button ndNavigationMenuTrigger>\n *         Docs <svg ndIcon=\"chevron-down\"></svg>\n *       </button>\n *       <div ndNavigationMenuContent>\n *         <a ndNavigationMenuLink href=\"/docs\">Introduction</a>\n *       </div>\n *     </li>\n *   </ul>\n * </nav>\n * ```\n */\n@Directive({\n  selector: '[ndNavigationMenu]',\n  hostDirectives: [\n    {\n      directive: NdNavigationMenu,\n      inputs: ['value', 'openDelay', 'closeDelay'],\n      outputs: ['valueChange'],\n    },\n  ],\n  host: {\n    'data-slot': 'navigation-menu',\n    // Panels sit under their own items, as shadcn's `viewport={false}`.\n    'data-viewport': 'false',\n    '[class]': 'classes()',\n  },\n})\nexport class NavigationMenu {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The list of top-level items, on a `ul`.\n *\n * @example\n * ```html\n * <ul ndNavigationMenuList>…</ul>\n * ```\n */\n@Directive({\n  selector: '[ndNavigationMenuList]',\n  hostDirectives: [NdNavigationMenuList],\n  host: { 'data-slot': 'navigation-menu-list', '[class]': 'classes()' },\n})\nexport class NavigationMenuList {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group flex flex-1 list-none items-center justify-center gap-1',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * One top-level item, on an `li`: a link, or a button with its panel.\n *\n * @example\n * ```html\n * <li ndNavigationMenuItem>…</li>\n * ```\n */\n@Directive({\n  selector: '[ndNavigationMenuItem]',\n  hostDirectives: [{ directive: NdNavigationMenuItem, inputs: ['value'] }],\n  host: { 'data-slot': 'navigation-menu-item', '[class]': 'classes()' },\n})\nexport class NavigationMenuItem {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() => cn('relative', this.class()));\n}\n\n/**\n * The button that shows its item's panel. Put the chevron icon in it,\n * last; it turns over while the panel is open.\n *\n * @example\n * ```html\n * <button ndNavigationMenuTrigger>Docs <svg ndIcon=\"chevron-down\"></svg></button>\n * ```\n */\n@Directive({\n  selector: 'button[ndNavigationMenuTrigger]',\n  hostDirectives: [\n    { directive: NdNavigationMenuTrigger, inputs: ['disabled'] },\n  ],\n  host: { 'data-slot': 'navigation-menu-trigger', '[class]': 'classes()' },\n})\nexport class NavigationMenuTrigger {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      navigationMenuTriggerStyle,\n      'group',\n      '[&>svg]:relative [&>svg]:top-[1px] [&>svg]:ms-1 [&>svg]:size-3 [&>svg]:transition [&>svg]:duration-300 group-data-[state=open]:[&>svg]:rotate-180',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Its item's panel of links, shown below the item from the `md`\n * breakpoint, and in the flow of the page below it.\n *\n * @example\n * ```html\n * <div ndNavigationMenuContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndNavigationMenuContent]',\n  hostDirectives: [NdNavigationMenuContent],\n  host: { 'data-slot': 'navigation-menu-content', '[class]': 'classes()' },\n})\nexport class NavigationMenuContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'top-0 start-0 w-full p-2 pe-2.5 data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 data-[motion^=from-]:animate-in data-[motion^=from-]:fade-in data-[motion^=to-]:animate-out data-[motion^=to-]:fade-out md:absolute md:w-auto',\n      'group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none group-data-[viewport=false]/navigation-menu:data-[state=closed]:animate-out group-data-[viewport=false]/navigation-menu:data-[state=closed]:fade-out-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:animate-in group-data-[viewport=false]/navigation-menu:data-[state=open]:fade-in-0 group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95',\n      'z-50',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A link, at the top level or in a panel; `active` marks the current page.\n * At the top level, give it {@link navigationMenuTriggerStyle} to match the\n * buttons.\n *\n * @example\n * ```html\n * <a ndNavigationMenuLink href=\"/docs\" active>Docs</a>\n * ```\n */\n@Directive({\n  selector: 'a[ndNavigationMenuLink]',\n  hostDirectives: [{ directive: NdNavigationMenuLink, inputs: ['active'] }],\n  host: { 'data-slot': 'navigation-menu-link', '[class]': 'classes()' },\n})\nexport class NavigationMenuLink {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      \"flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground data-[active=true]:hover:bg-accent data-[active=true]:focus:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground\",\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "navigationMenuTriggerStyle",
+      "NavigationMenu",
+      "NavigationMenuList",
+      "NavigationMenuItem",
+      "NavigationMenuTrigger",
+      "NavigationMenuContent",
+      "NavigationMenuLink"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/navigation-menu.json",
+    "examples": [
+      "navigation-menu-demo"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

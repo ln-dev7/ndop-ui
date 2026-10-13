@@ -1,0 +1,29 @@
+{
+  "name": "textarea-form",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Textarea form",
+  "description": "A required message field in a Signal Forms form, with its error.",
+  "registryDependencies": [
+    "button",
+    "label",
+    "textarea"
+  ],
+  "files": [
+    {
+      "path": "examples/textarea-form.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/textarea-form.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { form, FormField, maxLength, required } from '@angular/forms/signals';\nimport { Button } from '@/ui/button/button';\nimport { Label } from '@/ui/label/label';\nimport { Textarea } from '@/ui/textarea/textarea';\n\n/**\n * A required message field in a Signal Forms form. It turns invalid once\n * touched, says why under the field, and counts what's left.\n */\n@Component({\n  selector: 'example-textarea-form',\n  imports: [Button, FormField, Label, Textarea],\n  template: `\n    <form class=\"grid w-full max-w-sm gap-3\" (submit)=\"send($event)\">\n      <label ndLabel for=\"textarea-form-bio\">Bio</label>\n      <textarea\n        ndTextarea\n        id=\"textarea-form-bio\"\n        placeholder=\"Tell us a little about yourself.\"\n        aria-describedby=\"textarea-form-hint\"\n        [formField]=\"profile.bio\"\n      ></textarea>\n      <p id=\"textarea-form-hint\" class=\"text-sm text-muted-foreground\">\n        @if (profile.bio().touched() && profile.bio().invalid()) {\n          Write a bio of up to 160 characters.\n        } @else {\n          {{ 160 - model().bio.length }} characters left.\n        }\n      </p>\n      <button ndButton type=\"submit\" class=\"justify-self-start\">Save</button>\n    </form>\n  `,\n})\nexport class TextareaFormExample {\n  protected readonly model = signal({ bio: '' });\n\n  protected readonly profile = form(this.model, (path) => {\n    required(path.bio);\n    maxLength(path.bio, 160);\n  });\n\n  /**\n   * Marks the fields touched, so errors show, instead of reloading.\n   *\n   * @param event - The form's submit event.\n   */\n  protected send(event: Event): void {\n    event.preventDefault();\n    this.profile().markAsTouched();\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TextareaFormExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

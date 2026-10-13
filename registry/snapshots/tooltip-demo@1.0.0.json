@@ -1,0 +1,28 @@
+{
+  "name": "tooltip-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Tooltip demo",
+  "description": "A tooltip describing a button, shown on hover and keyboard focus.",
+  "registryDependencies": [
+    "button",
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "examples/tooltip-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/tooltip-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Tooltip,\n  TooltipPortal,\n  TooltipTrigger,\n  TooltipContent,\n} from '@/ui/tooltip/tooltip';\n\n/** A tooltip describing a button, shown on hover and keyboard focus. */\n@Component({\n  selector: 'example-tooltip-demo',\n  imports: [Tooltip, TooltipTrigger, TooltipPortal, TooltipContent, Button],\n  template: `\n    <ng-container ndTooltip>\n      <button ndButton ndTooltipTrigger variant=\"outline\">Hover</button>\n      <ng-template ndTooltipPortal>\n        <div ndTooltipContent>Add to library</div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class TooltipDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TooltipDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

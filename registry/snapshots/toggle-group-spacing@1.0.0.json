@@ -1,0 +1,27 @@
+{
+  "name": "toggle-group-spacing",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Toggle Group spacing",
+  "description": "Separate buttons instead of one joined bar.",
+  "registryDependencies": [
+    "toggle-group"
+  ],
+  "files": [
+    {
+      "path": "examples/toggle-group-spacing.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toggle-group-spacing.ts",
+      "content": "import { Component } from '@angular/core';\nimport { ToggleGroup, ToggleGroupItem } from '@/ui/toggle-group/toggle-group';\n\n/** Separate buttons instead of one joined bar. */\n@Component({\n  selector: 'example-toggle-group-spacing',\n  imports: [ToggleGroup, ToggleGroupItem],\n  template: `\n    <div\n      ndToggleGroup\n      variant=\"outline\"\n      size=\"sm\"\n      [spacing]=\"2\"\n      aria-label=\"Release channel\"\n      [defaultValue]=\"['stable']\"\n    >\n      <button ndToggleGroupItem value=\"stable\">Stable</button>\n      <button ndToggleGroupItem value=\"beta\">Beta</button>\n      <button ndToggleGroupItem value=\"nightly\">Nightly</button>\n    </div>\n  `,\n})\nexport class ToggleGroupSpacingExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToggleGroupSpacingExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "input-otp-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Input OTP disabled",
+  "description": "A disabled code input.",
+  "registryDependencies": [
+    "input-otp"
+  ],
+  "files": [
+    {
+      "path": "examples/input-otp-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/input-otp-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  InputOtp,\n  InputOtpGroup,\n  InputOtpInput,\n  InputOtpSlot,\n} from '@/ui/input-otp/input-otp';\n\n/** A disabled code input, such as while a code is being checked. */\n@Component({\n  selector: 'example-input-otp-disabled',\n  imports: [InputOtp, InputOtpGroup, InputOtpInput, InputOtpSlot],\n  template: `\n    <div ndInputOtp [length]=\"4\" defaultValue=\"2048\" disabled>\n      <input ndInputOtpInput aria-label=\"PIN\" />\n      <div ndInputOtpGroup>\n        @for (index of [0, 1, 2, 3]; track index) {\n          <div ndInputOtpSlot [index]=\"index\"></div>\n        }\n      </div>\n    </div>\n  `,\n})\nexport class InputOtpDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "InputOtpDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

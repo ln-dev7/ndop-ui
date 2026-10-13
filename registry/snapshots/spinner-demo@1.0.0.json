@@ -1,0 +1,31 @@
+{
+  "name": "spinner-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Spinner demo",
+  "description": "Spinners in three sizes.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "spinner",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/spinner-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/spinner-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Spinner } from '@/ui/spinner/spinner';\n\n/** Spinners in three sizes. */\n@Component({\n  selector: 'example-spinner-demo',\n  imports: [NdIcon, Spinner],\n  template: `\n    <div class=\"flex items-center gap-6\">\n      <span ndSpinner><svg ndIcon=\"loader-circle\"></svg></span>\n      <span ndSpinner class=\"size-6\"><svg ndIcon=\"loader-circle\"></svg></span>\n      <span ndSpinner label=\"Loading results\" class=\"size-8\">\n        <svg ndIcon=\"loader-circle\"></svg>\n      </span>\n    </div>\n  `,\n})\nexport class SpinnerDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SpinnerDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

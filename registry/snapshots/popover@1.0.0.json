@@ -1,0 +1,73 @@
+{
+  "name": "popover",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Popover",
+  "description": "Displays rich content in a portal, triggered by a button.",
+  "categories": [
+    "overlays"
+  ],
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/popover/popover.ts",
+      "type": "registry:ui",
+      "target": "{ui}/popover/popover.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdPopover,\n  NdPopoverClose,\n  NdPopoverContent,\n  NdPopoverPortal,\n  NdPopoverTrigger,\n} from '@ndop/primitives/popover';\nimport { cn } from '@/lib/utils';\n\n/**\n * A popover (`@ndop/primitives/popover`): rich content anchored to its\n * trigger, opened and closed with it. Put it on an `ng-container`; `open`\n * is two-way bindable.\n *\n * @example\n * ```html\n * <ng-container ndPopover>…</ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndPopover]',\n  hostDirectives: [\n    {\n      directive: NdPopover,\n      inputs: ['open', 'defaultOpen'],\n      outputs: ['openChange'],\n    },\n  ],\n})\nexport class Popover {}\n\n/**\n * The button that opens and closes its popover.\n *\n * @example\n * ```html\n * <button ndButton variant=\"outline\" ndPopoverTrigger>Filters</button>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverTrigger]',\n  hostDirectives: [NdPopoverTrigger],\n  host: { 'data-slot': 'popover-trigger' },\n})\nexport class PopoverTrigger {}\n\n/**\n * Marks the `ng-template` its popover renders while open.\n *\n * @example\n * ```html\n * <ng-template ndPopoverPortal>…</ng-template>\n * ```\n */\n@Directive({\n  selector: 'ng-template[ndPopoverPortal]',\n  hostDirectives: [NdPopoverPortal],\n})\nexport class PopoverPortal {}\n\n/**\n * A button that closes its popover.\n *\n * @example\n * ```html\n * <button ndButton ndPopoverClose>Done</button>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverClose]',\n  hostDirectives: [NdPopoverClose],\n  host: { 'data-slot': 'popover-close' },\n})\nexport class PopoverClose {}\n\n/**\n * The popover panel, placed next to its trigger.\n *\n * @example\n * ```html\n * <div ndPopoverContent align=\"start\" aria-label=\"Filters\">…</div>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverContent]',\n  hostDirectives: [\n    { directive: NdPopoverContent, inputs: ['side', 'align', 'sideOffset'] },\n  ],\n  host: { 'data-slot': 'popover-content', '[class]': 'classes()' },\n})\nexport class PopoverContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Layout for the popover's title and description.\n *\n * @example\n * ```html\n * <div ndPopoverHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverHeader]',\n  host: { 'data-slot': 'popover-header', '[class]': 'classes()' },\n})\nexport class PopoverHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('flex flex-col gap-1 text-sm', this.class()),\n  );\n}\n\n/**\n * The popover's title. Point the content's `aria-labelledby` at it.\n *\n * @example\n * ```html\n * <h2 ndPopoverTitle id=\"filters-title\">Filters</h2>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverTitle]',\n  host: { 'data-slot': 'popover-title', '[class]': 'classes()' },\n})\nexport class PopoverTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() => cn('font-medium', this.class()));\n}\n\n/**\n * Supporting text under the popover's title.\n *\n * @example\n * ```html\n * <p ndPopoverDescription>Narrow the results.</p>\n * ```\n */\n@Directive({\n  selector: '[ndPopoverDescription]',\n  host: { 'data-slot': 'popover-description', '[class]': 'classes()' },\n})\nexport class PopoverDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-muted-foreground', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Popover",
+      "PopoverTrigger",
+      "PopoverPortal",
+      "PopoverClose",
+      "PopoverContent",
+      "PopoverHeader",
+      "PopoverTitle",
+      "PopoverDescription"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "codemods": [
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdPopover",
+      "to": "Popover"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdPopoverClose",
+      "to": "PopoverClose"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdPopoverPortal",
+      "to": "PopoverPortal"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdPopoverTrigger",
+      "to": "PopoverTrigger"
+    }
+  ],
+  "ndop": {
+    "metadata": "metadata/popover.json",
+    "examples": [
+      "popover-demo",
+      "popover-placement"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

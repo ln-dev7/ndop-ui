@@ -1,0 +1,32 @@
+{
+  "name": "radio-group-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Radio Group disabled",
+  "description": "A group with one option that can't be chosen.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "label",
+    "radio-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/radio-group-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/radio-group-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Label } from '@/ui/label/label';\nimport {\n  RadioGroup,\n  RadioGroupIndicator,\n  RadioGroupItem,\n} from '@/ui/radio-group/radio-group';\n\n/**\n * A group with one option that can't be chosen; the arrow keys skip it.\n */\n@Component({\n  selector: 'example-radio-group-disabled',\n  imports: [Label, NdIcon, RadioGroup, RadioGroupIndicator, RadioGroupItem],\n  template: `\n    <div ndRadioGroup aria-label=\"Delivery\" defaultValue=\"standard\">\n      @for (option of options; track option.value) {\n        <div class=\"flex items-center gap-3\">\n          <button\n            ndRadioGroupItem\n            [value]=\"option.value\"\n            [id]=\"'radio-group-disabled-' + option.value\"\n            [disabled]=\"option.disabled\"\n          >\n            <span ndRadioGroupIndicator><svg ndIcon=\"circle\"></svg></span>\n          </button>\n          <label\n            ndLabel\n            [for]=\"'radio-group-disabled-' + option.value\"\n            class=\"data-disabled:opacity-50\"\n          >\n            {{ option.label }}\n          </label>\n        </div>\n      }\n    </div>\n  `,\n})\nexport class RadioGroupDisabledExample {\n  protected readonly options = [\n    { value: 'standard', label: 'Standard, 3–5 days', disabled: false },\n    { value: 'express', label: 'Express, next day', disabled: false },\n    { value: 'same-day', label: 'Same day (unavailable)', disabled: true },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "RadioGroupDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

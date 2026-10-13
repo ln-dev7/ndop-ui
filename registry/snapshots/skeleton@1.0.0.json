@@ -1,0 +1,37 @@
+{
+  "name": "skeleton",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Skeleton",
+  "description": "Shows a placeholder while content loads.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "feedback"
+  ],
+  "files": [
+    {
+      "path": "ui/skeleton/skeleton.ts",
+      "type": "registry:ui",
+      "target": "{ui}/skeleton/skeleton.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/**\n * A pulsing placeholder in the shape of content that's loading. It's\n * hidden from assistive technology; mark the region that's loading with\n * `aria-busy=\"true\"` instead.\n *\n * @example\n * ```html\n * <div aria-busy=\"true\"><div ndSkeleton class=\"h-4 w-48\"></div></div>\n * ```\n */\n@Directive({\n  selector: '[ndSkeleton]',\n  host: {\n    'data-slot': 'skeleton',\n    'aria-hidden': 'true',\n    '[class]': 'classes()',\n  },\n})\nexport class Skeleton {\n  /** Extra classes, merged last so they win: usually a size and shape. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('animate-pulse rounded-md bg-accent', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Skeleton"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/skeleton.json",
+    "examples": [
+      "skeleton-demo",
+      "skeleton-card"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

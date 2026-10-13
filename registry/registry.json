@@ -6,7 +6,7 @@
     {
       "name": "utils",
       "type": "registry:lib",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Utils",
       "description": "cn() and variants(), re-exported from @ndop/core so you have a place to customize them.",
       "dependencies": ["@ndop/core"],
@@ -21,7 +21,7 @@
     {
       "name": "icons",
       "type": "registry:lib",
-      "version": "0.7.0",
+      "version": "1.0.0",
       "title": "Icons",
       "description": "The icons styled items ask for by name, drawn with Lucide, and provideIcons() to register them.",
       "dependencies": ["@lucide/angular@^1.50.0", "@ndop/core"],
@@ -36,7 +36,7 @@
     {
       "name": "default",
       "type": "registry:theme",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "title": "Default theme",
       "description": "shadcn's neutral palette with Geist and Geist Mono, in light and dark.",
       "dependencies": [
@@ -47,7 +47,7 @@
     {
       "name": "indigo",
       "type": "registry:theme",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Indigo theme",
       "description": "Ndop's own palette: deep indigo on crisp white, after the royal cloth of Cameroon's Grassfields, in light and dark.",
       "dependencies": [
@@ -58,7 +58,7 @@
     {
       "name": "green",
       "type": "registry:theme",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Green theme",
       "description": "shadcn/ui's green on cool zinc neutrals, deepened so every text pair passes 4.5:1, in light and dark.",
       "author": "Adapted from shadcn/ui (MIT)",
@@ -70,7 +70,7 @@
     {
       "name": "orange",
       "type": "registry:theme",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Orange theme",
       "description": "shadcn/ui's orange on warm stone neutrals, deepened so every text pair passes 4.5:1, in light and dark.",
       "author": "Adapted from shadcn/ui (MIT)",
@@ -82,7 +82,7 @@
     {
       "name": "rose",
       "type": "registry:theme",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Rose theme",
       "description": "shadcn/ui's rose on cool zinc neutrals, deepened so every text pair passes 4.5:1, in light and dark.",
       "author": "Adapted from shadcn/ui (MIT)",
@@ -94,7 +94,7 @@
     {
       "name": "button",
       "type": "registry:ui",
-      "version": "0.1.3",
+      "version": "1.0.0",
       "title": "Button",
       "description": "Displays a button or a component that looks like a button.",
       "categories": ["inputs"],
@@ -126,7 +126,7 @@
     {
       "name": "badge",
       "type": "registry:ui",
-      "version": "0.1.2",
+      "version": "1.0.0",
       "title": "Badge",
       "description": "Displays a badge or a component that looks like a badge.",
       "categories": ["data-display"],
@@ -152,7 +152,7 @@
     {
       "name": "label",
       "type": "registry:ui",
-      "version": "0.1.3",
+      "version": "1.0.0",
       "title": "Label",
       "description": "Renders an accessible label associated with controls.",
       "categories": ["inputs"],
@@ -179,7 +179,7 @@
     {
       "name": "input",
       "type": "registry:ui",
-      "version": "0.1.4",
+      "version": "1.0.0",
       "title": "Input",
       "description": "Displays a form input field.",
       "categories": ["inputs"],
@@ -211,7 +211,7 @@
     {
       "name": "separator",
       "type": "registry:ui",
-      "version": "0.1.3",
+      "version": "1.0.0",
       "title": "Separator",
       "description": "Visually or semantically separates content.",
       "categories": ["layout"],
@@ -238,7 +238,7 @@
     {
       "name": "dialog",
       "type": "registry:ui",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "title": "Dialog",
       "description": "A window overlaid on the primary window, rendering the content underneath inert.",
       "categories": ["overlays"],
@@ -307,7 +307,7 @@
     {
       "name": "popover",
       "type": "registry:ui",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "title": "Popover",
       "description": "Displays rich content in a portal, triggered by a button.",
       "categories": ["overlays"],
@@ -369,7 +369,7 @@
     {
       "name": "tooltip",
       "type": "registry:ui",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "title": "Tooltip",
       "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
       "categories": ["overlays"],
@@ -421,7 +421,7 @@
     {
       "name": "textarea",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Textarea",
       "description": "Displays a multi-line text field, or a component that looks like one.",
       "registryDependencies": ["utils"],
@@ -448,7 +448,7 @@
     {
       "name": "card",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Card",
       "description": "Displays a card with a header, content and footer.",
       "registryDependencies": ["utils"],
@@ -482,7 +482,7 @@
     {
       "name": "alert",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert",
       "description": "Displays a callout that draws the user's attention.",
       "registryDependencies": ["utils"],
@@ -508,7 +508,7 @@
     {
       "name": "skeleton",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Skeleton",
       "description": "Shows a placeholder while content loads.",
       "registryDependencies": ["utils"],
@@ -534,7 +534,7 @@
     {
       "name": "spinner",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Spinner",
       "description": "Shows that something is loading.",
       "registryDependencies": ["utils"],
@@ -560,7 +560,7 @@
     {
       "name": "empty",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Empty State",
       "description": "Shows that there is nothing here yet, and what to do about it.",
       "registryDependencies": ["utils"],
@@ -594,7 +594,7 @@
     {
       "name": "aspect-ratio",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Aspect Ratio",
       "description": "Displays content within a chosen width-to-height ratio.",
       "registryDependencies": ["utils"],
@@ -620,7 +620,7 @@
     {
       "name": "breadcrumb",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Breadcrumb",
       "description": "Shows the path to the current page in a hierarchy of pages.",
       "registryDependencies": ["utils"],
@@ -654,7 +654,7 @@
     {
       "name": "pagination",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Pagination",
       "description": "Navigates between pages of results.",
       "registryDependencies": ["utils", "button"],
@@ -688,7 +688,7 @@
     {
       "name": "table",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Table",
       "description": "Displays tabular data with responsive styles.",
       "registryDependencies": ["utils"],
@@ -724,7 +724,7 @@
     {
       "name": "scroll-area",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Scroll Area",
       "description": "A scrollable region with styled scrollbars.",
       "registryDependencies": ["utils"],
@@ -750,7 +750,7 @@
     {
       "name": "avatar",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Avatar",
       "description": "Displays a user's image, with a fallback while it loads or when it fails.",
       "dependencies": ["@ndop/primitives"],
@@ -784,7 +784,7 @@
     {
       "name": "progress",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Progress",
       "description": "Displays how far a task has got.",
       "dependencies": ["@ndop/primitives"],
@@ -811,7 +811,7 @@
     {
       "name": "collapsible",
       "type": "registry:ui",
-      "version": "0.3.0",
+      "version": "1.0.0",
       "title": "Collapsible",
       "description": "Shows and hides a section of content.",
       "dependencies": ["@ndop/primitives"],
@@ -858,7 +858,7 @@
     {
       "name": "checkbox",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Checkbox",
       "description": "A control that's checked, unchecked or mixed, for choosing an option on its own or several from a list.",
       "dependencies": ["@ndop/primitives"],
@@ -890,7 +890,7 @@
     {
       "name": "switch",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Switch",
       "description": "An on/off control that takes effect right away, such as a setting.",
       "dependencies": ["@ndop/primitives"],
@@ -922,7 +922,7 @@
     {
       "name": "toggle",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle",
       "description": "A button that stays pressed or released, such as Bold in a text editor.",
       "dependencies": ["@ndop/primitives"],
@@ -955,7 +955,7 @@
     {
       "name": "radio-group",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Radio Group",
       "description": "A set of options of which one at most is chosen, navigated with the arrow keys.",
       "dependencies": ["@ndop/primitives"],
@@ -987,7 +987,7 @@
     {
       "name": "toggle-group",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group",
       "description": "A set of toggle buttons of which one or several are pressed, such as text alignment or formatting.",
       "dependencies": ["@ndop/primitives"],
@@ -1021,7 +1021,7 @@
     {
       "name": "slider",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Slider",
       "description": "Picks a number, or a range with two thumbs, by dragging along a track or with the arrow keys.",
       "dependencies": ["@ndop/primitives"],
@@ -1054,7 +1054,7 @@
     {
       "name": "input-otp",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input OTP",
       "description": "Enters a one-time code, digit by digit, in one field that autofill and screen readers understand.",
       "dependencies": ["@ndop/primitives"],
@@ -1092,7 +1092,7 @@
     {
       "name": "form-field",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Form Field",
       "description": "Lays out a form control with its label, description and error, and links them for assistive technology.",
       "dependencies": ["@ndop/primitives"],
@@ -1137,7 +1137,7 @@
     {
       "name": "alert-dialog",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert Dialog",
       "description": "A modal dialog that interrupts with an important question, such as confirming a deletion, and expects an answer.",
       "dependencies": ["@ndop/primitives"],
@@ -1181,7 +1181,7 @@
     {
       "name": "sheet",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sheet",
       "description": "A dialog that slides in from an edge of the screen, for secondary content such as settings or filters.",
       "dependencies": ["@ndop/primitives"],
@@ -1221,7 +1221,7 @@
     {
       "name": "drawer",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Drawer",
       "description": "A panel that slides up from the bottom of the screen and can be dragged away, suited to phones.",
       "dependencies": ["@ndop/primitives"],
@@ -1260,7 +1260,7 @@
     {
       "name": "hover-card",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Hover Card",
       "description": "A preview of what's behind a link, shown to pointer and keyboard users while they hover or focus it.",
       "dependencies": ["@ndop/primitives"],
@@ -1292,7 +1292,7 @@
     {
       "name": "toast",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toast",
       "description": "A brief message about an action, shown in a corner without interrupting, such as Saved or Message sent.",
       "dependencies": ["@ndop/primitives"],
@@ -1330,7 +1330,7 @@
     {
       "name": "dropdown-menu",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Dropdown Menu",
       "description": "A menu of actions or options that a button opens, such as a row's actions in a table.",
       "dependencies": ["@ndop/primitives"],
@@ -1375,7 +1375,7 @@
     {
       "name": "context-menu",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Context Menu",
       "description": "A menu of actions that a right click or long press on an area opens, at the pointer.",
       "dependencies": ["@ndop/primitives"],
@@ -1416,7 +1416,7 @@
     {
       "name": "tabs",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Tabs",
       "description": "Layered sections of content, shown one at a time.",
       "dependencies": ["@ndop/primitives"],
@@ -1449,7 +1449,7 @@
     {
       "name": "accordion",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Accordion",
       "description": "A stack of headed sections that each show or hide their content.",
       "dependencies": ["@ndop/primitives"],
@@ -1482,7 +1482,7 @@
     {
       "name": "resizable",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Resizable",
       "description": "Panels that share space, resized by dragging or with the keyboard.",
       "dependencies": ["@ndop/primitives"],
@@ -1514,7 +1514,7 @@
     {
       "name": "menubar",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Menubar",
       "description": "A bar of menus, such as a desktop app's File and Edit menus.",
       "dependencies": ["@ndop/primitives"],
@@ -1556,7 +1556,7 @@
     {
       "name": "navigation-menu",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Navigation Menu",
       "description": "A site's navigation: links and buttons that show panels of links.",
       "dependencies": ["@ndop/primitives"],
@@ -1591,7 +1591,7 @@
     {
       "name": "select",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Select",
       "description": "A button that shows a value and opens a list of options to pick from.",
       "dependencies": ["@ndop/primitives"],
@@ -1634,7 +1634,7 @@
     {
       "name": "combobox",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Combobox",
       "description": "A text field that filters a list of options as the user types.",
       "dependencies": ["@ndop/primitives"],
@@ -1685,7 +1685,7 @@
     {
       "name": "command",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Command",
       "description": "A search field over a list of commands, filtered as the user types.",
       "dependencies": ["@ndop/primitives"],
@@ -1723,7 +1723,7 @@
     {
       "name": "calendar",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Calendar",
       "description": "Month grids to choose a date, a range or several dates.",
       "dependencies": ["@ndop/primitives"],
@@ -1771,7 +1771,7 @@
     {
       "name": "date-picker",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Date Picker",
       "description": "A button that opens a calendar in a popover to pick a date or a range.",
       "registryDependencies": ["button", "utils"],
@@ -1797,7 +1797,7 @@
     {
       "name": "sidebar",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sidebar",
       "description": "A collapsible side panel for an app's navigation, which becomes a dialog on small screens.",
       "dependencies": ["@ndop/primitives"],
@@ -1852,7 +1852,7 @@
     {
       "name": "data-table",
       "type": "registry:ui",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Data Table",
       "description": "A table of rows to sort, search, page through and select, on signals.",
       "registryDependencies": ["button", "utils"],
@@ -1883,7 +1883,7 @@
     {
       "name": "chart",
       "type": "registry:ui",
-      "version": "0.2.0",
+      "version": "1.0.0",
       "title": "Chart",
       "description": "SVG charts you own: bar, line, area, pie and radial, with tooltips and legends.",
       "registryDependencies": ["utils"],
@@ -1948,7 +1948,7 @@
     {
       "name": "badge-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Badge demo",
       "description": "The four main Badge variants, then badges used as counts.",
       "registryDependencies": ["badge"],
@@ -1969,7 +1969,7 @@
     {
       "name": "badge-link",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Badge link",
       "description": "A badge that links somewhere, with a hover style.",
       "registryDependencies": ["badge"],
@@ -1990,7 +1990,7 @@
     {
       "name": "button-anchor",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Button anchor",
       "description": "Button styles on links, where shadcn uses `asChild`: an enabled link, and a disabled one that stays focusable and announces itself as disabled.",
       "registryDependencies": ["button"],
@@ -2011,7 +2011,7 @@
     {
       "name": "button-link",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Button link",
       "description": "The `link` variant: a button that looks like a text link.",
       "registryDependencies": ["button"],
@@ -2032,7 +2032,7 @@
     {
       "name": "button-sizes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Button sizes",
       "description": "Button sizes, including an icon-only button with an accessible name.",
       "dependencies": ["@ndop/core"],
@@ -2054,7 +2054,7 @@
     {
       "name": "button-variants",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Button variants",
       "description": "Every Button variant, side by side.",
       "registryDependencies": ["button"],
@@ -2075,7 +2075,7 @@
     {
       "name": "dialog-close-button",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Dialog close button",
       "description": "A share dialog with a read-only link and a footer close button.",
       "dependencies": ["@ndop/core"],
@@ -2097,7 +2097,7 @@
     {
       "name": "dialog-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Dialog demo",
       "description": "An edit-profile dialog with a Signal Forms form. Saving validates the form, closes the dialog when it passes, and keeps it open otherwise.",
       "dependencies": ["@ndop/core"],
@@ -2119,7 +2119,7 @@
     {
       "name": "input-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input demo",
       "description": "A plain email input.",
       "registryDependencies": ["input"],
@@ -2140,7 +2140,7 @@
     {
       "name": "input-signal-forms",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input signal forms",
       "description": "An input bound with Signal Forms. It turns invalid once the field is touched and fails validation, and the label follows it.",
       "registryDependencies": ["input", "label"],
@@ -2161,7 +2161,7 @@
     {
       "name": "input-with-button",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input with button",
       "description": "An input and a button on one row, as in a newsletter sign-up.",
       "registryDependencies": ["button", "input"],
@@ -2182,7 +2182,7 @@
     {
       "name": "label-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Label demo",
       "description": "A label naming its input.",
       "registryDependencies": ["input", "label"],
@@ -2203,7 +2203,7 @@
     {
       "name": "label-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Label disabled",
       "description": "A label that dims with its disabled input.",
       "registryDependencies": ["input", "label"],
@@ -2224,7 +2224,7 @@
     {
       "name": "popover-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Popover demo",
       "description": "A popover holding a small dimensions form.",
       "registryDependencies": ["button", "input", "label", "popover"],
@@ -2245,7 +2245,7 @@
     {
       "name": "popover-placement",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Popover placement",
       "description": "Popovers on each logical side, with a close button inside. `start` and `end` follow the text direction.",
       "registryDependencies": ["button", "popover"],
@@ -2266,7 +2266,7 @@
     {
       "name": "separator-decorative",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Separator decorative",
       "description": "A decorative separator, hidden from assistive technology because the headings already divide the content.",
       "registryDependencies": ["separator"],
@@ -2287,7 +2287,7 @@
     {
       "name": "separator-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Separator demo",
       "description": "Horizontal and vertical separators between blocks of content.",
       "registryDependencies": ["separator"],
@@ -2308,7 +2308,7 @@
     {
       "name": "tooltip-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Tooltip demo",
       "description": "A tooltip describing a button, shown on hover and keyboard focus.",
       "registryDependencies": ["button", "tooltip"],
@@ -2329,7 +2329,7 @@
     {
       "name": "tooltip-icon-button",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Tooltip icon button",
       "description": "An icon-only button with its own accessible name and a tooltip on the end side for sighted users.",
       "dependencies": ["@ndop/core"],
@@ -2351,7 +2351,7 @@
     {
       "name": "textarea-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Textarea demo",
       "description": "A textarea with a label and a description.",
       "registryDependencies": ["label", "textarea"],
@@ -2372,7 +2372,7 @@
     {
       "name": "textarea-form",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Textarea form",
       "description": "A required message field in a Signal Forms form, with its error.",
       "registryDependencies": ["button", "label", "textarea"],
@@ -2393,7 +2393,7 @@
     {
       "name": "card-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Card demo",
       "description": "A sign-in form in a card.",
       "registryDependencies": ["button", "card", "input", "label"],
@@ -2414,7 +2414,7 @@
     {
       "name": "card-with-action",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Card with action",
       "description": "A card with a header action, content and footer.",
       "registryDependencies": ["badge", "button", "card"],
@@ -2435,7 +2435,7 @@
     {
       "name": "alert-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert demo",
       "description": "A success message with an icon.",
       "dependencies": ["@ndop/core"],
@@ -2457,7 +2457,7 @@
     {
       "name": "alert-destructive",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert destructive",
       "description": "An error, with what to do about it.",
       "dependencies": ["@ndop/core"],
@@ -2479,7 +2479,7 @@
     {
       "name": "skeleton-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Skeleton demo",
       "description": "Placeholders for a profile while it loads.",
       "registryDependencies": ["skeleton"],
@@ -2500,7 +2500,7 @@
     {
       "name": "skeleton-card",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Skeleton card",
       "description": "A card that shows skeletons while its content loads.",
       "registryDependencies": ["button", "card", "skeleton"],
@@ -2521,7 +2521,7 @@
     {
       "name": "spinner-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Spinner demo",
       "description": "Spinners in three sizes.",
       "dependencies": ["@ndop/core"],
@@ -2543,7 +2543,7 @@
     {
       "name": "spinner-button",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Spinner button",
       "description": "A button that shows a spinner while it saves.",
       "dependencies": ["@ndop/core"],
@@ -2565,7 +2565,7 @@
     {
       "name": "empty-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Empty State demo",
       "description": "No projects yet, with actions to create one.",
       "dependencies": ["@ndop/core"],
@@ -2587,7 +2587,7 @@
     {
       "name": "empty-search",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Empty State search",
       "description": "No search results, with a way to clear the search.",
       "dependencies": ["@ndop/core"],
@@ -2609,7 +2609,7 @@
     {
       "name": "aspect-ratio-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Aspect Ratio demo",
       "description": "An illustration kept at 16:9.",
       "registryDependencies": ["aspect-ratio"],
@@ -2630,7 +2630,7 @@
     {
       "name": "aspect-ratio-square",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Aspect Ratio square",
       "description": "Square tiles in a grid.",
       "registryDependencies": ["aspect-ratio"],
@@ -2651,7 +2651,7 @@
     {
       "name": "breadcrumb-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Breadcrumb demo",
       "description": "A trail with collapsed items.",
       "dependencies": ["@ndop/core"],
@@ -2673,7 +2673,7 @@
     {
       "name": "breadcrumb-separator",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Breadcrumb separator",
       "description": "A trail with slash separators.",
       "registryDependencies": ["breadcrumb"],
@@ -2694,7 +2694,7 @@
     {
       "name": "pagination-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Pagination demo",
       "description": "Links to pages, with the current one marked.",
       "dependencies": ["@ndop/core"],
@@ -2716,7 +2716,7 @@
     {
       "name": "pagination-state",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Pagination state",
       "description": "Pages kept in component state, with buttons.",
       "dependencies": ["@ndop/core"],
@@ -2738,7 +2738,7 @@
     {
       "name": "table-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Table demo",
       "description": "Invoices with a caption and a total.",
       "registryDependencies": ["table"],
@@ -2759,7 +2759,7 @@
     {
       "name": "table-status",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Table status",
       "description": "Orders with a status and an action on each row.",
       "registryDependencies": ["badge", "button", "table"],
@@ -2780,7 +2780,7 @@
     {
       "name": "scroll-area-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Scroll Area demo",
       "description": "A list of tags that scrolls vertically.",
       "registryDependencies": ["scroll-area", "separator"],
@@ -2801,7 +2801,7 @@
     {
       "name": "scroll-area-horizontal",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Scroll Area horizontal",
       "description": "A row of artworks that scrolls sideways.",
       "registryDependencies": ["aspect-ratio", "scroll-area"],
@@ -2822,7 +2822,7 @@
     {
       "name": "avatar-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Avatar demo",
       "description": "An avatar with an image, and one that falls back to initials.",
       "registryDependencies": ["avatar"],
@@ -2843,7 +2843,7 @@
     {
       "name": "avatar-group",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Avatar group",
       "description": "A team's avatars, with a count and a status badge.",
       "registryDependencies": ["avatar"],
@@ -2864,7 +2864,7 @@
     {
       "name": "progress-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Progress demo",
       "description": "A labelled progress bar.",
       "registryDependencies": ["progress"],
@@ -2885,7 +2885,7 @@
     {
       "name": "progress-upload",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Progress upload",
       "description": "Files uploading, each with its progress and percentage.",
       "registryDependencies": ["progress"],
@@ -2906,7 +2906,7 @@
     {
       "name": "collapsible-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Collapsible demo",
       "description": "A list of repositories that expands.",
       "dependencies": ["@ndop/core"],
@@ -2928,7 +2928,7 @@
     {
       "name": "collapsible-settings",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Collapsible settings",
       "description": "Advanced options shown on demand.",
       "dependencies": ["@ndop/core"],
@@ -2956,7 +2956,7 @@
     {
       "name": "badge-variants",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Badge variants",
       "description": "Every Badge variant side by side.",
       "registryDependencies": ["badge"],
@@ -2977,7 +2977,7 @@
     {
       "name": "dialog-unsaved-changes",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Dialog unsaved changes",
       "description": "A dialog that only closes through its buttons, so a click outside doesn't lose the user's changes.",
       "registryDependencies": ["button", "dialog", "label", "textarea"],
@@ -2998,7 +2998,7 @@
     {
       "name": "tooltip-sides",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Tooltip sides",
       "description": "Tooltips on each side of their triggers.",
       "dependencies": ["@ndop/primitives"],
@@ -3020,7 +3020,7 @@
     {
       "name": "input-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input disabled",
       "description": "A disabled input with its label.",
       "registryDependencies": ["input", "label"],
@@ -3041,7 +3041,7 @@
     {
       "name": "textarea-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Textarea disabled",
       "description": "A disabled textarea with its label.",
       "registryDependencies": ["label", "textarea"],
@@ -3062,7 +3062,7 @@
     {
       "name": "empty-avatar",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Empty State avatar",
       "description": "An empty state with an avatar as its media.",
       "registryDependencies": ["avatar", "button", "empty"],
@@ -3083,7 +3083,7 @@
     {
       "name": "checkbox-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Checkbox demo",
       "description": "A checkbox with its label, and one with a description beside it.",
       "dependencies": ["@ndop/core"],
@@ -3105,7 +3105,7 @@
     {
       "name": "checkbox-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Checkbox disabled",
       "description": "A disabled checkbox, checked and unchecked, with dimmed labels.",
       "dependencies": ["@ndop/core"],
@@ -3127,7 +3127,7 @@
     {
       "name": "checkbox-indeterminate",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Checkbox indeterminate",
       "description": "A select-all checkbox that's mixed while only some of the list is checked.",
       "dependencies": ["@ndop/core"],
@@ -3149,7 +3149,7 @@
     {
       "name": "checkbox-form",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Checkbox form",
       "description": "A required terms checkbox in a Signal Forms form, with its error once touched.",
       "dependencies": ["@ndop/core"],
@@ -3171,7 +3171,7 @@
     {
       "name": "switch-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Switch demo",
       "description": "A switch that turns a setting on or off right away.",
       "registryDependencies": ["label", "switch"],
@@ -3192,7 +3192,7 @@
     {
       "name": "switch-small",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Switch small",
       "description": "The small size, for dense lists of settings.",
       "registryDependencies": ["label", "switch"],
@@ -3213,7 +3213,7 @@
     {
       "name": "switch-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Switch disabled",
       "description": "Disabled switches, on and off.",
       "registryDependencies": ["label", "switch"],
@@ -3234,7 +3234,7 @@
     {
       "name": "switch-form",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Switch form",
       "description": "A settings card of switches bound to a Signal Forms model.",
       "registryDependencies": ["form-field", "switch"],
@@ -3255,7 +3255,7 @@
     {
       "name": "toggle-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle demo",
       "description": "An icon-only toggle, named for screen readers.",
       "dependencies": ["@ndop/core"],
@@ -3277,7 +3277,7 @@
     {
       "name": "toggle-outline",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle outline",
       "description": "The outline variant.",
       "dependencies": ["@ndop/core"],
@@ -3299,7 +3299,7 @@
     {
       "name": "toggle-with-text",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle with text",
       "description": "A toggle with an icon and a label.",
       "dependencies": ["@ndop/core"],
@@ -3321,7 +3321,7 @@
     {
       "name": "toggle-sizes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle sizes",
       "description": "The small, default and large sizes.",
       "dependencies": ["@ndop/core"],
@@ -3343,7 +3343,7 @@
     {
       "name": "toggle-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle disabled",
       "description": "A disabled toggle.",
       "dependencies": ["@ndop/core"],
@@ -3365,7 +3365,7 @@
     {
       "name": "toggle-group-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group demo",
       "description": "Text formatting where any number of options combine, in the outline style.",
       "dependencies": ["@ndop/core"],
@@ -3387,7 +3387,7 @@
     {
       "name": "toggle-group-single",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group single",
       "description": "Text alignment, where one option at most is pressed.",
       "dependencies": ["@ndop/core"],
@@ -3409,7 +3409,7 @@
     {
       "name": "toggle-group-sizes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group sizes",
       "description": "The small and large sizes.",
       "dependencies": ["@ndop/core"],
@@ -3431,7 +3431,7 @@
     {
       "name": "toggle-group-spacing",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group spacing",
       "description": "Separate buttons instead of one joined bar.",
       "registryDependencies": ["toggle-group"],
@@ -3452,7 +3452,7 @@
     {
       "name": "toggle-group-vertical",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group vertical",
       "description": "A vertical group, moved through with the up and down arrows.",
       "registryDependencies": ["toggle-group"],
@@ -3473,7 +3473,7 @@
     {
       "name": "toggle-group-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toggle Group disabled",
       "description": "A disabled group.",
       "dependencies": ["@ndop/core"],
@@ -3495,7 +3495,7 @@
     {
       "name": "radio-group-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Radio Group demo",
       "description": "Three options with labels, one chosen by default.",
       "dependencies": ["@ndop/core"],
@@ -3517,7 +3517,7 @@
     {
       "name": "radio-group-cards",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Radio Group cards",
       "description": "Plans as selectable cards, each with a description.",
       "dependencies": ["@ndop/core"],
@@ -3539,7 +3539,7 @@
     {
       "name": "radio-group-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Radio Group disabled",
       "description": "A group with one option that can't be chosen.",
       "dependencies": ["@ndop/core"],
@@ -3561,7 +3561,7 @@
     {
       "name": "radio-group-form",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Radio Group form",
       "description": "A required choice in a Signal Forms form, with its error once touched.",
       "dependencies": ["@ndop/core"],
@@ -3589,7 +3589,7 @@
     {
       "name": "slider-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Slider demo",
       "description": "A single value from 0 to 100.",
       "registryDependencies": ["slider"],
@@ -3610,7 +3610,7 @@
     {
       "name": "slider-range",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Slider range",
       "description": "A price range with two thumbs, and the values shown beside it.",
       "registryDependencies": ["slider"],
@@ -3631,7 +3631,7 @@
     {
       "name": "slider-steps",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Slider steps",
       "description": "Steps of ten, with the value said in words for screen readers.",
       "registryDependencies": ["slider"],
@@ -3652,7 +3652,7 @@
     {
       "name": "slider-vertical",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Slider vertical",
       "description": "A vertical slider, running bottom to top.",
       "registryDependencies": ["slider"],
@@ -3673,7 +3673,7 @@
     {
       "name": "slider-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Slider disabled",
       "description": "A disabled slider.",
       "registryDependencies": ["slider"],
@@ -3694,7 +3694,7 @@
     {
       "name": "input-otp-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input OTP demo",
       "description": "A six-digit code in two groups of three.",
       "dependencies": ["@ndop/core"],
@@ -3716,7 +3716,7 @@
     {
       "name": "input-otp-pattern",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input OTP pattern",
       "description": "A code of letters and digits.",
       "registryDependencies": ["input-otp", "label"],
@@ -3737,7 +3737,7 @@
     {
       "name": "input-otp-verify",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input OTP verify",
       "description": "A verification step that submits the code as soon as it's complete.",
       "dependencies": ["@ndop/core"],
@@ -3759,7 +3759,7 @@
     {
       "name": "input-otp-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Input OTP disabled",
       "description": "A disabled code input.",
       "registryDependencies": ["input-otp"],
@@ -3780,7 +3780,7 @@
     {
       "name": "form-field-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Form Field demo",
       "description": "A sign-up form whose fields describe themselves and show errors once touched.",
       "registryDependencies": ["button", "form-field", "input"],
@@ -3801,7 +3801,7 @@
     {
       "name": "form-field-fieldset",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Form Field fieldset",
       "description": "An address in a field set with a legend, its fields side by side when there's room.",
       "registryDependencies": ["form-field", "input"],
@@ -3822,7 +3822,7 @@
     {
       "name": "form-field-horizontal",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Form Field horizontal",
       "description": "Checkbox and switch fields with their labels and descriptions beside the control.",
       "dependencies": ["@ndop/core"],
@@ -3844,7 +3844,7 @@
     {
       "name": "form-field-choice-card",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Form Field choice card",
       "description": "Options as cards: each whole field is the label of its radio.",
       "dependencies": ["@ndop/core"],
@@ -3866,7 +3866,7 @@
     {
       "name": "alert-dialog-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert Dialog demo",
       "description": "A confirmation before signing out, with Cancel focused first.",
       "registryDependencies": ["alert-dialog", "button"],
@@ -3887,7 +3887,7 @@
     {
       "name": "alert-dialog-destructive",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert Dialog destructive",
       "description": "Deleting a project, with an icon and a destructive action that runs before the dialog closes.",
       "dependencies": ["@ndop/core"],
@@ -3909,7 +3909,7 @@
     {
       "name": "alert-dialog-small",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Alert Dialog small",
       "description": "The small size: a short question with side-by-side buttons.",
       "registryDependencies": ["alert-dialog", "button"],
@@ -3930,7 +3930,7 @@
     {
       "name": "sheet-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sheet demo",
       "description": "A profile form in a sheet from the end side, saved from its footer.",
       "dependencies": ["@ndop/core"],
@@ -3952,7 +3952,7 @@
     {
       "name": "sheet-sides",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sheet sides",
       "description": "A sheet from each edge: top, end, bottom and start.",
       "registryDependencies": ["button", "sheet"],
@@ -3973,7 +3973,7 @@
     {
       "name": "drawer-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Drawer demo",
       "description": "A daily goal set with buttons in a bottom drawer, with a handle to drag it away.",
       "dependencies": ["@ndop/core"],
@@ -3995,7 +3995,7 @@
     {
       "name": "drawer-directions",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Drawer directions",
       "description": "Drawers from the end side and the top.",
       "registryDependencies": ["button", "drawer"],
@@ -4016,7 +4016,7 @@
     {
       "name": "hover-card-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Hover Card demo",
       "description": "A profile preview behind a username link.",
       "registryDependencies": ["avatar", "button", "hover-card"],
@@ -4037,7 +4037,7 @@
     {
       "name": "hover-card-sides",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Hover Card sides",
       "description": "Cards on each side of their links.",
       "registryDependencies": ["button", "hover-card"],
@@ -4058,7 +4058,7 @@
     {
       "name": "toast-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toast demo",
       "description": "A toast with a description and an Undo action.",
       "registryDependencies": ["button", "toast"],
@@ -4079,7 +4079,7 @@
     {
       "name": "toast-types",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Toast types",
       "description": "Success, info, warning, error and loading toasts, the loading one replaced when it finishes.",
       "registryDependencies": ["button", "toast"],
@@ -4100,7 +4100,7 @@
     {
       "name": "dropdown-menu-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Dropdown Menu demo",
       "description": "An account menu with groups, shortcuts, a submenu, a disabled item and a destructive action.",
       "dependencies": ["@ndop/core"],
@@ -4122,7 +4122,7 @@
     {
       "name": "dropdown-menu-checkboxes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Dropdown Menu checkboxes",
       "description": "Checkbox items that show or hide panels, keeping the menu open on Space.",
       "dependencies": ["@ndop/core"],
@@ -4144,7 +4144,7 @@
     {
       "name": "dropdown-menu-radio-group",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Dropdown Menu radio group",
       "description": "Radio items that choose one panel position.",
       "dependencies": ["@ndop/core"],
@@ -4166,7 +4166,7 @@
     {
       "name": "context-menu-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Context Menu demo",
       "description": "Browser-style actions on an area, with shortcuts, a submenu, checkbox and radio items.",
       "dependencies": ["@ndop/core"],
@@ -4188,7 +4188,7 @@
     {
       "name": "context-menu-checkboxes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Context Menu checkboxes",
       "description": "Checkbox items on a right click, for showing and hiding layers.",
       "dependencies": ["@ndop/core"],
@@ -4210,7 +4210,7 @@
     {
       "name": "tabs-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Tabs demo",
       "description": "Account settings in two tabs, each a card with a form.",
       "registryDependencies": ["button", "card", "input", "label", "tabs"],
@@ -4231,7 +4231,7 @@
     {
       "name": "tabs-line",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Tabs line",
       "description": "Tabs underlined instead of raised, with the line variant.",
       "registryDependencies": ["tabs"],
@@ -4252,7 +4252,7 @@
     {
       "name": "tabs-vertical",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Tabs vertical",
       "description": "Tabs stacked beside their panels, selected with Enter or Space.",
       "registryDependencies": ["tabs"],
@@ -4273,7 +4273,7 @@
     {
       "name": "accordion-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Accordion demo",
       "description": "Frequently asked questions, one open at a time.",
       "dependencies": ["@ndop/core"],
@@ -4295,7 +4295,7 @@
     {
       "name": "accordion-multiple",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Accordion multiple",
       "description": "Sections that open independently, with one disabled.",
       "dependencies": ["@ndop/core"],
@@ -4317,7 +4317,7 @@
     {
       "name": "resizable-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Resizable demo",
       "description": "A sidebar beside two stacked panes, each resizable.",
       "registryDependencies": ["resizable"],
@@ -4338,7 +4338,7 @@
     {
       "name": "resizable-handle",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Resizable handle",
       "description": "A handle with a grip, showing it can be dragged.",
       "dependencies": ["@ndop/core"],
@@ -4360,7 +4360,7 @@
     {
       "name": "resizable-vertical",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Resizable vertical",
       "description": "Two panes stacked, resized up and down.",
       "registryDependencies": ["resizable"],
@@ -4381,7 +4381,7 @@
     {
       "name": "menubar-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Menubar demo",
       "description": "An editor's File, Edit and View menus, with shortcuts, checkboxes, radios and a submenu.",
       "dependencies": ["@ndop/core"],
@@ -4403,7 +4403,7 @@
     {
       "name": "navigation-menu-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Navigation Menu demo",
       "description": "A site's navigation with two panels of links and a top-level link.",
       "dependencies": ["@ndop/core"],
@@ -4425,7 +4425,7 @@
     {
       "name": "select-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Select demo",
       "description": "A fruit picker with a placeholder.",
       "dependencies": ["@ndop/core"],
@@ -4447,7 +4447,7 @@
     {
       "name": "select-groups",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Select groups",
       "description": "A long list of options in labelled groups.",
       "dependencies": ["@ndop/core"],
@@ -4469,7 +4469,7 @@
     {
       "name": "select-sizes",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Select sizes",
       "description": "The default and small triggers.",
       "dependencies": ["@ndop/core"],
@@ -4491,7 +4491,7 @@
     {
       "name": "select-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Select disabled",
       "description": "A disabled select, and one with a disabled option.",
       "dependencies": ["@ndop/core"],
@@ -4513,7 +4513,7 @@
     {
       "name": "combobox-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Combobox demo",
       "description": "A framework picker that filters as you type.",
       "dependencies": ["@ndop/core"],
@@ -4535,7 +4535,7 @@
     {
       "name": "combobox-clear",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Combobox clear",
       "description": "A combobox with a button that clears it.",
       "dependencies": ["@ndop/core"],
@@ -4557,7 +4557,7 @@
     {
       "name": "combobox-multiple",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Combobox multiple",
       "description": "Several frameworks, chosen as chips.",
       "dependencies": ["@ndop/core"],
@@ -4579,7 +4579,7 @@
     {
       "name": "combobox-groups",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Combobox groups",
       "description": "Options in labelled groups, with separators.",
       "dependencies": ["@ndop/core"],
@@ -4601,7 +4601,7 @@
     {
       "name": "combobox-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Combobox disabled",
       "description": "A disabled combobox, and one with a disabled option.",
       "dependencies": ["@ndop/core"],
@@ -4623,7 +4623,7 @@
     {
       "name": "command-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Command demo",
       "description": "An inline command list with groups, shortcuts and a disabled command.",
       "dependencies": ["@ndop/core"],
@@ -4645,7 +4645,7 @@
     {
       "name": "command-dialog",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Command dialog",
       "description": "A command palette in a dialog, opened with Ctrl+K or Cmd+K.",
       "dependencies": ["@ndop/core"],
@@ -4667,7 +4667,7 @@
     {
       "name": "calendar-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Calendar demo",
       "description": "A calendar to choose one date, with today marked.",
       "dependencies": ["@ndop/core"],
@@ -4689,7 +4689,7 @@
     {
       "name": "calendar-range",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Calendar range",
       "description": "Two months side by side to choose a range of days.",
       "dependencies": ["@ndop/core"],
@@ -4711,7 +4711,7 @@
     {
       "name": "calendar-multiple",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Calendar multiple",
       "description": "Several dates chosen at once.",
       "dependencies": ["@ndop/core"],
@@ -4733,7 +4733,7 @@
     {
       "name": "calendar-disabled",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Calendar disabled",
       "description": "Weekends and past days that can't be chosen.",
       "dependencies": ["@ndop/core"],
@@ -4755,7 +4755,7 @@
     {
       "name": "calendar-locale",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Calendar locale",
       "description": "Month and weekday names in French, with weeks from Monday.",
       "dependencies": ["@ndop/core"],
@@ -4777,7 +4777,7 @@
     {
       "name": "date-picker-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Date Picker demo",
       "description": "A button that opens a calendar to pick a date, and closes once one is picked.",
       "dependencies": ["@ndop/core"],
@@ -4799,7 +4799,7 @@
     {
       "name": "date-picker-range",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Date Picker range",
       "description": "A button that opens two months to pick a range of days.",
       "dependencies": ["@ndop/core"],
@@ -4821,7 +4821,7 @@
     {
       "name": "sidebar-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sidebar demo",
       "description": "An app shell with a sidebar of grouped links that collapses to icons.",
       "dependencies": ["@ndop/core"],
@@ -4843,7 +4843,7 @@
     {
       "name": "sidebar-floating",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Sidebar floating",
       "description": "A floating sidebar that slides off-canvas, with a badge and nested links.",
       "dependencies": ["@ndop/core"],
@@ -4865,7 +4865,7 @@
     {
       "name": "data-table-demo",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Data Table demo",
       "description": "Payments to sort, search, select and page through, with columns to hide.",
       "dependencies": ["@ndop/core"],
@@ -4895,7 +4895,7 @@
     {
       "name": "chart-bar",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Chart bar",
       "description": "Desktop and mobile visitors by month, as grouped bars you can read with the keyboard.",
       "registryDependencies": ["chart"],
@@ -4916,7 +4916,7 @@
     {
       "name": "chart-line",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Chart line",
       "description": "Desktop and mobile visitors by month, as two smooth lines.",
       "registryDependencies": ["chart"],
@@ -4937,7 +4937,7 @@
     {
       "name": "chart-area",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Chart area",
       "description": "Desktop and mobile visitors by month, as stacked areas.",
       "registryDependencies": ["chart"],
@@ -4958,7 +4958,7 @@
     {
       "name": "chart-pie",
       "type": "registry:primitive-usage",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Chart pie",
       "description": "Visitors by browser, as a donut with the total in its middle.",
       "registryDependencies": ["chart"],
@@ -4979,7 +4979,7 @@
     {
       "name": "chart-radial",
       "type": "registry:primitive-usage",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Chart radial",
       "description": "Visitors by browser, as bars around rings.",
       "registryDependencies": ["chart"],
@@ -5000,7 +5000,7 @@
     {
       "name": "login-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Login 01",
       "description": "A sign-in form in a card, with email and password.",
       "registryDependencies": ["button", "card", "form-field", "input"],
@@ -5023,7 +5023,7 @@
     {
       "name": "login-02",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Login 02",
       "description": "A two-column sign-in page with the form beside an image.",
       "registryDependencies": ["button", "form-field", "input"],
@@ -5046,7 +5046,7 @@
     {
       "name": "signup-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Signup 01",
       "description": "A sign-up form in a card, validated with Signal Forms.",
       "dependencies": ["@ndop/core"],
@@ -5078,7 +5078,7 @@
     {
       "name": "dashboard-01",
       "type": "registry:block",
-      "version": "0.1.2",
+      "version": "1.0.0",
       "title": "Dashboard 01",
       "description": "A dashboard of stat cards, an area chart and a table of recent orders.",
       "dependencies": ["@ndop/core"],
@@ -5116,7 +5116,7 @@
     {
       "name": "dashboard-02",
       "type": "registry:block",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "title": "Dashboard 02",
       "description": "An analytics dashboard with tabs for overview, reports and notifications.",
       "dependencies": ["@ndop/core"],
@@ -5155,7 +5155,7 @@
     {
       "name": "settings-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Settings 01",
       "description": "A settings page with profile and account forms.",
       "dependencies": ["@ndop/core"],
@@ -5191,7 +5191,7 @@
     {
       "name": "settings-02",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Settings 02",
       "description": "A settings page of notification switches and a danger zone.",
       "dependencies": ["@ndop/core"],
@@ -5224,7 +5224,7 @@
     {
       "name": "data-table-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Data Table 01",
       "description": "A table of tasks to search, filter, sort, page through and select, with actions per row.",
       "dependencies": ["@ndop/core"],
@@ -5265,7 +5265,7 @@
     {
       "name": "sidebar-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sidebar 01",
       "description": "An app shell with a sidebar of grouped links.",
       "dependencies": ["@ndop/core"],
@@ -5295,7 +5295,7 @@
     {
       "name": "sidebar-02",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Sidebar 02",
       "description": "An app shell whose sidebar collapses to icons and opens as a sheet on mobile.",
       "dependencies": ["@ndop/core"],
@@ -5327,7 +5327,7 @@
     {
       "name": "hero-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Hero 01",
       "description": "A hero section with a headline, two actions and a product shot.",
       "dependencies": ["@ndop/core"],
@@ -5351,7 +5351,7 @@
     {
       "name": "pricing-01",
       "type": "registry:block",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "title": "Pricing 01",
       "description": "Pricing plans with a monthly or yearly billing toggle.",
       "dependencies": ["@ndop/core"],

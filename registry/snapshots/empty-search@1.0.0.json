@@ -1,0 +1,32 @@
+{
+  "name": "empty-search",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Empty State search",
+  "description": "No search results, with a way to clear the search.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "empty",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/empty-search.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/empty-search.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Empty,\n  EmptyContent,\n  EmptyDescription,\n  EmptyHeader,\n  EmptyMedia,\n  EmptyTitle,\n} from '@/ui/empty/empty';\n\n/**\n * No search results, which says what was searched and offers to clear\n * the search.\n */\n@Component({\n  selector: 'example-empty-search',\n  imports: [\n    Button,\n    Empty,\n    EmptyContent,\n    EmptyDescription,\n    EmptyHeader,\n    EmptyMedia,\n    EmptyTitle,\n    NdIcon,\n  ],\n  template: `\n    <div ndEmpty role=\"status\">\n      <div ndEmptyHeader>\n        <div ndEmptyMedia variant=\"icon\"><svg ndIcon=\"search\"></svg></div>\n        <h2 ndEmptyTitle>No results</h2>\n        <p ndEmptyDescription>\n          Nothing matches “{{ query() }}”. Check the spelling or try other\n          words.\n        </p>\n      </div>\n      <div ndEmptyContent>\n        <button ndButton variant=\"outline\" (click)=\"query.set('')\">\n          Clear search\n        </button>\n      </div>\n    </div>\n  `,\n})\nexport class EmptySearchExample {\n  protected readonly query = signal('quarterly report 2019');\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "EmptySearchExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

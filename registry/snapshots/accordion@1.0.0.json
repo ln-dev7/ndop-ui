@@ -1,0 +1,44 @@
+{
+  "name": "accordion",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Accordion",
+  "description": "A stack of headed sections that each show or hide their content.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "data-display"
+  ],
+  "files": [
+    {
+      "path": "ui/accordion/accordion.ts",
+      "type": "registry:ui",
+      "target": "{ui}/accordion/accordion.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdAccordion,\n  NdAccordionContent,\n  NdAccordionHeader,\n  NdAccordionItem,\n  NdAccordionTrigger,\n} from '@ndop/primitives/accordion';\nimport { cn } from '@/lib/utils';\n\n/**\n * An accordion (`@ndop/primitives/accordion`): a stack of headed sections\n * that each show or hide their content. One section opens at a time unless\n * it's `multiple`; `collapsible` lets the open one close.\n *\n * @example\n * ```html\n * <div ndAccordion collapsible defaultValue=\"shipping\">\n *   <div ndAccordionItem value=\"shipping\">\n *     <h3 ndAccordionHeader>\n *       <button ndAccordionTrigger>\n *         Shipping <svg ndIcon=\"chevron-down\"></svg>\n *       </button>\n *     </h3>\n *     <div ndAccordionContent>Ships in two days.</div>\n *   </div>\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndAccordion]',\n  hostDirectives: [\n    {\n      directive: NdAccordion,\n      inputs: ['value', 'defaultValue', 'multiple', 'collapsible', 'disabled'],\n      outputs: ['valueChange'],\n    },\n  ],\n  host: { 'data-slot': 'accordion' },\n})\nexport class Accordion {}\n\n/**\n * One section of an accordion, with a line under it.\n *\n * @example\n * ```html\n * <div ndAccordionItem value=\"shipping\">…</div>\n * ```\n */\n@Directive({\n  selector: '[ndAccordionItem]',\n  hostDirectives: [\n    { directive: NdAccordionItem, inputs: ['value', 'disabled'] },\n  ],\n  host: { 'data-slot': 'accordion-item', '[class]': 'classes()' },\n})\nexport class AccordionItem {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('border-b last:border-b-0', this.class()),\n  );\n}\n\n/**\n * The heading around a section's trigger: an `h2` to `h6` that fits the\n * page's outline.\n *\n * @example\n * ```html\n * <h3 ndAccordionHeader>…</h3>\n * ```\n */\n@Directive({\n  selector: '[ndAccordionHeader]',\n  hostDirectives: [NdAccordionHeader],\n  host: { 'data-slot': 'accordion-header', '[class]': 'classes()' },\n})\nexport class AccordionHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() => cn('flex', this.class()));\n}\n\n/**\n * The button that opens and closes its section. Put the chevron icon in it,\n * last; it turns over while the section is open.\n *\n * @example\n * ```html\n * <button ndAccordionTrigger>Shipping <svg ndIcon=\"chevron-down\"></svg></button>\n * ```\n */\n@Directive({\n  selector: 'button[ndAccordionTrigger]',\n  hostDirectives: [NdAccordionTrigger],\n  host: { 'data-slot': 'accordion-trigger', '[class]': 'classes()' },\n})\nexport class AccordionTrigger {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-start text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',\n      '[&>svg]:pointer-events-none [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:translate-y-0.5 [&>svg]:text-muted-foreground [&>svg]:transition-transform [&>svg]:duration-200',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The content its trigger shows and hides, sliding open and closed.\n *\n * @example\n * ```html\n * <div ndAccordionContent>Ships in two days.</div>\n * ```\n */\n@Directive({\n  selector: '[ndAccordionContent]',\n  hostDirectives: [NdAccordionContent],\n  host: { 'data-slot': 'accordion-content', '[class]': 'classes()' },\n})\nexport class AccordionContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down',\n      // tw-animate-css's accordion keyframes read this height.\n      '[--radix-accordion-content-height:var(--nd-accordion-content-height)]',\n      // Space below the text as a pseudo-element, which the height\n      // animation clips; padding would stay visible at height 0.\n      'after:block after:h-4',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Accordion",
+      "AccordionItem",
+      "AccordionHeader",
+      "AccordionTrigger",
+      "AccordionContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/accordion.json",
+    "examples": [
+      "accordion-demo",
+      "accordion-multiple"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

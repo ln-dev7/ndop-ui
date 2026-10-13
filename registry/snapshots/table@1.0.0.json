@@ -1,0 +1,45 @@
+{
+  "name": "table",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Table",
+  "description": "Displays tabular data with responsive styles.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "data-display"
+  ],
+  "files": [
+    {
+      "path": "ui/table/table.ts",
+      "type": "registry:ui",
+      "target": "{ui}/table/table.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/**\n * Scrolls a wide table sideways instead of the page. Wrap the\n * `table[ndTable]` in it.\n *\n * @example\n * ```html\n * <div ndTableContainer><table ndTable>…</table></div>\n * ```\n */\n@Directive({\n  selector: '[ndTableContainer]',\n  host: { 'data-slot': 'table-container', '[class]': 'classes()' },\n})\nexport class TableContainer {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('relative w-full overflow-x-auto', this.class()),\n  );\n}\n\n/**\n * A styled native table. Its parts style the table's own elements, so the\n * table keeps all of its semantics.\n *\n * @example\n * ```html\n * <table ndTable>\n *   <caption ndTableCaption>Recent invoices</caption>\n *   <thead ndTableHeader><tr ndTableRow><th ndTableHead>Invoice</th></tr></thead>\n *   <tbody ndTableBody><tr ndTableRow><td ndTableCell>INV001</td></tr></tbody>\n * </table>\n * ```\n */\n@Directive({\n  selector: 'table[ndTable]',\n  host: { 'data-slot': 'table', '[class]': 'classes()' },\n})\nexport class Table {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('w-full caption-bottom text-sm', this.class()),\n  );\n}\n\n/**\n * A table's header rows.\n *\n * @example\n * ```html\n * <thead ndTableHeader>…</thead>\n * ```\n */\n@Directive({\n  selector: 'thead[ndTableHeader]',\n  host: { 'data-slot': 'table-header', '[class]': 'classes()' },\n})\nexport class TableHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('[&_tr]:border-b', this.class()),\n  );\n}\n\n/**\n * A table's body rows.\n *\n * @example\n * ```html\n * <tbody ndTableBody>…</tbody>\n * ```\n */\n@Directive({\n  selector: 'tbody[ndTableBody]',\n  host: { 'data-slot': 'table-body', '[class]': 'classes()' },\n})\nexport class TableBody {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('[&_tr:last-child]:border-0', this.class()),\n  );\n}\n\n/**\n * A table's footer rows, such as totals.\n *\n * @example\n * ```html\n * <tfoot ndTableFooter>…</tfoot>\n * ```\n */\n@Directive({\n  selector: 'tfoot[ndTableFooter]',\n  host: { 'data-slot': 'table-footer', '[class]': 'classes()' },\n})\nexport class TableFooter {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('border-t bg-muted/50 font-medium [&>tr]:last:border-b-0', this.class()),\n  );\n}\n\n/**\n * A table row; `data-state=\"selected\"` highlights it.\n *\n * @example\n * ```html\n * <tr ndTableRow>…</tr>\n * ```\n */\n@Directive({\n  selector: 'tr[ndTableRow]',\n  host: { 'data-slot': 'table-row', '[class]': 'classes()' },\n})\nexport class TableRow {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-[state=selected]:bg-muted',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A header cell. Add `scope=\"col\"` or `scope=\"row\"` as fits.\n *\n * @example\n * ```html\n * <th ndTableHead scope=\"col\">Status</th>\n * ```\n */\n@Directive({\n  selector: 'th[ndTableHead]',\n  host: { 'data-slot': 'table-head', '[class]': 'classes()' },\n})\nexport class TableHead {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'h-10 px-2 text-start align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A data cell.\n *\n * @example\n * ```html\n * <td ndTableCell>INV001</td>\n * ```\n */\n@Directive({\n  selector: 'td[ndTableCell]',\n  host: { 'data-slot': 'table-cell', '[class]': 'classes()' },\n})\nexport class TableCell {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pe-0 [&>[role=checkbox]]:translate-y-[2px]',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A table's caption, which names it; shown under the table.\n *\n * @example\n * ```html\n * <caption ndTableCaption>Recent invoices</caption>\n * ```\n */\n@Directive({\n  selector: 'caption[ndTableCaption]',\n  host: { 'data-slot': 'table-caption', '[class]': 'classes()' },\n})\nexport class TableCaption {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('mt-4 text-sm text-muted-foreground', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TableContainer",
+      "Table",
+      "TableHeader",
+      "TableBody",
+      "TableFooter",
+      "TableRow",
+      "TableHead",
+      "TableCell",
+      "TableCaption"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/table.json",
+    "examples": [
+      "table-demo",
+      "table-status"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

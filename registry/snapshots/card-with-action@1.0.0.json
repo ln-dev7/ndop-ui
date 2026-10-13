@@ -1,0 +1,29 @@
+{
+  "name": "card-with-action",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Card with action",
+  "description": "A card with a header action, content and footer.",
+  "registryDependencies": [
+    "badge",
+    "button",
+    "card"
+  ],
+  "files": [
+    {
+      "path": "examples/card-with-action.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/card-with-action.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Badge } from '@/ui/badge/badge';\nimport { Button } from '@/ui/button/button';\nimport {\n  Card,\n  CardAction,\n  CardContent,\n  CardDescription,\n  CardFooter,\n  CardHeader,\n  CardTitle,\n} from '@/ui/card/card';\n\n/** A card with a header action, content and a footer. */\n@Component({\n  selector: 'example-card-with-action',\n  imports: [\n    Badge,\n    Button,\n    Card,\n    CardAction,\n    CardContent,\n    CardDescription,\n    CardFooter,\n    CardHeader,\n    CardTitle,\n  ],\n  template: `\n    <section\n      ndCard\n      class=\"w-full max-w-sm\"\n      aria-labelledby=\"card-with-action-title\"\n    >\n      <div ndCardHeader>\n        <h2 ndCardTitle id=\"card-with-action-title\">Pro plan</h2>\n        <p ndCardDescription>Billed monthly, renews on November 1.</p>\n        <div ndCardAction><span ndBadge variant=\"secondary\">Current</span></div>\n      </div>\n      <div ndCardContent>\n        <p class=\"text-3xl font-semibold\">\n          $24<span class=\"text-sm font-normal text-muted-foreground\">\n            / month</span\n          >\n        </p>\n        <ul class=\"mt-4 grid gap-2 text-sm text-muted-foreground\">\n          <li>Unlimited projects</li>\n          <li>10 team members</li>\n          <li>Priority support</li>\n        </ul>\n      </div>\n      <div ndCardFooter class=\"gap-2 border-t\">\n        <button ndButton variant=\"outline\">Cancel plan</button>\n        <button ndButton class=\"ms-auto\">Upgrade</button>\n      </div>\n    </section>\n  `,\n})\nexport class CardWithActionExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CardWithActionExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

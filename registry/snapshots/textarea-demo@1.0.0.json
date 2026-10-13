@@ -1,0 +1,28 @@
+{
+  "name": "textarea-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Textarea demo",
+  "description": "A textarea with a label and a description.",
+  "registryDependencies": [
+    "label",
+    "textarea"
+  ],
+  "files": [
+    {
+      "path": "examples/textarea-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/textarea-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Label } from '@/ui/label/label';\nimport { Textarea } from '@/ui/textarea/textarea';\n\n/** A textarea with a label and a description. */\n@Component({\n  selector: 'example-textarea-demo',\n  imports: [Label, Textarea],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <label ndLabel for=\"textarea-demo-message\">Your message</label>\n      <textarea\n        ndTextarea\n        id=\"textarea-demo-message\"\n        placeholder=\"Type your message here.\"\n        aria-describedby=\"textarea-demo-hint\"\n      ></textarea>\n      <p id=\"textarea-demo-hint\" class=\"text-sm text-muted-foreground\">\n        Your message goes to the support team.\n      </p>\n    </div>\n  `,\n})\nexport class TextareaDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TextareaDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

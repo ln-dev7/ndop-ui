@@ -1,0 +1,28 @@
+{
+  "name": "toast-types",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Toast types",
+  "description": "Success, info, warning, error and loading toasts, the loading one replaced when it finishes.",
+  "registryDependencies": [
+    "button",
+    "toast"
+  ],
+  "files": [
+    {
+      "path": "examples/toast-types.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/toast-types.ts",
+      "content": "import { Component, inject } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport { Toaster, type ToastType } from '@/ui/toast/toast';\n\n/**\n * Success, info, warning, error and loading toasts. The loading one is\n * replaced, under the same id, when the work finishes.\n */\n@Component({\n  selector: 'example-toast-types',\n  imports: [Button],\n  template: `\n    <div class=\"flex flex-wrap gap-2\">\n      @for (type of types; track type.type) {\n        <button\n          ndButton\n          variant=\"outline\"\n          (click)=\"show(type.type, type.title)\"\n        >\n          {{ type.label }}\n        </button>\n      }\n      <button ndButton variant=\"outline\" (click)=\"load()\">Loading</button>\n    </div>\n  `,\n})\nexport class ToastTypesExample {\n  private readonly toaster = inject(Toaster);\n\n  protected readonly types: readonly {\n    type: ToastType;\n    label: string;\n    title: string;\n  }[] = [\n    { type: 'success', label: 'Success', title: 'Changes saved' },\n    { type: 'info', label: 'Info', title: 'A new version is available' },\n    { type: 'warning', label: 'Warning', title: 'Your storage is almost full' },\n    { type: 'error', label: 'Error', title: \"Couldn't upload the file\" },\n  ];\n\n  /**\n   * Shows a toast of a type.\n   *\n   * @param type - What it's about.\n   * @param title - Its message.\n   */\n  protected show(type: ToastType, title: string): void {\n    this.toaster.show({ type, title });\n  }\n\n  /** Shows a loading toast, then replaces it once the upload is done. */\n  protected load(): void {\n    const id = this.toaster.show({\n      type: 'loading',\n      title: 'Uploading report.pdf…',\n      duration: Infinity,\n    });\n    setTimeout(\n      () =>\n        this.toaster.show({ id, type: 'success', title: 'Report uploaded' }),\n      2000,\n    );\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ToastTypesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

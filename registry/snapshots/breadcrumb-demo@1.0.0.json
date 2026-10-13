@@ -1,0 +1,31 @@
+{
+  "name": "breadcrumb-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Breadcrumb demo",
+  "description": "A trail with collapsed items.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "breadcrumb",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/breadcrumb-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/breadcrumb-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Breadcrumb,\n  BreadcrumbEllipsis,\n  BreadcrumbItem,\n  BreadcrumbLink,\n  BreadcrumbList,\n  BreadcrumbPage,\n  BreadcrumbSeparator,\n} from '@/ui/breadcrumb/breadcrumb';\n\n/** A trail to the current page, with middle items collapsed. */\n@Component({\n  selector: 'example-breadcrumb-demo',\n  imports: [\n    Breadcrumb,\n    BreadcrumbEllipsis,\n    BreadcrumbItem,\n    BreadcrumbLink,\n    BreadcrumbList,\n    BreadcrumbPage,\n    BreadcrumbSeparator,\n    NdIcon,\n  ],\n  template: `\n    <nav ndBreadcrumb>\n      <ol ndBreadcrumbList>\n        <li ndBreadcrumbItem><a ndBreadcrumbLink href=\"#home\">Home</a></li>\n        <li ndBreadcrumbSeparator><svg ndIcon=\"chevron-right\"></svg></li>\n        <li ndBreadcrumbItem>\n          <span ndBreadcrumbEllipsis><svg ndIcon=\"ellipsis\"></svg></span>\n        </li>\n        <li ndBreadcrumbSeparator><svg ndIcon=\"chevron-right\"></svg></li>\n        <li ndBreadcrumbItem>\n          <a ndBreadcrumbLink href=\"#components\">Components</a>\n        </li>\n        <li ndBreadcrumbSeparator><svg ndIcon=\"chevron-right\"></svg></li>\n        <li ndBreadcrumbItem><span ndBreadcrumbPage>Breadcrumb</span></li>\n      </ol>\n    </nav>\n  `,\n})\nexport class BreadcrumbDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "BreadcrumbDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "dialog-close-button",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Dialog close button",
+  "description": "A share dialog with a read-only link and a footer close button.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "dialog",
+    "input",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/dialog-close-button.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dialog-close-button.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DialogCloseButton,\n  DialogContent,\n  DialogDescription,\n  DialogFooter,\n  DialogHeader,\n  DialogOverlay,\n  DialogTitle,\n  Dialog,\n  DialogClose,\n  DialogPortal,\n  DialogTrigger,\n} from '@/ui/dialog/dialog';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/** A share dialog with a read-only link and a footer close button. */\n@Component({\n  selector: 'example-dialog-close-button',\n  imports: [\n    Dialog,\n    DialogTrigger,\n    DialogPortal,\n    DialogClose,\n    DialogOverlay,\n    DialogContent,\n    DialogHeader,\n    DialogFooter,\n    DialogTitle,\n    DialogDescription,\n    DialogCloseButton,\n    NdIcon,\n    Button,\n    Input,\n    Label,\n  ],\n  template: `\n    <ng-container ndDialog>\n      <button ndButton ndDialogTrigger variant=\"outline\">Share</button>\n      <ng-template ndDialogPortal>\n        <div ndDialogOverlay></div>\n        <div ndDialogContent class=\"sm:max-w-md\">\n          <div ndDialogHeader>\n            <h2 ndDialogTitle>Share link</h2>\n            <p ndDialogDescription>\n              Anyone who has this link will be able to view this.\n            </p>\n          </div>\n          <div class=\"grid gap-2\">\n            <label ndLabel for=\"dialog-close-button-link\" class=\"sr-only\">\n              Link\n            </label>\n            <input\n              ndInput\n              id=\"dialog-close-button-link\"\n              value=\"https://ndop.dev/docs/installation\"\n              readonly\n            />\n          </div>\n          <div ndDialogFooter class=\"sm:justify-start\">\n            <button ndButton ndDialogClose variant=\"secondary\">Close</button>\n          </div>\n          <button ndDialogCloseButton>\n            <svg ndIcon=\"x\"></svg>\n            <span class=\"sr-only\">Close</span>\n          </button>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class DialogCloseButtonExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DialogCloseButtonExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

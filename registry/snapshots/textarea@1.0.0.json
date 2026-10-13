@@ -1,0 +1,41 @@
+{
+  "name": "textarea",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Textarea",
+  "description": "Displays a multi-line text field, or a component that looks like one.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/textarea/textarea.ts",
+      "type": "registry:ui",
+      "target": "{ui}/textarea/textarea.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { NdInput } from '@ndop/primitives/input';\nimport { cn } from '@/lib/utils';\n\n/**\n * Styled multi-line text field (`@ndop/primitives/input`). It grows with\n * its content (`field-sizing: content`) from a two-line minimum. Forms bind\n * the native `textarea`; invalid and disabled states show once the bound\n * field reports them, and a `label[ndLabel]` with a matching `for` follows\n * them too.\n *\n * @example\n * ```html\n * <label ndLabel for=\"bio\">Bio</label>\n * <textarea ndTextarea id=\"bio\" [formField]=\"form.bio\"></textarea>\n * ```\n */\n@Directive({\n  selector: 'textarea[ndTextarea]',\n  hostDirectives: [{ directive: NdInput, inputs: ['id', 'invalid'] }],\n  host: { 'data-slot': 'textarea', '[class]': 'classes()' },\n})\nexport class Textarea {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Textarea"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/textarea.json",
+    "examples": [
+      "textarea-demo",
+      "textarea-form",
+      "textarea-disabled"
+    ]
+  },
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

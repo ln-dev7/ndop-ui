@@ -1,0 +1,28 @@
+{
+  "name": "textarea-disabled",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Textarea disabled",
+  "description": "A disabled textarea with its label.",
+  "registryDependencies": [
+    "label",
+    "textarea"
+  ],
+  "files": [
+    {
+      "path": "examples/textarea-disabled.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/textarea-disabled.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Label } from '@/ui/label/label';\nimport { Textarea } from '@/ui/textarea/textarea';\n\n/** A disabled textarea; its label dims with it. */\n@Component({\n  selector: 'example-textarea-disabled',\n  imports: [Label, Textarea],\n  template: `\n    <div class=\"grid w-full max-w-sm gap-3\">\n      <label ndLabel for=\"textarea-disabled-notes\">Notes</label>\n      <textarea ndTextarea id=\"textarea-disabled-notes\" disabled>\nArchived projects can't be edited.</textarea\n      >\n    </div>\n  `,\n})\nexport class TextareaDisabledExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TextareaDisabledExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

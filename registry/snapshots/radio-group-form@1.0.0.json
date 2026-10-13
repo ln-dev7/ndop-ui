@@ -1,0 +1,34 @@
+{
+  "name": "radio-group-form",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Radio Group form",
+  "description": "A required choice in a Signal Forms form, with its error once touched.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "button",
+    "form-field",
+    "label",
+    "radio-group",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/radio-group-form.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/radio-group-form.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { form, FormField, required } from '@angular/forms/signals';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Field,\n  FieldError,\n  FieldLegend,\n  FieldSet,\n} from '@/ui/form-field/form-field';\nimport { Label } from '@/ui/label/label';\nimport {\n  RadioGroup,\n  RadioGroupIndicator,\n  RadioGroupItem,\n} from '@/ui/radio-group/radio-group';\n\n/**\n * A required choice in a Signal Forms form. Submitting without one shows\n * the error and announces it.\n */\n@Component({\n  selector: 'example-radio-group-form',\n  imports: [\n    Button,\n    Field,\n    FieldError,\n    FieldLegend,\n    FieldSet,\n    FormField,\n    Label,\n    NdIcon,\n    RadioGroup,\n    RadioGroupIndicator,\n    RadioGroupItem,\n  ],\n  template: `\n    <form class=\"flex flex-col gap-6\" (submit)=\"submit($event)\">\n      <fieldset ndFieldSet>\n        <legend ndFieldLegend variant=\"label\" id=\"radio-group-form-legend\">\n          Notify me about\n        </legend>\n        <div ndField>\n          <div\n            ndRadioGroup\n            aria-labelledby=\"radio-group-form-legend\"\n            [formField]=\"preferences.notify\"\n          >\n            @for (option of options; track option.value) {\n              <div class=\"flex items-center gap-3\">\n                <button\n                  ndRadioGroupItem\n                  [value]=\"option.value\"\n                  [id]=\"'radio-group-form-' + option.value\"\n                >\n                  <span ndRadioGroupIndicator>\n                    <svg ndIcon=\"circle\"></svg>\n                  </span>\n                </button>\n                <label ndLabel [for]=\"'radio-group-form-' + option.value\">\n                  {{ option.label }}\n                </label>\n              </div>\n            }\n          </div>\n          <p ndFieldError>Choose what to be notified about.</p>\n        </div>\n      </fieldset>\n      <button ndButton type=\"submit\" class=\"self-start\">Save</button>\n    </form>\n  `,\n})\nexport class RadioGroupFormExample {\n  protected readonly options = [\n    { value: 'all', label: 'All new messages' },\n    { value: 'mentions', label: 'Direct messages and mentions' },\n    { value: 'none', label: 'Nothing' },\n  ];\n\n  protected readonly model = signal<{ notify: string | null }>({\n    notify: null,\n  });\n\n  protected readonly preferences = form(this.model, (path) => {\n    required(path.notify);\n  });\n\n  /**\n   * Marks the fields touched, so errors show, instead of reloading.\n   *\n   * @param event - The form's submit event.\n   */\n  protected submit(event: Event): void {\n    event.preventDefault();\n    this.preferences().markAsTouched();\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "RadioGroupFormExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

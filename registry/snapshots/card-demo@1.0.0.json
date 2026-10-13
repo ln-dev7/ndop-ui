@@ -1,0 +1,30 @@
+{
+  "name": "card-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Card demo",
+  "description": "A sign-in form in a card.",
+  "registryDependencies": [
+    "button",
+    "card",
+    "input",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/card-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/card-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  Card,\n  CardAction,\n  CardContent,\n  CardDescription,\n  CardFooter,\n  CardHeader,\n  CardTitle,\n} from '@/ui/card/card';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\n\n/** A sign-in form in a card. */\n@Component({\n  selector: 'example-card-demo',\n  imports: [\n    Button,\n    Card,\n    CardAction,\n    CardContent,\n    CardDescription,\n    CardFooter,\n    CardHeader,\n    CardTitle,\n    Input,\n    Label,\n  ],\n  template: `\n    <section ndCard class=\"w-full max-w-sm\" aria-labelledby=\"card-demo-title\">\n      <div ndCardHeader>\n        <h2 ndCardTitle id=\"card-demo-title\">Sign in to your account</h2>\n        <p ndCardDescription>Enter your email below to sign in.</p>\n        <div ndCardAction>\n          <a ndButton variant=\"link\" href=\"#sign-up\">Sign up</a>\n        </div>\n      </div>\n      <form ndCardContent id=\"card-demo-form\" class=\"grid gap-6\">\n        <div class=\"grid gap-2\">\n          <label ndLabel for=\"card-demo-email\">Email</label>\n          <input\n            ndInput\n            id=\"card-demo-email\"\n            type=\"email\"\n            placeholder=\"m@example.com\"\n            required\n          />\n        </div>\n        <div class=\"grid gap-2\">\n          <div class=\"flex items-center\">\n            <label ndLabel for=\"card-demo-password\">Password</label>\n            <a\n              href=\"#forgot\"\n              class=\"ms-auto text-sm underline-offset-4 hover:underline\"\n              >Forgot your password?</a\n            >\n          </div>\n          <input ndInput id=\"card-demo-password\" type=\"password\" required />\n        </div>\n      </form>\n      <div ndCardFooter class=\"flex-col gap-2\">\n        <button ndButton type=\"submit\" form=\"card-demo-form\" class=\"w-full\">\n          Sign in\n        </button>\n      </div>\n    </section>\n  `,\n})\nexport class CardDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CardDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

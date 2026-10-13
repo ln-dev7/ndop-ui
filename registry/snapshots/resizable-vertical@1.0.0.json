@@ -1,0 +1,27 @@
+{
+  "name": "resizable-vertical",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Resizable vertical",
+  "description": "Two panes stacked, resized up and down.",
+  "registryDependencies": [
+    "resizable"
+  ],
+  "files": [
+    {
+      "path": "examples/resizable-vertical.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/resizable-vertical.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport {\n  ResizableHandle,\n  ResizablePanel,\n  ResizablePanelGroup,\n} from '@/ui/resizable/resizable';\n\n/**\n * Two panes stacked, resized up and down; the sizes are bound, to save\n * and restore the layout.\n */\n@Component({\n  selector: 'example-resizable-vertical',\n  imports: [ResizableHandle, ResizablePanel, ResizablePanelGroup],\n  template: `\n    <div\n      ndResizablePanelGroup\n      orientation=\"vertical\"\n      [(sizes)]=\"sizes\"\n      class=\"min-h-[200px] max-w-md rounded-lg border md:min-w-[450px]\"\n    >\n      <div ndResizablePanel [defaultSize]=\"25\" [minSize]=\"10\">\n        <div class=\"flex h-full items-center justify-center p-6\">\n          <span class=\"font-semibold\">Header</span>\n        </div>\n      </div>\n      <div ndResizableHandle aria-label=\"Resize header\"></div>\n      <div ndResizablePanel [defaultSize]=\"75\">\n        <div class=\"flex h-full items-center justify-center p-6\">\n          <span class=\"font-semibold\">Content</span>\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class ResizableVerticalExample {\n  protected readonly sizes = signal<readonly number[]>([]);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ResizableVerticalExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

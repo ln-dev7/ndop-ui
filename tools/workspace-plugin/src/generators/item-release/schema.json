@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NdopItemRelease",
+  "title": "Ndop item release",
+  "description": "Release registry items (ADR-0012, ADR-0020): set each item's version in registry.json and add its changelog section. Build the registry afterwards to write the new snapshots.",
+  "type": "object",
+  "properties": {
+    "names": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Items to release, by name.",
+      "$default": { "$source": "argv" }
+    },
+    "all": {
+      "type": "boolean",
+      "description": "Release every item in registry.json.",
+      "default": false
+    },
+    "to": {
+      "type": "string",
+      "description": "The new version, major.minor.patch, for every item named. Use either this or bump.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "bump": {
+      "type": "string",
+      "description": "Raise each item's own version. Use either this or to.",
+      "enum": ["major", "minor", "patch"]
+    },
+    "notes": {
+      "type": "string",
+      "description": "The changelog section's text. {previous} stands for each item's version before the release.",
+      "x-prompt": "What changed?"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the changed files.",
+      "default": false
+    }
+  },
+  "required": ["notes"]
+}

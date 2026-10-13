@@ -1,0 +1,27 @@
+{
+  "name": "slider-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Slider demo",
+  "description": "A single value from 0 to 100.",
+  "registryDependencies": [
+    "slider"
+  ],
+  "files": [
+    {
+      "path": "examples/slider-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/slider-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Slider,\n  SliderRange,\n  SliderThumb,\n  SliderTrack,\n} from '@/ui/slider/slider';\n\n/** A single value from 0 to 100. */\n@Component({\n  selector: 'example-slider-demo',\n  imports: [Slider, SliderRange, SliderThumb, SliderTrack],\n  template: `\n    <div ndSlider class=\"w-3/5\">\n      <div ndSliderTrack><div ndSliderRange></div></div>\n      <span ndSliderThumb aria-label=\"Volume\" [defaultValue]=\"50\"></span>\n    </div>\n  `,\n})\nexport class SliderDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SliderDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

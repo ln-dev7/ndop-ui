@@ -1,0 +1,32 @@
+{
+  "name": "checkbox-indeterminate",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Checkbox indeterminate",
+  "description": "A select-all checkbox that's mixed while only some of the list is checked.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "checkbox",
+    "label",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/checkbox-indeterminate.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/checkbox-indeterminate.ts",
+      "content": "import { Component, computed, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Checkbox, CheckboxIndicator } from '@/ui/checkbox/checkbox';\nimport { Label } from '@/ui/label/label';\n\n/**\n * A select-all checkbox: checked when every item is, mixed when some are,\n * and checking or clearing them all when activated.\n */\n@Component({\n  selector: 'example-checkbox-indeterminate',\n  imports: [Checkbox, CheckboxIndicator, Label, NdIcon],\n  template: `\n    <fieldset class=\"flex flex-col gap-3\">\n      <legend class=\"sr-only\">Email me about</legend>\n      <div class=\"flex items-center gap-3\">\n        <button\n          ndCheckbox\n          id=\"checkbox-indeterminate-all\"\n          [checked]=\"allChecked()\"\n          [indeterminate]=\"someChecked()\"\n          (checkedChange)=\"setAll($event)\"\n        >\n          <span ndCheckboxIndicator>\n            <svg [ndIcon]=\"someChecked() ? 'minus' : 'check'\"></svg>\n          </span>\n        </button>\n        <label ndLabel for=\"checkbox-indeterminate-all\">All updates</label>\n      </div>\n      @for (topic of topics(); track topic.id) {\n        <div class=\"flex items-center gap-3 ps-7\">\n          <button\n            ndCheckbox\n            [id]=\"'checkbox-indeterminate-' + topic.id\"\n            [checked]=\"topic.checked\"\n            (checkedChange)=\"set(topic.id, $event)\"\n          >\n            <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n          </button>\n          <label ndLabel [for]=\"'checkbox-indeterminate-' + topic.id\">\n            {{ topic.label }}\n          </label>\n        </div>\n      }\n    </fieldset>\n  `,\n})\nexport class CheckboxIndeterminateExample {\n  protected readonly topics = signal([\n    { id: 'product', label: 'Product news', checked: true },\n    { id: 'events', label: 'Events near me', checked: false },\n    { id: 'tips', label: 'Tips and tutorials', checked: false },\n  ]);\n\n  protected readonly allChecked = computed(() =>\n    this.topics().every((topic) => topic.checked),\n  );\n\n  protected readonly someChecked = computed(\n    () => !this.allChecked() && this.topics().some((topic) => topic.checked),\n  );\n\n  /**\n   * Checks or clears one topic.\n   *\n   * @param id - The topic.\n   * @param checked - Its new state.\n   */\n  protected set(id: string, checked: boolean): void {\n    this.topics.update((topics) =>\n      topics.map((topic) => (topic.id === id ? { ...topic, checked } : topic)),\n    );\n  }\n\n  /**\n   * Checks or clears every topic.\n   *\n   * @param checked - The new state.\n   */\n  protected setAll(checked: boolean): void {\n    this.topics.update((topics) =>\n      topics.map((topic) => ({ ...topic, checked })),\n    );\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "CheckboxIndeterminateExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

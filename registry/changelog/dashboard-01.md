@@ -1,5 +1,9 @@
 # Dashboard 01
 
+## 1.0.0
+
+Stable release; no code changes since 0.1.2.
+
 ## 0.1.2
 
 The visitors chart uses the chart's HTML axis labels, which keep their

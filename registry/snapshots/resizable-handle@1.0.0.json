@@ -1,0 +1,31 @@
+{
+  "name": "resizable-handle",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Resizable handle",
+  "description": "A handle with a grip, showing it can be dragged.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "icons",
+    "resizable"
+  ],
+  "files": [
+    {
+      "path": "examples/resizable-handle.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/resizable-handle.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  ResizableHandle,\n  ResizableHandleGrip,\n  ResizablePanel,\n  ResizablePanelGroup,\n} from '@/ui/resizable/resizable';\n\n/** A handle with a grip, showing it can be dragged. */\n@Component({\n  selector: 'example-resizable-handle',\n  imports: [\n    NdIcon,\n    ResizableHandle,\n    ResizableHandleGrip,\n    ResizablePanel,\n    ResizablePanelGroup,\n  ],\n  template: `\n    <div\n      ndResizablePanelGroup\n      orientation=\"horizontal\"\n      class=\"min-h-[200px] max-w-md rounded-lg border md:min-w-[450px]\"\n    >\n      <div ndResizablePanel [defaultSize]=\"25\" [minSize]=\"15\">\n        <div class=\"flex h-full items-center justify-center p-6\">\n          <span class=\"font-semibold\">Sidebar</span>\n        </div>\n      </div>\n      <div ndResizableHandle aria-label=\"Resize sidebar\">\n        <div ndResizableHandleGrip><svg ndIcon=\"grip-vertical\"></svg></div>\n      </div>\n      <div ndResizablePanel [defaultSize]=\"75\">\n        <div class=\"flex h-full items-center justify-center p-6\">\n          <span class=\"font-semibold\">Content</span>\n        </div>\n      </div>\n    </div>\n  `,\n})\nexport class ResizableHandleExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ResizableHandleExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

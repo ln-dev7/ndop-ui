@@ -1,5 +1,9 @@
 # Button
 
+## 1.0.0
+
+Stable release; no code changes since 0.1.3.
+
 ## 0.1.3
 
 Lists the item under Inputs in the docs. The files are unchanged.

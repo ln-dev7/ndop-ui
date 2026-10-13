@@ -29,6 +29,11 @@
       "factory": "./src/generators/theme/theme",
       "schema": "./src/generators/theme/schema.json",
       "description": "Scaffold a registry theme: theme.css, registry entry and changelog."
+    },
+    "item-release": {
+      "factory": "./src/generators/item-release/item-release",
+      "schema": "./src/generators/item-release/schema.json",
+      "description": "Release registry items: bump each version and add its changelog section."
     }
   }
 }

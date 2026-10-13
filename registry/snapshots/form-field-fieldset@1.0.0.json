@@ -1,0 +1,28 @@
+{
+  "name": "form-field-fieldset",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Form Field fieldset",
+  "description": "An address in a field set with a legend, its fields side by side when there's room.",
+  "registryDependencies": [
+    "form-field",
+    "input"
+  ],
+  "files": [
+    {
+      "path": "examples/form-field-fieldset.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/form-field-fieldset.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Field,\n  FieldDescription,\n  FieldGroup,\n  FieldLabel,\n  FieldLegend,\n  FieldSet,\n} from '@/ui/form-field/form-field';\nimport { Input } from '@/ui/input/input';\n\n/**\n * An address in a field set with a legend. The responsive fields put\n * their label beside the input when the group is wide enough.\n */\n@Component({\n  selector: 'example-form-field-fieldset',\n  imports: [\n    Field,\n    FieldDescription,\n    FieldGroup,\n    FieldLabel,\n    FieldLegend,\n    FieldSet,\n    Input,\n  ],\n  template: `\n    <fieldset ndFieldSet class=\"w-full max-w-lg\">\n      <legend ndFieldLegend>Shipping address</legend>\n      <p ndFieldDescription>Where should we send your order?</p>\n      <div ndFieldGroup>\n        <div ndField orientation=\"responsive\">\n          <label ndFieldLabel for=\"form-field-fieldset-street\">Street</label>\n          <input\n            ndInput\n            id=\"form-field-fieldset-street\"\n            autocomplete=\"street-address\"\n          />\n        </div>\n        <div ndField orientation=\"responsive\">\n          <label ndFieldLabel for=\"form-field-fieldset-city\">City</label>\n          <input\n            ndInput\n            id=\"form-field-fieldset-city\"\n            autocomplete=\"address-level2\"\n          />\n        </div>\n        <div ndField orientation=\"responsive\">\n          <label ndFieldLabel for=\"form-field-fieldset-postcode\">\n            Postal code\n          </label>\n          <input\n            ndInput\n            id=\"form-field-fieldset-postcode\"\n            autocomplete=\"postal-code\"\n          />\n        </div>\n      </div>\n    </fieldset>\n  `,\n})\nexport class FormFieldFieldsetExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "FormFieldFieldsetExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

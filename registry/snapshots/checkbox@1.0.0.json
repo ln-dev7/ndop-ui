@@ -1,0 +1,43 @@
+{
+  "name": "checkbox",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Checkbox",
+  "description": "A control that's checked, unchecked or mixed, for choosing an option on its own or several from a list.",
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/checkbox/checkbox.ts",
+      "type": "registry:ui",
+      "target": "{ui}/checkbox/checkbox.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { NdCheckbox, NdCheckboxIndicator } from '@ndop/primitives/checkbox';\nimport { cn } from '@/lib/utils';\n\n/**\n * A checkbox on a native `button` (`@ndop/primitives/checkbox`): checked,\n * unchecked or, with `indeterminate`, mixed. Bind it with `[(checked)]` or\n * any forms library, name it with a `label[ndLabel]` whose `for` is its\n * `id`, and put a `ndCheckboxIndicator` with a check icon inside.\n *\n * @example\n * ```html\n * <button ndCheckbox id=\"terms\" [(checked)]=\"accepted\">\n *   <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n * </button>\n * <label ndLabel for=\"terms\">Accept terms and conditions</label>\n * ```\n */\n@Directive({\n  selector: 'button[ndCheckbox]',\n  hostDirectives: [\n    {\n      directive: NdCheckbox,\n      inputs: [\n        'checked',\n        'indeterminate',\n        'defaultChecked',\n        'disabled',\n        'required',\n        'invalid',\n        'id',\n      ],\n      outputs: ['checkedChange', 'indeterminateChange'],\n    },\n  ],\n  host: { 'data-slot': 'checkbox', '[class]': 'classes()' },\n})\nexport class Checkbox {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary',\n      'data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground dark:data-[state=indeterminate]:bg-primary',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The checkmark of a {@link Checkbox}, shown while it's checked or mixed.\n * Put a check icon inside, or a minus icon for a mixed checkbox.\n *\n * @example\n * ```html\n * <span ndCheckboxIndicator><svg ndIcon=\"check\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndCheckboxIndicator]',\n  hostDirectives: [NdCheckboxIndicator],\n  host: { 'data-slot': 'checkbox-indicator', '[class]': 'classes()' },\n})\nexport class CheckboxIndicator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'grid place-content-center text-current transition-none [&>svg]:size-3.5',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Checkbox",
+      "CheckboxIndicator"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/checkbox.json",
+    "examples": [
+      "checkbox-demo",
+      "checkbox-disabled",
+      "checkbox-indeterminate",
+      "checkbox-form"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

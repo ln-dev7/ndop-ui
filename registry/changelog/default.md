@@ -1,5 +1,9 @@
 # Default theme
 
+## 1.0.0
+
+Stable release; no code changes since 0.2.0.
+
 ## 0.2.0
 
 Muted text in light mode is a little darker, `oklch(0.545 0 0)` instead of

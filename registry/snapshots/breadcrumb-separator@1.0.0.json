@@ -1,0 +1,27 @@
+{
+  "name": "breadcrumb-separator",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Breadcrumb separator",
+  "description": "A trail with slash separators.",
+  "registryDependencies": [
+    "breadcrumb"
+  ],
+  "files": [
+    {
+      "path": "examples/breadcrumb-separator.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/breadcrumb-separator.ts",
+      "content": "import { Component } from '@angular/core';\nimport {\n  Breadcrumb,\n  BreadcrumbItem,\n  BreadcrumbLink,\n  BreadcrumbList,\n  BreadcrumbPage,\n  BreadcrumbSeparator,\n} from '@/ui/breadcrumb/breadcrumb';\n\n/** A trail with slashes between the items. */\n@Component({\n  selector: 'example-breadcrumb-separator',\n  imports: [\n    Breadcrumb,\n    BreadcrumbItem,\n    BreadcrumbLink,\n    BreadcrumbList,\n    BreadcrumbPage,\n    BreadcrumbSeparator,\n  ],\n  template: `\n    <nav ndBreadcrumb label=\"Settings breadcrumb\">\n      <ol ndBreadcrumbList>\n        <li ndBreadcrumbItem><a ndBreadcrumbLink href=\"#home\">Home</a></li>\n        <li ndBreadcrumbSeparator>/</li>\n        <li ndBreadcrumbItem>\n          <a ndBreadcrumbLink href=\"#settings\">Settings</a>\n        </li>\n        <li ndBreadcrumbSeparator>/</li>\n        <li ndBreadcrumbItem><span ndBreadcrumbPage>Billing</span></li>\n      </ol>\n    </nav>\n  `,\n})\nexport class BreadcrumbSeparatorExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "BreadcrumbSeparatorExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,64 @@
+{
+  "name": "tooltip",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Tooltip",
+  "description": "A popup that displays information related to an element when it receives keyboard focus or the mouse hovers over it.",
+  "categories": [
+    "overlays"
+  ],
+  "dependencies": [
+    "@ndop/primitives"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "ui/tooltip/tooltip.ts",
+      "type": "registry:ui",
+      "target": "{ui}/tooltip/tooltip.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdTooltip,\n  NdTooltipContent,\n  NdTooltipPortal,\n  NdTooltipTrigger,\n} from '@ndop/primitives/tooltip';\nimport { cn } from '@/lib/utils';\n\n/**\n * A tooltip (`@ndop/primitives/tooltip`): a short description of its\n * trigger, shown after a delay on hover and at once on keyboard focus. Put\n * it on an `ng-container`.\n *\n * @example\n * ```html\n * <ng-container ndTooltip>…</ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndTooltip]',\n  hostDirectives: [\n    {\n      directive: NdTooltip,\n      inputs: ['open', 'defaultOpen', 'openDelay', 'closeDelay'],\n      outputs: ['openChange'],\n    },\n  ],\n})\nexport class Tooltip {}\n\n/**\n * The element its tooltip describes, which shows it on hover and focus.\n *\n * @example\n * ```html\n * <button ndButton ndTooltipTrigger>Add to library</button>\n * ```\n */\n@Directive({\n  selector: '[ndTooltipTrigger]',\n  hostDirectives: [NdTooltipTrigger],\n  host: { 'data-slot': 'tooltip-trigger' },\n})\nexport class TooltipTrigger {}\n\n/**\n * Marks the `ng-template` its tooltip renders while open.\n *\n * @example\n * ```html\n * <ng-template ndTooltipPortal>…</ng-template>\n * ```\n */\n@Directive({\n  selector: 'ng-template[ndTooltipPortal]',\n  hostDirectives: [NdTooltipPortal],\n})\nexport class TooltipPortal {}\n\n/**\n * The tooltip bubble.\n *\n * @example\n * ```html\n * <div ndTooltipContent>Delete permanently</div>\n * ```\n */\n@Directive({\n  selector: '[ndTooltipContent]',\n  hostDirectives: [\n    { directive: NdTooltipContent, inputs: ['side', 'align', 'sideOffset'] },\n  ],\n  host: { 'data-slot': 'tooltip-content', '[class]': 'classes()' },\n})\nexport class TooltipContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'z-50 w-fit animate-in rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "Tooltip",
+      "TooltipTrigger",
+      "TooltipPortal",
+      "TooltipContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "codemods": [
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdTooltip",
+      "to": "Tooltip"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdTooltipPortal",
+      "to": "TooltipPortal"
+    },
+    {
+      "since": "0.2.0",
+      "kind": "rename-export",
+      "from": "NdTooltipTrigger",
+      "to": "TooltipTrigger"
+    }
+  ],
+  "ndop": {
+    "metadata": "metadata/tooltip.json",
+    "examples": [
+      "tooltip-demo",
+      "tooltip-icon-button",
+      "tooltip-sides"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

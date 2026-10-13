@@ -1,0 +1,27 @@
+{
+  "name": "skeleton-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Skeleton demo",
+  "description": "Placeholders for a profile while it loads.",
+  "registryDependencies": [
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "examples/skeleton-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/skeleton-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Skeleton } from '@/ui/skeleton/skeleton';\n\n/** Placeholders for a profile while it loads. */\n@Component({\n  selector: 'example-skeleton-demo',\n  imports: [Skeleton],\n  template: `\n    <div class=\"flex items-center gap-4\" aria-busy=\"true\">\n      <span class=\"sr-only\">Loading profile</span>\n      <div ndSkeleton class=\"size-12 rounded-full\"></div>\n      <div class=\"grid gap-2\">\n        <div ndSkeleton class=\"h-4 w-56\"></div>\n        <div ndSkeleton class=\"h-4 w-48\"></div>\n      </div>\n    </div>\n  `,\n})\nexport class SkeletonDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SkeletonDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

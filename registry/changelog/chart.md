@@ -1,5 +1,9 @@
 # Chart
 
+## 1.0.0
+
+Stable release; no code changes since 0.2.0.
+
 ## 0.2.0
 
 Axis labels keep their size at every width (ADR-0029). They were SVG

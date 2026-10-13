@@ -1,0 +1,37 @@
+{
+  "name": "scroll-area",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Scroll Area",
+  "description": "A scrollable region with styled scrollbars.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "layout"
+  ],
+  "files": [
+    {
+      "path": "ui/scroll-area/scroll-area.ts",
+      "type": "registry:ui",
+      "target": "{ui}/scroll-area/scroll-area.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/** Which way a {@link ScrollArea} scrolls. */\nexport type ScrollAreaOrientation = 'vertical' | 'horizontal' | 'both';\n\n/**\n * A scrollable region with thin, themed scrollbars, using the browser's\n * own scrolling (ADR-0021): touch, wheel and keyboard scrolling all work,\n * and it can take focus, so keyboard users can scroll it. Give it a size\n * and, when it holds more than a list, a name with `aria-label`.\n *\n * @example\n * ```html\n * <div ndScrollArea class=\"h-72 w-48 rounded-md border\" aria-label=\"Tags\">…</div>\n * ```\n */\n@Directive({\n  selector: '[ndScrollArea]',\n  host: {\n    'data-slot': 'scroll-area',\n    tabindex: '0',\n    '[attr.data-orientation]': 'orientation()',\n    '[class]': 'classes()',\n  },\n})\nexport class ScrollArea {\n  /** Which way it scrolls. */\n  readonly orientation = input<ScrollAreaOrientation>('vertical');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'relative',\n      'size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1',\n      '[scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]',\n      this.orientation() === 'horizontal'\n        ? 'overflow-x-auto overflow-y-hidden'\n        : this.orientation() === 'both'\n          ? 'overflow-auto'\n          : 'overflow-x-hidden overflow-y-auto',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ScrollArea"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/scroll-area.json",
+    "examples": [
+      "scroll-area-demo",
+      "scroll-area-horizontal"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

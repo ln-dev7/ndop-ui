@@ -1,0 +1,28 @@
+{
+  "name": "switch-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Switch demo",
+  "description": "A switch that turns a setting on or off right away.",
+  "registryDependencies": [
+    "label",
+    "switch"
+  ],
+  "files": [
+    {
+      "path": "examples/switch-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/switch-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Label } from '@/ui/label/label';\nimport { Switch, SwitchThumb } from '@/ui/switch/switch';\n\n/** A switch that turns a setting on or off right away. */\n@Component({\n  selector: 'example-switch-demo',\n  imports: [Label, Switch, SwitchThumb],\n  template: `\n    <div class=\"flex items-center gap-2\">\n      <button ndSwitch id=\"switch-demo-airplane\">\n        <span ndSwitchThumb></span>\n      </button>\n      <label ndLabel for=\"switch-demo-airplane\">Airplane Mode</label>\n    </div>\n  `,\n})\nexport class SwitchDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SwitchDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,37 @@
+{
+  "name": "aspect-ratio",
+  "type": "registry:ui",
+  "version": "1.0.0",
+  "title": "Aspect Ratio",
+  "description": "Displays content within a chosen width-to-height ratio.",
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "layout"
+  ],
+  "files": [
+    {
+      "path": "ui/aspect-ratio/aspect-ratio.ts",
+      "type": "registry:ui",
+      "target": "{ui}/aspect-ratio/aspect-ratio.ts",
+      "content": "import { computed, Directive, input, numberAttribute } from '@angular/core';\nimport { cn } from '@/lib/utils';\n\n/**\n * Keeps its content at a width-to-height ratio, with the CSS\n * `aspect-ratio` property. Put an image or media inside, sized to fill it.\n *\n * @example\n * ```html\n * <div ndAspectRatio [ratio]=\"16 / 9\">\n *   <img src=\"/cover.jpg\" alt=\"…\" class=\"size-full object-cover\" />\n * </div>\n * ```\n */\n@Directive({\n  selector: '[ndAspectRatio]',\n  host: {\n    'data-slot': 'aspect-ratio',\n    '[style.aspect-ratio]': 'ratio()',\n    '[class]': 'classes()',\n  },\n})\nexport class AspectRatio {\n  /** Width divided by height, such as `16 / 9`. */\n  readonly ratio = input(1, { transform: numberAttribute });\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('relative w-full', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AspectRatio"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/aspect-ratio.json",
+    "examples": [
+      "aspect-ratio-demo",
+      "aspect-ratio-square"
+    ]
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

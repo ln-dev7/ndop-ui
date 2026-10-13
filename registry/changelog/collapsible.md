@@ -1,5 +1,9 @@
 # Collapsible
 
+## 1.0.0
+
+Stable release; no code changes since 0.3.0.
+
 ## 0.3.0
 
 The content slides open and closed, with tw-animate-css's collapsible animations, and takes a `class` input for extra classes. It clips its content only while it animates, so focus rings inside it still show. A page loads without animating content that starts open.

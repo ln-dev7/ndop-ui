@@ -1,0 +1,31 @@
+{
+  "name": "combobox-groups",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Combobox groups",
+  "description": "Options in labelled groups, with separators.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "combobox",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/combobox-groups.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/combobox-groups.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Combobox,\n  ComboboxContent,\n  ComboboxControl,\n  ComboboxEmpty,\n  ComboboxGroup,\n  ComboboxInput,\n  ComboboxItem,\n  ComboboxItemIndicator,\n  ComboboxLabel,\n  ComboboxList,\n  ComboboxSeparator,\n  ComboboxTrigger,\n} from '@/ui/combobox/combobox';\n\n/**\n * Options in labelled groups, with separators. A group hides while none\n * of its options matches.\n */\n@Component({\n  selector: 'example-combobox-groups',\n  imports: [\n    Combobox,\n    ComboboxContent,\n    ComboboxControl,\n    ComboboxEmpty,\n    ComboboxGroup,\n    ComboboxInput,\n    ComboboxItem,\n    ComboboxItemIndicator,\n    ComboboxLabel,\n    ComboboxList,\n    ComboboxSeparator,\n    ComboboxTrigger,\n    NdIcon,\n  ],\n  template: `\n    <ng-container ndCombobox>\n      <div ndComboboxControl class=\"w-[240px]\">\n        <input ndComboboxInput aria-label=\"Food\" placeholder=\"Select a food\" />\n        <button ndComboboxTrigger><svg ndIcon=\"chevron-down\"></svg></button>\n      </div>\n      <div ndComboboxContent>\n        <div ndComboboxList>\n          <div ndComboboxEmpty>No food found.</div>\n          @for (group of groups; track group.name; let last = $last) {\n            <div ndComboboxGroup>\n              <div ndComboboxLabel>{{ group.name }}</div>\n              @for (food of group.foods; track food) {\n                <div ndComboboxItem [value]=\"food\">\n                  {{ food }}\n                  <span ndComboboxItemIndicator>\n                    <svg ndIcon=\"check\"></svg>\n                  </span>\n                </div>\n              }\n            </div>\n            @if (!last) {\n              <div ndComboboxSeparator></div>\n            }\n          }\n        </div>\n      </div>\n    </ng-container>\n  `,\n})\nexport class ComboboxGroupsExample {\n  protected readonly groups = [\n    { name: 'Fruits', foods: ['Apple', 'Banana', 'Mango'] },\n    { name: 'Vegetables', foods: ['Carrot', 'Okra', 'Spinach'] },\n    { name: 'Grains', foods: ['Millet', 'Rice', 'Sorghum'] },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ComboboxGroupsExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

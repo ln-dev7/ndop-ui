@@ -1,0 +1,32 @@
+{
+  "name": "combobox-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.0.0",
+  "title": "Combobox demo",
+  "description": "A framework picker that filters as you type.",
+  "dependencies": [
+    "@ndop/core"
+  ],
+  "registryDependencies": [
+    "combobox",
+    "icons",
+    "label"
+  ],
+  "files": [
+    {
+      "path": "examples/combobox-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/combobox-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Combobox,\n  ComboboxContent,\n  ComboboxControl,\n  ComboboxEmpty,\n  ComboboxInput,\n  ComboboxItem,\n  ComboboxItemIndicator,\n  ComboboxList,\n  ComboboxTrigger,\n} from '@/ui/combobox/combobox';\nimport { Label } from '@/ui/label/label';\n\n/**\n * A framework picker that filters as you type. Focus stays in the field;\n * the arrow keys move through the options and Enter picks one.\n */\n@Component({\n  selector: 'example-combobox-demo',\n  imports: [\n    Combobox,\n    ComboboxContent,\n    ComboboxControl,\n    ComboboxEmpty,\n    ComboboxInput,\n    ComboboxItem,\n    ComboboxItemIndicator,\n    ComboboxList,\n    ComboboxTrigger,\n    Label,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"grid w-[240px] gap-3\">\n      <label ndLabel for=\"combobox-demo-framework\">Framework</label>\n      <ng-container ndCombobox [(value)]=\"framework\">\n        <div ndComboboxControl>\n          <input\n            ndComboboxInput\n            id=\"combobox-demo-framework\"\n            placeholder=\"Select a framework\"\n          />\n          <button ndComboboxTrigger><svg ndIcon=\"chevron-down\"></svg></button>\n        </div>\n        <div ndComboboxContent>\n          <div ndComboboxList>\n            <div ndComboboxEmpty>No framework found.</div>\n            @for (option of frameworks; track option.value) {\n              <div ndComboboxItem [value]=\"option.value\">\n                {{ option.label }}\n                <span ndComboboxItemIndicator><svg ndIcon=\"check\"></svg></span>\n              </div>\n            }\n          </div>\n        </div>\n      </ng-container>\n    </div>\n  `,\n})\nexport class ComboboxDemoExample {\n  protected readonly framework = signal<string | null>(null);\n  protected readonly frameworks = [\n    { value: 'angular', label: 'Angular' },\n    { value: 'analog', label: 'Analog' },\n    { value: 'astro', label: 'Astro' },\n    { value: 'nuxt', label: 'Nuxt' },\n    { value: 'remix', label: 'Remix' },\n    { value: 'sveltekit', label: 'SvelteKit' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ComboboxDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}
