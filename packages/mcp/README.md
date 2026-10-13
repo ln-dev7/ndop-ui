@@ -4,11 +4,7 @@ The Ndop UI MCP server: it gives coding agents the registry's components,
 examples, blocks and theme tokens, so they use Ndop's real APIs instead of
 guessing. It runs on your machine, started by your agent, and reads the same
 registry `ndop add` does. See
-[ADR-0009](../../docs/adr/0009-mcp-server.md).
-
-> Not released yet. The project tools (`get_project_context`, `add_items`,
-> `validate_usage` and `verify`) come later in Phase 4 of
-> [RFC-0001](../../rfcs/0001-ndop-ui.md).
+[ADR-0009](https://github.com/ndop-ui/ui/blob/master/docs/adr/0009-mcp-server.md).
 
 ## Use it
 

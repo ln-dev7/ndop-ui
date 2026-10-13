@@ -1,7 +1,18 @@
 {
   "name": "ndop",
   "version": "0.0.1",
-  "description": "Runs the Ndop UI CLI, so `npx ndop init` works. The CLI itself is @ndop/cli.",
+  "private": true,
+  "description": "The unscoped ndop alias of @ndop/cli, kept unpublished until npm releases the name (ADR-0031).",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/ndop"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
   "type": "module",
   "bin": {
     "ndop": "./bin.js"
@@ -14,6 +25,6 @@
     "node": ">=22.12.0"
   },
   "dependencies": {
-    "@ndop/cli": "workspace:*"
+    "@ndop/cli": "workspace:^"
   }
 }

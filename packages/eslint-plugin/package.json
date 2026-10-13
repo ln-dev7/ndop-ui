@@ -2,6 +2,21 @@
   "name": "@ndop/eslint-plugin",
   "version": "0.0.1",
   "description": "ESLint rules for apps that use Ndop UI: accessible names, labels, dialog titles, tokens and logical utilities.",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/eslint-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/eslint-plugin",
+    "linkDirectory": false
+  },
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",

@@ -4,8 +4,10 @@ An agent-native, signals-first component ecosystem for Angular: owned code, a
 registry, a CLI that can safely update code you've edited, and docs and
 tooling built for both humans and coding agents.
 
-> Pre-release. The design is [RFC-0001](rfcs/0001-ndop-ui.md); decisions
-> that refine it are in [docs/adr](docs/adr).
+Version 1.0.0. Start in an Angular 21 or 22 app with `npx @ndop/cli init`; the
+docs are at [ndop.dev](https://ndop.dev). The design is
+[RFC-0001](rfcs/0001-ndop-ui.md); decisions that refine it are in
+[docs/adr](docs/adr).
 
 | Path                     | What                                             |
 | ------------------------ | ------------------------------------------------ |

@@ -2,6 +2,21 @@
   "name": "@ndop/mcp",
   "version": "0.0.1",
   "description": "MCP server exposing the Ndop registry and component metadata to coding agents.",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/mcp",
+    "linkDirectory": false
+  },
   "type": "module",
   "exports": {
     ".": "./index.js"
@@ -22,10 +37,10 @@
   "dependencies": {
     "@modelcontextprotocol/node": "2.1.1",
     "@modelcontextprotocol/server": "2.3.0",
-    "@ndop/cli": "workspace:*",
-    "@ndop/metadata": "workspace:*",
-    "@ndop/schema": "workspace:*",
-    "@ndop/verify": "workspace:*",
+    "@ndop/cli": "workspace:^",
+    "@ndop/metadata": "workspace:^",
+    "@ndop/schema": "workspace:^",
+    "@ndop/verify": "workspace:^",
     "zod": "4.6.5"
   },
   "devDependencies": {

@@ -1,6 +1,22 @@
 {
   "name": "@ndop/schema",
   "version": "0.0.1",
+  "description": "JSON schemas and types for Ndop UI registries, registry items, ndop.json, ndop.lock.json and component metadata.",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/schema"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/schema",
+    "linkDirectory": false
+  },
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",

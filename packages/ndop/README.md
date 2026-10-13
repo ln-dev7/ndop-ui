@@ -1,11 +1,15 @@
 # ndop
 
-Runs the [Ndop UI](https://ndop.dev) CLI under its short name:
+The unscoped `ndop` alias of the [Ndop UI](https://ndop.dev) CLI. It isn't
+published: npm refused the name as too similar to existing packages
+(ADR-0031). If npm releases it, this package can come back as a short alias.
+
+Run the CLI from its own package instead:
 
 ```bash
-npx ndop init
-npx ndop add dialog
+npx @ndop/cli init
+npx @ndop/cli add dialog
 ```
 
-The CLI itself is published as [`@ndop/cli`](../cli); this package only
-depends on it and exposes the `ndop` command.
+Installed as a dev dependency (`npm install -D @ndop/cli`), the command is
+`ndop`.

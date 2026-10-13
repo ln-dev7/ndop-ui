@@ -3,18 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/ndop/src",
   "projectType": "library",
-  "release": {
-    "version": {
-      "manifestRootsToUpdate": [
-        {
-          "path": "dist/{projectRoot}",
-          "preserveLocalDependencyProtocols": false
-        }
-      ],
-      "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
-    }
-  },
   "tags": ["type:tooling"],
   "targets": {
     "build": {
@@ -47,11 +35,6 @@
       "configurations": {
         "development": {},
         "production": {}
-      }
-    },
-    "nx-release-publish": {
-      "options": {
-        "packageRoot": "dist/{projectRoot}"
       }
     }
   }

@@ -3,8 +3,6 @@
 Utilities shared by Ndop styled items, app configuration, and the token
 mechanics CSS.
 
-> Not released yet. See [RFC-0001](../../rfcs/0001-ndop-ui.md).
-
 ## Install
 
 ```bash

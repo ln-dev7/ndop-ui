@@ -2,12 +2,11 @@
 
 The three-way merge behind `ndop update` and the update preview on the docs'
 changelog pages
-([ADR-0003](../../docs/adr/0003-three-way-merge-strategy.md),
-[ADR-0020](../../docs/adr/0020-diff-and-update.md)). It uses no Node APIs,
+([ADR-0003](https://github.com/ndop-ui/ui/blob/master/docs/adr/0003-three-way-merge-strategy.md),
+[ADR-0020](https://github.com/ndop-ui/ui/blob/master/docs/adr/0020-diff-and-update.md)). It uses no Node APIs,
 so the CLI and the browser merge a file the same way.
 
-> Not released yet. You don't need it to use Ndop: the `ndop` CLI depends on
-> it.
+You don't need it to use Ndop: the `ndop` CLI depends on it.
 
 ## Install
 

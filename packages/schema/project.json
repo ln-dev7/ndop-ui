@@ -22,11 +22,6 @@
         "assets": ["packages/schema/*.md"]
       }
     },
-    "nx-release-publish": {
-      "options": {
-        "packageRoot": "dist/{projectRoot}"
-      }
-    },
     "test": {
       "outputs": [
         "{projectRoot}/{options.coverage.reportsDirectory}",

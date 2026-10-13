@@ -466,16 +466,16 @@ importers:
         specifier: 1.8.1
         version: 1.8.1
       '@ndop/merge':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../merge
       '@ndop/metadata':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../metadata
       '@ndop/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@ndop/verify':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../verify
       commander:
         specifier: 15.0.0
@@ -501,6 +501,8 @@ importers:
       ts-morph:
         specifier: 28.0.0
         version: 28.0.0
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/cli
 
   packages/core:
     dependencies:
@@ -516,6 +518,8 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/core
 
   packages/eslint-plugin:
     dependencies:
@@ -541,6 +545,8 @@ importers:
       '@typescript-eslint/parser':
         specifier: 8.71.0
         version: 8.71.0(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/eslint-plugin
 
   packages/mcp:
     dependencies:
@@ -551,16 +557,16 @@ importers:
         specifier: 2.3.0
         version: 2.3.0
       '@ndop/cli':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cli
       '@ndop/metadata':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../metadata
       '@ndop/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       '@ndop/verify':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../verify
       zod:
         specifier: 4.6.5
@@ -569,12 +575,16 @@ importers:
       '@modelcontextprotocol/client':
         specifier: 2.3.0
         version: 2.3.0
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/mcp
 
   packages/merge:
     dependencies:
       node-diff3:
         specifier: 3.2.1
         version: 3.2.1
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/merge
 
   packages/metadata:
     dependencies:
@@ -582,7 +592,7 @@ importers:
         specifier: ^21.0.0 || ^22.0.0
         version: 22.2.1(@angular/compiler@22.2.1)(typescript@6.0.3)
       '@ndop/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       esbuild:
         specifier: '>=0.25.0'
@@ -593,11 +603,13 @@ importers:
       typescript:
         specifier: '>=5.9.0'
         version: 6.0.3
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/metadata
 
   packages/ndop:
     dependencies:
       '@ndop/cli':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cli
 
   packages/primitives:
@@ -611,6 +623,8 @@ importers:
       '@angular/forms':
         specifier: ^21.0.0 || ^22.0.0
         version: 22.2.1(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(@angular/platform-browser@22.2.1(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)))(rxjs@7.8.2)
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/primitives
 
   packages/schema:
     dependencies:
@@ -626,6 +640,8 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/schema
 
   packages/verify:
     dependencies:
@@ -633,10 +649,10 @@ importers:
         specifier: 22.5.0
         version: 22.5.0
       '@ndop/eslint-plugin':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../eslint-plugin
       '@ndop/metadata':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../metadata
       angular-eslint:
         specifier: 22.5.0
@@ -663,6 +679,8 @@ importers:
       '@angular-devkit/core':
         specifier: 22.2.1
         version: 22.2.1(chokidar@5.0.0)
+    linkDirectory: false
+    publishDirectory: ../../dist/packages/verify
 
   tools/workspace-plugin:
     dependencies:

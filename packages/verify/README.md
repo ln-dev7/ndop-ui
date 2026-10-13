@@ -4,9 +4,6 @@ The checks behind `ndop verify` and the MCP server's `verify` and
 `validate_usage` tools (ADR-0018). It's a separate package so other `ndop`
 commands don't install a linter and a browser driver.
 
-> Not released yet. See
-> [ADR-0018](../../docs/adr/0018-verify-and-eslint-plugin.md).
-
 ## Install
 
 ```bash

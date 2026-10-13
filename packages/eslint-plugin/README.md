@@ -5,9 +5,6 @@ dialog titles, theme tokens, logical direction utilities and the public
 `@ndop/primitives` entry points. `ndop verify` runs them (ADR-0018), and the
 Ndop registry lints with them.
 
-> Not released yet. See
-> [ADR-0018](../../docs/adr/0018-verify-and-eslint-plugin.md).
-
 ## Use it
 
 The template rules need angular-eslint's template parser, and its inline

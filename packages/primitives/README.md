@@ -4,8 +4,6 @@ Headless, signal-based Angular directives for state, keyboard, focus, ARIA and
 overlay wiring. No styles. Zoneless, SSR-safe, and tested against each
 primitive's written accessibility contract.
 
-> Not released yet. See [RFC-0001](../../rfcs/0001-ndop-ui.md).
-
 ## Install
 
 ```bash

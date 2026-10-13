@@ -2,6 +2,21 @@
   "name": "@ndop/merge",
   "version": "0.0.1",
   "description": "The three-way merge behind ndop update and the docs' update preview: diff3 line merge, conflict markers and partial upstream changes, with no Node APIs.",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/merge"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/merge",
+    "linkDirectory": false
+  },
   "type": "module",
   "exports": {
     ".": {

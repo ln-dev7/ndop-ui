@@ -1,23 +1,34 @@
 # @ndop/cli
 
 The ndop CLI: `init`, `add`, `diff`, `update`, `doctor`, `verify` and
-`build` today; `list` and `view` come in later phases of
-[RFC-0001](../../rfcs/0001-ndop-ui.md).
-
-> Not released yet.
+`build`.
 
 ## Install
 
+Run it without installing, with your package manager's runner:
+
 ```bash
-pnpm add @ndop/cli
+npx @ndop/cli init
+pnpm dlx @ndop/cli init
+yarn dlx @ndop/cli init
+bunx @ndop/cli init
 ```
+
+Or add it as a dev dependency, which gives you the `ndop` command:
+
+```bash
+pnpm add -D @ndop/cli
+pnpm exec ndop add dialog
+```
+
+The examples below use `npx @ndop/cli`; installed, write `ndop` instead.
 
 ## `ndop init`
 
 Run it in an Angular 21 or 22 app with a standalone `app.config.ts`:
 
 ```bash
-npx ndop init
+npx @ndop/cli init
 ```
 
 It writes `ndop.json`, adds the `@/*` path alias to `tsconfig.json`, sets up
@@ -50,7 +61,7 @@ choice is saved in `ndop.json` as `agents` and `mcp`.
 ## `ndop add <items...>`
 
 ```bash
-npx ndop add dialog
+npx @ndop/cli add dialog
 ```
 
 Installs items and the items they depend on: files go where `ndop.json`'s
@@ -60,13 +71,13 @@ since they were installed are kept unless you pass `--overwrite`. Running it
 again changes nothing.
 
 Add `@<version>` to install a specific version, such as
-`npx ndop add button@0.1.0`. Registries serve each version at their URL
+`npx @ndop/cli add button@0.1.0`. Registries serve each version at their URL
 template with `<name>@<version>` in place of `{name}`.
 
 ## `ndop diff [items...]`
 
 ```bash
-npx ndop diff button
+npx @ndop/cli diff button
 ```
 
 For each installed item (all of them by default), shows two diffs per
@@ -79,7 +90,7 @@ takes `--cwd`, `--registry` and `--json`.
 ## `ndop update [items...]`
 
 ```bash
-npx ndop update
+npx @ndop/cli update
 ```
 
 Brings installed items (all of them by default) to their latest version,
@@ -97,7 +108,7 @@ upstream's lines
 ```
 
 It then exits with code 2. Resolve the markers and run
-`npx ndop update --continue` to record them. New upstream files are
+`npx @ndop/cli update --continue` to record them. New upstream files are
 created, theme variables you changed keep your values, and new
 dependencies are installed.
 
@@ -114,7 +125,7 @@ as `add`, and `--json` reports what happened to every file.
 ## `ndop doctor`
 
 ```bash
-npx ndop doctor
+npx @ndop/cli doctor
 ```
 
 Checks the setup (ADR-0024): the Node and Angular versions, the packages
@@ -174,7 +185,7 @@ https://ndop.dev
 ## `ndop verify [paths...]`
 
 ```bash
-npx ndop verify src/app/settings --json
+npx @ndop/cli verify src/app/settings --json
 ```
 
 Checks components and pages that use Ndop UI, for people and for agents

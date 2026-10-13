@@ -1,6 +1,22 @@
 {
   "name": "@ndop/core",
   "version": "0.0.1",
+  "description": "Utilities shared by Ndop UI styled items: class merging, app configuration and the token mechanics CSS.",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/core",
+    "linkDirectory": false
+  },
   "peerDependencies": {
     "@angular/core": "^21.0.0 || ^22.0.0"
   },

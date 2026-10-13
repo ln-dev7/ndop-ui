@@ -1,6 +1,22 @@
 {
   "name": "@ndop/primitives",
   "version": "0.0.1",
+  "description": "Headless, signal-based Angular directives for Ndop UI: state, keyboard, focus, ARIA and overlay wiring, with no styles.",
+  "license": "MIT",
+  "homepage": "https://ndop.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ndop-ui/ui.git",
+    "directory": "packages/primitives"
+  },
+  "bugs": {
+    "url": "https://github.com/ndop-ui/ui/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "../../dist/packages/primitives",
+    "linkDirectory": false
+  },
   "peerDependencies": {
     "@angular/core": "^21.0.0 || ^22.0.0",
     "@angular/forms": "^21.0.0 || ^22.0.0",
