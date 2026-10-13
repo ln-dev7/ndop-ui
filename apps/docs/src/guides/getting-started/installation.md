@@ -37,6 +37,11 @@ npx @ndop/cli add dialog
 `ndop init` asks before it changes anything. Pass `--yes` to skip the
 question, or `--dry-run` to see every change as a diff first.
 
+`ndop init` also adds `@ndop/cli` to your dev dependencies, so later
+commands can run your project's own copy, at the version your lockfile
+pins: `npx ndop add dialog`, or `pnpm exec ndop add dialog`. Pass
+`--no-cli` to leave it out; see [CLI](/docs/getting-started/cli).
+
 ## Nx and Analog
 
 `ndop init` reads `angular.json`, so it sets up Angular CLI workspaces only
@@ -109,7 +114,8 @@ each component's `@/` imports to relative paths.
   global stylesheet;
 - adds `src/app/lib/utils.ts` and `src/app/lib/icons.ts`;
 - registers `provideNdop()` and `provideIcons()` in `app.config.ts`;
-- installs `@ndop/core` and the theme's fonts with your package manager.
+- installs `@ndop/core` and the theme's fonts with your package manager,
+  and `@ndop/cli` as a dev dependency unless you pass `--no-cli`.
 
 ## Your first component
 

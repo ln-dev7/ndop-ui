@@ -9,9 +9,14 @@ plans its changes first, then applies them: `--dry-run` shows the plan as
 diffs, and running a command twice changes nothing the second time.
 
 Run it with your package manager's runner, as in `npx @ndop/cli init`; the
-tabs on each command show the pnpm, Yarn and Bun forms. Added as a dev
-dependency, `@ndop/cli` gives your project the `ndop` command, which the
-tables below use.
+tabs on each command show the pnpm, Yarn and Bun forms. `ndop init` adds
+`@ndop/cli` to your dev dependencies, as `ng new` adds `@angular/cli`, so
+your project gets its own `ndop` command at the version your lockfile
+pins. From then on, run it as `npx ndop add dialog`, which finds the
+installed command with npm, pnpm and Bun alike, or as
+`pnpm exec ndop add dialog`. The tables below write it as `ndop`. Pass
+`--no-cli` to `init` to keep it out of your dependencies and run every
+command through `npx @ndop/cli`.
 
 ## Commands
 
@@ -39,7 +44,7 @@ tables below use.
 | `-y, --yes`        | Applies without asking.                                   |
 | `--registry <url>` | Uses another registry; the URL contains `{name}`.         |
 
-`init` also takes `--theme <name>` and `--project <name>`; `add` takes
+`init` also takes `--theme <name>`, `--project <name>` and `--no-cli`; `add` takes
 `--overwrite`, and installs a specific version when you write one after
 the name, as in `ndop add button@0.1.0`; `update` takes `--force`,
 `--continue` and `--interactive`. `doctor` takes the same options, with
@@ -205,6 +210,10 @@ the agent files. Add `--dry-run` to see them as diffs first. It never
 changes your components or resolves conflicts for you, and running it
 again changes nothing.
 
+When `@ndop/cli` isn't in your dependencies, because `init` ran with
+`--no-cli` or before it added the package, `doctor` warns, and `--fix`
+adds it. A warning doesn't fail the command, so you can leave it out.
+
 It exits with code 1 while any error remains, so CI can run it. `--json`
 prints the checks, and `--offline` skips the ones that need the registry,
 such as whether your components are behind it.
@@ -262,4 +271,5 @@ npx @ndop/cli add dialog --yes --json
 
 `ndop add` also refreshes the Ndop section of your agents' instructions,
 and installs `@angular/cdk` for your Angular version when a component
-needs it.
+needs it. The instructions tell agents to run `npx ndop`, or
+`npx @ndop/cli` when the project doesn't depend on `@ndop/cli`.
