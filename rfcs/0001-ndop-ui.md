@@ -482,7 +482,7 @@ The docs site is the product's storefront and must be visibly better than shadcn
 
 - Lighthouse ≥ 95 in all four categories on every page; LCP < 1.5 s, CLS < 0.05, INP < 200 ms on a mid-range mobile profile.
 - Zero axe violations site-wide; full keyboard navigation; visible focus everywhere.
-- No example code on the site that isn't compiled and tested in CI.
+- No example code on the site that isn't compiled and tested in CI. Guides' Ndop TypeScript and template blocks are compiled and their `ndop.json` and `registry.json` blocks validated; only other libraries' code and deliberate fragments opt out, with a reason (ADR-0030).
 - Every page works without JavaScript for reading (prerendered); interactivity hydrates progressively.
 
 ## Quality engineering and CI

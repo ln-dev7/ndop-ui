@@ -36,3 +36,4 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0027](0027-installable-docs.md)                         | Installable docs (favicons and PWA)                       | Accepted                       |
 | [0028](0028-release-and-deploy.md)                       | The 1.0.0 release and the docs deployment                 | Accepted                       |
 | [0029](0029-launch.md)                                   | Launch checklist and success metrics                      | Accepted                       |
+| [0030](0030-compiled-guide-code.md)                      | Compiled guide code                                       | Accepted                       |
