@@ -63,7 +63,8 @@ const TYPES: Record<string, string> = {
 
 /**
  * Serves a built static site on a free loopback port, answering a route
- * with its `index.html` as the host does, for photographing its pages.
+ * with its `<route>.html` or `index.html` as the host does, for
+ * photographing its pages.
  *
  * @param dir - The site's files.
  * @returns The server and its origin.
@@ -75,7 +76,11 @@ export async function serveSite(
     const path = normalize(
       decodeURIComponent(new URL(request.url ?? '/', 'http://x').pathname),
     );
-    const candidates = [join(dir, path), join(dir, path, 'index.html')];
+    const candidates = [
+      join(dir, path),
+      join(dir, `${path}.html`),
+      join(dir, path, 'index.html'),
+    ];
     const file = candidates.find(
       (candidate) =>
         candidate.startsWith(dir) &&

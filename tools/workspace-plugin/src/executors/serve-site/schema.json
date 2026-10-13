@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/schema",
   "version": 2,
   "title": "Serve a static site",
-  "description": "Serves a built static site the way Cloudflare Pages does: routes from their index.html, content types by extension, the site's _headers rules, and 404 for anything else. Runs until stopped.",
+  "description": "Serves a built static site the way Cloudflare Pages does: routes from their <route>.html or index.html, content types by extension, the site's _headers rules, and 404, with the site's 404.html, for anything else. Runs until stopped.",
   "type": "object",
   "properties": {
     "dir": {

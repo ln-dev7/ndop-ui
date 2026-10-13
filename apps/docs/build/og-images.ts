@@ -187,9 +187,10 @@ export interface OgImageOptions {
 }
 
 /**
- * Lists the prerendered pages that get an OG image: every `index.html`
- * under the site with an `og:title`, except pages marked `noindex`, such
- * as block previews and the offline page.
+ * Lists the prerendered pages that get an OG image: every HTML file under
+ * the site with an `og:title`, except pages marked `noindex`, such as
+ * block previews, the offline page and the not-found page. Pages are
+ * prerendered as `<route>.html`, the home page as `index.html`.
  *
  * @param site - The built site's static files.
  * @returns Each page's path and title.
@@ -201,14 +202,15 @@ export function ogPages(site: string): { path: string; title: string }[] {
       const full = join(dir, entry.name);
       if (entry.isDirectory()) {
         if (entry.name !== 'assets' && entry.name !== 'r') walk(full);
-      } else if (entry.name === 'index.html') {
+      } else if (entry.name.endsWith('.html')) {
         const html = readFileSync(full, 'utf-8');
         if (/<meta name="robots" content="noindex"/.test(html)) continue;
         const title = html.match(
           /<meta property="og:title" content="([^"]*)"/,
         )?.[1];
         if (!title) continue;
-        const path = `/${relative(site, dirname(full)).split(sep).join('/')}`;
+        const file = relative(site, full).split(sep).join('/');
+        const path = `/${file.replace(/(?:^|\/)index\.html$|\.html$/, '')}`;
         pages.push({ path: path === '/' ? '/' : path, title: unescape(title) });
       }
     }

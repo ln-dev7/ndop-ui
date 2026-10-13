@@ -16,16 +16,23 @@ import {
 } from './routes';
 
 describe('prerenderedRoutes', () => {
-  it('lists every folder with an index.html', async () => {
+  it('lists every prerendered page, from its HTML file', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'lighthouse-routes-'));
-    await mkdir(join(dir, 'docs/components/dialog'), { recursive: true });
+    await mkdir(join(dir, 'docs/components'), { recursive: true });
     await mkdir(join(dir, 'assets'));
+    await mkdir(join(dir, 'r'));
     await writeFile(join(dir, 'index.html'), '');
-    await writeFile(join(dir, 'docs/components/dialog/index.html'), '');
+    await writeFile(join(dir, '404.html'), '');
+    await writeFile(join(dir, 'docs.html'), '');
+    await writeFile(join(dir, 'docs/components/dialog.html'), '');
     await writeFile(join(dir, 'docs/components/dialog.md'), '');
     await writeFile(join(dir, 'assets/app.js'), '');
+    await writeFile(join(dir, 'assets/frame.html'), '');
+    await writeFile(join(dir, 'r/readme.html'), '');
     expect(await prerenderedRoutes(dir)).toEqual([
       '/',
+      '/404',
+      '/docs',
       '/docs/components/dialog',
     ]);
     await rm(dir, { recursive: true, force: true });

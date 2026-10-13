@@ -79,8 +79,11 @@ export default defineConfig(() => {
         // Every page is linked from the navigation, so following links
         // from the home page prerenders the whole site.
         // The offline page is linked from nowhere: the service worker
-        // answers with it (ADR-0027).
-        prerender: { discover: true, routes: ['/', '/offline'] },
+        // answers with it (ADR-0027). Nor is the not-found page, which
+        // Cloudflare Pages serves for unknown paths from the top-level
+        // `404.html` (ADR-0016, "Hosting"); a route ending in `.html` is
+        // written under its own name.
+        prerender: { discover: true, routes: ['/', '/offline', '/404.html'] },
         nitro: {
           hooks: {
             // Block thumbnails for the landing page and OG images
@@ -106,6 +109,10 @@ export default defineConfig(() => {
             },
           },
           prerender: {
+            // `/about` as `about.html`: Cloudflare Pages redirects `/about`
+            // to `/about/` when the page is `about/index.html`, and every
+            // link on the site has no trailing slash (ADR-0016, "Hosting").
+            autoSubfolderIndex: false,
             // Links into the theme studio carry a theme in their query
             // (ADR-0023); the page itself is prerendered from its plain
             // link, and a query has no place in a static file's name.
@@ -115,7 +122,7 @@ export default defineConfig(() => {
             ignore: [
               (route: string) =>
                 route.includes('?') ||
-                !/^\/(?:$|offline$|docs(?:\/|$)|blocks(?:\/|$)|themes(?:\/|$))/.test(
+                !/^\/(?:$|offline$|404\.html$|docs(?:\/|$)|blocks(?:\/|$)|themes(?:\/|$))/.test(
                   route,
                 ),
             ],

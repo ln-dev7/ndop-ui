@@ -1,5 +1,5 @@
 import { readdir } from 'node:fs/promises';
-import { relative, sep } from 'node:path';
+import { join, relative, sep } from 'node:path';
 
 /** One route's category scores, 0 to 100. */
 export interface RouteScores {
@@ -40,8 +40,10 @@ export function categoryScores(
 }
 
 /**
- * Every prerendered route of a built site: each folder holding an
- * `index.html`.
+ * Every prerendered route of a built site: each HTML file outside
+ * `assets/` and `r/`. Pages are prerendered as `<route>.html`, so Cloudflare
+ * Pages serves them without a trailing-slash redirect (ADR-0016,
+ * "Hosting"); the home page is `index.html`.
  *
  * @param dir - The built site.
  * @returns Routes, sorted, such as `/` and `/docs/components/dialog`.
@@ -49,11 +51,12 @@ export function categoryScores(
 export async function prerenderedRoutes(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { recursive: true, withFileTypes: true });
   return entries
-    .filter((entry) => entry.isFile() && entry.name === 'index.html')
-    .map((entry) => {
-      const folder = relative(dir, entry.parentPath).split(sep).join('/');
-      return folder ? `/${folder}` : '/';
-    })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
+    .map((entry) =>
+      relative(dir, join(entry.parentPath, entry.name)).split(sep).join('/'),
+    )
+    .filter((file) => !/^(?:assets|r)\//.test(file))
+    .map((file) => `/${file.replace(/(?:^|\/)index\.html$|\.html$/, '')}`)
     .sort();
 }
 

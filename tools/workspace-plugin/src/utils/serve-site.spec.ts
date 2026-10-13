@@ -109,3 +109,36 @@ describe('serveSite', () => {
     );
   });
 });
+
+describe('serveSite with a 404 page', () => {
+  let folder: string;
+  let site: SiteServer;
+
+  beforeAll(async () => {
+    folder = await mkdtemp(join(tmpdir(), 'serve-site-404-'));
+    await mkdir(join(folder, 'docs'));
+    await writeFile(join(folder, 'docs/intro.html'), '<h1>Intro</h1>');
+    await writeFile(join(folder, '404.html'), '<h1>Page not found</h1>');
+    site = await serveSite(folder);
+  });
+
+  afterAll(async () => {
+    await site.close();
+    await rm(folder, { recursive: true, force: true });
+  });
+
+  it('serves routes from their <route>.html, without a redirect', async () => {
+    const response = await fetch(`${site.url}/docs/intro`, {
+      redirect: 'manual',
+    });
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe('<h1>Intro</h1>');
+  });
+
+  it('answers unknown paths with the 404 page and a 404 status', async () => {
+    const response = await fetch(`${site.url}/nope`);
+    expect(response.status).toBe(404);
+    expect(response.headers.get('content-type')).toContain('text/html');
+    expect(await response.text()).toBe('<h1>Page not found</h1>');
+  });
+});

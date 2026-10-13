@@ -103,9 +103,10 @@ async function resolveFile(
 /**
  * Serves a built static site locally the way Cloudflare Pages, which hosts
  * the docs (ADR-0016), serves it: routes resolve to their prerendered
- * `index.html`, content types follow the file extension, text is
+ * `<route>.html` or `index.html`, content types follow the file extension, text is
  * compressed with Brotli or gzip, the site's `_headers` rules apply, and
- * anything else is a 404. Theme URLs (`/r/themes/custom.json?t=…`) are
+ * anything else is a 404, with the site's top-level `404.html` when it has
+ * one. Theme URLs (`/r/themes/custom.json?t=…`) are
  * answered by the same code as the site's Pages Function (ADR-0023). The registry install test, the docs' end-to-end
  * tests and Lighthouse use it.
  *
@@ -151,9 +152,16 @@ export async function serveSite(folder: string, port = 0): Promise<SiteServer> {
     }
     const file = await resolveFile(root, path);
     if (!file) {
-      response
-        .writeHead(404, { 'content-type': 'text/plain' })
-        .end('Not found');
+      const page = await readFile(join(root, '404.html')).catch(
+        () => undefined,
+      );
+      if (page) {
+        response.writeHead(404, { 'content-type': TYPES['.html'] }).end(page);
+      } else {
+        response
+          .writeHead(404, { 'content-type': 'text/plain' })
+          .end('Not found');
+      }
       return;
     }
     const headers: Record<string, string> = {
