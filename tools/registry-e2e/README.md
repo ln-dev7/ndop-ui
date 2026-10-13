@@ -25,7 +25,9 @@ never from npm. Then, for each case in `project.json`:
    (ADR-0031);
 3. `ndop add dialog --yes --json` again, which must plan nothing and change
    no file;
-4. for the case marked `update`: `ndop add button@0.1.0`, an edit to the
+4. `ndop list --json`, which must list Dialog as installed at its latest
+   version, and `ndop view dialog`, which must succeed;
+5. for the case marked `update`: `ndop add button@0.1.0`, an edit to the
    Button file, `ndop update button`, which must merge the edit with
    upstream's changes, and the build again (ADR-0020).
 

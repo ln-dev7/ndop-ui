@@ -18,6 +18,8 @@ import {
   hashTree,
   TEAM_NOTE,
   lastJsonObject,
+  listProblems,
+  type ListJson,
   run,
   runScriptCommand,
   type InstallCase,
@@ -267,6 +269,15 @@ async function runCase(
         error: `running add again wasn't a no-op: ${JSON.stringify({ plan: again, changed })}`,
       };
     }
+
+    const listed = listProblems(
+      lastJsonObject(await run(ndop(['list', '--json']), options)) as ListJson,
+      settings.item,
+    );
+    if (listed.length) {
+      return { id, seconds, error: listed.join('; ') };
+    }
+    await run(ndop(['view', settings.item]), options);
 
     await run(
       addDevCommand(packageManager, `@ndop/verify@${settings.version}`),

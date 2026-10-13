@@ -120,6 +120,37 @@ export function updateProblems(result: UpdateJson, merged: string): string[] {
   return problems;
 }
 
+/** The parts of `ndop list --json` the install test reads. */
+export interface ListJson {
+  /** Whether it succeeded. */
+  ok?: boolean;
+  /** The items listed. */
+  items?: { name: string; type: string; version: string; installed?: string }[];
+}
+
+/**
+ * What's wrong with `ndop list --json` in an app that just added an item:
+ * it must list the registry's components, and that item as installed at
+ * its latest version.
+ *
+ * @param result - Its `--json` output.
+ * @param item - The item added.
+ * @returns Problems; none when it worked.
+ */
+export function listProblems(result: ListJson, item: string): string[] {
+  const items = result.items ?? [];
+  if (!result.ok || !items.some((entry) => entry.type === 'registry:ui')) {
+    return [`ndop list listed no components: ${JSON.stringify(result)}`];
+  }
+  const found = items.find((entry) => entry.name === item);
+  if (!found) return [`ndop list didn't list ${item}`];
+  return found.installed === found.version
+    ? []
+    : [
+        `ndop list shows ${item} installed at ${found.installed ?? 'no version'}, not ${found.version}`,
+      ];
+}
+
 /**
  * Short, stable name of a case, such as `pnpm-ng21`, or `npm-ng22-shadcn`
  * and `npm-ng22-registries` for the shadcn-compat and registries cases.

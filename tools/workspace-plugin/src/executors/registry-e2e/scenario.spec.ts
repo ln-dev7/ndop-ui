@@ -11,6 +11,7 @@ import {
   hashTree,
   installableItems,
   lastJsonObject,
+  listProblems,
   run,
   runScriptCommand,
   TEAM_NOTE,
@@ -182,5 +183,30 @@ describe('installableItems', () => {
         ],
       }),
     ).toEqual(['button', 'button-demo', 'login-01']);
+  });
+});
+
+describe('listProblems', () => {
+  const button = { name: 'button', type: 'registry:ui', version: '1.0.0' };
+
+  it('passes when the item is listed as installed at its latest version', () => {
+    expect(
+      listProblems(
+        { ok: true, items: [{ ...button, installed: '1.0.0' }] },
+        'button',
+      ),
+    ).toEqual([]);
+  });
+
+  it('reports a failed run, a missing item and a wrong version', () => {
+    expect(listProblems({ ok: false }, 'button')).toEqual([
+      'ndop list listed no components: {"ok":false}',
+    ]);
+    expect(listProblems({ ok: true, items: [button] }, 'dialog')).toEqual([
+      "ndop list didn't list dialog",
+    ]);
+    expect(listProblems({ ok: true, items: [button] }, 'button')).toEqual([
+      'ndop list shows button installed at no version, not 1.0.0',
+    ]);
   });
 });
