@@ -35,6 +35,16 @@ All tasks run through Nx.
 - Deviating from the RFC needs an ADR first.
 - Changes to published packages need a changeset: `pnpm changeset`.
 
+## Code in guides
+
+`pnpm nx guides docs`, part of `typecheck`, compiles every `ts` and
+`angular-html` block of the guides in `apps/docs/src/guides` against the
+registry, and validates `ndop.json` and `registry.json` blocks
+([ADR-0030](docs/adr/0030-compiled-guide-code.md)). Write whole files that
+import what they use, through packages or `@/`. A block that is another
+library's code or a deliberate fragment opts out with a reason in its
+fence: ` ```angular-html nocheck="Angular Material's markup" `.
+
 ## Definition of done for a component
 
 From [RFC-0001](rfcs/0001-ndop-ui.md), "Component catalog and definition of
@@ -109,3 +119,37 @@ pnpm nx g @ndop/workspace-plugin:block login-03 --category=auth --description="A
    e2e also checks it with axe and renders it on the server.
 4. The registry install test, `pnpm nx e2e registry-e2e`, installs and
    builds every block.
+
+## Deploying the docs
+
+The Deploy workflow (`.github/workflows/deploy.yml`,
+[ADR-0028](docs/adr/0028-release-and-deploy.md)) builds the docs and uploads
+them, with the theme URL Function in `apps/docs/functions`, to Cloudflare
+Pages with `pnpm nx deploy docs`, then checks the deployment with
+`pnpm nx smoke docs --url=<url>`: pages without a trailing-slash redirect,
+the 404 page, `/r/index.json`, a theme URL and the service worker.
+
+- **Pull requests** get a preview of their branch, linked from a comment on
+  the pull request that each push updates. Pull requests from forks and
+  from Dependabot get none: GitHub gives them no secrets.
+- **master** deploys to production once CI has passed on the commit.
+
+It needs, under the repository's Settings, Secrets and variables, Actions:
+
+| Name                       | Kind     | Value                                                                     |
+| -------------------------- | -------- | ------------------------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`     | Secret   | An account API token with one permission: Account, Cloudflare Pages, Edit |
+| `CLOUDFLARE_ACCOUNT_ID`    | Secret   | The Cloudflare account's ID                                               |
+| `CLOUDFLARE_PAGES_PROJECT` | Variable | The Pages project's name, `ndop`                                          |
+
+The project is `ndop`, a Direct Upload project with `master` as its
+production branch and `ndop.dev` as its custom domain, so previews are at
+`https://<branch>.ndop.pages.dev`. It was created once with:
+
+```bash
+pnpm exec wrangler pages project create ndop --production-branch=master
+```
+
+To try a build locally with the Function as Pages runs it, run
+`pnpm nx serve-pages docs` (http://localhost:8788), then
+`pnpm nx smoke docs --url=http://localhost:8788`.
