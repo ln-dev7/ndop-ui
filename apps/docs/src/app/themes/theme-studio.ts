@@ -392,9 +392,7 @@ const CHANNELS: readonly Channel[] = [
             <h2 id="studio-preview" class="text-lg font-semibold">
               Sample dashboard
             </h2>
-            <div
-              class="preview-backdrop overflow-hidden rounded-xl border bg-muted/40"
-            >
+            <div class="overflow-hidden rounded-xl border bg-muted/40">
               <!-- Made in the browser only: hydration sets an iframe's src
                    again, which Firefox and Safari take as a new
                    navigation, cancelling the dashboard's scripts. -->

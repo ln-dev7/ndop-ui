@@ -18,7 +18,7 @@ import { StaticHtml } from '../site/static-html';
       [attr.aria-label]="title()"
     >
       <div
-        class="preview-backdrop flex min-h-[350px] items-center justify-center bg-background p-10 text-foreground"
+        class="flex min-h-[350px] items-center justify-center bg-background p-10 text-foreground"
       >
         @if (component(); as type) {
           @defer (on immediate; hydrate on viewport) {

@@ -9,6 +9,12 @@
 @source '../../../registry/examples';
 @source '../../../registry/blocks';
 
+/* The brand's indigo (ADR-0026), for the logo only: the docs' chrome stays
+   neutral, and components render in the default theme. */
+@theme {
+  --color-brand: #1e3170;
+}
+
 @layer base {
   body {
     -webkit-font-smoothing: antialiased;
@@ -140,15 +146,6 @@
 /* Inline code outside prose, such as in steps. */
 .inline-code {
   @apply rounded-md bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[0.85em] text-foreground;
-}
-
-/* Example previews (components/example-preview.ts): a dotted backdrop. */
-.preview-backdrop {
-  background-image: radial-gradient(
-    color-mix(in oklab, var(--color-border) 90%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 16px 16px;
 }
 
 /* Items of the page menu (site/page-actions.ts), as shadcn's dropdown

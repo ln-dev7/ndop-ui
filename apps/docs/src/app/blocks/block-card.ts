@@ -149,7 +149,7 @@ type Viewport = (typeof VIEWPORTS)[number]['id'];
         role="tabpanel"
         [id]="id('preview')"
         [attr.aria-labelledby]="id('preview') + '-tab'"
-        class="preview-backdrop mt-3 overflow-hidden rounded-xl border bg-muted/40"
+        class="mt-3 overflow-hidden rounded-xl border bg-muted/40"
         [hidden]="current() !== 'preview'"
       >
         <!-- Made in the browser only: hydration would set the server's
