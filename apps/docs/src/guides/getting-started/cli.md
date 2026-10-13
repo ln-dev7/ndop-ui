@@ -19,6 +19,8 @@ tables below use.
 | ------------------------ | -------------------------------------------------------------------------------------- |
 | `ndop init`              | Sets up an Angular app for Ndop.                                                       |
 | `ndop add <items...>`    | Adds components and everything they depend on.                                         |
+| `ndop list [words...]`   | Lists the registry's components, blocks, themes and libraries.                         |
+| `ndop view <items...>`   | Shows an item's API, keyboard map and examples, and how to add it.                     |
 | `ndop diff [items...]`   | Shows your changes to installed components, and what changed upstream since.           |
 | `ndop update [items...]` | Updates installed components, merging upstream's changes into your edits.              |
 | `ndop doctor`            | Checks your setup, and fixes what is safe to fix.                                      |
@@ -44,6 +46,73 @@ the name, as in `ndop add button@0.1.0`; `update` takes `--force`,
 `--dry-run` and `--yes` applying to `--fix`, plus `--offline` and
 `--project`. For coding agents, `init` takes `--agent`, `--mcp` and
 `--verify`; see [Agents & MCP](/docs/getting-started/agents-mcp).
+
+`list`, `view` and `diff` write nothing. They take `--cwd`, `--registry`
+and `--json`; `list` also takes `--type`, `view` `--code`, and `diff`
+`--to`.
+
+## Browsing the registry
+
+`ndop list` shows what you can add, grouped by type, with each item's
+latest version and description. Words after it keep the items that
+contain them, and `--type` keeps one type: `ui`, `block`, `theme`, `lib`
+or `example`. Examples are listed only with `--type example`, since every
+component has several:
+
+```bash pm
+npx @ndop/cli list --type block
+```
+
+```text
+Blocks (12)
+  dashboard-01   1.0.0  A dashboard of stat cards, an area char…
+  dashboard-02   1.0.0  An analytics dashboard with tabs for ov…
+  data-table-01  1.0.0  A table of tasks to search, filter, sor…
+  hero-01        1.0.0  A hero section with a headline, two act…
+  login-01       1.0.0  A sign-in form in a card, with email an…
+…
+```
+
+It works outside an app, on Ndop's registry. In an app, it also lists the
+items of the registries in your `ndop.json`, as `@acme/table`, and shows
+which items you installed and at which version. Descriptions are cut to
+fit the terminal, 64 columns wide above, and printed in full when the
+output goes to a file or another program.
+
+`ndop view` prints what you need to use an item without leaving the
+terminal: the command that adds it, its docs page, its dependencies and
+files, and for a component its usage, every part's selector and inputs,
+its keyboard map, focus rules and examples. The start of its output, with
+`…` where lines were left out:
+
+```bash pm
+npx @ndop/cli view button
+```
+
+```text
+Button  button 1.0.0, component
+Displays a button or a component that looks like a button.
+…
+  Install  npx @ndop/cli add button
+  Docs     https://ndop.dev/docs/components/button
+…
+API
+  Button  button[ndButton], a[ndButton]
+…
+    Role        native (button / link)
+    [variant]   'default' | 'destructive' | 'outline' |
+                'secondary' | 'ghost' | 'link' = 'default'
+                Visual style.
+…
+Keyboard
+  Enter  Activates the button, or follows the link; does nothing
+         while disabled.
+  Space  Activates a `button`; does nothing while disabled.
+         Links don't react to Space.
+```
+
+`--code` adds the examples' source. An unknown name fails with the
+closest ones, and `--json` prints the item with its files and metadata.
 
 ## Themes and URLs
 
