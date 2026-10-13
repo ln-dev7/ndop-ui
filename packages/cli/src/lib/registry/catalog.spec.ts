@@ -1,5 +1,5 @@
-import { REGISTRY_URL, registryFetcher } from '../testing/registry';
-import { Catalog, distance } from './catalog';
+import { REGISTRY_URL, registryFetcher } from '../../testing/registry';
+import { Catalog, CatalogError, distance } from './catalog';
 
 const catalog = (files?: Record<string, unknown>) => {
   const { fetcher, requests } = registryFetcher(files);
@@ -11,25 +11,25 @@ describe('Catalog', () => {
     const { catalog: registry } = catalog();
     expect(
       (await registry.ofType('registry:ui')).map((entry) => entry.name),
-    ).toEqual(['dialog', 'separator']);
+    ).toEqual(['button', 'dialog']);
   });
 
   it('fetches each file once', async () => {
     const { catalog: registry, requests } = catalog();
-    await registry.item('dialog');
-    await registry.item('dialog');
-    await registry.metadata('dialog');
+    await registry.item('button');
+    await registry.item('button');
+    await registry.metadata('button');
     expect(requests.sort()).toEqual([
-      'https://registry.test/r/dialog.json',
-      'https://registry.test/r/index.json',
-      'https://registry.test/r/metadata/dialog.json',
+      'mem://button',
+      'mem://index',
+      'mem://metadata/button',
     ]);
   });
 
   it('suggests the closest names for an unknown item', async () => {
     const { catalog: registry } = catalog();
-    await expect(registry.item('dialgo', 'registry:ui')).rejects.toThrow(
-      'The registry has no component named "dialgo". Closest: dialog, separator.',
+    await expect(registry.item('buton', 'registry:ui')).rejects.toThrow(
+      'The registry has no component named "buton". Closest: button, dialog.',
     );
   });
 
@@ -37,6 +37,15 @@ describe('Catalog', () => {
     const { catalog: registry } = catalog();
     await expect(registry.metadata('utils')).rejects.toThrow(
       '"utils" is a registry:lib item, not a component.',
+    );
+  });
+
+  it('wraps a failed request in a catalog error', async () => {
+    const registry = new Catalog({ url: 'mem://missing/{name}' }, async () => {
+      throw new TypeError('fetch failed');
+    });
+    await expect(registry.index()).rejects.toThrow(
+      new CatalogError("Can't fetch mem://missing/index: fetch failed"),
     );
   });
 
@@ -49,19 +58,19 @@ describe('Catalog', () => {
 
   it("renders a component's Markdown twin", async () => {
     const { catalog: registry } = catalog();
-    const markdown = await registry.markdown('dialog');
-    expect(markdown).toMatch(/^# Dialog\n/);
+    const markdown = await registry.markdown('button');
+    expect(markdown).toMatch(/^# Button\n/);
     expect(markdown).toContain('### src/app/lib/utils.ts');
-    expect(markdown).toContain('<div ndDialogContent></div>');
-    expect(markdown).toContain('### Edit profile dialog');
+    expect(markdown).toContain('<button ndButton>Save</button>');
+    expect(markdown).toContain('### Button demo');
   });
 
   it('resolves dependencies transitively, each once', async () => {
     const { catalog: registry } = catalog();
-    const block = await registry.item('settings-form');
+    const block = await registry.item('login-01');
     expect(
       (await registry.withDependencies(block)).map((item) => item.name),
-    ).toEqual(['settings-form', 'dialog', 'separator', 'utils']);
+    ).toEqual(['login-01', 'button', 'utils']);
   });
 });
 

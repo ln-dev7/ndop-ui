@@ -2,8 +2,8 @@ import {
   Client,
   StreamableHTTPClientTransport,
 } from '@modelcontextprotocol/client';
+import { Catalog } from '@ndop/cli/api';
 import { REGISTRY_URL, registryFetcher } from '../testing/registry';
-import { Catalog } from './catalog';
 import { serveHttp, type HttpEndpoint } from './http';
 import { createNdopServer } from './server';
 

@@ -1,13 +1,13 @@
 import { readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import {
+  Catalog,
   DEFAULT_NAMESPACE,
   defaultFetcher,
   registrySources,
   type Fetcher,
 } from '@ndop/cli/api';
 import type { NdopConfig } from '@ndop/schema';
-import { Catalog } from './catalog';
 
 /** Options of {@link catalogFor}. */
 export interface CatalogOptions {

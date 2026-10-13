@@ -9,14 +9,15 @@ import {
   projectRoot,
   registryMetadata,
   RUN_CLI,
+  type Catalog,
   type DoctorResult,
+  type IndexEntry,
 } from '@ndop/cli/api';
 import type { Metadata } from '@ndop/metadata';
 import { verify, type StepName, type VerifyResult } from '@ndop/verify';
 import { isAbsolute, relative, resolve } from 'node:path';
 import type { RegistryItem } from '@ndop/schema';
 import * as z from 'zod';
-import type { Catalog, IndexEntry } from './catalog';
 import { searchComponents, type SearchDocument } from './search';
 import { themeTokens, tokensMarkdown } from './tokens';
 

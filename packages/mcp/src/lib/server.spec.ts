@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Client } from '@modelcontextprotocol/client';
 import { InMemoryTransport } from '@modelcontextprotocol/server';
-import type { DoctorResult } from '@ndop/cli/api';
+import { Catalog, type DoctorResult } from '@ndop/cli/api';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import {
   projectFixture,
@@ -10,7 +10,6 @@ import {
   REGISTRY_URL,
   registryFetcher,
 } from '../testing/registry';
-import { Catalog } from './catalog';
 import { createNdopServer } from './server';
 
 let client: Client;

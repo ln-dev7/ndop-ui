@@ -7,7 +7,7 @@
  *
  * @packageDocumentation
  */
-export { Catalog, CatalogError, type IndexEntry } from './lib/catalog';
+export { Catalog, CatalogError, type IndexEntry } from '@ndop/cli/api';
 export { serveHttp, type HttpEndpoint, type HttpOptions } from './lib/http';
 export { catalogFor, type CatalogOptions } from './lib/project';
 export {

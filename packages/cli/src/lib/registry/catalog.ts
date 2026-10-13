@@ -1,29 +1,31 @@
 import {
-  DEFAULT_NAMESPACE,
-  RegistryClient,
-  type Fetcher,
-  type RegistrySource,
-} from '@ndop/cli/api';
-import {
   componentMarkdown,
   withDependencies,
   type BuiltItem,
   type Metadata,
 } from '@ndop/metadata';
 import { validate, type Registry, type RegistryItem } from '@ndop/schema';
+import { CliError } from '../errors';
+import {
+  DEFAULT_NAMESPACE,
+  RegistryClient,
+  type Fetcher,
+  type RegistrySource,
+} from './client';
 
 /** An entry of a registry's `index.json`. */
 export type IndexEntry = Registry['items'][number];
 
 /**
- * A request the server can't answer, such as an unknown item. Its message
- * says how to fix the call, and becomes the tool error's text.
+ * A request about a registry that can't be answered, such as an unknown
+ * item. Its message says how to fix the request: the MCP server returns it
+ * as the tool error's text, and `ndop list` and `ndop view` print it.
  */
-export class CatalogError extends Error {
+export class CatalogError extends CliError {
   /**
    * Creates the error.
    *
-   * @param message - What went wrong and what to call instead.
+   * @param message - What went wrong and what to ask for instead.
    */
   constructor(message: string) {
     super(message);
@@ -32,14 +34,15 @@ export class CatalogError extends Error {
 }
 
 /**
- * A registry, read the way `ndop add` reads it (ADR-0009): `index.json`,
- * items and `metadata/<name>.json` through the CLI's registry client and
- * fetcher, each fetched once and cached for the life of the server.
+ * A registry, read the way `ndop add` reads it: `index.json`, items and
+ * `metadata/<name>.json` through the registry client and a fetcher, each
+ * fetched once and cached for the catalog's life. The MCP server
+ * (ADR-0009), `ndop list` and `ndop view` browse registries through it.
  */
 export class Catalog {
   private readonly client: RegistryClient;
   private readonly files = new Map<string, Promise<unknown>>();
-  private indexEntries?: Promise<IndexEntry[]>;
+  private checkedIndex?: Promise<Registry>;
 
   /**
    * Creates a catalog.
@@ -55,21 +58,31 @@ export class Catalog {
   }
 
   /**
-   * Every item the registry lists, validated against the registry schema.
+   * The registry's `index.json`, validated against the registry schema:
+   * its name, homepage and items.
    *
-   * @returns The index's items.
+   * @returns The index.
    */
-  index(): Promise<IndexEntry[]> {
-    this.indexEntries ??= this.json('index').then((data) => {
+  registry(): Promise<Registry> {
+    this.checkedIndex ??= this.json('index').then((data) => {
       const checked = validate('registry', data);
       if (!checked.valid) {
         throw new CatalogError(
           `The registry's index.json isn't valid: ${checked.issues[0]?.path || '/'} ${checked.issues[0]?.message}.`,
         );
       }
-      return checked.value.items;
+      return checked.value;
     });
-    return this.indexEntries;
+    return this.checkedIndex;
+  }
+
+  /**
+   * Every item the registry lists, validated against the registry schema.
+   *
+   * @returns The index's items.
+   */
+  async index(): Promise<IndexEntry[]> {
+    return (await this.registry()).items;
   }
 
   /**
@@ -203,13 +216,22 @@ export class Catalog {
     let data = this.files.get(name);
     if (!data) {
       const location = this.source.url.replaceAll('{name}', name);
-      data = this.fetcher(location, this.source.headers ?? {}).then((text) => {
-        try {
-          return JSON.parse(text) as unknown;
-        } catch {
-          throw new CatalogError(`${location} isn't valid JSON.`);
-        }
-      });
+      data = this.fetcher(location, this.source.headers ?? {}).then(
+        (text) => {
+          try {
+            return JSON.parse(text) as unknown;
+          } catch {
+            throw new CatalogError(`${location} isn't valid JSON.`);
+          }
+        },
+        (error: unknown) => {
+          throw error instanceof CliError
+            ? error
+            : new CatalogError(
+                `Can't fetch ${location}: ${(error as Error).message}`,
+              );
+        },
+      );
       this.files.set(name, data);
     }
     return data;

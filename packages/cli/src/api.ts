@@ -1,7 +1,8 @@
 /**
  * `@ndop/cli/api`: the CLI's operations as functions, for the MCP server
  * (ADR-0009). They behave exactly as the commands do, with `--yes` and
- * `--json`, and never prompt.
+ * `--json`, and never prompt. {@link Catalog} reads a registry as
+ * `ndop list` and `ndop view` do.
  *
  * @packageDocumentation
  */
@@ -26,6 +27,12 @@ import {
 } from './lib/registry/client';
 
 export { CliError } from './lib/errors';
+export {
+  Catalog,
+  CatalogError,
+  distance,
+  type IndexEntry,
+} from './lib/registry/catalog';
 export { RUN_CLI } from './lib/run-command';
 export {
   DEFAULT_NAMESPACE,
