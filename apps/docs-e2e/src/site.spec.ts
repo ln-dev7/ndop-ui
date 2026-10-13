@@ -57,8 +57,10 @@ test('the home page introduces Ndop UI and links to the guides', async ({
   page,
 }) => {
   await open(page, '/');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ndop UI');
-  await page.getByRole('link', { name: 'Get started' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Own your components. Update them anyway.',
+  );
+  await page.getByRole('link', { name: 'Get started' }).first().click();
   await expect(page).toHaveURL(/\/docs\/getting-started\/introduction$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Introduction',
@@ -98,16 +100,14 @@ test('the theme and direction are remembered across reloads', async ({
   await open(page, '/docs/getting-started/introduction');
   await page.getByRole('button', { name: /switch theme/ }).click();
   await page.getByRole('button', { name: /switch theme/ }).click();
-  await page.getByRole('button', { name: 'Right-to-left' }).click();
   await expect(page.locator('html')).toHaveClass(/\bdark\b/);
-  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  // The header's direction toggle is hidden for now; the saved preference
+  // still applies before the first paint.
+  await page.evaluate(() => localStorage.setItem('ndop-dir', 'rtl'));
 
   await open(page, '/docs/getting-started/introduction');
   await expect(page.locator('html')).toHaveClass(/\bdark\b/);
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-  await expect(
-    page.getByRole('button', { name: 'Right-to-left' }),
-  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('command blocks follow the chosen package manager everywhere', async ({

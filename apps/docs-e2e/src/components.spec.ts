@@ -92,8 +92,10 @@ test('the header uses the registry badge and button', async ({ page }) => {
 });
 
 test("a preview's overlays follow the site's direction", async ({ page }) => {
+  // The header's direction toggle is hidden for now; the saved preference
+  // still applies.
+  await page.addInitScript(() => localStorage.setItem('ndop-dir', 'rtl'));
   await open(page, '/docs/components/popover');
-  await page.getByRole('button', { name: 'Right-to-left' }).click();
   await page
     .locator('docs-example-preview')
     .first()
