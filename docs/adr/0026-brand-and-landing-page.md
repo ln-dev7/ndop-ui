@@ -1,6 +1,6 @@
 # ADR-0026: Brand, landing page and OG images
 
-- Status: Accepted (approved by Valery on 2026-10-12)
+- Status: Accepted (approved by Valery on 2026-10-12), with amendments 1–2
 - Date: 2026-10-12
 - Phase: 7
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Documentation site" (look
@@ -89,3 +89,46 @@ alone.
 - The landing page is the heaviest page; its Lighthouse budget is held
   by hydrating sections on view.
 - OG generation adds a headless browser step to the docs build.
+
+## Amendment 1 (2026-10-13): a centered hero above a component showcase
+
+Status: Accepted by Valery on 2026-10-13.
+
+Built as specified, the two-column hero set one form card and a chart
+against the copy, and the large cropped leaf, at a tint quiet enough not
+to compete, read as stray diamonds rather than the mark. Valery chose a
+centered hero above a broad showcase instead.
+
+- **Hero:** centered copy: the pill (with the small mark), the headline,
+  the pitch, the calls to action beside `npx ndop init`, and the trust
+  line.
+- **Showcase:** below the hero, a masonry grid of real registry items in
+  small, realistic cards (forms, a calendar, a chart, a data table, a
+  command menu, settings, and more), with the theme picker in a bar above
+  it restyling the whole grid. It opens on the default theme, and its
+  bottom fades into the page. On phones it shows a curated subset in one
+  column. It is prerendered and hydrates as it scrolls into view.
+- **Pattern:** the diamond bands frame the showcase (a full-width strip
+  along its top edge, faint bands in the side gutters) and never sit
+  behind text. The large cropped hero mark is dropped; the mark appears
+  in the header, footer, pill, icons and OG images.
+- This replaces section 1 ("Hero") of the decision's landing page; the
+  other sections follow it unchanged.
+
+## Amendment 2 (2026-10-13): block thumbnails from the built site
+
+Status: Accepted by Valery on 2026-10-13.
+
+The landing page's blocks section shows real thumbnails. The docs build
+takes them itself, after prerendering, by photographing each block's
+preview page in Playwright's Chromium, in light and dark, and writing
+WebP at several widths through Chromium's own canvas. No image library is
+added.
+
+- The step is reusable: OG images (step 5) take their component renders
+  the same way.
+- Shots are cached by a content hash of their inputs, so a build only
+  photographs blocks that changed.
+- CI's build job installs Chromium for it.
+- The dev server, which doesn't prerender, shows a placeholder card in
+  their place.
