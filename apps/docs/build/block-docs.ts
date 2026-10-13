@@ -32,7 +32,7 @@ export function blockSummaries(read: RegistryReader): BlockSummary[] {
         description: item.description,
         category: item.categories?.[0] ?? '',
         version: item.version,
-        command: `npx ndop add ${item.name}`,
+        command: `npx @ndop/cli add ${item.name}`,
         ...(item.docs ? { route: item.docs } : {}),
         components: (item.registryDependencies ?? [])
           .map((name) => read<BuiltItem>(`${name}.json`))

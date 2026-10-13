@@ -60,7 +60,7 @@ function versionId(version: string): string {
               </h1>
               <p class="mt-3 text-muted-foreground">
                 Every version of {{ item.title }}, newest first. Update with
-                <code class="inline-code">npx ndop update {{ item.name }}</code
+                <code class="inline-code">npx @ndop/cli update {{ item.name }}</code
                 >; it keeps your edits.
               </p>
             </header>

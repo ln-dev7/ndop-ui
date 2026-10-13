@@ -423,7 +423,7 @@ export class CommandPalette {
   private async copyInstall(name: string): Promise<void> {
     const command = commandFor(
       (savedPackageManager() ?? 'npm') as PackageManager,
-      `npx ndop add ${name}`,
+      `npx @ndop/cli add ${name}`,
     );
     try {
       await navigator.clipboard.writeText(command);

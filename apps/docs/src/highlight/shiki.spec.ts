@@ -38,7 +38,7 @@ describe('code frame', () => {
   });
 
   it('shows a pm block as one command per package manager, in tabs', async () => {
-    const html = await codeToHtml('npx ndop add dialog', {
+    const html = await codeToHtml('npx @ndop/cli add dialog', {
       lang: 'bash',
       themes: THEMES,
       meta: { __raw: 'pm' },
@@ -46,8 +46,8 @@ describe('code frame', () => {
     });
     expect(html).toContain('role="tablist"');
     expect(html).toMatch(/role="tab"[^>]*aria-selected="true"[^>]*>npm</);
-    expect(html).toContain('<code>pnpm dlx ndop add dialog</code>');
-    expect(html).toContain('<code>bunx ndop add dialog</code>');
+    expect(html).toContain('<code>pnpm dlx @ndop/cli add dialog</code>');
+    expect(html).toContain('<code>bunx @ndop/cli add dialog</code>');
     expect(html.match(/role="tabpanel"/g)).toHaveLength(4);
     expect(html.match(/role="tabpanel"[^>]*hidden/g)).toHaveLength(3);
   });
@@ -85,10 +85,14 @@ describe('code frame', () => {
 
 describe('commandFor', () => {
   it('translates running a package', () => {
-    expect(commandFor('pnpm', 'npx ndop init')).toBe('pnpm dlx ndop init');
-    expect(commandFor('yarn', 'npx ndop init')).toBe('yarn dlx ndop init');
-    expect(commandFor('bun', 'npx ndop init')).toBe('bunx ndop init');
-    expect(commandFor('npm', 'npx ndop init')).toBe('npx ndop init');
+    expect(commandFor('pnpm', 'npx @ndop/cli init')).toBe(
+      'pnpm dlx @ndop/cli init',
+    );
+    expect(commandFor('yarn', 'npx @ndop/cli init')).toBe(
+      'yarn dlx @ndop/cli init',
+    );
+    expect(commandFor('bun', 'npx @ndop/cli init')).toBe('bunx @ndop/cli init');
+    expect(commandFor('npm', 'npx @ndop/cli init')).toBe('npx @ndop/cli init');
   });
 
   it('translates installing packages and running scripts', () => {

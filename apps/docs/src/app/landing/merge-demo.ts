@@ -77,7 +77,7 @@ const STEP = 1800;
           }
         </div>
         <div class="grid gap-3 px-4">
-          <docs-install-command command="npx ndop update button" />
+          <docs-install-command command="npx @ndop/cli update button" />
           <p class="text-sm text-muted-foreground">
             Conflicts get markers and a non-zero exit, never a silent overwrite.
           </p>

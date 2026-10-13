@@ -12,7 +12,7 @@ const FACTS = ['WAI-ARIA', 'SSR', 'Zoneless', 'Signals'];
 /**
  * The landing page's hero (ADR-0026, amendment 1): centered copy with
  * the pill and its mark, the headline, the pitch, the calls to action
- * beside `npx ndop init`, and the trust line. It is static, so the
+ * beside `npx @ndop/cli init`, and the trust line. It is static, so the
  * headline paints from the prerendered HTML; only the copy button
  * hydrates, when the page is idle.
  */
@@ -69,7 +69,7 @@ const FACTS = ['WAI-ARIA', 'SSR', 'Zoneless', 'Signals'];
           >Browse components</a
         >
         @defer (on immediate; hydrate on idle) {
-          <docs-install-command command="npx ndop init" />
+          <docs-install-command command="npx @ndop/cli init" />
         }
       </div>
       <ul

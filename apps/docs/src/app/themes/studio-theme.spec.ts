@@ -42,7 +42,7 @@ const theme = (name: string, vars: ThemeVars): ThemeSummary => ({
   title: name,
   description: '',
   version: '0.1.0',
-  command: `npx ndop add ${name}`,
+  command: `npx @ndop/cli add ${name}`,
   vars,
 });
 

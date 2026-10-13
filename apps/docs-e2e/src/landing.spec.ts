@@ -30,7 +30,7 @@ test('the hero links to the guides and the components', async ({ page }) => {
     main.getByRole('link', { name: 'Browse components' }),
   ).toHaveAttribute('href', /^\/docs\/components\/[a-z-]+$/);
   await expect(
-    main.getByRole('button', { name: 'Copy npx ndop init' }).first(),
+    main.getByRole('button', { name: 'Copy npx @ndop/cli init' }).first(),
   ).toBeVisible();
 });
 

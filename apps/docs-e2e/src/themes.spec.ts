@@ -61,7 +61,7 @@ test('the gallery shows every theme in light and dark', async ({ page }) => {
     await expect(
       card.locator('docs-theme-sample[data-mode="dark"]'),
     ).toHaveClass(/\bdark\b/);
-    await expect(card).toContainText(`npx ndop add ${theme.name}`);
+    await expect(card).toContainText(`npx @ndop/cli add ${theme.name}`);
     await expect(
       card.getByRole('link', { name: /in the studio/ }),
     ).toHaveAttribute('href', `/themes/studio?from=${theme.name}`);
@@ -220,7 +220,7 @@ test('the exports hold the theme, and its URL installs it', async ({
     .inputValue();
   expect(url).toMatch(/\/r\/themes\/custom\.json\?t=[\w-]+$/);
   await expect(page.getByRole('textbox', { name: 'CLI command' })).toHaveValue(
-    `npx ndop add "${url}"`,
+    `npx @ndop/cli add "${url}"`,
   );
 
   const response = await request.get(url);

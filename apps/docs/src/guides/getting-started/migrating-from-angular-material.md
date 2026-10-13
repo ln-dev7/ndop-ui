@@ -201,11 +201,11 @@ Material's Sass where it is. `init` creates the file:
 Commit your work, then preview the changes and apply them:
 
 ```bash pm
-npx ndop init --dry-run
+npx @ndop/cli init --dry-run
 ```
 
 ```bash pm
-npx ndop init
+npx @ndop/cli init
 ```
 
 ### Follow one color scheme
@@ -233,7 +233,7 @@ Add the components a screen needs, and replace its Material components
 with the map above:
 
 ```bash pm
-npx ndop add button dialog form-field input
+npx @ndop/cli add button dialog form-field input
 ```
 
 Material's global styles aren't in a CSS layer, so they win over

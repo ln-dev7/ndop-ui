@@ -15,7 +15,7 @@ describe('stepsExtension', () => {
         'Run it.',
         '',
         '```bash',
-        'npx ndop init',
+        'npx @ndop/cli init',
         '```',
         '',
         '### Done',
@@ -28,7 +28,7 @@ describe('stepsExtension', () => {
       '<p>Before.</p>\n' +
         '<ol class="steps">' +
         '<li><h3 class="step-title">Install <code>ndop</code></h3><p>Run it.</p>\n' +
-        '<pre><code class="language-bash">npx ndop init\n</code></pre>\n</li>' +
+        '<pre><code class="language-bash">npx @ndop/cli init\n</code></pre>\n</li>' +
         '<li><h3 class="step-title">Done</h3></li>' +
         '</ol>\n' +
         '<p>After.</p>\n',

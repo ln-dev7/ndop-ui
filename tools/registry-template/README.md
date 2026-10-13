@@ -60,7 +60,7 @@ Users add the registry to their `ndop.json` under a namespace:
 ```
 
 ```bash
-npx ndop add @sample/widget
+npx @ndop/cli add @sample/widget
 ```
 
 That installs the widget and Ndop's Button, and records both in
@@ -84,7 +84,7 @@ users send it from an environment variable:
 ```
 
 ```bash
-SAMPLE_TOKEN=… npx ndop add @sample/widget
+SAMPLE_TOKEN=… npx @ndop/cli add @sample/widget
 ```
 
 Without the variable, `ndop add @sample/widget` fails with "Registry

@@ -226,7 +226,7 @@ export type PackageManager = (typeof PACKAGE_MANAGERS)[number];
  *
  * @example
  * ```ts
- * commandFor('pnpm', 'npx ndop add dialog'); // 'pnpm dlx ndop add dialog'
+ * commandFor('pnpm', 'npx @ndop/cli add dialog'); // 'pnpm dlx @ndop/cli add dialog'
  * ```
  */
 export function commandFor(manager: PackageManager, command: string): string {

@@ -104,7 +104,7 @@ dependencies, and build:
 
 ```bash
 npm install --save-dev @ndop/cli @angular/core @angular/compiler @angular/compiler-cli typescript
-npx ndop build --output public
+npx @ndop/cli build --output public
 ```
 
 An item that imports Ndop's Button also needs what its files import, and
@@ -165,7 +165,7 @@ template containing `{name}`:
 Then install items by namespace and name:
 
 ```bash pm
-npx ndop add @acme/widget
+npx @ndop/cli add @acme/widget
 ```
 
 `ndop add` installs the item's dependencies too, from their own
@@ -192,7 +192,7 @@ variable, so the token stays out of the repository:
 ```
 
 ```bash
-ACME_TOKEN=… npx ndop add @acme/widget
+ACME_TOKEN=… npx @ndop/cli add @acme/widget
 ```
 
 When the variable isn't set, installing from that registry fails with
@@ -207,7 +207,7 @@ server that checks the `Authorization` header.
 Any item can also be installed from its URL, with no `ndop.json` entry:
 
 ```bash pm
-npx ndop add https://acme.github.io/ui/r/widget.json
+npx @ndop/cli add https://acme.github.io/ui/r/widget.json
 ```
 
 The lockfile records the URL, and `ndop update` fetches it again, merging

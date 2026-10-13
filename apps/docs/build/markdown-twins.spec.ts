@@ -22,7 +22,7 @@ describe('plainMarkdown', () => {
       plainMarkdown(
         [
           '```bash pm',
-          'npx ndop init',
+          'npx @ndop/cli init',
           '```',
           '',
           ':::steps',
@@ -37,7 +37,7 @@ describe('plainMarkdown', () => {
     ).toBe(
       [
         '```bash',
-        'npx ndop init',
+        'npx @ndop/cli init',
         '```',
         '',
         '### 1. Write the config',
@@ -91,7 +91,7 @@ describe('componentMarkdown', () => {
   });
 
   it('includes the code to copy and the API tables', () => {
-    expect(markdown).toContain('npx ndop add dialog');
+    expect(markdown).toContain('npx @ndop/cli add dialog');
     expect(markdown).toContain('### src/app/ui/dialog/dialog.ts');
     expect(markdown).toContain('### src/app/lib/utils.ts');
     expect(markdown).toMatch(

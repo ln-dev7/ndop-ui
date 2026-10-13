@@ -86,7 +86,7 @@ test('llms.txt and the twins list the blocks', async ({ request }) => {
   expect(llms).toContain('## Blocks');
   expect(llms).toContain('/blocks/login-01.md');
   const twin = await (await request.get('/blocks/login-01.md')).text();
-  expect(twin).toContain('npx ndop add login-01');
+  expect(twin).toContain('npx @ndop/cli add login-01');
   expect(twin).toContain('src/app/blocks/login-01/login-01.ts');
 });
 

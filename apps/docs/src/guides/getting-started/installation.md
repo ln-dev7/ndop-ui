@@ -25,13 +25,13 @@ cd my-app
 Set it up for Ndop:
 
 ```bash pm
-npx ndop init
+npx @ndop/cli init
 ```
 
 Then add a component:
 
 ```bash pm
-npx ndop add dialog
+npx @ndop/cli add dialog
 ```
 
 `ndop init` asks before it changes anything. Pass `--yes` to skip the
@@ -76,7 +76,7 @@ The stylesheet needs Tailwind CSS v4 and Ndop's token mechanics:
 ### Add the theme and the helper files
 
 ```bash pm
-npx ndop add default utils icons
+npx @ndop/cli add default utils icons
 ```
 
 ### Register Ndop and the icons

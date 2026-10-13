@@ -153,7 +153,7 @@ export class AgentsSection {
       icon: 'shield-check',
       title: 'ndop verify',
       text: 'Checks usage, build, lint and accessibility, and names the file, line, rule and fix.',
-      code: 'npx ndop verify src/app',
+      code: 'npx @ndop/cli verify src/app',
     },
   ];
 

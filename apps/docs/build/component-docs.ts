@@ -525,7 +525,7 @@ async function pageData(
     ...(cdkSize ? { cdkSize } : {}),
     introHtml: await block(metadata.intro),
     install: {
-      cliHtml: await tools.highlight(`npx ndop add ${name}`, 'bash', 'pm'),
+      cliHtml: await tools.highlight(`npx @ndop/cli add ${name}`, 'bash', 'pm'),
       ...(dependencies.length
         ? {
             dependenciesHtml: await tools.highlight(

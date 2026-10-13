@@ -24,7 +24,7 @@ const STEPS = /^:::steps[ \t]*\n([\s\S]*?)\n:::[ \t]*(?:\n+|$)/;
  * :::steps
  * ### Set it up
  * ~~~bash pm
- * npx ndop init
+ * npx @ndop/cli init
  * ~~~
  * ### Add a component
  * Run `ndop add` with its name.

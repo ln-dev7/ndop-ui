@@ -28,7 +28,7 @@ export interface ComponentPageData {
   introHtml: string;
   /** How to install it. */
   install: {
-    /** `npx ndop add <name>`, as a command block. */
+    /** `npx @ndop/cli add <name>`, as a command block. */
     cliHtml: string;
     /** npm packages to install by hand, as a command block, if any. */
     dependenciesHtml?: string;

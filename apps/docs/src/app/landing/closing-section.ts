@@ -46,7 +46,7 @@ import { InstallCommand } from './install-command';
               <svg ndIcon="arrow-right" class="rtl:rotate-180"></svg>
             </a>
             @defer (on immediate; hydrate on idle) {
-              <docs-install-command command="npx ndop init" />
+              <docs-install-command command="npx @ndop/cli init" />
             }
           </div>
         </div>

@@ -208,7 +208,7 @@ export function componentMarkdown(name: string, read: RegistryReader): string {
     facts.join(' · '),
     withoutTsdocLinks(metadata.intro),
     '## Installation',
-    '```bash\nnpx ndop add ' + name + '\n```',
+    '```bash\nnpx @ndop/cli add ' + name + '\n```',
     'Or by hand' +
       (dependencies.length
         ? `: install ${dependencies.map((dependency) => `\`${dependency}\``).join(', ')}, then copy these files.`

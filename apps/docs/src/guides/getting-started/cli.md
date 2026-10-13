@@ -8,6 +8,11 @@ The `ndop` CLI sets up your app and adds components to it. Every command
 plans its changes first, then applies them: `--dry-run` shows the plan as
 diffs, and running a command twice changes nothing the second time.
 
+Run it with your package manager's runner, as in `npx @ndop/cli init`; the
+tabs on each command show the pnpm, Yarn and Bun forms. Added as a dev
+dependency, `@ndop/cli` gives your project the `ndop` command, which the
+tables below use.
+
 ## Commands
 
 | Command                  | What it does                                                                           |
@@ -48,7 +53,7 @@ on `localhost`. `theme:` in front of any of them checks that the item is a
 theme:
 
 ```bash pm
-npx ndop add theme:https://example.com/r/ocean.json
+npx @ndop/cli add theme:https://example.com/r/ocean.json
 ```
 
 Adding a theme to a set-up app replaces the theme variables in your
@@ -75,7 +80,7 @@ changes since you installed it, and what changed upstream since that
 version. It writes nothing.
 
 ```bash pm
-npx ndop diff button
+npx @ndop/cli diff button
 ```
 
 ## Updating
@@ -86,7 +91,7 @@ merged with upstream's changes, the way `git merge` does, using the
 version you installed as the common base:
 
 ```bash pm
-npx ndop update
+npx @ndop/cli update
 ```
 
 When you and upstream changed the same lines, the file gets conflict
@@ -94,7 +99,7 @@ markers, with your lines first, and the command exits with code 2. Edit
 the file to keep what you want, then record it:
 
 ```bash pm
-npx ndop update --continue
+npx @ndop/cli update --continue
 ```
 
 The files an update writes must be committed first, so `git checkout`
@@ -121,7 +126,7 @@ use, `provideNdop()` and the icon provider, the lockfile, zoneless and SSR
 support, and the agent files. It writes nothing:
 
 ```bash pm
-npx ndop doctor
+npx @ndop/cli doctor
 ```
 
 `--fix` applies the safe fixes, the same edits `init` and `add` make:
@@ -183,7 +188,7 @@ Commands ask for confirmation only in an interactive terminal, and
 `--json` prints a single result that a script or a coding agent can read:
 
 ```bash pm
-npx ndop add dialog --yes --json
+npx @ndop/cli add dialog --yes --json
 ```
 
 `ndop add` also refreshes the Ndop section of your agents' instructions,

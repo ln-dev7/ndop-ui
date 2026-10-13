@@ -30,7 +30,7 @@ export function themeSummaries(read: RegistryReader): ThemeSummary[] {
         description: item.description,
         ...(item.author ? { author: item.author } : {}),
         version: item.version,
-        command: `npx ndop add ${item.name}`,
+        command: `npx @ndop/cli add ${item.name}`,
         vars: {
           theme: item.cssVars?.theme ?? {},
           light: item.cssVars?.light ?? {},

@@ -117,14 +117,14 @@ test('command blocks follow the chosen package manager everywhere', async ({
   const blocks = page.locator('figure.code-frame-commands');
   await blocks.first().getByRole('tab', { name: 'pnpm' }).click();
   await expect(blocks.nth(1).getByRole('tabpanel')).toHaveText(
-    'pnpm dlx ndop init',
+    'pnpm dlx @ndop/cli init',
   );
   await blocks.first().getByRole('tab', { name: 'pnpm' }).press('ArrowRight');
   await expect(blocks.first().getByRole('tab', { name: 'yarn' })).toBeFocused();
 
   await open(page, '/docs/getting-started/installation');
   await expect(blocks.nth(2).getByRole('tabpanel')).toHaveText(
-    'yarn dlx ndop add dialog',
+    'yarn dlx @ndop/cli add dialog',
   );
 });
 

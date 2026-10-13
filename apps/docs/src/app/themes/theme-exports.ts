@@ -154,7 +154,9 @@ export class ThemeExports {
     () => `${JSON.stringify(themeTokens(this.vars()), null, 2)}\n`,
   );
   protected readonly url = computed(() => themeUrl(this.origin(), this.vars()));
-  protected readonly command = computed(() => `npx ndop add "${this.url()}"`);
+  protected readonly command = computed(
+    () => `npx @ndop/cli add "${this.url()}"`,
+  );
 
   constructor() {
     afterNextRender(() => this.origin.set(location.origin));

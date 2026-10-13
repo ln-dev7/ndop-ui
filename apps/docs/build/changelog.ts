@@ -284,7 +284,7 @@ export function changelogMarkdown(
   const lines = [
     `# ${item.title} changelog`,
     '',
-    `Every version of the ${item.title} registry item, newest first. Update with \`npx ndop update ${name}\`; it keeps your edits (https://ndop.dev/docs/getting-started/cli).`,
+    `Every version of the ${item.title} registry item, newest first. Update with \`npx @ndop/cli update ${name}\`; it keeps your edits (https://ndop.dev/docs/getting-started/cli).`,
   ];
   changelog.versions.forEach((entry, index) => {
     const previous = changelog.versions[index + 1]?.version;

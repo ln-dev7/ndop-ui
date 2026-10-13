@@ -9,7 +9,7 @@ Ndop. It reports every problem with its file, line and rule, often with the
 fix, and exits with an error until there are none.
 
 ```bash pm
-npx ndop verify src/app/settings
+npx @ndop/cli verify src/app/settings
 ```
 
 Paths can be files or folders; `src/app` by default.

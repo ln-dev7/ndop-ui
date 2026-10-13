@@ -22,7 +22,7 @@ This guide was checked against spartan/ui 1.6.3 (`@spartan-ng/brain` and
   published as `registry:style` items, such as tweakcn's:
 
   ```bash pm
-  npx ndop add theme:https://example.com/r/ocean.json
+  npx @ndop/cli add theme:https://example.com/r/ocean.json
   ```
 
 - **Classes.** Each styled item's `variants()` table holds the class
@@ -126,11 +126,11 @@ parts; put it back, so Tailwind isn't added a second time:
 Commit your work, then preview the changes and apply them:
 
 ```bash pm
-npx ndop init --dry-run
+npx @ndop/cli init --dry-run
 ```
 
 ```bash pm
-npx ndop init
+npx @ndop/cli init
 ```
 
 `init` imports `@ndop/core/styles.css` after your other imports. Leave it
@@ -162,7 +162,7 @@ installed. A copy that differs, even only in its import paths, is reported
 as skipped and not recorded:
 
 ```bash pm
-npx ndop add dialog
+npx @ndop/cli add dialog
 ```
 
 To adopt it, record the version you copied as its base, then put your
@@ -176,7 +176,7 @@ With your work committed, overwrite the copy with that version. Each
 component's changelog lists its versions.
 
 ```bash pm
-npx ndop add dialog@0.1.0 --overwrite
+npx @ndop/cli add dialog@0.1.0 --overwrite
 ```
 
 ### Restore your copy
@@ -195,7 +195,7 @@ items it depends on, such as `utils.ts`; `git status` lists them, and
 Commit, then update:
 
 ```bash pm
-npx ndop update dialog
+npx @ndop/cli update dialog
 ```
 
 `ndop update` merges the changes made upstream since that version into

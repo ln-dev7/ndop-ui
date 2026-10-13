@@ -20,7 +20,7 @@ then verify. `ndop add` refreshes it every time you install something.
 Pick the agents you use with `--agent`, or let `init` detect them:
 
 ```bash pm
-npx ndop init --agent claude-code,cursor
+npx @ndop/cli init --agent claude-code,cursor
 ```
 
 | Agent         | What `init` writes                                                     |
@@ -45,7 +45,7 @@ started by the agent.
 Let `init` register it for your agents:
 
 ```bash pm
-npx ndop init --agent claude-code --mcp
+npx @ndop/cli init --agent claude-code --mcp
 ```
 
 Or add it by hand, as a stdio server that runs `npx -y @ndop/mcp`. For
@@ -104,7 +104,7 @@ on its files, fixes every problem it reports, and runs it again until it
 passes. Each problem names a file, a line and a rule, often with the fix:
 
 ```bash pm
-npx ndop verify src/app/settings --json
+npx @ndop/cli verify src/app/settings --json
 ```
 
 ## Documentation agents can read
