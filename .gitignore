@@ -51,3 +51,6 @@ __screenshots__/
 !apps/harness-e2e/src/visual/__screenshots__/
 
 vitest.config.*.timestamp*
+
+# Wrangler's local state from `nx serve-pages docs`.
+.wrangler

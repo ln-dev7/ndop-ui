@@ -16,6 +16,9 @@ allowBuilds:
   lmdb: true
   msgpackr-extract: true
   nx: true
+  # Swaps Wrangler's JavaScript launcher for the platform's native workerd
+  # binary, which `wrangler pages dev` runs (ADR-0028).
+  workerd: true
   '@swc/core': false
   # Pulled in through @nx/jest, which Ndop doesn't use; its postinstall only
   # verifies a native binding that ships as an optional dependency anyway.

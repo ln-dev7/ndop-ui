@@ -126,6 +126,37 @@
         "port": 4400
       }
     },
+    "serve-pages": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Serves the built docs with the theme URL Function in Wrangler's local Pages runtime, at http://localhost:8788. Wrangler takes Functions from ./functions, so it runs from the app's folder (ADR-0028)."
+      },
+      "continuous": true,
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "apps/docs",
+        "command": "wrangler pages dev ../../dist/apps/docs/analog/public --port=8788 --compatibility-date=2026-09-26"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "metadata": {
+        "description": "Uploads the built docs and the theme URL Function to Cloudflare Pages; pass Wrangler's options after --, such as --project-name and --branch. Wrangler takes Functions from ./functions, so it runs from the app's folder (ADR-0028)."
+      },
+      "dependsOn": ["build"],
+      "cache": false,
+      "options": {
+        "cwd": "apps/docs",
+        "command": "wrangler pages deploy ../../dist/apps/docs/analog/public"
+      }
+    },
+    "smoke": {
+      "executor": "@ndop/workspace-plugin:docs-smoke",
+      "metadata": {
+        "description": "Checks a deployed docs site: nx smoke docs --url=<deployment URL> (ADR-0028)."
+      },
+      "cache": false
+    },
     "test": {
       "executor": "@analogjs/vitest-angular:test",
       "inputs": ["default", "^default", "{workspaceRoot}/ROADMAP.md"],

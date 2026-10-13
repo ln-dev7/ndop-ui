@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Docs smoke check",
+  "description": "Checks a deployed docs site (ADR-0028): pages without trailing-slash redirects and their slashed and .html forms redirecting to them, the 404 page with a 404 status, /r/index.json as fresh JSON, a theme URL served by the Function, /sw.js, and, in Chromium, that the service worker registers and leaves /r/ uncached.",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "description": "The deployment's origin, such as https://ndop.dev or a preview URL."
+    },
+    "browser": {
+      "type": "boolean",
+      "description": "Also check the service worker in Playwright's Chromium.",
+      "default": true
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Seconds to wait for the site to answer, and for the service worker to take control.",
+      "default": 60
+    }
+  },
+  "required": ["url"]
+}
