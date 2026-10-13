@@ -1,0 +1,222 @@
+name: Deploy
+
+# ADR-0028: builds the docs, uploads them with the theme URL Function
+# (ADR-0023) to Cloudflare Pages with Wrangler, then checks the deployment
+# (`nx smoke docs`).
+#
+# - Every pull request gets a preview of its branch, linked from one
+#   comment on the pull request that each push updates. It doesn't wait for
+#   CI: a preview of a red branch is still worth reviewing.
+# - master deploys to production (ndop.dev) once CI has passed on the
+#   commit, so a red master is never deployed. workflow_run runs this file
+#   as it is on master, with master's code, so the credentials never meet a
+#   pull request's code.
+#
+# Credentials: the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets
+# and the CLOUDFLARE_PAGES_PROJECT variable. Pull requests from forks and
+# from Dependabot get no secrets, so they get no preview.
+on:
+  pull_request:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  # A newer push supersedes a preview; a production deploy always finishes,
+  # and the newest waiting one runs next.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Decides before any build whether there is anything to deploy with.
+  credentials:
+    name: Credentials
+    # workflow_run's branch filter matches a branch named master in a fork
+    # too, so production also checks the event and the repository.
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.check.outputs.deploy }}
+    steps:
+      - id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+          HAS_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+          HAS_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT != '' }}
+        run: |
+          missing=()
+          if [ "$HAS_TOKEN" != "true" ]; then missing+=("secret CLOUDFLARE_API_TOKEN"); fi
+          if [ "$HAS_ACCOUNT" != "true" ]; then missing+=("secret CLOUDFLARE_ACCOUNT_ID"); fi
+          if [ "$HAS_PROJECT" != "true" ]; then missing+=("variable CLOUDFLARE_PAGES_PROJECT"); fi
+          if [ "$FORK" = "true" ]; then
+            echo "::notice title=No docs preview::Pull requests from forks get no docs preview: GitHub gives them no secrets."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          elif [ ${#missing[@]} -gt 0 ]; then
+            list=$(printf '%s, ' "${missing[@]}")
+            if [ "$EVENT" = "pull_request" ]; then
+              echo "::notice title=No docs preview::Skipped: this run has no ${list%, }. Dependabot's pull requests never have them; otherwise see CONTRIBUTING.md, \"Deploying the docs\"."
+              echo "deploy=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "::error title=Cannot deploy the docs::Missing the repository's ${list%, }. Add them under Settings, Secrets and variables, Actions (see CONTRIBUTING.md, \"Deploying the docs\")."
+              exit 1
+            fi
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  preview:
+    name: Preview
+    needs: credentials
+    if: github.event_name == 'pull_request' && needs.credentials.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      # The preview comment.
+      pull-requests: write
+    steps:
+      # The branch as pushed, not the merge commit, so the preview and its
+      # commit hash are the branch's.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The docs build photographs block previews and OG images in
+      # Chromium (ADR-0026); the smoke check uses it too.
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build and deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          HEAD_REF: ${{ github.head_ref }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.json
+        # Nx joins the arguments into a shell command, so the branch name,
+        # which its author picks, keeps only characters that are safe there.
+        run: |
+          branch=$(printf '%s' "$HEAD_REF" | tr -c 'A-Za-z0-9._/-' '-')
+          pnpm nx run docs:deploy -- --project-name="$PROJECT" --branch="$branch" --commit-hash="$SHA"
+
+      # Wrangler's machine-readable output: one JSON object per line.
+      - name: Read the deployment's URLs
+        id: deployment
+        env:
+          OUTPUT: ${{ runner.temp }}/wrangler-output.json
+        run: |
+          url=$(jq -r 'select(.type == "pages-deploy-detailed") | .url' "$OUTPUT" | tail -n 1)
+          alias=$(jq -r 'select(.type == "pages-deploy-detailed") | .alias // empty' "$OUTPUT" | tail -n 1)
+          if [ -z "$url" ]; then
+            echo "::error::Wrangler reported no deployment URL."
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "alias=$alias" >> "$GITHUB_OUTPUT"
+          echo "Docs preview: $url ${alias:+(branch: $alias)}" >> "$GITHUB_STEP_SUMMARY"
+
+      # One comment per pull request, found by its marker and updated in
+      # place, so pushes don't pile up comments.
+      - name: Post the preview URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          URL: ${{ steps.deployment.outputs.url }}
+          ALIAS: ${{ steps.deployment.outputs.alias }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          marker='<!-- ndop-docs-preview -->'
+          body="$marker
+          **Docs preview** of ${SHA:0:7}: $URL"
+          if [ -n "$ALIAS" ]; then
+            body="$body
+          Latest of this branch: $ALIAS"
+          fi
+          body="$body
+
+          Checks of the deployment: [Deploy run]($RUN)."
+          id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" \
+            --jq "[.[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\")))][0].id // empty" \
+            | head -n 1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh api "repos/$REPO/issues/$PR/comments" -f body="$body" > /dev/null
+          fi
+
+      - name: Check the deployment
+        env:
+          URL: ${{ steps.deployment.outputs.url }}
+        run: pnpm nx smoke docs --url="$URL"
+
+  production:
+    name: Production
+    needs: credentials
+    if: github.event_name == 'workflow_run' && needs.credentials.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # The commit CI passed, even if master has moved on since.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      # master is the Pages project's production branch.
+      - name: Build and deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.json
+        run: pnpm nx run docs:deploy -- --project-name="$PROJECT" --branch=master --commit-hash="$SHA"
+
+      - name: Read the deployment's URL
+        id: deployment
+        env:
+          OUTPUT: ${{ runner.temp }}/wrangler-output.json
+        run: |
+          url=$(jq -r 'select(.type == "pages-deploy-detailed") | .url' "$OUTPUT" | tail -n 1)
+          if [ -z "$url" ]; then
+            echo "::error::Wrangler reported no deployment URL."
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Docs deployed: $url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check the deployment
+        env:
+          URL: ${{ steps.deployment.outputs.url }}
+        run: pnpm nx smoke docs --url="$URL"
