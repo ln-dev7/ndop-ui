@@ -31,6 +31,7 @@ const TYPES: Record<string, string> = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.txt': 'text/plain; charset=utf-8',
+  '.webmanifest': 'application/manifest+json',
   '.webp': 'image/webp',
   '.woff2': 'font/woff2',
   '.xml': 'application/xml',
@@ -166,7 +167,7 @@ export async function serveSite(folder: string, port = 0): Promise<SiteServer> {
     // bytes readers actually download.
     const accepted = String(request.headers['accept-encoding'] ?? '');
     if (
-      /^(text\/|application\/(json|xml)|image\/svg)/.test(
+      /^(text\/|application\/(json|xml|manifest\+json)|image\/svg)/.test(
         headers['content-type'] ?? '',
       )
     ) {

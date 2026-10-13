@@ -21,8 +21,9 @@ competes with the components it frames.
 
 ### Brand
 
-- The logo files live in `apps/docs/public/brand/` (SVG masters; PNGs
-  generated from them at build time where a size is needed).
+- The logo's SVG masters live in `apps/docs/brand/`. The build serves
+  them at `/brand/*.svg` and generates every PNG and ICO size from them,
+  so no raster copy is committed.
 - The header shows the mark beside the "Ndop UI" wordmark; the footer
   shows the mark.
 - **Indigo is a brand accent only:** the logo, the landing pattern, OG

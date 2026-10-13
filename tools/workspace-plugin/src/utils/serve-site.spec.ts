@@ -30,6 +30,7 @@ describe('serveSite', () => {
     await writeFile(join(folder, 'docs/intro.md'), '# Intro');
     await mkdir(join(folder, 'r'));
     await writeFile(join(folder, 'r/dialog.json'), '{"name":"dialog"}');
+    await writeFile(join(folder, 'manifest.webmanifest'), '{"name":"Ndop UI"}');
     await writeFile(
       join(folder, '_headers'),
       '/*.md\n  Content-Type: text/markdown; charset=utf-8\n',
@@ -70,6 +71,14 @@ describe('serveSite', () => {
     const response = await fetch(`${site.url}/r/dialog.json`);
     expect(response.headers.get('content-type')).toBe('application/json');
     expect(await response.json()).toEqual({ name: 'dialog' });
+  });
+
+  it('serves the web app manifest with its own type', async () => {
+    const response = await fetch(`${site.url}/manifest.webmanifest`);
+    expect(response.headers.get('content-type')).toBe(
+      'application/manifest+json',
+    );
+    expect(await response.json()).toEqual({ name: 'Ndop UI' });
   });
 
   it('answers theme URLs as the Pages Function does', async () => {
