@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Docs guides",
+  "description": "Check the docs guides against the registry: compile their TypeScript and Angular template blocks, validate their ndop.json and registry.json blocks, and check the directives, items and component links they name (ADR-0030).",
+  "type": "object",
+  "properties": {
+    "guides": {
+      "type": "string",
+      "description": "Workspace-relative guides folder, holding <section>/<page>.md."
+    },
+    "registry": {
+      "type": "string",
+      "description": "Workspace-relative folder of the built registry's JSON: index.json, <item>.json and metadata/.",
+      "default": "dist/registry/r"
+    },
+    "tsconfig": {
+      "type": "string",
+      "description": "Workspace-relative tsconfig whose paths resolve @/ to the registry and the @ndop packages.",
+      "default": "tsconfig.base.json"
+    },
+    "workDir": {
+      "type": "string",
+      "description": "Workspace-relative folder the blocks are written to and compiled in; emptied on every run.",
+      "default": "tmp/docs-guides"
+    }
+  },
+  "required": ["guides"]
+}

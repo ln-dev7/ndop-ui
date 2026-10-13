@@ -80,6 +80,43 @@
         }
       ]
     },
+    "guides": {
+      "executor": "@ndop/workspace-plugin:docs-guides",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/guides/**/*.md",
+        "{workspaceRoot}/registry/**/*",
+        "{workspaceRoot}/packages/core/src/**/*",
+        "{workspaceRoot}/packages/primitives/**/*",
+        "{workspaceRoot}/packages/schema/src/**/*",
+        "{workspaceRoot}/tsconfig.base.json",
+        "{workspaceRoot}/tools/workspace-plugin/src/executors/docs-guides/**/*",
+        {
+          "dependentTasksOutputFiles": "**/*.json"
+        },
+        {
+          "externalDependencies": [
+            "typescript",
+            "@angular/compiler-cli",
+            "@angular/core",
+            "@angular/cdk"
+          ]
+        }
+      ],
+      "outputs": [],
+      "dependsOn": [
+        {
+          "projects": ["registry"],
+          "target": "build"
+        }
+      ],
+      "options": {
+        "guides": "apps/docs/src/guides"
+      }
+    },
+    "typecheck": {
+      "dependsOn": ["guides"]
+    },
     "serve-static": {
       "executor": "@ndop/workspace-plugin:serve-site",
       "continuous": true,

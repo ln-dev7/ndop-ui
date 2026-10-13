@@ -44,6 +44,11 @@
       "implementation": "./src/executors/size/size",
       "schema": "./src/executors/size/schema.json",
       "description": "Measure what each registry component adds to an app, gzipped, and fail over its budget (ADR-0021)."
+    },
+    "docs-guides": {
+      "implementation": "./src/executors/docs-guides/docs-guides",
+      "schema": "./src/executors/docs-guides/schema.json",
+      "description": "Check the docs guides against the registry: compile their TypeScript and Angular template blocks, validate their ndop.json and registry.json blocks, and check the directives, items and component links they name (ADR-0030)."
     }
   }
 }
