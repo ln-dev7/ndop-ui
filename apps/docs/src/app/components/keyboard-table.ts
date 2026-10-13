@@ -25,7 +25,7 @@ const KEY_NAMES: Record<string, string> = { ' ': 'Space', Esc: 'Escape' };
     <div class="mb-3 flex items-center justify-between gap-4">
       <p class="text-sm text-muted-foreground">
         @if (trying()) {
-          Press keys anywhere on the page, such as in the preview above.
+          {{ tryHint() }}
         } @else {
           Keys the component handles.
         }
@@ -94,6 +94,11 @@ const KEY_NAMES: Record<string, string> = { ' ': 'Space', Esc: 'Escape' };
 export class KeyboardTable {
   /** The rows, in `spec.md` order. */
   readonly rows = input.required<KeyboardRow[]>();
+
+  /** What the "Try the keyboard" mode tells the reader to do. */
+  readonly tryHint = input(
+    'Press keys anywhere on the page, such as in the preview above.',
+  );
 
   protected readonly trying = signal(false);
   protected readonly pressed = signal<string | null>(null);

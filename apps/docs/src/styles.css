@@ -284,6 +284,83 @@
   }
 }
 
+/* The landing page's update demo (ADR-0026, section 2): the reader's
+   lines and upstream's in two tints, removed lines struck through, and
+   long lines wrapped so the whole change stays in view. */
+.merge-demo {
+  --merge-mine: oklch(0.94 0.045 255);
+  --merge-theirs: oklch(0.95 0.05 150);
+  --merge-remove: oklch(0.96 0.03 25);
+  &:where(.dark, .dark *) {
+    --merge-mine: oklch(0.32 0.07 255);
+    --merge-theirs: oklch(0.3 0.06 150);
+    --merge-remove: oklch(0.3 0.06 25);
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where([data-ndop-theme='system'] *) {
+      --merge-mine: oklch(0.32 0.07 255);
+      --merge-theirs: oklch(0.3 0.06 150);
+      --merge-remove: oklch(0.3 0.06 25);
+    }
+  }
+  & .code-frame {
+    @apply rounded-none bg-transparent;
+  }
+  & .code-frame-copy {
+    @apply top-2.5;
+  }
+  & pre {
+    @apply max-h-none py-3 text-xs sm:text-[0.8125rem];
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  /* Wrapped lines continue under the code, not the line numbers: the
+     number column is 2.5rem plus a 1.5rem gap. */
+  & .code-frame-numbered .line {
+    @apply pe-12;
+    padding-inline-start: 4rem;
+    text-indent: -4rem;
+  }
+  & .merge-line.mine {
+    background: var(--merge-mine);
+    box-shadow: inset 2px 0 0 oklch(0.55 0.15 255);
+  }
+  & .merge-line.add.theirs {
+    background: var(--merge-theirs);
+    box-shadow: inset 2px 0 0 oklch(0.6 0.14 150);
+  }
+  & .merge-line.remove {
+    background: var(--merge-remove);
+    & span {
+      text-decoration: line-through;
+      text-decoration-color: color-mix(in oklab, currentColor 45%, transparent);
+    }
+  }
+  & .merge-line {
+    animation: merge-line-in 0.6s ease-out both;
+  }
+  & .merge-swatch {
+    @apply inline-block size-2.5 rounded-sm;
+    &.mine {
+      background: oklch(0.55 0.15 255);
+    }
+    &.theirs {
+      background: oklch(0.6 0.14 150);
+    }
+  }
+}
+@keyframes merge-line-in {
+  from {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .merge-demo .merge-line {
+    animation: none;
+  }
+}
+
 /* Shiki writes both themes as CSS variables; pick one per mode. */
 .shiki,
 .shiki span {

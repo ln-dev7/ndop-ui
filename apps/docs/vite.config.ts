@@ -8,6 +8,7 @@ import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { angularServerMode } from '../../tools/workspace-plugin/src/vite/angular-server-mode';
 import { deferScripts } from '../../tools/workspace-plugin/src/vite/defer-scripts';
 import { inlineCss } from '../../tools/workspace-plugin/src/vite/inline-css';
+import { blockThumbnails } from './build/block-thumbnails';
 import { brandAssets } from './build/brand-assets';
 import { componentDocs } from './build/component-docs';
 import { serviceWorker } from './build/service-worker';
@@ -80,6 +81,19 @@ export default defineConfig(() => {
         // answers with it (ADR-0027).
         prerender: { discover: true, routes: ['/', '/offline'] },
         nitro: {
+          hooks: {
+            // Block thumbnails for the landing page (ADR-0026), from the
+            // previews just prerendered into Analog's public output.
+            'prerender:done': async () => {
+              const { taken, cached } = await blockThumbnails({
+                workspace,
+                site: join(workspace, 'dist/apps/docs/analog/public'),
+              });
+              console.log(
+                `Block thumbnails: ${taken} taken, ${cached} from the cache`,
+              );
+            },
+          },
           prerender: {
             // Links into the theme studio carry a theme in their query
             // (ADR-0023); the page itself is prerendered from its plain

@@ -77,3 +77,8 @@ declare module 'virtual:ndop/themes' {
   /** Every theme, in the registry's order (ADR-0023). */
   export const themes: import('./app/themes/theme-data').ThemeSummary[];
 }
+
+declare module 'virtual:ndop/landing' {
+  /** The landing page's build-time data (ADR-0026). */
+  export const landing: import('./app/landing/landing-data').LandingData;
+}

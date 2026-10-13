@@ -43,6 +43,10 @@ jobs:
 
       - run: pnpm nx format:check
 
+      # The docs build photographs block previews for the landing page in
+      # Chromium (ADR-0026).
+      - run: pnpm exec playwright install --with-deps chromium
+
       # Pull requests run only what they affect; pushes to master run
       # everything, so a batch of commits can't skip projects.
       - if: github.event_name == 'pull_request'

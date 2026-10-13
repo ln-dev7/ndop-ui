@@ -42,6 +42,7 @@ import {
 } from './changelog';
 import { blockCode, blockMarkdown, blockSummaries } from './block-docs';
 import { themeSummaries } from './theme-docs';
+import { landingData } from './landing-data';
 import { block, inline, partData } from './part-data';
 import {
   primitiveMarkdown,
@@ -70,6 +71,7 @@ const PRIMITIVE_PREFIX = 'virtual:ndop/primitive/';
 const BLOCKS_ID = 'virtual:ndop/blocks';
 const BLOCK_CODE_PREFIX = 'virtual:ndop/block-code/';
 const THEMES_ID = 'virtual:ndop/themes';
+const LANDING_ID = 'virtual:ndop/landing';
 const REPOSITORY = 'https://github.com/ndop-ui/ui';
 
 /** Options of {@link componentDocs}. */
@@ -109,7 +111,8 @@ interface PageTools {
  * the blocks and loads each one's component and, from
  * `virtual:ndop/block-code/<name>`, its highlighted code (ADR-0022);
  * `virtual:ndop/themes` lists the themes, and the dev server answers theme
- * URLs as the site's Pages Function does (ADR-0023). The
+ * URLs as the site's Pages Function does (ADR-0023); and
+ * `virtual:ndop/landing` holds the landing page's data (ADR-0026). The
  * registry must be built first
  * (`registry:build`), which the docs' targets depend on.
  *
@@ -119,6 +122,9 @@ interface PageTools {
 export function componentDocs(options: ComponentDocsOptions): Plugin {
   const registry = join(options.workspace, 'dist/registry/r');
   let highlighter: Promise<Highlighter> | undefined;
+  // Block thumbnails are photographed after prerendering (ADR-0026), which
+  // only a build does; the dev server shows placeholders instead.
+  let serving = false;
   const highlight = async (
     code: string,
     lang: string,
@@ -266,6 +272,9 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
 
   return {
     name: 'ndop:component-docs',
+    configResolved(config) {
+      serving = config.command === 'serve';
+    },
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const path = request.url?.split(/[?#]/)[0] ?? '';
@@ -312,7 +321,8 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
         id.startsWith(SNAPSHOTS_PREFIX) ||
         id === BLOCKS_ID ||
         id.startsWith(BLOCK_CODE_PREFIX) ||
-        id === THEMES_ID
+        id === THEMES_ID ||
+        id === LANDING_ID
         ? `\0${id}`
         : undefined;
     },
@@ -332,6 +342,16 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             summary.category,
         }));
         return `export const entries = ${JSON.stringify(searchIndex(options.guides, components, blocks))};`;
+      }
+      if (id === `\0${LANDING_ID}`) {
+        const data = await landingData({
+          read,
+          highlight,
+          workspace: options.workspace,
+          gzip: (name) => sizes.get(name)?.gzip,
+          thumbnails: !serving,
+        });
+        return `export const landing = ${JSON.stringify(data)};`;
       }
       if (id === `\0${THEMES_ID}`) {
         return `export const themes = ${JSON.stringify(themeSummaries(read))};`;
