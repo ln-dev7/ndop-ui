@@ -1,6 +1,6 @@
 # ADR-0021: Completing the v1 catalog
 
-- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–4.
+- Status: Accepted (approved by Valery on 2026-10-08), with amendments 1–5.
   Deviates from the definition of done for items without behavior
 - Date: 2026-10-08
 - Phase: 6
@@ -204,3 +204,12 @@ focus trap, and about 25 styled parts. Both are over the 4 kB default.
   `tools/size/budgets.json`.
 - Chart (2.09 kB) and Data Table (1.17 kB), whose libs are files of their
   items, fit the default, so they need no budget of their own.
+
+## Amendment 5 (2026-10-12): the visual check runs in its own job
+
+Status: Accepted by Valery on 2026-10-12 (ADR-0029).
+
+The visual check no longer follows Chromium's e2e in the same job: that
+job took 42 minutes and set the length of every CI run. It has its own
+`Visual` job, beside the e2e jobs, which now run each browser in two
+Playwright shards.

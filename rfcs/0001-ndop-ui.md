@@ -120,15 +120,15 @@ The bar: a developer goes from `ng new` to a themed, accessible, production-qual
 
 **Success metrics**
 
-| Metric                  | Target                                                   | How it's measured                                                                   |
-| ----------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Time to first component | < 2 min from `npx ndop init`                             | Scripted e2e run in CI on a fresh `ng new` app                                      |
-| Clean update rate       | ≥ 90% of `ndop update` runs with no conflicts            | Fixture suite of realistic local edits                                              |
-| Accessibility           | 0 axe violations; full keyboard spec per component       | Automated a11y tests                                                                |
-| Docs performance        | Lighthouse ≥ 95 on every page; LCP < 1.5 s               | Lighthouse CI                                                                       |
-| Agent accuracy          | ≥ 95% of generated snippets pass `ndop verify`           | Eval suite of 50 prompts run against the MCP server                                 |
-| Bundle cost             | Button < 2 kB gzip; Dialog < 8 kB gzip                   | Size check per component, on Ndop's own code; the shared CDK is reported (ADR-0021) |
-| Adoption (post-launch)  | 1,000 GitHub stars and 3 external registries in 6 months | GitHub, registry directory                                                          |
+| Metric                  | Target                                                                                                                                                           | How it's measured                                                                   |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Time to first component | < 2 min from `npx ndop init`                                                                                                                                     | Scripted e2e run in CI on a fresh `ng new` app                                      |
+| Clean update rate       | ≥ 90% of `ndop update` runs with no conflicts                                                                                                                    | Fixture suite of realistic local edits                                              |
+| Accessibility           | 0 axe violations; full keyboard spec per component                                                                                                               | Automated a11y tests                                                                |
+| Docs performance        | Lighthouse ≥ 95 in accessibility, best practices and SEO on every page; performance ≥ 95 and LCP < 1.5 s on landing, component, block and guide pages (ADR-0029) | Lighthouse CI                                                                       |
+| Agent accuracy          | ≥ 95% of generated snippets pass `ndop verify`                                                                                                                   | Eval suite of 50 prompts run against the MCP server                                 |
+| Bundle cost             | Button < 2 kB gzip; Dialog < 8 kB gzip                                                                                                                           | Size check per component, on Ndop's own code; the shared CDK is reported (ADR-0021) |
+| Adoption (post-launch)  | 1,000 GitHub stars and 3 external registries in 6 months                                                                                                         | GitHub, registry directory                                                          |
 
 ## Landscape and differentiation
 
@@ -464,7 +464,7 @@ The docs site is the product's storefront and must be visibly better than shadcn
 - **Layout:** three columns on desktop: left nav (260 px), content (max 760 px prose, previews may break out to 1,040 px), right "On this page" rail with scroll-spy. Collapses to a single column with a bottom-sheet nav on mobile.
 - **Typography:** a variable sans (Inter or Geist) for UI and body at 16 px / 1.65, a mono (Geist Mono or JetBrains Mono) for code at 14 px. Headings tight (-0.02em tracking). Fluid type scale with `clamp()`.
 - **Color:** neutral, near-monochrome UI so components are the color. Uses the same Ndop tokens as the components, so switching the docs theme in the theme studio restyles the entire site live.
-- **Surfaces:** 1 px hairline borders, large radii on preview frames (12 px), a subtle dotted or grid background inside previews, no heavy shadows or gradients.
+- **Surfaces:** 1 px hairline borders, large radii on preview frames (12 px), plain preview surfaces (ADR-0026), no heavy shadows or gradients. The brand motif (the Ndop mark and its diamond bands) appears on the landing page and OG images only.
 - **Motion:** 150–250 ms ease-out for UI; View Transitions API for route changes and theme switches; everything respects `prefers-reduced-motion`.
 - **Code blocks:** file name tab, language label, copy button, line highlighting, word highlighting, diff mode (`+`/`-` lines) and collapse for long files with "show all".
 - **Craft details:** keycap component for shortcuts, inline "copied" toast, anchor links on every heading, smooth scroll offset for sticky header, crisp favicon and OG images generated per page (component name + live render snapshot).
@@ -474,7 +474,7 @@ The docs site is the product's storefront and must be visibly better than shadcn
 - **Command palette (⌘K / Ctrl+K):** searches docs, components, props and blocks; actions like "Copy install for Dialog", "Toggle dark", "Open theme studio", "Copy page for agent".
 - **Theme studio:** edit tokens (colors in OKLCH with contrast warnings, radius, fonts, density) with the whole site and a sample dashboard updating live; export as CSS, as a `registry:theme` URL for `ndop init --theme`, or as JSON tokens.
 - **Blocks gallery:** large live previews with device frames, filter by category, "Copy CLI command", "Open in StackBlitz", and a dependency list.
-- **Version switcher** for the two supported Angular majors and Ndop versions, plus a per-component changelog that shows the diff between versions.
+- **Per-component changelog** that shows the diff between versions. A site-wide version switcher comes with the second major version (ADR-0028).
 - **"Update preview":** on the changelog, paste your local file and see what `ndop update` would produce (the merge runs in the browser).
 - **Feedback widget** on every page ("Was this helpful?" + optional comment) to a GitHub discussion or form.
 

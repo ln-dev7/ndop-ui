@@ -1,6 +1,6 @@
 # ADR-0023: Themes, the theme studio and the theme gallery
 
-- Status: Accepted (approved by Valery on 2026-10-08)
+- Status: Accepted (approved by Valery on 2026-10-08), with amendment 1
 - Date: 2026-10-08
 - Phase: 6
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Token system", "Themes as
@@ -87,3 +87,46 @@ community theme gallery.
   links still work, but their install URL doesn't.
 - The contrast rule can reject a theme the author likes. That's
   deliberate, since the docs promise zero accessibility violations.
+
+## Amendment 1 (2026-10-12): theme sheets in the visual tests
+
+Status: Accepted by Valery on 2026-10-12 (ADR-0029).
+
+Examples and blocks are screenshotted in the default theme only, so a
+change that breaks another theme went unseen. Each `registry:theme` now
+has a theme sheet in the harness, and the visual test checks it.
+
+- **Route:** `/themes/<name>` in `apps/harness`, linked from the harness
+  home page, so prerendering and the e2e quality crawl (axe, hydration,
+  one `main`) cover every sheet.
+- **Content:** the registry's styled items as an app uses them: token
+  swatches, every Button variant and size, every Badge variant, a Card
+  with a labelled form (Input, Select, Textarea, RadioGroup, Checkbox,
+  Switch), default and destructive Alerts, Tabs, Progress, Skeletons, a
+  sidebar-style menu on the `sidebar-*` tokens, a bar chart in
+  `--chart-1` to `--chart-5` (Chart's container, grid and legend) and a
+  Table. The header names the theme's sans and mono fonts and radius.
+- **Values:** the harness bundles `registry/themes/*/theme.css` as text
+  and reads its `@theme`, `:root` and `.dark` blocks, so the sheets need
+  no registry build. The values go in a stylesheet scoped to the page's
+  `main`, written into the document head on the server and in the
+  browser: light by default, dark under a `.dark` ancestor or system
+  mode with a dark preference, the same conditions as `dark:`. A sheet
+  takes a theme exactly as an installed theme would, and follows the
+  page's color scheme.
+- **Fonts:** a theme's `font-sans` and `font-mono` must be loaded by the
+  harness's stylesheet, directly or through the theme it imports. A unit
+  test fails for a theme whose font isn't, naming the `@fontsource`
+  import to add (from `@ndop/schema`'s `THEME_FONTS`); the sheet shows the
+  same message instead of the components and logs it, which fails the
+  quality test.
+- **Visual test:** the theme list comes from `registry.json`'s
+  `registry:theme` items, the default theme included. Each sheet is
+  opened like an example (frozen clock, from the home page, pointer
+  moved away) and screenshotted full page in light and dark, with no RTL:
+  two baselines per theme, `<name>-light.png` and `<name>-dark.png`. The
+  tests are named `theme-sheet <name> in <mode>`, so
+  `--grep="theme-sheet"` updates only them.
+- **Visual executor:** it waited for a TCP connection to the browser
+  server, which Docker's port proxy accepts before the server in the
+  container listens; it now waits for an HTTP answer.

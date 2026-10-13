@@ -20,19 +20,19 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0011](0011-cli-architecture.md)                         | CLI architecture and stack                                | Accepted, with amendment 1     |
 | [0012](0012-registry-source-and-build.md)                | Registry source, build and distribution                   | Accepted, with amendment 1     |
 | [0013](0013-icons-adapter.md)                            | Icons adapter on `@lucide/angular`                        | Accepted                       |
-| [0014](0014-styled-items-and-examples.md)                | Styled items and examples                                 | Accepted, with amendments 1–4  |
+| [0014](0014-styled-items-and-examples.md)                | Styled items and examples                                 | Accepted, with amendments 1–5  |
 | [0015](0015-registry-install-test.md)                    | Registry install test                                     | Accepted                       |
 | [0016](0016-docs-site.md)                                | Docs site architecture and quality gates                  | Accepted, with amendments 1–14 |
 | [0017](0017-agent-context-files.md)                      | Agent context files                                       | Accepted                       |
 | [0018](0018-verify-and-eslint-plugin.md)                 | `ndop verify` and the ESLint plugin                       | Accepted                       |
 | [0019](0019-agent-eval-suite.md)                         | Agent eval suite                                          | Accepted, with amendments 1–2  |
 | [0020](0020-diff-and-update.md)                          | `ndop diff`, `ndop update` and the update preview         | Accepted, with amendment 1     |
-| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendments 1–4  |
+| [0021](0021-catalog-completion.md)                       | Completing the v1 catalog                                 | Accepted, with amendments 1–5  |
 | [0022](0022-blocks.md)                                   | Blocks and the blocks gallery                             | Accepted                       |
-| [0023](0023-themes-and-theme-studio.md)                  | Themes, the theme studio and the theme gallery            | Accepted                       |
+| [0023](0023-themes-and-theme-studio.md)                  | Themes, the theme studio and the theme gallery            | Accepted, with amendment 1     |
 | [0024](0024-doctor.md)                                   | `ndop doctor`                                             | Accepted                       |
 | [0025](0025-third-party-registries-and-shadcn-compat.md) | Third-party registries and the shadcn-compatible output   | Accepted, with amendment 1     |
-| [0026](0026-brand-and-landing-page.md)                   | Brand, landing page and OG images                         | Proposed                       |
-| [0027](0027-installable-docs.md)                         | Installable docs (favicons and PWA)                       | Proposed                       |
-| [0028](0028-release-and-deploy.md)                       | The 1.0.0 release and the docs deployment                 | Proposed                       |
-| [0029](0029-launch.md)                                   | Launch checklist and success metrics                      | Proposed                       |
+| [0026](0026-brand-and-landing-page.md)                   | Brand, landing page and OG images                         | Accepted                       |
+| [0027](0027-installable-docs.md)                         | Installable docs (favicons and PWA)                       | Accepted                       |
+| [0028](0028-release-and-deploy.md)                       | The 1.0.0 release and the docs deployment                 | Accepted                       |
+| [0029](0029-launch.md)                                   | Launch checklist and success metrics                      | Accepted                       |

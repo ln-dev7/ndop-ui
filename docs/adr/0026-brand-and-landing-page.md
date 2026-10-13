@@ -1,6 +1,6 @@
 # ADR-0026: Brand, landing page and OG images
 
-- Status: Proposed
+- Status: Accepted (approved by Valery on 2026-10-12)
 - Date: 2026-10-12
 - Phase: 7
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Documentation site" (look
