@@ -196,6 +196,8 @@ test.describe('the service worker', () => {
     );
     await expect(page).toHaveURL(/\/docs\/components\/dialog$/);
     await page.getByRole('link', { name: 'Go to the home page' }).click();
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ndop UI');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Own your components. Update them anyway.',
+    );
   });
 });
