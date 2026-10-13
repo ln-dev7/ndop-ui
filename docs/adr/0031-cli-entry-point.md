@@ -64,3 +64,45 @@ nothing that uses it breaks.
   npm, with no second package to keep in step.
 - Historical ADRs keep `npx ndop`; this ADR and the RFC's amended lines
   are the reference.
+
+## Amendment 1 (2026-10-13): `init` installs the CLI
+
+Status: Accepted; requested by Valery on 2026-10-13.
+
+`ndop init` adds `@ndop/cli` as a dev dependency, as `ng new` adds
+`@angular/cli`, so a project runs its own `ndop`, at the version its
+lockfile pins, instead of whichever version `npx @ndop/cli` fetches.
+
+- **Range.** `^` the running CLI's version, read from its `package.json`
+  as `ndop --version` is. A prerelease, such as the install test's
+  `0.0.0-e2e.<time>`, is asked for exactly: it names one build. npm
+  still saves it with its `^` save-prefix, which matches only prereleases
+  of that version; pnpm and Bun save it as given. The lockfile pins the
+  installed build either way. A project
+  that already lists `@ndop/cli` in any dependency field keeps its own
+  range. `--dry-run` and `--json` show the package with the other
+  dependencies.
+- **Opt-out.** `init --no-cli`, commander's negated option, as
+  `build --no-compile`. The choice isn't recorded in `ndop.json`, so the
+  schema doesn't change.
+- **Agent files.** The commands in the files `init`, `add`, `update` and
+  `doctor --fix` write are `npx ndop …` when `package.json` lists
+  `@ndop/cli`, or will once the plan is applied, and `npx @ndop/cli …`
+  otherwise. `npx` runs `node_modules/.bin/ndop` before fetching
+  anything, looking up from the current folder (npm 11.19.0's
+  `libnpmexec`), and npm, pnpm and Bun all link the bin there, so one
+  form works in every tested project; the install test runs
+  `npx ndop --version` and `npx ndop add` in its npm, pnpm and Bun apps.
+  `pnpm exec ndop` and `bunx ndop` also work but are manager-specific,
+  and Yarn's Plug'n'Play has no `.bin` folder. Both commands come from
+  the CLI's one run-command module.
+- **Hints elsewhere.** The CLI's own hints, the MCP server's tool results
+  and `@ndop/verify`'s fixes keep `npx @ndop/cli`: they don't read the
+  project's `package.json`, and in an npm project `npx @ndop/cli` runs
+  the installed copy too.
+- **Doctor.** The Packages check warns when `@ndop/cli` isn't a
+  dependency, and `--fix` adds it at the running version, then refreshes
+  the agent files in the same plan. A warning, not an error: a project
+  set up with `--no-cli` works, and, with no recorded choice, `doctor`
+  can't tell it from one set up before this amendment.
+- The documented first command stays `npx @ndop/cli init`.

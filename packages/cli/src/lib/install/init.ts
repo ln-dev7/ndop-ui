@@ -13,6 +13,7 @@ import {
   type RegistryClient,
   type ResolvedItem,
 } from '../registry/client';
+import { cliDependency } from '../run-command';
 import { detectAgents, planAgentFiles, type Agent } from './agents';
 import { planItems } from './items';
 import {
@@ -88,6 +89,17 @@ export interface InitOptions {
    * agents are set up; it isn't added without it.
    */
   chooseVerify?: () => Promise<boolean>;
+  /**
+   * Whether to add `@ndop/cli` as a dev dependency, so the project runs
+   * its own, lockfile-pinned `ndop` (ADR-0031, amendment 1); `--no-cli`
+   * turns it off. On by default.
+   */
+  cli?: boolean;
+  /**
+   * The running CLI's version, which the added `@ndop/cli` is pinned to;
+   * the latest is added when it's unknown.
+   */
+  cliVersion?: string;
 }
 
 /**
@@ -246,13 +258,15 @@ function firstStylesheet(styles: unknown): string | undefined {
 /**
  * Stages everything `ndop init` does (ADR-0011): `ndop.json`, the `@/`
  * path alias, Tailwind v4 when it's missing, the `@ndop/core` stylesheet
- * import, the theme, `utils` and `icons` items, and `provideNdop()` and
- * `provideIcons()` in `app.config.ts`. An existing `ndop.json` is kept, so
- * running init again changes nothing.
+ * import, the theme, `utils` and `icons` items, `provideNdop()` and
+ * `provideIcons()` in `app.config.ts`, the agent files, and `@ndop/cli` as
+ * a dev dependency unless `cli` is `false` (ADR-0031). An existing
+ * `ndop.json` is kept, and packages `package.json` lists aren't added
+ * again, so running init again changes nothing.
  *
  * @param builder - The plan being built.
  * @param client - Registry client.
- * @param options - Theme, project and registry.
+ * @param options - Theme, project, registry, agents and dev dependencies.
  * @returns What was detected and which items will be installed.
  */
 export async function planInit(
@@ -287,6 +301,9 @@ export async function planInit(
     ensureImports(css, ['tailwindcss', '@ndop/core/styles.css']),
   );
   builder.depend(['@ndop/core']);
+  if (options.cli !== false) {
+    builder.depend([cliDependency(options.cliVersion)], true);
+  }
 
   const context: InstallContext = { config, aliasBase };
   const theme = parseRequest(options.theme);

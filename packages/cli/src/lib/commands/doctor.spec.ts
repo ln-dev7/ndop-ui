@@ -231,6 +231,36 @@ describe('ndop doctor', () => {
     ]);
   });
 
+  it('warns when @ndop/cli is no dependency, and adds it with --fix, refreshing the agent files', async () => {
+    const environment = testEnvironment(fixture('ng22'));
+    await runNdop(environment, 'init', '--yes', '--no-cli');
+    expect(environment.project.files.get('AGENTS.md')).toContain(
+      '`npx @ndop/cli doctor --json`',
+    );
+
+    const result = await doctor(environment, '--offline');
+    expect(check(result, 'packages')).toEqual(
+      expect.objectContaining({
+        status: 'warning',
+        message: "@ndop/cli isn't a dev dependency.",
+        fixable: true,
+      }),
+    );
+    expect(problems(result)).toEqual({ packages: 'warning' });
+    expect(result.ok).toBe(true);
+
+    const installs = environment.installs.length;
+    const fixed = await doctor(environment, '--offline', '--fix', '--yes');
+    expect(environment.installs.slice(installs)).toEqual([
+      { specs: ['@ndop/cli@^0.0.0'], dev: true },
+    ]);
+    expect(fixed.fix?.files.map((file) => file.path)).toEqual(['AGENTS.md']);
+    expect(environment.project.files.get('AGENTS.md')).toContain(
+      '`npx ndop doctor --json`',
+    );
+    expect(problems(fixed)).toEqual({});
+  });
+
   it('reports a missing or invalid ndop.json, and skips what needs it', async () => {
     const environment = await installed();
     edit(environment, 'ndop.json', (text) =>

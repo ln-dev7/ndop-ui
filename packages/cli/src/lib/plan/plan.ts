@@ -169,6 +169,23 @@ export class PlanBuilder {
   }
 
   /**
+   * Whether the project depends on a package once the plan is applied:
+   * its `package.json` lists it, or the plan installs it. Text that names
+   * the package's command, such as the agent files, reads this, so it
+   * matches the project after the install the plan makes.
+   *
+   * @param name - Package name.
+   * @returns True when it's, or will be, a dependency.
+   */
+  async dependsOn(name: string): Promise<boolean> {
+    return (
+      [...this.dependencies, ...this.devDependencies].some(
+        (spec) => dependencyName(spec) === name,
+      ) || (await this.installedPackages()).has(name)
+    );
+  }
+
+  /**
    * Records a file deliberately left alone.
    *
    * @param path - Project-relative path.

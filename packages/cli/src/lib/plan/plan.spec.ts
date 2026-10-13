@@ -27,6 +27,19 @@ describe('PlanBuilder', () => {
       { path: 'a.ts', action: 'update', before: 'a\n', after: 'new\n' },
     ]);
   });
+
+  it('knows the packages the project depends on once the plan is applied', async () => {
+    const builder = new PlanBuilder(
+      memoryFs({
+        'package.json': JSON.stringify({ devDependencies: { tslib: '^2' } }),
+      }),
+      noFormat,
+    );
+    builder.depend(['@ndop/cli@^1.0.0'], true);
+    expect(await builder.dependsOn('tslib')).toBe(true);
+    expect(await builder.dependsOn('@ndop/cli')).toBe(true);
+    expect(await builder.dependsOn('@ndop/core')).toBe(false);
+  });
 });
 
 describe('memoryFs.list', () => {

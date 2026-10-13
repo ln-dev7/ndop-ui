@@ -4,7 +4,7 @@ import { insertJsonc, parseJsonc } from '../edit/json';
 import { isColorValue } from '../edit/stylesheet';
 import { CliError } from '../errors';
 import { sha256, type PlanBuilder } from '../plan/plan';
-import { RUN_CLI } from '../run-command';
+import { CLI_PACKAGE, cliCommand } from '../run-command';
 import {
   aliasPrefix,
   LOCK_FILE,
@@ -129,8 +129,10 @@ export function parseAgents(values: readonly string[]): Agent[] | false {
  * owns outright, unless the user edited them; and, when `mcp` is set, the
  * `ndop` server in each agent's MCP configuration. Shared files are staged
  * unformatted, since formatting would also change the user's text. The
- * content comes from the lockfile and the stylesheet, so it's always true
- * for the project.
+ * content comes from the lockfile, the stylesheet and `package.json`, so
+ * it's always true for the project: its commands run the project's own
+ * `ndop` when `@ndop/cli` is a dependency, or will be once the plan is
+ * applied, and `npx @ndop/cli` otherwise (ADR-0031).
  *
  * @param builder - The plan being built, after the items are staged.
  * @param config - The project's configuration.
@@ -150,6 +152,7 @@ export async function planAgentFiles(
     aliasBase,
     lock,
     tokens: tokenNames((await builder.read(config.tailwind.css)) ?? ''),
+    cli: cliCommand(await builder.dependsOn(CLI_PACKAGE)),
   };
 
   for (const file of FILES) {
@@ -183,6 +186,8 @@ interface Facts {
   aliasBase: string | undefined;
   lock: NdopLock;
   tokens: { colors: string[]; other: string[] };
+  /** How to run the CLI in this project, such as `npx ndop`. */
+  cli: string;
 }
 
 /**
@@ -309,7 +314,7 @@ export function tokenNames(css: string): { colors: string[]; other: string[] } {
  * @returns The lines.
  */
 function guidance(facts: Facts, heading: string): string[] {
-  const { config, lock, tokens } = facts;
+  const { config, lock, tokens, cli } = facts;
   const prefix = aliasPrefix(config.importAlias ?? '@/');
   const docs = config.mcp
     ? 'call the `get_component` MCP tool'
@@ -331,18 +336,18 @@ function guidance(facts: Facts, heading: string): string[] {
     'This app uses [Ndop UI](https://ndop.dev): accessible Angular components installed as source files you own. The ndop CLI writes this section and refreshes it on `ndop add`; keep your own notes outside it.',
     `${heading} Workflow`,
     [
-      `1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run \`${RUN_CLI} add <name>\`; never copy component code by hand.`,
+      `1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run \`${cli} add <name>\`; never copy component code by hand.`,
       `2. Before using a component, ${docs}. Use its selectors, inputs and nesting exactly; never guess an API.`,
       '3. Give every form field a visible label with the `label` component (`<label ndLabel>`); a placeholder or `aria-label` alone is not a label.',
       '4. Style with theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`), never palette colors such as `bg-zinc-900`, and with logical utilities (`ms-`, `pe-`, `start-`, `text-start`), never `ml-`, `pr-`, `left-` or `text-left`.',
       `5. Change how a component looks in its own file under \`${config.aliases.ui}\`. Don't edit \`@ndop/primitives\` or import its private paths.`,
-      `6. Run \`${RUN_CLI} verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.`,
-      `7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`${RUN_CLI} doctor --json\`; \`${RUN_CLI} doctor --fix\` applies its safe fixes.`,
+      `6. Run \`${cli} verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.`,
+      `7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`${cli} doctor --json\`; \`${cli} doctor --fix\` applies its safe fixes.`,
     ].join('\n'),
     `${heading} Installed`,
     installed.length
       ? `${installed.join(', ')}.`
-      : `Nothing yet; add components with \`${RUN_CLI} add <name>\`.`,
+      : `Nothing yet; add components with \`${cli} add <name>\`.`,
     `Components are in ${folder(config.aliases.ui)}, helpers in ${folder(config.aliases.lib)} and blocks in ${folder(config.aliases.blocks)}.`,
     `${heading} Tokens`,
     tokens.colors.length || tokens.other.length
@@ -362,7 +367,7 @@ function guidance(facts: Facts, heading: string): string[] {
     `${heading} MCP server`,
     config.mcp
       ? 'The `ndop` MCP server is set up for this project: `get_project_context` describes it, `search_components` finds components, `get_component` documents one, `list_blocks` and `get_block` offer whole sections, `add_items` installs them, and `verify` checks your files.'
-      : `To let your agent search and read the Ndop docs directly, run \`${RUN_CLI} init --mcp\`.`,
+      : `To let your agent search and read the Ndop docs directly, run \`${cli} init --mcp\`.`,
   ];
 }
 

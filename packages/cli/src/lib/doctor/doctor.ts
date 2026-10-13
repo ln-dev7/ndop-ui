@@ -22,6 +22,7 @@ import {
 } from '../install/project-files';
 import { dependencyName, PlanBuilder } from '../plan/plan';
 import type { Formatter } from '../project/format';
+import { CLI_PACKAGE, cliDependency } from '../run-command';
 import {
   itemKey,
   lockedRef,
@@ -102,6 +103,11 @@ export interface DiagnoseInput {
   project?: string;
   /** The running Node version. */
   nodeVersion: string;
+  /**
+   * The running CLI's version, which the fix pins a missing `@ndop/cli`
+   * to; the latest when it's unknown.
+   */
+  cliVersion?: string;
 }
 
 /** Everything the checks share, read once. */
@@ -422,7 +428,8 @@ interface Requirement {
 
 /**
  * Packages: everything installed items need is in `package.json`, within
- * its range when installed, and the CDK and forms match Angular's minor.
+ * its range when installed, the CDK and forms match Angular's minor, and
+ * `@ndop/cli` is a dependency, as `ndop init` adds it (ADR-0031).
  * Offline, what items need is read from their files' imports, without
  * ranges.
  *
@@ -526,6 +533,21 @@ async function checkPackages(facts: Facts): Promise<Finding> {
       });
     }
   }
+  const angularWarnings = warnings.length;
+
+  // A warning, not an error: nothing breaks without it, and `init --no-cli`
+  // leaves it out on purpose. ndop.json doesn't record that choice, so the
+  // warning can't tell the two apart (ADR-0031, amendment 1).
+  if (!declared.has(CLI_PACKAGE)) {
+    warnings.push(
+      `${CLI_PACKAGE} isn't a dev dependency, so the project has no ndop of its own, pinned by the lockfile.`,
+    );
+    installs.push({
+      spec: cliDependency(facts.input.cliVersion),
+      dev: true,
+      replace: false,
+    });
+  }
 
   const status = worst(errors.length, warnings.length);
   if (status === 'ok') {
@@ -540,7 +562,9 @@ async function checkPackages(facts: Facts): Promise<Finding> {
     status,
     errors.length
       ? 'Installed items need packages that are missing or out of range.'
-      : 'Angular packages are at different minor versions.',
+      : angularWarnings
+        ? 'Angular packages are at different minor versions.'
+        : `${CLI_PACKAGE} isn't a dev dependency.`,
     {
       details: [...errors, ...warnings],
       fix: 'ndop doctor --fix installs the missing or matching versions.',

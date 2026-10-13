@@ -64,6 +64,7 @@ describe('ndop init', () => {
         ],
         dev: false,
       },
+      { specs: ['@ndop/cli@^0.0.0'], dev: true },
     ]);
   });
 
@@ -106,7 +107,7 @@ describe('ndop init', () => {
       }),
     );
     expect(environment.project.files).toEqual(before);
-    expect(environment.installs).toHaveLength(1);
+    expect(environment.installs).toHaveLength(2);
   });
 
   it('ignores .ndop/ in git, keeping the rest of .gitignore', async () => {
@@ -118,6 +119,23 @@ describe('ndop init', () => {
     expect(environment.project.files.get('.gitignore')).toBe(
       "/dist\n/node_modules\n\n# ndop verify's harness and screenshots\n.ndop/\n",
     );
+  });
+
+  it('adds @ndop/cli as a dev dependency, unless the app has it or --no-cli', async () => {
+    expect(
+      (await init(testEnvironment(fixture('ng22')), '--dry-run'))
+        .devDependencies,
+    ).toEqual(['@ndop/cli@^0.0.0']);
+    expect(
+      (await init(testEnvironment(fixture('ng22')), '--no-cli'))
+        .devDependencies,
+    ).toEqual([]);
+
+    const files = fixture('ng22');
+    const manifest = JSON.parse(files['package.json'] ?? '{}');
+    manifest.devDependencies['@ndop/cli'] = '~0.1.0';
+    files['package.json'] = JSON.stringify(manifest, null, 2);
+    expect((await init(testEnvironment(files))).devDependencies).toEqual([]);
   });
 
   it('adds @ndop/verify with --verify', async () => {
@@ -147,6 +165,7 @@ describe('ndop init', () => {
       plugins: { '@tailwindcss/postcss': {} },
     });
     expect(result.devDependencies).toEqual([
+      '@ndop/cli@^0.0.0',
       '@tailwindcss/postcss',
       'postcss',
       'tailwindcss',

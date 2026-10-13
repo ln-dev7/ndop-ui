@@ -14,14 +14,17 @@ yarn dlx @ndop/cli init
 bunx @ndop/cli init
 ```
 
-Or add it as a dev dependency, which gives you the `ndop` command:
+`ndop init` then adds `@ndop/cli` as a dev dependency, as `ng new` adds
+`@angular/cli`, so the project has its own `ndop` command at the version
+its lockfile pins. `npx ndop` runs it with npm, pnpm and Bun alike:
 
 ```bash
-pnpm add -D @ndop/cli
+npx ndop add dialog
 pnpm exec ndop add dialog
 ```
 
-The examples below use `npx @ndop/cli`; installed, write `ndop` instead.
+`ndop init --no-cli` leaves it out; `pnpm add -D @ndop/cli` adds it later.
+The examples below use `npx @ndop/cli`, which works either way.
 
 ## `ndop init`
 
@@ -34,8 +37,9 @@ npx @ndop/cli init
 It writes `ndop.json`, adds the `@/*` path alias to `tsconfig.json`, sets up
 Tailwind v4 if the app doesn't have it, imports `@ndop/core/styles.css`,
 installs the default theme and the `utils` and `icons` items, and adds
-`provideNdop()` and `provideIcons()` to `app.config.ts`. Running it again
-changes nothing.
+`provideNdop()` and `provideIcons()` to `app.config.ts`, and adds
+`@ndop/cli` as a dev dependency, at `^` its own version (a prerelease
+is asked for exactly). Running it again changes nothing.
 
 | Option             | Effect                                                                                                                                     |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -43,11 +47,14 @@ changes nothing.
 | `--project <name>` | Angular project, when `angular.json` has several.                                                                                          |
 | `--agent <names>`  | Coding agents to write guidance for: `claude-code`, `cursor`, `copilot`, or `none`. Repeatable or comma-separated. Detected when left out. |
 | `--mcp`            | Also register the Ndop MCP server in the agents' MCP settings.                                                                             |
+| `--no-cli`         | Don't add `@ndop/cli` as a dev dependency; the agent files then say `npx @ndop/cli` instead of `npx ndop`.                                 |
 
 ### Agent context files
 
 `init` writes an Ndop section into `AGENTS.md`: how to use the installed
-components, the theme's tokens and the `ndop verify` loop. With
+components, the theme's tokens and the `ndop verify` loop, with commands
+written as `npx ndop`, or `npx @ndop/cli` when the project doesn't
+depend on `@ndop/cli`. With
 `--agent claude-code` it also writes it into `CLAUDE.md` and adds a skill
 at `.claude/skills/ndop/SKILL.md`; with `cursor`, a rule at
 `.cursor/rules/ndop.mdc`; with `copilot`, a section in
@@ -157,7 +164,8 @@ npx @ndop/cli doctor
 ```
 
 Checks the setup (ADR-0024): the Node and Angular versions, the packages
-installed items need, `ndop.json`, the import alias, Tailwind, the tokens
+installed items need and `@ndop/cli` itself (a warning when missing),
+`ndop.json`, the import alias, Tailwind, the tokens
 items use, `provideNdop()` and the icon provider, the lockfile (conflicts,
 missing and edited files, items behind the registry), zoneless and SSR
 support, and the agent files. Each check reports `ok`, `warning` or

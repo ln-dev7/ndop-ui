@@ -111,12 +111,32 @@ describe('agent context files', () => {
     expect(before).toContain(
       'read `https://ndop.dev/docs/components/<name>.md`',
     );
-    expect(before).toContain('run `npx @ndop/cli init --mcp`');
+    expect(before).toContain('run `npx ndop init --mcp`');
 
     await ndop(environment, 'add', 'dialog');
     expect(environment.project.files.get('AGENTS.md')).toContain(
       `\`default\` ${version('default')}, \`dialog\` ${version('dialog')}, \`icons\` ${version('icons')}, \`utils\` ${version('utils')}.`,
     );
+  });
+
+  it("runs the project's own ndop only once @ndop/cli is a dependency", async () => {
+    const environment = app();
+    await ndop(environment, 'init', '--no-cli');
+    const agents = () => environment.project.files.get('AGENTS.md') ?? '';
+    expect(agents()).toContain('run `npx @ndop/cli add <name>`');
+    expect(agents()).not.toContain('npx ndop');
+
+    const manifest = JSON.parse(
+      environment.project.files.get('package.json') ?? '',
+    );
+    manifest.devDependencies['@ndop/cli'] = '^1.0.0';
+    environment.project.files.set(
+      'package.json',
+      JSON.stringify(manifest, null, 2),
+    );
+    await ndop(environment, 'add', 'dialog');
+    expect(agents()).toContain('run `npx ndop add <name>`');
+    expect(agents()).not.toContain('npx @ndop/cli');
   });
 
   it('uses the agents a project already has, without asking', async () => {

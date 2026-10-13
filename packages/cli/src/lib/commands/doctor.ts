@@ -41,6 +41,11 @@ export interface DoctorOptions {
   yes?: boolean;
   /** The Node version to check; the running one by default. */
   nodeVersion?: string;
+  /**
+   * The running CLI's version, which `--fix` pins a missing `@ndop/cli` to;
+   * the latest when it's unknown.
+   */
+  cliVersion?: string;
 }
 
 /** The machine-readable outcome of `ndop doctor`, printed with `--json`. */
@@ -112,6 +117,7 @@ export async function runDoctor(
       client: offline ? undefined : client,
       ...(options.project ? { project: options.project } : {}),
       nodeVersion: options.nodeVersion ?? process.versions.node,
+      ...(options.cliVersion ? { cliVersion: options.cliVersion } : {}),
     });
   const fresh = async () => {
     const fs = environment.fs(root);
@@ -227,8 +233,9 @@ export function registerDoctorCommand(
     .option('-y, --yes', 'with --fix, apply without asking')
     .action(async function (this: Command, options: DoctorOptions) {
       const output = outputOf(this);
+      const version = program.version();
       const { result, plan, cancelled } = await runDoctor(
-        options,
+        version ? { ...options, cliVersion: version } : options,
         environment,
         !options.yes && !options.json && environment.interactive
           ? async (planned) => {

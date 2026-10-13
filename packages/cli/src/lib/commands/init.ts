@@ -13,6 +13,7 @@ interface InitCommandOptions extends WriteOptions {
   agent: string[];
   mcp?: boolean;
   verify?: boolean;
+  cli: boolean;
 }
 
 /** How each agent is named in the prompt. */
@@ -27,8 +28,11 @@ const AGENT_LABELS: Record<Agent, string> = {
  * ADR-0011). It writes `ndop.json`, adds the `@/` path alias, sets up
  * Tailwind v4 if needed, imports `@ndop/core/styles.css`, installs the
  * theme, `utils` and `icons` items, registers `provideNdop()` and
- * `provideIcons()`, and writes the agent context files (ADR-0017), with the
- * MCP server registered when asked. Running it again changes nothing.
+ * `provideIcons()`, writes the agent context files (ADR-0017), with the
+ * MCP server registered when asked, and adds `@ndop/cli` as a dev
+ * dependency at the running version, so later commands run the project's
+ * own `ndop` (`npx ndop add dialog`); `--no-cli` skips it (ADR-0031).
+ * Running it again changes nothing.
  *
  * @param program - The root `ndop` program.
  * @param environment - Injected outside world.
@@ -39,6 +43,7 @@ const AGENT_LABELS: Record<Agent, string> = {
  * npx @ndop/cli init --yes
  * npx @ndop/cli init --dry-run --json
  * npx @ndop/cli init --agent claude-code --mcp
+ * npx @ndop/cli init --no-cli
  * ```
  */
 export function registerInitCommand(
@@ -65,8 +70,13 @@ export function registerInitCommand(
         [],
       )
       .option('--mcp', "register the Ndop MCP server in the agents' settings")
-      .option('--verify', 'add @ndop/verify, which ndop verify runs'),
+      .option('--verify', 'add @ndop/verify, which ndop verify runs')
+      .option(
+        '--no-cli',
+        "don't add @ndop/cli as a dev dependency; run it with npx @ndop/cli",
+      ),
   ).action(async function (this: Command, options: InitCommandOptions) {
+    const version = program.version();
     const ask =
       environment.interactive && !options.yes && !options.json
         ? {
@@ -106,6 +116,8 @@ export function registerInitCommand(
             : {}),
           ...(options.mcp ? { mcp: true } : {}),
           ...(options.verify ? { verify: true } : {}),
+          cli: options.cli,
+          ...(version ? { cliVersion: version } : {}),
           ...ask,
         });
         return items;

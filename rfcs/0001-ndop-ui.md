@@ -354,6 +354,8 @@ The CLI is AST-aware, idempotent and previewable: every write can be shown as a 
 | `ndop build`                     | For registry authors: validates and emits static registry JSON, metadata and versioned snapshots.                                                                                                                                                                                                           |
 | `ng add @ndop/cli`               | Schematic wrapper that runs `ndop init` for teams that prefer Angular CLI flows.                                                                                                                                                                                                                            |
 
+`ndop init` also adds `@ndop/cli` as a dev dependency, as `ng new` adds `@angular/cli`, so later commands run the project's own, lockfile-pinned `ndop` (`npx ndop add dialog`); `--no-cli` skips it (ADR-0031, amendment 1).
+
 **Code modification (MUST)**
 
 - Use the TypeScript compiler API (via ts-morph) or Angular schematics' AST utilities for edits to `.ts` files: adding providers to `app.config.ts`, imports to standalone components, path aliases to `tsconfig.json`. No regex or string-replace on TypeScript.
