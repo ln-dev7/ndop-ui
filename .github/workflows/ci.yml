@@ -97,7 +97,9 @@ jobs:
         with:
           main-branch-name: master
 
-      - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+      # The docs build takes block thumbnails and OG images in Chromium
+      # (ADR-0026), so every browser's job needs it to build the site.
+      - run: pnpm exec playwright install --with-deps ${{ matrix.browser == 'chromium' && 'chromium' || format('{0} chromium', matrix.browser) }}
 
       # Arguments after `--` reach every Playwright run, which keeps it to
       # this job's browser and half.
