@@ -11,15 +11,31 @@
     },
     "build": {
       "executor": "@ndop/workspace-plugin:registry-build",
-      "outputs": ["{workspaceRoot}/dist/registry"],
+      "cache": true,
+      "outputs": ["{workspaceRoot}/dist/registry", "{projectRoot}/snapshots"],
       "inputs": [
         "production",
         "^production",
         "{workspaceRoot}/packages/cli/src/**/*",
         "{workspaceRoot}/packages/schema/src/**/*",
+        "{workspaceRoot}/tools/workspace-plugin/src/executors/registry-build/**/*",
         "{workspaceRoot}/tsconfig.base.json",
         {
           "env": "CI"
+        },
+        {
+          "env": "NDOP_REGISTRY"
+        },
+        {
+          "externalDependencies": [
+            "typescript",
+            "@angular/compiler-cli",
+            "@angular/core",
+            "@angular/common",
+            "@angular/forms",
+            "@angular/cdk",
+            "@lucide/angular"
+          ]
         }
       ],
       "options": {
