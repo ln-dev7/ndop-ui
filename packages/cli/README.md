@@ -1,7 +1,7 @@
 # @ndop/cli
 
-The ndop CLI: `init`, `add`, `diff`, `update`, `doctor`, `verify` and
-`build`.
+The ndop CLI: `init`, `add`, `list`, `view`, `diff`, `update`, `doctor`,
+`verify` and `build`.
 
 ## Install
 
@@ -73,6 +73,34 @@ again changes nothing.
 Add `@<version>` to install a specific version, such as
 `npx @ndop/cli add button@0.1.0`. Registries serve each version at their URL
 template with `<name>@<version>` in place of `{name}`.
+
+## `ndop list [words...]`
+
+```bash
+npx @ndop/cli list --type block
+```
+
+Lists the registry's items, grouped by type, with their latest version and
+description. Outside an app it reads Ndop's registry; in one, also the
+registries in `ndop.json`'s `registries`, and it shows the version of each
+item installed. Words filter by name, title, description and category.
+`--type` keeps one type: `ui`, `block`, `theme`, `lib`, `style`, `file` or
+`example`; examples are listed only with `--type example`.
+
+## `ndop view <items...>`
+
+```bash
+npx @ndop/cli view dialog
+```
+
+Prints an item's description, version, install command, docs page,
+dependencies and files, and for a component its usage, API (each part's
+selector, inputs, models, outputs and data attributes), keyboard map, focus
+rules and examples, from its metadata. `--code` adds the examples' source.
+An unknown name fails with exit code 1 and the closest names.
+
+`list` and `view` write nothing, fit their output to the terminal, and take
+`--cwd`, `--registry` and `--json`.
 
 ## `ndop diff [items...]`
 

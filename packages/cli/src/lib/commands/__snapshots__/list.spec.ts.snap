@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ndop list > adds the registries in ndop.json and what is installed 1`] = `
+"Components (3)
+  button            1.0.0  0.1.0 installed  Displays a button or a component th…
+  dialog            1.0.0                   A window overlaid on the page.
+  @acme/data-table  2.1.0  installed        Sortable rows of data.
+
+Blocks (1)
+  login-01          1.0.0                   A sign-in form in a card, with emai…
+
+Themes (1)
+  default           1.0.0                   shadcn's neutral palette, in light…
+
+Libraries (1)
+  utils             1.0.0  installed        cn() and variants().
+
+2 examples not listed; add --type example to list them.
+Run npx @ndop/cli view <name> for an item's API and examples.
+"
+`;
+
+exports[`ndop list > lists the default registry's items outside a project, without examples 1`] = `
+"Components (2)
+  button    1.0.0  Displays a button or a component that looks like a button.
+  dialog    1.0.0  A window overlaid on the page.
+
+Blocks (1)
+  login-01  1.0.0  A sign-in form in a card, with email and password.
+
+Themes (1)
+  default   1.0.0  shadcn's neutral palette, in light and dark.
+
+Libraries (1)
+  utils     1.0.0  cn() and variants().
+
+2 examples not listed; add --type example to list them.
+Run npx @ndop/cli view <name> for an item's API and examples.
+"
+`;
+
+exports[`ndop list > prints a stable JSON result 1`] = `
+{
+  "command": "list",
+  "errors": [],
+  "items": [
+    {
+      "categories": [
+        "inputs",
+      ],
+      "description": "Displays a button or a component that looks like a button.",
+      "name": "button",
+      "registry": "@ndop",
+      "title": "Button",
+      "type": "registry:ui",
+      "version": "1.0.0",
+    },
+    {
+      "categories": [
+        "overlays",
+      ],
+      "description": "A window overlaid on the page.",
+      "name": "dialog",
+      "registry": "@ndop",
+      "title": "Dialog",
+      "type": "registry:ui",
+      "version": "1.0.0",
+    },
+    {
+      "categories": [
+        "auth",
+      ],
+      "description": "A sign-in form in a card, with email and password.",
+      "name": "login-01",
+      "registry": "@ndop",
+      "title": "Login 01",
+      "type": "registry:block",
+      "version": "1.0.0",
+    },
+    {
+      "categories": [],
+      "description": "shadcn's neutral palette, in light and dark.",
+      "name": "default",
+      "registry": "@ndop",
+      "title": "Default theme",
+      "type": "registry:theme",
+      "version": "1.0.0",
+    },
+    {
+      "categories": [],
+      "description": "cn() and variants().",
+      "name": "utils",
+      "registry": "@ndop",
+      "title": "Utils",
+      "type": "registry:lib",
+      "version": "1.0.0",
+    },
+  ],
+  "ok": true,
+  "warnings": [],
+}
+`;

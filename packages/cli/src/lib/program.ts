@@ -8,8 +8,10 @@ import {
   type CommandEnvironment,
 } from './commands/environment';
 import { registerInitCommand } from './commands/init';
+import { registerListCommand } from './commands/list';
 import { registerUpdateCommand } from './commands/update';
 import { registerVerifyCommand } from './commands/verify';
+import { registerViewCommand } from './commands/view';
 
 /**
  * Builds the `ndop` command-line program with every command registered.
@@ -36,6 +38,8 @@ export function createProgram(
     .version(version);
   registerInitCommand(program, environment);
   registerAddCommand(program, environment);
+  registerListCommand(program, environment);
+  registerViewCommand(program, environment);
   registerDiffCommand(program, environment);
   registerUpdateCommand(program, environment);
   registerDoctorCommand(program, environment);

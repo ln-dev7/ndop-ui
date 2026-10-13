@@ -159,7 +159,7 @@ The two top layers are copied into the user's repo; the two bottom layers update
 | `@ndop/primitives`               | npm, semver                                          | Headless directives: state, keyboard, focus, ARIA, overlay wiring. No styles. |
 | `@ndop/core`                     | npm, semver                                          | `cn()`, `variants()`, token helpers, `provideNdop()` config, icons adapter    |
 | `registry/` (styled UI + blocks) | Copied in by the CLI                                 | Tailwind-styled directives/components, examples, blocks                       |
-| `@ndop/cli` (CLI `ndop`)         | npm, `npx @ndop/cli` + `ng add @ndop/cli` (ADR-0031) | init, add, diff, update, doctor, verify, build                                |
+| `@ndop/cli` (CLI `ndop`)         | npm, `npx @ndop/cli` + `ng add @ndop/cli` (ADR-0031) | init, add, list, view, diff, update, doctor, verify, build                    |
 | `@ndop/mcp`                      | npm, `npx @ndop/mcp`                                 | MCP server over the registry and metadata                                     |
 | `@ndop/metadata`                 | Build-time tool                                      | Extracts component APIs from compiled code into `metadata.json`               |
 | `apps/docs`                      | Website                                              | Analog-based docs, theme studio, llms.txt                                     |

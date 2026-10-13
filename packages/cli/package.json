@@ -1,7 +1,7 @@
 {
   "name": "@ndop/cli",
   "version": "0.0.1",
-  "description": "The ndop CLI: init, add, diff, update, doctor, verify and build for Ndop UI registries.",
+  "description": "The ndop CLI: init, add, list, view, diff, update, doctor, verify and build for Ndop UI registries.",
   "license": "MIT",
   "homepage": "https://ndop.dev",
   "repository": {

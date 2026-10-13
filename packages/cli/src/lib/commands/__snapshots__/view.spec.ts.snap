@@ -1,0 +1,229 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ndop view > prints a block's notes, and no API 1`] = `
+"Login 01  login-01 1.0.0, block
+A sign-in form in a card, with email and password.
+
+  Install  npx @ndop/cli add login-01
+  Docs     https://ndop.dev/blocks/login-01
+  Angular  21.0.0 or later, SSR, zoneless
+
+Dependencies
+  registry  button
+
+Files
+  {blocks}/login-01/login-01.ts
+
+Notes
+  Route to it, for example: { path: 'login', loadComponent: () =>
+  import('./blocks/login-01/login-01').then((m) => m.Login01Block) }
+"
+`;
+
+exports[`ndop view > prints a component's API, keyboard map and examples 1`] = `
+"Button  button 1.0.0, component
+Displays a button or a component that looks like a button.
+
+Buttons start actions. \`ndButton\` styles a native \`button\`, or an \`a\` when the
+action navigates.
+
+  Install  npx @ndop/cli add button
+  Docs     https://ndop.dev/docs/components/button
+  Pattern  Button, https://www.w3.org/WAI/ARIA/apg/patterns/button/
+  Angular  21.0.0 or later, SSR, zoneless
+  Size     1.0 kB gzip
+
+Dependencies
+  npm       @ndop/primitives
+  registry  utils
+
+Files
+  {ui}/button/button.ts
+
+Usage
+  import { Button } from '@/ui/button/button';
+
+  <button ndButton>Save</button>
+
+API
+  Button  button[ndButton], a[ndButton]
+    Styled button for a native \`button\` or an \`a\`, with the \`NdButton\` behavior.
+    Role        native (button / link)
+    [variant]   'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' |
+                'link' = 'default'
+                Visual style.
+    [disabled]  boolean = false
+                Whether the button or link is disabled.
+    Data        data-slot (button), data-variant
+
+Keyboard
+  Enter  Activates the button, or follows the link; does nothing while disabled.
+  Space  Activates a \`button\`.
+
+Focus
+  - A disabled \`button\` is removed from the tab order.
+
+Right to left
+  Nothing mirrors.
+
+Examples
+  button-demo  The six button variants.
+  button-link  A link that looks like a button.
+
+  Add --code to print their source.
+"
+`;
+
+exports[`ndop view > prints the item and its metadata as JSON 1`] = `
+{
+  "command": "view",
+  "errors": [],
+  "items": [
+    {
+      "docs": "https://ndop.dev/docs/components/button",
+      "examples": [
+        {
+          "description": "The six button variants.",
+          "name": "button-demo",
+          "title": "Button demo",
+        },
+        {
+          "description": "A link that looks like a button.",
+          "name": "button-link",
+          "title": "Button link",
+        },
+      ],
+      "install": "npx @ndop/cli add button",
+      "item": {
+        "angular": {
+          "exports": [
+            "Button",
+          ],
+          "minVersion": "21.0.0",
+          "ssr": true,
+          "zoneless": true,
+        },
+        "categories": [
+          "inputs",
+        ],
+        "dependencies": [
+          "@ndop/primitives",
+        ],
+        "description": "Displays a button or a component that looks like a button.",
+        "files": [
+          {
+            "content": "export class Button {}
+",
+            "path": "ui/button/button.ts",
+            "target": "{ui}/button/button.ts",
+            "type": "registry:ui",
+          },
+        ],
+        "name": "button",
+        "ndop": {
+          "examples": [
+            "button-demo",
+            "button-link",
+          ],
+          "metadata": "metadata/button.json",
+        },
+        "registryDependencies": [
+          "utils",
+        ],
+        "title": "Button",
+        "type": "registry:ui",
+        "version": "1.0.0",
+      },
+      "metadata": {
+        "agentNotes": {
+          "do": [
+            "Use one default button per view.",
+          ],
+          "dont": [
+            "Don't put \`ndButton\` on a \`div\`.",
+          ],
+        },
+        "bundleSize": {
+          "gzip": 991,
+        },
+        "description": "Displays a button or a component that looks like a button.",
+        "examples": [
+          "button-demo",
+          "button-link",
+        ],
+        "focus": [
+          "A disabled \`button\` is removed from the tab order.",
+        ],
+        "intro": "Buttons start actions.
+\`ndButton\` styles a native \`button\`, or an \`a\`
+when the action navigates.",
+        "keyboard": [
+          {
+            "action": "Activates the button, or follows the link; does nothing while disabled.",
+            "keys": [
+              "Enter",
+            ],
+          },
+          {
+            "action": "Activates a \`button\`.",
+            "keys": [
+              "Space",
+            ],
+          },
+        ],
+        "name": "button",
+        "parts": [
+          {
+            "dataAttributes": [
+              {
+                "name": "data-slot",
+                "values": [
+                  "button",
+                ],
+              },
+              {
+                "name": "data-variant",
+              },
+            ],
+            "description": "Styled button for a native \`button\` or an \`a\`, with
+the {@link NdButton} behavior.",
+            "inputs": [
+              {
+                "default": "'default'",
+                "description": "Visual style.",
+                "name": "variant",
+                "type": "'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'",
+              },
+              {
+                "default": "false",
+                "description": "Whether the button or link is disabled.",
+                "name": "disabled",
+                "type": "boolean",
+              },
+            ],
+            "models": [],
+            "name": "Button",
+            "outputs": [],
+            "role": "native (button / link)",
+            "selector": "button[ndButton], a[ndButton]",
+            "source": "item",
+          },
+        ],
+        "pattern": {
+          "name": "Button",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/button/",
+        },
+        "rtl": "Nothing mirrors.",
+        "title": "Button",
+        "usage": {
+          "imports": "import { Button } from '@/ui/button/button';",
+          "template": "<button ndButton>Save</button>",
+        },
+      },
+      "name": "button",
+      "registry": "@ndop",
+    },
+  ],
+  "ok": true,
+}
+`;

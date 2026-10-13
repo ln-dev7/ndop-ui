@@ -84,6 +84,11 @@ export interface CommandEnvironment {
   angularCompiler(root: string): Promise<AngularCompiler | undefined>;
   /** Whether the user can answer prompts. */
   interactive: boolean;
+  /**
+   * The terminal's width, which `ndop list` and `ndop view` fit their
+   * output to; unknown when output goes to a file or another program.
+   */
+  columns?: number | undefined;
   /** Environment variables. */
   env: Record<string, string | undefined>;
 }
@@ -131,6 +136,7 @@ export function nodeEnvironment(
       }
     },
     interactive: Boolean(process.stdin.isTTY && process.stdout.isTTY),
+    columns: process.stdout.isTTY ? process.stdout.columns : undefined,
     env: process.env,
   };
 }
