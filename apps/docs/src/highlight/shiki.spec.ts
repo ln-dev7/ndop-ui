@@ -61,6 +61,17 @@ describe('code frame', () => {
     expect(html).not.toContain('highlighted-word');
   });
 
+  it("never shows a block's nocheck or reads its reason as highlights", async () => {
+    const html = await highlight(
+      'const a = 1;\nconst b = 2;',
+      'title="before.html" nocheck="spartan/ui markup, {2} lines"',
+    );
+    expect(html).not.toContain('nocheck');
+    expect(html).not.toContain('spartan');
+    expect(html).not.toContain('highlighted');
+    expect(html).toContain('<span class="code-frame-title">before.html</span>');
+  });
+
   it('highlights lines and words from the meta, and marks diffs', async () => {
     const html = await highlight(
       'const a = 1;\nconst b = 2; // [!code ++]\nconst c = 3;',

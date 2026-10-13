@@ -50,6 +50,14 @@ describe('plainMarkdown', () => {
       ].join('\n'),
     );
   });
+
+  it("drops a block's nocheck (ADR-0030)", () => {
+    expect(
+      plainMarkdown(
+        '```angular-html title="delete-dialog.html" nocheck="Angular Material\'s markup"\n<h2>Delete?</h2>\n```',
+      ),
+    ).toBe('`delete-dialog.html`:\n\n```angular-html\n<h2>Delete?</h2>\n```');
+  });
 });
 
 describe('guideMarkdown', () => {

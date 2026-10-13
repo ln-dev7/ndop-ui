@@ -323,7 +323,9 @@ function commandBlock(command: string): Element {
 /**
  * Takes `title="…"` out of a fence's meta and keeps it apart, so the
  * word-highlight transformer, which reads every `/…/` in the meta as a
- * word to mark, doesn't match the slashes of a file path.
+ * word to mark, doesn't match the slashes of a file path. Drops
+ * `nocheck="…"`, which only tells the guides' check to skip the block
+ * (ADR-0030), for the same reason: its reason may hold slashes or braces.
  *
  * @returns The transformer; it must run first.
  */
@@ -334,10 +336,15 @@ export function transformerMetaTitle(): ShikiTransformer {
       const meta = options.meta as
         | { __raw?: string; title?: string }
         | undefined;
-      const title = meta?.__raw && /title="([^"]+)"/.exec(meta.__raw)?.[1];
-      if (meta && title) {
+      if (!meta?.__raw) return;
+      meta.__raw = meta.__raw.replace(
+        /(?:^|\s)nocheck(?:="[^"]*")?(?=\s|$)/,
+        '',
+      );
+      const title = /title="([^"]+)"/.exec(meta.__raw)?.[1];
+      if (title) {
         meta.title = title;
-        meta.__raw = meta.__raw?.replace(/title="[^"]+"/, '');
+        meta.__raw = meta.__raw.replace(/title="[^"]+"/, '');
       }
     },
   };
