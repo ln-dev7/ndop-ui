@@ -66,12 +66,15 @@ jobs:
   # Vite's 60s server-render limit. The docs' e2e runs against their
   # production build. The registry install test has its own job.
   e2e:
-    name: E2E ${{ matrix.browser }}
+    name: E2E ${{ matrix.browser }} ${{ matrix.shard }}/2
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
+        # Two halves of each project's tests per browser (ADR-0029). The
+        # crawls are single tests, so each lands whole in one half.
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -93,18 +96,34 @@ jobs:
       - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
 
       # Arguments after `--` reach every Playwright run, which keeps it to
-      # this job's browser.
+      # this job's browser and half.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }}
+        run: pnpm nx affected -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
 
       - if: github.event_name == 'push'
-        run: pnpm nx run-many -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }}
+        run: pnpm nx run-many -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
 
-      # ADR-0021: every example in light, dark and RTL, against committed
-      # baselines. The browser runs in Playwright's Docker image, so one
-      # job is enough. The Visual baselines workflow writes them; until
-      # they're committed, there's nothing to compare.
-      - if: matrix.browser == 'chromium' && hashFiles('apps/harness-e2e/src/visual/__screenshots__/**') != ''
+  # ADR-0021: every example, block and theme sheet against committed
+  # baselines. The browser runs in Playwright's Docker image, so one job is
+  # enough; it has its own runner so it runs beside the e2e jobs rather
+  # than after one of them (ADR-0029). The Visual baselines workflow
+  # writes the baselines.
+  visual:
+    name: Visual
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - if: hashFiles('apps/harness-e2e/src/visual/__screenshots__/**') != ''
         run: pnpm nx run harness-e2e:visual
 
   # ADR-0016: Lighthouse on every prerendered docs route, served the way
