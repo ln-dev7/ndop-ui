@@ -15,7 +15,8 @@ tooling built for both humans and coding agents.
 | `tools/workspace-plugin` | Nx generators and inferred targets for this repo |
 | `tools/update-fixtures`  | Fixtures for `ndop update` merges                |
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) to build and test. MIT licensed.
+See [CONTRIBUTING.md](CONTRIBUTING.md) to build and test, and
+[ROADMAP.md](ROADMAP.md) for what comes after 1.0. MIT licensed.
 
 ## Acknowledgements
 
