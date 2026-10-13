@@ -20,6 +20,8 @@ import {
   lastJsonObject,
   listProblems,
   type ListJson,
+  localCliProblems,
+  localCommand,
   run,
   runScriptCommand,
   type InstallCase,
@@ -48,9 +50,10 @@ interface CaseResult {
  * case, an app with `ng new` and times `ndop init`, `ndop add <item>` and
  * the app's build against the budget, running `@ndop/cli` as users do
  * (ADR-0031). It checks the agent context files (ADR-0017), init having run
- * with `--agent claude-code --mcp` over a team note in `AGENTS.md`. Then it
- * runs `ndop add <item> --json` again and checks that the plan is empty and
- * no file changed. A case with `update` also installs `button@0.1.0`, edits
+ * with `--agent claude-code --mcp` over a team note in `AGENTS.md`, and
+ * that init added `@ndop/cli` as a dev dependency that `npx ndop` runs.
+ * Then it runs `ndop add <item> --json` again through that local bin and
+ * checks that the plan is empty and no file changed. A case with `update` also installs `button@0.1.0`, edits
  * it, runs `ndop update` and builds the app again (ADR-0020). A case with
  * `all` then installs every component, example and block in the registry
  * and builds the app, outside the budget. A case with `shadcn` installs the
@@ -241,14 +244,25 @@ async function runCase(
         () => undefined,
       );
     }
-    const problems = agentFileProblems(agentFiles, settings.item);
+    const problems = [
+      ...agentFileProblems(agentFiles, settings.item),
+      ...localCliProblems(
+        JSON.parse(await readFile(join(app, 'package.json'), 'utf-8')),
+        settings.version,
+        await run(localCommand(['--version']), options),
+      ),
+    ];
     if (problems.length > 0) {
       return { id, seconds, error: problems.join('; ') };
     }
 
+    // Through the app's own ndop, as the agent files tell agents to run it.
     const before = await hashTree(app);
     const again = lastJsonObject(
-      await run(ndop(['add', settings.item, '--yes', '--json']), options),
+      await run(
+        localCommand(['add', settings.item, '--yes', '--json']),
+        options,
+      ),
     ) as {
       ok: boolean;
       files: unknown[];

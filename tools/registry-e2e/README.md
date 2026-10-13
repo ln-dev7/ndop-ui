@@ -23,8 +23,10 @@ never from npm. Then, for each case in `project.json`:
    timed together against the 2-minute budget. `ndop` runs as users run
    it: `npx --yes @ndop/cli`, `pnpm dlx @ndop/cli` or `bunx @ndop/cli`
    (ADR-0031);
-3. `ndop add dialog --yes --json` again, which must plan nothing and change
-   no file;
+3. checks that `init` added `@ndop/cli` to `devDependencies` at the
+   prerelease under test (npm writes it with `^`), and that `npx ndop --version`, the app's own
+   bin, prints it; then `npx ndop add dialog --yes --json` again, which
+   must plan nothing and change no file;
 4. `ndop list --json`, which must list Dialog as installed at its latest
    version, and `ndop view dialog`, which must succeed;
 5. for the case marked `update`: `ndop add button@0.1.0`, an edit to the
@@ -41,15 +43,15 @@ note's steps (adds the theme and icons, imports the styles, registers
 builds the app.
 
 The case marked `registries` (`npm-ng22-registries`) is Phase 6's
-acceptance test for third-party registries (ADR-0025): after `ndop init`,
-it copies `tools/registry-template`, points its `@ndop/cli` at the
-published version, builds it with its own `npm run build`, and serves it
-behind a bearer token. It adds `"@sample": { "url": ".../{name}.json",
-"headers": { "Authorization": "Bearer ${SAMPLE_TOKEN}" } }` to `ndop.json`,
-checks that `ndop add @sample/widget` without `SAMPLE_TOKEN` fails naming
-it, then runs it with the token, which also installs `button` from Ndop's
-registry, checks the lockfile, imports a page using both and builds the
-app.
+acceptance test for third-party registries (ADR-0025): after `ndop init`
+and the same `@ndop/cli` check, it copies `tools/registry-template`,
+points its `@ndop/cli` at the published version, builds it with its own
+`npm run build`, and serves it behind a bearer token. It adds
+`"@sample": { "url": ".../{name}.json", "headers": { "Authorization": "Bearer ${SAMPLE_TOKEN}" } }`
+to `ndop.json`, checks that `npx ndop add @sample/widget` without
+`SAMPLE_TOKEN` fails naming it, then runs it with the token, which also
+installs `button` from Ndop's registry, checks the lockfile, imports a page
+using both and builds the app.
 
 Apps and one log per case end up in `tmp/registry-e2e`. bun must be on the
 `PATH` for the bun case.

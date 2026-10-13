@@ -12,6 +12,8 @@ import {
   installableItems,
   lastJsonObject,
   listProblems,
+  localCliProblems,
+  localCommand,
   run,
   runScriptCommand,
   TEAM_NOTE,
@@ -49,6 +51,41 @@ describe('commands', () => {
       ['@ndop/cli@1.0.0', 'init'],
     ]);
     expect(runScriptCommand('bun', 'build')).toEqual(['bun', ['run', 'build']]);
+  });
+
+  it("runs the app's own ndop through npx, never fetching it", () => {
+    expect(localCommand(['add', 'dialog'])).toEqual([
+      'npx',
+      ['ndop', 'add', 'dialog'],
+    ]);
+  });
+});
+
+describe('localCliProblems', () => {
+  const version = '0.0.0-e2e.1';
+
+  it('accepts @ndop/cli pinned to the version under test, and run locally', () => {
+    expect(
+      localCliProblems(
+        { devDependencies: { '@ndop/cli': version } },
+        version,
+        `${version}\n`,
+      ),
+    ).toEqual([]);
+    expect(
+      localCliProblems(
+        { devDependencies: { '@ndop/cli': `^${version}` } },
+        version,
+        version,
+      ),
+    ).toEqual([]);
+  });
+
+  it('reports a missing dev dependency and another version run', () => {
+    expect(localCliProblems({}, version, '1.0.0\n')).toEqual([
+      `package.json has @ndop/cli nowhere in devDependencies, not ${version}`,
+      `npx ndop --version printed "1.0.0", not ${version}`,
+    ]);
   });
 });
 
@@ -99,7 +136,7 @@ describe('run', () => {
 
 describe('agentFileProblems', () => {
   const section =
-    '<!-- ndop:start -->\n\n## Ndop UI\n\n`dialog` 0.1.2.\n\n<!-- ndop:end -->\n';
+    '<!-- ndop:start -->\n\n## Ndop UI\n\nRun `npx ndop add <name>`.\n\n`dialog` 0.1.2.\n\n<!-- ndop:end -->\n';
   const good = {
     'AGENTS.md': `${TEAM_NOTE}\n${section}`,
     'CLAUDE.md': section,

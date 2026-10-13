@@ -194,6 +194,59 @@ export function execCommand(
 }
 
 /**
+ * How users run the app's own `ndop` once `ndop init` added `@ndop/cli` as
+ * a dev dependency (ADR-0031): `npx ndop`, which runs the bin in
+ * `node_modules/.bin` in npm, pnpm and bun projects alike. No `--yes`:
+ * were the bin missing, npx would fetch an `ndop` package instead, and no
+ * registry has one at the test's version.
+ *
+ * @param args - Arguments for `ndop`.
+ * @returns The command line.
+ */
+export function localCommand(args: string[]): CommandLine {
+  return ['npx', ['ndop', ...args]];
+}
+
+/** The part of an app's `package.json` {@link localCliProblems} reads. */
+export interface AppManifest {
+  /** Its dev dependencies, by name. */
+  devDependencies?: Record<string, string>;
+}
+
+/**
+ * What's wrong with the CLI `ndop init` installed: `package.json` must
+ * list `@ndop/cli` as a dev dependency at the version under test, exactly
+ * or with npm's `^`, and `npx ndop --version` must run that version, from
+ * the app's own `node_modules`.
+ *
+ * @param manifest - The app's `package.json`.
+ * @param version - Version the `@ndop/*` packages were published under.
+ * @param printed - What `npx ndop --version` printed.
+ * @returns Problems; none when it worked.
+ */
+export function localCliProblems(
+  manifest: AppManifest,
+  version: string,
+  printed: string,
+): string[] {
+  const problems: string[] = [];
+  const declared = manifest.devDependencies?.['@ndop/cli'];
+  // npm saves even an exact spec with its `^` save-prefix; pnpm and bun
+  // keep a prerelease exact. The lockfile pins it either way.
+  if (declared !== version && declared !== `^${version}`) {
+    problems.push(
+      `package.json has @ndop/cli ${declared ?? 'nowhere in devDependencies'}, not ${version}`,
+    );
+  }
+  if (printed.trim().split('\n').at(-1) !== version) {
+    problems.push(
+      `npx ndop --version printed ${JSON.stringify(printed.trim())}, not ${version}`,
+    );
+  }
+  return problems;
+}
+
+/**
  * Runs a `package.json` script with a package manager.
  *
  * @param packageManager - The package manager.
@@ -348,8 +401,9 @@ export const TEAM_NOTE = '# Team notes\n\nKeep components small.\n';
 /**
  * Checks the agent context files `ndop init --agent claude-code --mcp` and
  * `ndop add` wrote (ADR-0017): the team's own note in `AGENTS.md` survived
- * above one Ndop section, which lists the added item; `CLAUDE.md` carries
- * the same section; the skill exists; and `.mcp.json` registers the server.
+ * above one Ndop section, which lists the added item and runs the app's own
+ * `ndop` (ADR-0031); `CLAUDE.md` carries the same section; the skill
+ * exists; and `.mcp.json` registers the server.
  *
  * @param files - The files' text, by project-relative path.
  * @param item - The item `ndop add` installed.
@@ -371,6 +425,9 @@ export function agentFileProblems(
   }
   if (!agents.includes(`\`${item}\``)) {
     problems.push(`AGENTS.md doesn't list ${item}`);
+  }
+  if (!agents.includes('`npx ndop add <name>`')) {
+    problems.push("AGENTS.md doesn't run the app's own ndop");
   }
   const section = agents.slice(agents.indexOf('<!-- ndop:start -->'));
   if (files['CLAUDE.md'] !== section) {

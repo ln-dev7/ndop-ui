@@ -8,6 +8,8 @@ import {
   caseId,
   execCommand,
   lastJsonObject,
+  localCliProblems,
+  localCommand,
   run,
   runScriptCommand,
   type CommandLine,
@@ -304,7 +306,9 @@ export interface RegistriesCaseSettings {
 
 /**
  * Runs the `registries` case: `ng new` with the case's package manager
- * and Angular CLI, `ndop init --yes`, then {@link registriesProblems}.
+ * and Angular CLI, `ndop init --yes`, a check that init added the app's
+ * own `ndop` (see {@link localCliProblems}), then
+ * {@link registriesProblems} through that `ndop`.
  *
  * @param installCase - Package manager and Angular version.
  * @param settings - Folders, environment and version.
@@ -347,13 +351,20 @@ export async function runRegistriesCase(
     );
     const start = performance.now();
     await run(ndop(['init', '--yes']), options);
+    const installed = localCliProblems(
+      JSON.parse(await readFile(join(app, 'package.json'), 'utf-8')),
+      settings.version,
+      await run(localCommand(['--version']), options),
+    );
+    if (installed.length) return { id, error: installed.join('; ') };
     const problems = await registriesProblems({
       app,
       workDir: settings.workDir,
       template: settings.template,
       version: settings.version,
       options,
-      ndop,
+      // After init, the app's own ndop, as users run it from then on.
+      ndop: localCommand,
       build: runScriptCommand(packageManager, 'build'),
     });
     const seconds = Math.round((performance.now() - start) / 1000);
