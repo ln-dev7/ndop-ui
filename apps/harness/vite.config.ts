@@ -46,7 +46,21 @@ export default defineConfig(() => {
     // Route discovery follows the home page's links, so every demo is
     // prerendered and its server render checked at build time.
     plugins: [
-      analog({ prerender: { discover: true, routes: ['/'] } }),
+      analog({
+        prerender: { discover: true, routes: ['/'] },
+        nitro: {
+          prerender: {
+            // Blocks link to the app routes they'd sit among, such as
+            // /login, which the harness doesn't have (ADR-0022).
+            ignore: [
+              (route: string) =>
+                !/^\/(?:$|tokens$|primitives\/|examples\/|blocks\/|themes\/)/.test(
+                  route,
+                ),
+            ],
+          },
+        },
+      }),
       angularServerMode(),
       // Rewrites the url()s of inlined stylesheets, such as Fontsource's
       // font files, which Tailwind's PostCSS plugin left unresolved.
@@ -60,6 +74,14 @@ export default defineConfig(() => {
       globals: true,
       environment: 'jsdom',
       setupFiles: ['src/test-setup.ts'],
+      // Vitest empties stylesheets unless included; the theme sheets'
+      // tests read these as text.
+      css: {
+        include: [
+          /\/registry\/themes\/[^/]+\/theme\.css/,
+          /\/src\/styles\.css/,
+        ],
+      },
       include: ['**/*.spec.ts'],
       reporters: ['default'],
     },

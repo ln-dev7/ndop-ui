@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { BLOCK_NAMES } from '../blocks/block-names';
 import { DEMOS } from '../demos/demos';
 import { EXAMPLE_NAMES } from '../examples/example-names';
+import { THEME_NAMES } from '../themes/theme-names';
 
 /**
- * Harness index (`/`): links every primitive demo, registry example and
- * block.
+ * Harness index (`/`): links every primitive demo, registry example,
+ * block and theme sheet.
  */
 @Component({
   selector: 'harness-home',
@@ -54,6 +55,16 @@ import { EXAMPLE_NAMES } from '../examples/example-names';
           }
         </ul>
       }
+      <h2 class="mt-8 text-lg font-semibold">Themes</h2>
+      <ul class="mt-4 space-y-2">
+        @for (theme of themes; track theme) {
+          <li>
+            <a class="underline" [routerLink]="'/themes/' + theme">{{
+              theme
+            }}</a>
+          </li>
+        }
+      </ul>
     </main>
   `,
 })
@@ -61,4 +72,5 @@ export default class HomePage {
   protected readonly demos = DEMOS;
   protected readonly examples = EXAMPLE_NAMES;
   protected readonly blocks = BLOCK_NAMES;
+  protected readonly themes = THEME_NAMES;
 }
