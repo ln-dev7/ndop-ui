@@ -9,9 +9,10 @@ files' contents. `ndop build` writes it from your sources, any static host
 serves it, and your users install from it with `ndop add`, next to Ndop's
 own components. A registry can be public, or private behind a token.
 
-The quickest start is the registry template: a minimal registry with one
-`widget` item that depends on Ndop's Button, and a GitHub Actions workflow
-that publishes it to GitHub Pages.
+The quickest start is the
+[registry template](https://github.com/ndop-ui/registry-template): a
+minimal registry with one `widget` item that depends on Ndop's Button, and
+a GitHub Actions workflow that publishes it to GitHub Pages.
 
 ## The source: registry.json
 
@@ -219,16 +220,21 @@ except on `localhost`.
 
 ## Start from the template
 
-The registry template is a folder with:
+On the
+[registry template's page](https://github.com/ndop-ui/registry-template),
+select **Use this template**, then **Create a new repository**. Your
+repository starts with:
 
 - `registry.json`, with the `widget` item;
 - `ui/widget/widget.ts` and `docs.md`, its source and docs;
 - `changelog/widget.md` and `snapshots/`, its release history;
 - `package.json`, whose `build` script runs `ndop build --output public`;
+- `package-lock.json`, which the workflow's `npm ci` installs from;
 - `.github/workflows/deploy.yml`, which builds and deploys to GitHub Pages.
 
-To make it yours, rename the registry in `registry.json` and set its
-`homepage`, replace the widget with your items, run `npm run build`, and
-commit the snapshots it writes. Ndop's install test builds the template
+In the repository's settings, under Pages, set the source to GitHub
+Actions. To make it yours, rename the registry in `registry.json` and set
+its `homepage`, replace the widget with your items, run `npm run build`,
+and commit the snapshots it writes. Ndop's install test builds the template
 and installs its widget behind a token on every change, so it keeps
 working with the current CLI.
