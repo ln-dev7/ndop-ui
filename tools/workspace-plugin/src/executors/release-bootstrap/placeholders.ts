@@ -71,9 +71,33 @@ export function publishArgs(tarball: string): string[] {
   return ['publish', tarball, '--access', 'public'];
 }
 
+/** The first npm whose `npm trust github` takes `--allow-publish`. */
+export const TRUST_NPM = '11.15.0';
+
+/**
+ * Whether an npm version is {@link TRUST_NPM} or later. Older npm 11
+ * releases have `npm trust github` without `--allow-publish`, and reject
+ * the command.
+ *
+ * @param version - `npm --version`'s output.
+ * @returns `true` when it can add the trusted publishers.
+ */
+export function canTrust(version: string): boolean {
+  const parts = (text: string) =>
+    text.trim().split(/[.-]/).slice(0, 3).map(Number);
+  const [have, need] = [parts(version), parts(TRUST_NPM)];
+  for (let index = 0; index < 3; index++) {
+    const a = have[index] ?? 0;
+    const b = need[index] ?? 0;
+    if (Number.isNaN(a)) return false;
+    if (a !== b) return a > b;
+  }
+  return true;
+}
+
 /**
  * The `npm trust github` command that lets the Release workflow publish a
- * package with OIDC (npm 11.15.0 or later).
+ * package with OIDC ({@link TRUST_NPM} or later).
  *
  * @param name - Package name.
  * @param publisher - Repository, workflow and environment.

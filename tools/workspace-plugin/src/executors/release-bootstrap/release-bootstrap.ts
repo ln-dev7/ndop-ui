@@ -2,9 +2,11 @@ import { copyFile, mkdir, rm, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { logger, type PromiseExecutor } from '@nx/devkit';
 import {
+  canTrust,
   placeholderManifest,
   placeholderReadme,
   publishArgs,
+  TRUST_NPM,
   trustArgs,
   type SourceManifest,
   type TrustedPublisher,
@@ -55,6 +57,17 @@ const releaseBootstrap: PromiseExecutor<
       ? {}
       : { environment: options.environment ?? 'npm' }),
   };
+  if (options.trust) {
+    // Checked first, so an old npm stops the run before anything is
+    // published rather than between publishing and trusting.
+    const npm = await runCaptured('npm', ['--version'], root);
+    if (npm.code !== 0 || !canTrust(npm.stdout)) {
+      logger.error(
+        `Adding trusted publishers needs npm ${TRUST_NPM} or later; this is npm ${npm.stdout.trim() || 'unknown'}. Update it with npm install -g npm@latest, or run the printed npm trust commands with npx -y npm@latest.`,
+      );
+      return { success: false };
+    }
+  }
   let packages: ReleasePackage[];
   try {
     packages = await releasePackages(root, options.packagesDir ?? 'packages');
@@ -111,7 +124,7 @@ const releaseBootstrap: PromiseExecutor<
     logger.info('Every package is on npm already.');
   }
   logger.info(
-    `\nThen let ${publisher.repository}'s ${publisher.workflow} publish them (npm 11.15.0 or later):\n`,
+    `\nThen let ${publisher.repository}'s ${publisher.workflow} publish them (npm ${TRUST_NPM} or later):\n`,
   );
   for (const name of names)
     logger.info(`  ${shown(trustArgs(name, publisher))}`);

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { ExecutorContext } from '@nx/devkit';
 import {
+  canTrust,
   placeholderManifest,
   placeholderReadme,
   publishArgs,
@@ -75,6 +76,17 @@ describe('release-bootstrap placeholders', () => {
   });
 });
 
+describe('canTrust', () => {
+  it('accepts npm 11.15.0 and later, whose npm trust takes --allow-publish', () => {
+    expect(canTrust('11.15.0\n')).toBe(true);
+    expect(canTrust('11.19.1')).toBe(true);
+    expect(canTrust('12.2.0')).toBe(true);
+    expect(canTrust('11.12.1')).toBe(false);
+    expect(canTrust('10.9.2')).toBe(false);
+    expect(canTrust('')).toBe(false);
+  });
+});
+
 describe('release-bootstrap executor', () => {
   let root: string;
   let context: ExecutorContext;
@@ -102,6 +114,9 @@ describe('release-bootstrap executor', () => {
     // `@ndop/core` is on npm; `@ndop/cli` isn't. `npm pack` names the
     // tarball.
     vi.mocked(runCaptured).mockImplementation(async (_command, args) => {
+      if (args[0] === '--version') {
+        return { code: 0, stdout: '11.19.1\n', stderr: '' };
+      }
       if (args[0] !== 'view') {
         return {
           code: 0,
@@ -172,5 +187,18 @@ describe('release-bootstrap executor', () => {
       ['trust', 'github', '@ndop/core'],
       ['trust', 'github', '@ndop/cli'],
     ]);
+  });
+
+  it('stops before publishing when npm is too old to add trusted publishers', async () => {
+    vi.mocked(runCaptured).mockImplementation(async (_command, args) =>
+      args[0] === '--version'
+        ? { code: 0, stdout: '11.12.1\n', stderr: '' }
+        : { code: 1, stdout: '{"error":{"code":"E404"}}', stderr: '' },
+    );
+
+    expect(
+      (await executor({ publish: true, trust: true }, context)).success,
+    ).toBe(false);
+    expect(runInherited).not.toHaveBeenCalled();
   });
 });
