@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+  ApplicationRef,
   inject,
   PLATFORM_ID,
   provideAppInitializer,
@@ -14,6 +15,9 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router';
  *
  * Then, so pages read offline:
  *
+ * - The first worker takes over the page that registered it once the app
+ *   has nothing loading, so no lazy chunk is fetched partly before the
+ *   takeover and partly through the worker.
  * - The page that registered it is saved, with the code it loaded before
  *   the worker existed; each page opened in the app afterwards is saved
  *   too, since moving between pages loads no HTML.
@@ -31,6 +35,7 @@ export function provideOfflineReading(): EnvironmentProviders {
     if (!('serviceWorker' in navigator)) return;
     const container = navigator.serviceWorker;
     const router = inject(Router);
+    const app = inject(ApplicationRef);
     let waiting: ServiceWorker | undefined;
 
     const save = (urls: string[]) => {
@@ -59,13 +64,20 @@ export function provideOfflineReading(): EnvironmentProviders {
         .catch(() => undefined);
       if (!registration) return;
       track(registration);
-      await container.ready;
+      const { active } = await container.ready;
       if (!container.controller) {
-        await new Promise((resolve) =>
+        // Taking over while a lazy chunk loads would split it: its preloads
+        // fetched by the page, its import through the worker, so Safari
+        // fetches it twice and warns. Pending tasks cover deferred blocks
+        // and route loads.
+        await app.whenStable();
+        const taken = new Promise((resolve) =>
           container.addEventListener('controllerchange', resolve, {
             once: true,
           }),
         );
+        active?.postMessage({ type: 'claim' });
+        await taken;
       }
       save([
         location.pathname,

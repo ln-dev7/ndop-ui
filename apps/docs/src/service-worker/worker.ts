@@ -147,11 +147,7 @@ worker.addEventListener('activate', (event) => {
             .filter((key) => key.startsWith(PREFIX) && key !== CACHE)
             .map((key) => caches.delete(key)),
         ),
-      )
-      // The first worker takes the page that registered it, so the code
-      // that page loads from now on is saved too. A later one only
-      // activates when that page asks, as it navigates.
-      .then(() => worker.clients.claim()),
+      ),
   );
 });
 
@@ -165,6 +161,14 @@ worker.addEventListener('message', (event) => {
   const data = event.data as { type?: string; urls?: unknown } | null;
   if (data?.type === 'skip-waiting') {
     event.waitUntil(worker.skipWaiting());
+  } else if (data?.type === 'claim') {
+    // The first worker takes the page that registered it, so the code that
+    // page loads from then on is saved too; a later one only activates when
+    // a page asks, as it navigates. The page asks once nothing is loading:
+    // a module preloaded before the takeover and imported after it is
+    // fetched again through the worker, and the preload is wasted (Safari
+    // warns about it).
+    event.waitUntil(worker.clients.claim());
   } else if (data?.type === 'save' && Array.isArray(data.urls)) {
     // Pages the reader opened inside the app, and the code they loaded
     // before this worker controlled them, so they read offline too.
