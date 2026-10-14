@@ -44,7 +44,8 @@ builds the app.
 
 The case marked `registries` (`npm-ng22-registries`) is Phase 6's
 acceptance test for third-party registries (ADR-0025): after `ndop init`
-and the same `@ndop/cli` check, it copies `tools/registry-template`,
+and the same `@ndop/cli` check, it exports `tools/registry-template` as
+the public template repository gets it (`registry-template:export`),
 points its `@ndop/cli` at the published version, builds it with its own
 `npm run build`, and serves it behind a bearer token. It adds
 `"@sample": { "url": ".../{name}.json", "headers": { "Authorization": "Bearer ${SAMPLE_TOKEN}" } }`

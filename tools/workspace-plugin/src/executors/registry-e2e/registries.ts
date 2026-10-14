@@ -1,9 +1,10 @@
-import { cp, readFile, stat, writeFile } from 'node:fs/promises';
+import { readFile, stat, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { join, normalize, sep } from 'node:path';
 import type { SiteServer } from '../../utils/serve-site';
 import { logger } from '@nx/devkit';
+import { exportRegistryTemplate } from '../registry-template-export/template-export';
 import {
   caseId,
   execCommand,
@@ -196,9 +197,11 @@ export function missingTokenProblems(output: string): string[] {
 export interface RegistriesCase {
   /** The set-up app. */
   app: string;
-  /** Folder the template is copied to and built in. */
+  /** Folder the template is exported to and built in. */
   workDir: string;
-  /** The `tools/registry-template` folder. */
+  /** Absolute workspace root. */
+  root: string;
+  /** The registry template folder, relative to `root`. */
   template: string;
   /** The published `@ndop/cli` version. */
   version: string;
@@ -211,9 +214,11 @@ export interface RegistriesCase {
 }
 
 /**
- * The `registries` case (ADR-0025): it builds a copy of
- * `tools/registry-template` with its own `npm run build`, against the
- * published `@ndop/cli`, and serves it behind a bearer token. In the app,
+ * The `registries` case (ADR-0025): it exports `tools/registry-template`
+ * as the public template repository gets it (see
+ * {@link exportRegistryTemplate}), builds that copy with its own
+ * `npm run build`, against the published `@ndop/cli`, and serves it behind
+ * a bearer token. In the app,
  * it adds `@sample` to `ndop.json`, checks that `ndop add @sample/widget`
  * without the token fails naming the variable, then adds it with the
  * token, which also installs `button` from Ndop's registry, checks the
@@ -228,9 +233,11 @@ export async function registriesProblems(
 ): Promise<string[]> {
   const { app, options } = settings;
   const registry = join(settings.workDir, 'registry-template');
-  await cp(settings.template, registry, {
-    recursive: true,
-    filter: (source) => !/[/\\](node_modules|public)$/.test(source),
+  await exportRegistryTemplate({
+    root: settings.root,
+    source: settings.template,
+    output: registry,
+    license: 'LICENSE',
   });
   const manifest = join(registry, 'package.json');
   await writeFile(
@@ -300,7 +307,9 @@ export interface RegistriesCaseSettings {
   env: NodeJS.ProcessEnv;
   /** Version the `@ndop/*` packages were published under. */
   version: string;
-  /** Absolute path of `tools/registry-template`. */
+  /** Absolute workspace root. */
+  root: string;
+  /** The registry template folder, relative to `root`. */
   template: string;
 }
 
@@ -360,6 +369,7 @@ export async function runRegistriesCase(
     const problems = await registriesProblems({
       app,
       workDir: settings.workDir,
+      root: settings.root,
       template: settings.template,
       version: settings.version,
       options,

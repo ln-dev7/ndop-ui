@@ -59,7 +59,7 @@ interface CaseResult {
  * and builds the app, outside the budget. A case with `shadcn` installs the
  * item through the shadcn CLI instead (ADR-0025; see
  * {@link runShadcnCase}). A case with `registries` installs
- * `@sample/widget` from `tools/registry-template`, served behind a token
+ * `@sample/widget` from the exported `tools/registry-template`, served behind a token
  * (ADR-0025; see {@link runRegistriesCase}).
  *
  * @param options - Cases, budget and paths.
@@ -125,7 +125,8 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
               workDir,
               env,
               version,
-              template: join(context.root, 'tools/registry-template'),
+              root: context.root,
+              template: 'tools/registry-template',
             }),
           );
           continue;

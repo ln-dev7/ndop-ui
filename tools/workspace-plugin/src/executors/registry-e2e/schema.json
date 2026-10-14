@@ -33,7 +33,7 @@
           },
           "registries": {
             "type": "boolean",
-            "description": "Instead of the main scenario, build tools/registry-template, serve it behind a bearer token, add @sample to ndop.json and install @sample/widget, with Ndop's button, then build (ADR-0025)."
+            "description": "Instead of the main scenario, export tools/registry-template as the public template repository gets it and build that copy, serve it behind a bearer token, add @sample to ndop.json and install @sample/widget, with Ndop's button, then build (ADR-0025)."
           }
         },
         "required": ["packageManager", "angular"]
