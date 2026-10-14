@@ -31,6 +31,10 @@
           "projects": ["registry"]
         }
       ]
+    },
+    "export": {
+      "executor": "@ndop/workspace-plugin:registry-template-export",
+      "cache": false
     }
   }
 }

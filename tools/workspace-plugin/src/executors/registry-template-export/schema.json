@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "Registry template export",
+  "description": "Write a standalone copy of the registry template, ready to push as the public template repository (ADR-0025): every file but project.json and local install and build output, the README without its maintainer section and with links into the Ndop repository made absolute, and the workspace's license.",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "The registry template folder, relative to the workspace root.",
+      "default": "tools/registry-template"
+    },
+    "outputPath": {
+      "type": "string",
+      "description": "Folder to write the copy to, relative to the workspace root or absolute. It is emptied first.",
+      "default": "dist/registry-template-repo"
+    },
+    "license": {
+      "type": "string",
+      "description": "License file to ship as LICENSE, relative to the workspace root.",
+      "default": "LICENSE"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "description": "Base URL of the Ndop repository's files on GitHub, for links that leave the template folder.",
+      "default": "https://github.com/ndop-ui/ui/blob/master"
+    }
+  },
+  "required": []
+}

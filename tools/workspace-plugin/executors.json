@@ -64,6 +64,11 @@
       "implementation": "./src/executors/release-version/release-version",
       "schema": "./src/executors/release-version/schema.json",
       "description": "Version the npm packages for a release with changeset version, then pin the registry template to the new version (ADR-0028)."
+    },
+    "registry-template-export": {
+      "implementation": "./src/executors/registry-template-export/registry-template-export",
+      "schema": "./src/executors/registry-template-export/schema.json",
+      "description": "Write a standalone copy of tools/registry-template, ready to push as the public template repository (ADR-0025)."
     }
   }
 }
