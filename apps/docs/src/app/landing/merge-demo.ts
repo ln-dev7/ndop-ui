@@ -44,11 +44,11 @@ const STEP = 1800;
     <div
       ndTabs
       orientation="vertical"
-      class="grid items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12"
+      class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12"
       [value]="step()"
       (valueChange)="pick($event)"
     >
-      <div class="grid gap-6">
+      <div class="grid grid-cols-1 gap-6">
         <div
           ndTabsList
           aria-label="Update steps"
@@ -76,7 +76,7 @@ const STEP = 1800;
             </button>
           }
         </div>
-        <div class="grid gap-3 px-4">
+        <div class="grid grid-cols-1 gap-3 px-4">
           <docs-install-command command="npx @ndop/cli update button" />
           <p class="text-sm text-muted-foreground">
             Conflicts get markers and a non-zero exit, never a silent overwrite.

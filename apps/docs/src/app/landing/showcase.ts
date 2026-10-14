@@ -80,7 +80,7 @@ const INITIAL_THEME = 'default';
         <div
           #surface
           data-testid="showcase"
-          class="grid gap-4 text-foreground [mask-image:linear-gradient(to_bottom,#000_calc(100%-15rem),transparent)] has-[:focus-visible]:[mask-image:none] md:[mask-image:linear-gradient(to_bottom,#000_68%,transparent)] md:has-[:focus-visible]:[mask-image:none] data-switching:**:transition-[color,background-color,border-color,fill,stroke,box-shadow] data-switching:**:duration-300 data-switching:**:ease-out md:grid-cols-2 xl:grid-cols-4"
+          class="grid grid-cols-1 gap-4 text-foreground [mask-image:linear-gradient(to_bottom,#000_calc(100%-15rem),transparent)] has-[:focus-visible]:[mask-image:none] md:[mask-image:linear-gradient(to_bottom,#000_68%,transparent)] md:has-[:focus-visible]:[mask-image:none] data-switching:**:transition-[color,background-color,border-color,fill,stroke,box-shadow] data-switching:**:duration-300 data-switching:**:ease-out md:grid-cols-2 xl:grid-cols-4"
           [attr.data-theme]="theme()"
           [style]="tokens()"
         >

@@ -36,7 +36,7 @@ interface TranscriptLine {
         lead="Your coding agent reads the real API, installs what it needs and checks its own work, instead of guessing."
       />
       <div
-        class="mx-auto mt-14 grid max-w-6xl items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12"
+        class="mx-auto mt-14 grid grid-cols-1 max-w-6xl items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12"
       >
         <div class="grid gap-6">
           <ul class="grid gap-1">
@@ -86,7 +86,7 @@ interface TranscriptLine {
             A sample session with the Ndop MCP server
           </figcaption>
           <ol
-            class="grid gap-2.5 p-4 font-mono text-[0.8125rem] leading-6 sm:p-5"
+            class="grid grid-cols-1 gap-2.5 p-4 font-mono text-[0.8125rem] leading-6 sm:p-5"
             dir="ltr"
           >
             @for (line of transcript; track $index) {

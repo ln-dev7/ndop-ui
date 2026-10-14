@@ -11,12 +11,17 @@ import { Button } from '@/ui/button/button';
 @Component({
   selector: 'docs-install-command',
   imports: [NdIcon, Button],
-  host: { class: 'inline-flex' },
+  host: { class: 'inline-flex max-w-full' },
   template: `
     <div
-      class="inline-flex h-10 items-center gap-3 rounded-lg border bg-background ps-3.5 pe-1 font-mono text-[0.8125rem] shadow-xs"
+      class="inline-flex h-10 max-w-full items-center gap-3 rounded-lg border bg-background ps-3.5 pe-1 font-mono text-[0.8125rem] shadow-xs"
     >
-      <code class="flex items-center gap-2 whitespace-nowrap" dir="ltr">
+      <!-- On the narrowest phones a long command scrolls inside the chip
+           rather than widening the page. -->
+      <code
+        class="flex min-w-0 items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none]"
+        dir="ltr"
+      >
         <span class="text-muted-foreground select-none" aria-hidden="true"
           >$</span
         >{{ command() }}
