@@ -33,7 +33,7 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0024](0024-doctor.md)                                   | `ndop doctor`                                             | Accepted                       |
 | [0025](0025-third-party-registries-and-shadcn-compat.md) | Third-party registries and the shadcn-compatible output   | Accepted, with amendment 1     |
 | [0026](0026-brand-and-landing-page.md)                   | Brand, landing page and OG images                         | Accepted, with amendments 1–2  |
-| [0027](0027-installable-docs.md)                         | Installable docs (favicons and PWA)                       | Accepted                       |
+| [0027](0027-installable-docs.md)                         | Installable docs (favicons and PWA)                       | Accepted, with amendment 1     |
 | [0028](0028-release-and-deploy.md)                       | The 1.0.0 release and the docs deployment                 | Accepted, with amendment 1     |
 | [0029](0029-launch.md)                                   | Launch checklist and success metrics                      | Accepted                       |
 | [0030](0030-compiled-guide-code.md)                      | Compiled guide code                                       | Accepted                       |

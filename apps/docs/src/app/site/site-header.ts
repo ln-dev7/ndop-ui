@@ -21,7 +21,6 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/ui/tooltip/tooltip';
-import { InstallApp } from './install';
 import { LogoMark } from './logo-mark';
 import { Preferences } from './preferences';
 import { CommandPalette } from './command-palette';
@@ -47,10 +46,9 @@ const SYSTEM = {
 
 /**
  * The sticky site header: the logo, primary links, the search palette,
- * and a GitHub link and the theme toggle set apart by a separator; on
- * small screens, a button that opens the navigation in a bottom sheet
- * that can be dragged down to close, which also offers "Install app" when
- * the browser does. Its controls hydrate when first needed.
+ * a GitHub link and the theme toggle, set apart by separators; on small
+ * screens, a button that opens the navigation in a bottom sheet that can
+ * be dragged down to close. Its controls hydrate when first needed.
  */
 @Component({
   selector: 'docs-site-header',
@@ -149,49 +147,7 @@ const SYSTEM = {
                         >Themes</a
                       >
                     </nav>
-                    @if (installer.available()) {
-                      <button
-                        ndButton
-                        variant="outline"
-                        size="sm"
-                        class="ms-auto"
-                        (click)="installer.install()"
-                      >
-                        <svg ndIcon="download"></svg>
-                        Install app
-                      </button>
-                    }
                   </div>
-                  @if (installer.iosHint()) {
-                    <!-- iOS Safari has no install prompt (ADR-0027). -->
-                    <aside
-                      aria-label="Install"
-                      class="mb-4 flex items-start gap-3 rounded-lg border bg-muted/40 p-3 text-sm"
-                    >
-                      <p class="flex-1 pt-0.5 text-muted-foreground">
-                        Install Ndop UI: tap Share
-                        <svg
-                          ndIcon="share"
-                          class="inline size-4 align-[-0.1875rem] text-foreground"
-                        ></svg
-                        >, then
-                        <span
-                          class="font-medium whitespace-nowrap text-foreground"
-                          >Add to Home Screen</span
-                        >.
-                      </p>
-                      <button
-                        ndButton
-                        variant="ghost"
-                        size="icon-sm"
-                        class="-me-1 -mt-1 shrink-0"
-                        aria-label="Dismiss"
-                        (click)="installer.dismissHint()"
-                      >
-                        <svg ndIcon="x"></svg>
-                      </button>
-                    </aside>
-                  }
                   <docs-site-nav />
                 </div>
               </div>
@@ -201,34 +157,25 @@ const SYSTEM = {
 
         <a
           routerLink="/"
-          class="me-4 flex items-center gap-2 font-semibold tracking-tight"
+          class="me-2 flex items-center gap-2 font-semibold tracking-tight"
         >
           <!-- 1px up centers the leaf on the capitals. -->
           <docs-logo-mark class="h-5 -translate-y-px" />
           Ndop UI
         </a>
-        <nav
-          aria-label="Main"
-          class="hidden items-center gap-4 text-sm md:flex"
-        >
+        <nav aria-label="Main" class="hidden items-center gap-1 md:flex">
           <a
+            ndButton
+            variant="ghost"
+            size="sm"
             routerLink="/docs/getting-started/introduction"
-            class="text-muted-foreground hover:text-foreground"
             >Docs</a
           >
-          <a
-            routerLink="/blocks"
-            class="text-muted-foreground hover:text-foreground"
-            >Blocks</a
-          >
-          <a
-            routerLink="/themes"
-            class="text-muted-foreground hover:text-foreground"
-            >Themes</a
-          >
+          <a ndButton variant="ghost" size="sm" routerLink="/blocks">Blocks</a>
+          <a ndButton variant="ghost" size="sm" routerLink="/themes">Themes</a>
         </nav>
 
-        <div class="ms-auto flex items-center gap-1">
+        <div class="ms-auto flex items-center gap-2">
           <!-- ⌘K before the palette hydrates is caught below and opens it
                once it has. -->
           @defer (
@@ -240,6 +187,11 @@ const SYSTEM = {
           }
           <!-- Soon after load, so the icon and label follow a saved
                scheme the server couldn't know. -->
+          <div
+            ndSeparator
+            orientation="vertical"
+            class="mx-1 data-[orientation=vertical]:h-4"
+          ></div>
           @defer (on immediate; hydrate on idle) {
             <ng-container ndTooltip>
               <a
@@ -290,7 +242,6 @@ const SYSTEM = {
 })
 export class SiteHeader {
   protected readonly preferences = inject(Preferences);
-  protected readonly installer = inject(InstallApp);
 
   /** GitHub's mark, Octicons' `mark-github` at 16px (MIT). */
   protected readonly githubMark = GITHUB_MARK;

@@ -31,8 +31,7 @@
     <meta name="apple-mobile-web-app-title" content="Ndop" />
     <link rel="stylesheet" href="/src/styles.css" />
     <!-- Applies the saved theme and direction before the first paint, so a
-         prerendered page never flashes; the app re-applies them on boot.
-         Also keeps an install prompt that fires before the app boots. -->
+         prerendered page never flashes; the app re-applies them on boot. -->
     <script>
       try {
         var root = document.documentElement;
@@ -43,14 +42,6 @@
         }
         if (localStorage.getItem('ndop-dir') === 'rtl') root.dir = 'rtl';
       } catch (e) {}
-      // Chrome offers installation once, possibly before the app has
-      // booted; the event is kept for the header's "Install app"
-      // (site/install.ts) instead of the browser's own prompt.
-      addEventListener('beforeinstallprompt', function (event) {
-        event.preventDefault();
-        window.ndopInstallPrompt = event;
-        dispatchEvent(new Event('ndop:installable'));
-      });
     </script>
   </head>
   <body>

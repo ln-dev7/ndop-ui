@@ -1,6 +1,6 @@
 # ADR-0027: Installable docs (favicons and PWA)
 
-- Status: Accepted (approved by Valery on 2026-10-12)
+- Status: Accepted (approved by Valery on 2026-10-12), with amendment 1
 - Date: 2026-10-12
 - Phase: 7
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Documentation site";
@@ -65,3 +65,19 @@ bypasses it. Lighthouse's PWA-related audits run in the docs check.
 - Readers can install the docs and read visited pages offline.
 - A service worker can serve stale pages if mishandled; network-first
   pages and versioned caches keep a deploy visible on the next load.
+
+## Amendment 1 (2026-10-14): no install offer of the site's own
+
+Status: Accepted by Valery on 2026-10-14.
+
+The site no longer offers installation itself. Valery removed the
+header's "Install app" first, then the same item and the iOS hint from the
+navigation sheet: the docs shouldn't ask readers to install them.
+
+- The "Offering installation" section is withdrawn: no `Install app`
+  control, no iOS hint, and `index.html` no longer keeps the
+  `beforeinstallprompt` event, so Chrome and Android show their own
+  install offer as they see fit.
+- Everything else stands: the icons, the manifest and the service worker,
+  so the docs stay installable from the browser's menu and readable
+  offline.

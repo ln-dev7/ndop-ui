@@ -26,9 +26,8 @@ const LINK = 'font-medium underline underline-offset-4 hover:text-foreground';
         </div>
         <p>
           Built by
-          <a href="https://github.com/valerymelou" [class]="link"
-            >Valery Melou</a
-          >. The source code is available on
+          <a href="https://x.com/valerymelou" [class]="link">valerymelou</a>.
+          The source code is available on
           <a [href]="repository" [class]="link">GitHub</a>.
         </p>
         <p class="mt-1">
