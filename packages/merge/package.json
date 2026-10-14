@@ -1,6 +1,6 @@
 {
   "name": "@ndop/merge",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "The three-way merge behind ndop update and the docs' update preview: diff3 line merge, conflict markers and partial upstream changes, with no Node APIs.",
   "license": "MIT",
   "homepage": "https://ndop.dev",
