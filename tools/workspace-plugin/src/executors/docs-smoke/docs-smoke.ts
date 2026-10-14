@@ -1,12 +1,12 @@
 import { logger, type PromiseExecutor } from '@nx/devkit';
-import { fetchChecks, waitForSite, type SmokeResult } from './checks';
+import { settledChecks, waitForSite, type SmokeResult } from './checks';
 import type { DocsSmokeExecutorSchema } from './schema';
 import { serviceWorkerCheck } from './service-worker-check';
 
 /**
  * The post-deploy check of the docs site (ADR-0028, "Docs deployment"):
  * waits for the deployment to answer, then runs every check in
- * `checks.ts` and, unless `browser` is off, the service worker check in
+ * `checks.ts`, trying failed ones again until the timeout, and, unless `browser` is off, the service worker check in
  * Chromium, logs each result, and fails when any check fails. The Deploy
  * workflow runs it against the URL Wrangler reports; it also runs against
  * `wrangler pages dev` locally.
@@ -29,7 +29,7 @@ const docsSmoke: PromiseExecutor<DocsSmokeExecutorSchema> = async (options) => {
     logger.error(error instanceof Error ? error.message : String(error));
     return { success: false };
   }
-  const results: SmokeResult[] = await fetchChecks(base);
+  const results: SmokeResult[] = await settledChecks(base, timeout);
   if (options.browser ?? true) {
     results.push(await serviceWorkerCheck(base, timeout));
   }

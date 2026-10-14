@@ -228,6 +228,34 @@ export async function fetchChecks(
 }
 
 /**
+ * Runs {@link fetchChecks} until every check passes or the timeout ends.
+ * A new Pages deployment serves its static files before its Functions
+ * answer everywhere, so a check of the theme URL can fail for a few
+ * seconds after the home page loads.
+ *
+ * @param base - The deployment's origin.
+ * @param timeout - Milliseconds to keep trying failed checks.
+ * @param fetcher - Fetches a URL; the global `fetch` by default.
+ * @param interval - Milliseconds between tries.
+ * @returns The last run's results.
+ */
+export async function settledChecks(
+  base: string,
+  timeout: number,
+  fetcher: Fetcher = fetch,
+  interval = 5000,
+): Promise<SmokeResult[]> {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const results = await fetchChecks(base, fetcher);
+    if (results.every((result) => result.ok) || Date.now() >= deadline) {
+      return results;
+    }
+    await new Promise((resolve) => setTimeout(resolve, interval));
+  }
+}
+
+/**
  * Waits until the deployment answers its home page, since a new
  * deployment's URL can take a few seconds to answer everywhere.
  *

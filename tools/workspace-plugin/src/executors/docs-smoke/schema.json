@@ -16,7 +16,7 @@
     },
     "timeout": {
       "type": "number",
-      "description": "Seconds to wait for the site to answer, and for the service worker to take control.",
+      "description": "Seconds to wait for the site to answer, for failed checks to pass as the deployment settles, and for the service worker to take control.",
       "default": 60
     }
   },

@@ -5,8 +5,9 @@ export interface DocsSmokeExecutorSchema {
   /** Also check the service worker in Playwright's Chromium; on by default. */
   browser?: boolean;
   /**
-   * Seconds to wait for the site to answer, and for the service worker to
-   * take control; 60 by default.
+   * Seconds to wait for the site to answer, for failed checks to pass as
+   * the deployment settles, and for the service worker to take control; 60
+   * by default.
    */
   timeout?: number;
 }

@@ -4,6 +4,7 @@ import {
   fetchChecks,
   maxAge,
   PAGE,
+  settledChecks,
   waitForSite,
   type Fetcher,
 } from './checks';
@@ -247,6 +248,28 @@ describe('waitForSite', () => {
   });
 });
 
+describe('settledChecks', () => {
+  it('tries failed checks again until they pass', async () => {
+    let tries = 0;
+    const fetcher = site(({ pathname }) => {
+      if (pathname !== '/r/themes/custom.json') return undefined;
+      tries += 1;
+      return tries <= 2 ? new Response(null, { status: 404 }) : undefined;
+    });
+    const results = await settledChecks(BASE, 1000, fetcher, 0);
+    expect(results.every((result) => result.ok)).toBe(true);
+    expect(tries).toBeGreaterThan(2);
+  });
+
+  it('returns the failures still there at the timeout', async () => {
+    const fetcher = site(({ pathname }) =>
+      pathname === '/sw.js' ? new Response(null, { status: 404 }) : undefined,
+    );
+    const results = await settledChecks(BASE, 0, fetcher, 0);
+    expect(results.filter((result) => !result.ok)).toHaveLength(1);
+  });
+});
+
 describe('docs-smoke executor', () => {
   const context = { root: '/workspace' } as ExecutorContext;
 
@@ -270,8 +293,8 @@ describe('docs-smoke executor', () => {
         ),
       ),
     );
-    expect(await executor({ url: BASE, browser: false }, context)).toEqual({
-      success: false,
-    });
+    expect(
+      await executor({ url: BASE, browser: false, timeout: 0 }, context),
+    ).toEqual({ success: false });
   });
 });
