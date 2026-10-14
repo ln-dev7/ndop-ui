@@ -1,6 +1,6 @@
 {
   "name": "@ndop/verify",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Checks Angular code that uses Ndop UI: usage against component metadata, a type-checked build, Ndop's lint rules, and axe and screenshots in a real browser.",
   "license": "MIT",
   "homepage": "https://ndop.dev",

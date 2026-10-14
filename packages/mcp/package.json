@@ -1,6 +1,6 @@
 {
   "name": "@ndop/mcp",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "MCP server exposing the Ndop registry and component metadata to coding agents.",
   "license": "MIT",
   "homepage": "https://ndop.dev",
