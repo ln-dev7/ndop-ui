@@ -70,6 +70,39 @@ jobs:
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --projects=update-fixtures
 
+  # ADR-0028: a pull request that changes what a published package ships
+  # needs a changeset; `changedFilePatterns` in .changeset/config.json says
+  # which files ship. The version pull request is skipped: it consumes the
+  # changesets and bumps every package.json.
+  changeset:
+    name: Changeset
+    if: >-
+      github.event_name == 'pull_request' &&
+      !(startsWith(github.head_ref, 'changeset-release/') &&
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: |
+          if ! pnpm nx run @ndop/source:changeset-status --since="$BASE_REF"; then
+            echo "::error title=Missing changeset::This pull request changes a published @ndop package but adds no changeset. Run 'pnpm changeset' and describe the change for the package's users, or 'pnpm changeset --empty' if they won't see it. See CONTRIBUTING.md, Releasing."
+            exit 1
+          fi
+
   # Browser tests depend on the browser, not on Node, so they run once, on
   # the active LTS, with one job per browser in parallel. They have their
   # own runners: the harness's dev server renders pages on demand, and

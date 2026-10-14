@@ -17,6 +17,13 @@
     "release-bootstrap": {
       "executor": "@ndop/workspace-plugin:release-bootstrap",
       "cache": false
+    },
+    "changeset-status": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "changeset status"
+      },
+      "cache": false
     }
   }
 }

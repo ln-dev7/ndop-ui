@@ -5,6 +5,20 @@
   "format": "auto",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
+  "changedFilePatterns": [
+    "package.json",
+    "README.md",
+    "ng-package.json",
+    "styles.css",
+    "src/**",
+    "*/src/**",
+    "*/README.md",
+    "*/spec.md",
+    "*/ng-package.json",
+    "!**/*.spec.ts",
+    "!**/__snapshots__/**",
+    "!src/testing/**"
+  ],
   "ignore": [],
   "fixed": [
     [
