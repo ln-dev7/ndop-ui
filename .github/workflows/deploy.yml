@@ -36,9 +36,12 @@ jobs:
   credentials:
     name: Credentials
     # workflow_run's branch filter matches a branch named master in a fork
-    # too, so production also checks the event and the repository.
+    # too, so production also checks the event and the repository. The
+    # Changesets version pull request changes only versions and changelogs,
+    # and production deploys them once it merges, so it gets no preview.
     if: >-
-      github.event_name == 'pull_request' ||
+      (github.event_name == 'pull_request' &&
+       !startsWith(github.head_ref, 'changeset-release/')) ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
