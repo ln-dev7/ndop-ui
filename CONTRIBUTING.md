@@ -33,7 +33,9 @@ All tasks run through Nx.
 - Every export has TSDoc; lint enforces it. Inline comments explain why,
   never what. No commented-out code, and no TODO without an issue link.
 - Deviating from the RFC needs an ADR first.
-- Changes to published packages need a changeset: `pnpm changeset`.
+- A pull request that changes what a published package ships needs a
+  changeset: `pnpm changeset`, or `pnpm changeset --empty` if users won't
+  see the change. CI checks it ("Releasing").
 
 ## Code in guides
 
@@ -174,8 +176,24 @@ If npm releases it, make it public, add it to the fixed group and to the
 build list below, and document `npx ndop` as an alternative to
 `npx @ndop/cli`.
 
-1. A pull request that changes a published package adds a changeset with
-   `pnpm changeset`, written for the package's users.
+1. A pull request that changes what a published package ships adds a
+   changeset with `pnpm changeset`, written for the package's users. If
+   they won't see the change, such as a refactor or a comment fix, it adds
+   an empty one, `pnpm changeset --empty`, which releases nothing. CI's
+   Changeset job runs `pnpm nx run @ndop/source:changeset-status --since=origin/master`
+   and fails the pull request when a published package changed and no
+   changeset was added. Only the files a package ships count, listed in
+   `changedFilePatterns` in `.changeset/config.json`: `package.json`,
+   `README.md`, `ng-package.json`, `styles.css` and `src/`, and in
+   `@ndop/primitives` each entry point's `src/`, `README.md`, `spec.md`
+   and `ng-package.json`, but not specs, `__snapshots__` or `src/testing`.
+   Tests, fixtures, lint, test and build configuration (`project.json`,
+   `tsconfig*.json`) don't count. Changesets reads the patterns relative to
+   each package, so a package with a new shipped file needs it added
+   there. A Dependabot pull request that bumps a published package's
+   dependencies needs a changeset too: check out its branch, run
+   `pnpm changeset`, and push the file. The version pull request is
+   exempt.
 2. Once CI passes on master, the Release workflow
    (`.github/workflows/release.yml`) opens or updates the version pull
    request, "chore(repo): version packages". It runs
