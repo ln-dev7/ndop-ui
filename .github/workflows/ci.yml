@@ -57,8 +57,15 @@ jobs:
 
       # The update merge suite (ADR-0020) needs no browser, but does depend
       # on Node, so it stays here.
+      # nx affected has no --projects filter and would run every affected
+      # e2e target here, so the affected check picks the project instead.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t e2e --projects=update-fixtures
+        run: |
+          if pnpm nx show projects --affected --projects=update-fixtures --json | grep -q '"update-fixtures"'; then
+            pnpm nx e2e update-fixtures
+          else
+            echo "No change affects the update merge suite."
+          fi
 
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --projects=update-fixtures
@@ -103,8 +110,16 @@ jobs:
 
       # Arguments after `--` reach every Playwright run, which keeps it to
       # this job's browser and half.
+      # nx affected has no --projects filter, so the affected browser suites
+      # are listed first and run with run-many.
       - if: github.event_name == 'pull_request'
-        run: pnpm nx affected -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
+        run: |
+          projects=$(pnpm nx show projects --affected --projects=harness-e2e,docs-e2e --json | jq -r 'join(",")')
+          if [ -n "$projects" ]; then
+            pnpm nx run-many -t e2e --projects="$projects" -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
+          else
+            echo "No change affects the browser tests."
+          fi
 
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
