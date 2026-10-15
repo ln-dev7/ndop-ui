@@ -52,7 +52,12 @@ const SYSTEM = {
  */
 @Component({
   selector: 'docs-site-header',
-  host: { '(document:keydown)': 'requestPalette($event)' },
+  host: {
+    // No box of its own: the root is a flex column, and a sticky header
+    // only sticks within its parent, so the parent must be the page.
+    class: 'contents',
+    '(document:keydown)': 'requestPalette($event)',
+  },
   imports: [
     RouterLink,
     NdIcon,
