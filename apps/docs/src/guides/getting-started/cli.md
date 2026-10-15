@@ -191,6 +191,26 @@ what `ndop update` does for it, and the diffs. Its update preview merges
 your copy of a file in the browser, so you can see the result before
 running anything.
 
+## Updating the CLI
+
+Once `@ndop/cli` is in your dev dependencies, `npx ndop` runs your
+project's copy, at the version your lockfile pins, and with npm so does
+`npx @ndop/cli`. To move your project to the latest release, update the
+package:
+
+```bash pm
+npm install -D @ndop/cli@latest
+```
+
+To run the latest release once without changing your project, name the
+version:
+
+```bash pm
+npx @ndop/cli@latest diff
+```
+
+`ndop update` updates your components, not the CLI.
+
 ## Checking your setup
 
 `ndop doctor` checks everything Ndop relies on and prints each problem with
