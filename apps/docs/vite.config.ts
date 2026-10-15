@@ -33,6 +33,9 @@ const PAGE_FONTS = [/geist-(mono-)?latin-wght-normal-/];
 export default defineConfig(() => {
   return {
     root: import.meta.dirname,
+    // DocSearch's settings (ADR-0008) reach the palette from the deploy
+    // workflow's variables or a local, untracked .env.local.
+    envPrefix: ['VITE_', 'DOCSEARCH_'],
     cacheDir: `../../node_modules/.vite`,
     build: {
       outDir: '../../dist/apps/docs/client',

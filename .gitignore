@@ -54,3 +54,7 @@ vitest.config.*.timestamp*
 
 # Wrangler's local state from `nx serve-pages docs`.
 .wrangler
+
+# Local environment, such as DocSearch keys for the docs (ADR-0008).
+.env.local
+.env.*.local

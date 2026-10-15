@@ -8,6 +8,7 @@ import {
   Component,
   computed,
   Directive,
+  effect,
   inject,
   Injector,
   input,
@@ -31,6 +32,11 @@ import {
 import { commandFor, type PackageManager } from '../../highlight/shiki';
 import type { SearchEntry } from '../search/search-entry';
 import { score, search } from '../search/search';
+import {
+  docSearchConfig,
+  searchFullText,
+  type FullTextHit,
+} from '../search/docsearch';
 import { savedPackageManager } from './code-frames';
 import { injectCurrentPath } from './current-path';
 import { copyPageMarkdown } from './page-actions';
@@ -99,7 +105,8 @@ export class PaletteOption implements Highlightable {
  * The ⌘K / Ctrl+K command palette (ADR-0008): a WAI-ARIA combobox in a
  * dialog that searches a build-time index of guides, sections,
  * components, props and keyboard shortcuts, and runs actions. The index is
- * loaded the first time the palette opens.
+ * loaded the first time the palette opens. When the build has DocSearch's
+ * settings, pages whose text matches are listed too.
  */
 @Component({
   selector: 'docs-command-palette',
@@ -213,6 +220,12 @@ export class CommandPalette {
   protected readonly query = signal('');
   protected readonly entries = signal<SearchEntry[] | null>(null);
   protected readonly announcement = signal('');
+  /** Pages DocSearch found for the query, if the build has DocSearch. */
+  private readonly fullText = signal<{ query: string; hits: FullTextHit[] }>({
+    query: '',
+    hits: [],
+  });
+  private readonly docSearch = docSearchConfig();
   protected readonly shortcut = signal('Ctrl K');
 
   private readonly document = inject(DOCUMENT);
@@ -279,11 +292,26 @@ export class CommandPalette {
             0,
       )
       .slice(0, words.length ? 6 : 2);
+    const local = search(entries, query);
+    // A page the local index already lists isn't listed again.
+    const listed = new Set(
+      local.flatMap((group) =>
+        group.entries.map((entry) => entry.url.split('#')[0]),
+      ),
+    );
+    const fullText = this.fullText();
+    const pages =
+      words.length && fullText.query === query
+        ? fullText.hits
+            .filter((hit) => !listed.has(hit.path))
+            .map((hit) => this.itemForPage(hit))
+        : [];
     return [
-      ...search(entries, query).map((group) => ({
+      ...local.map((group) => ({
         title: group.title,
         items: group.entries.map((entry) => this.itemFor(entry)),
       })),
+      ...(pages.length ? [{ title: 'Full text', items: pages }] : []),
       ...(actions.length ? [{ title: 'Actions', items: actions }] : []),
     ];
   });
@@ -303,6 +331,25 @@ export class CommandPalette {
       untracked(() => {
         if (this.options().length) this.keys.setFirstItemActive();
         else this.activeId.set(null);
+      });
+    });
+    effect((onCleanup) => {
+      const config = this.docSearch;
+      const query = this.query().trim();
+      if (!config || !this.open() || query.length < 2) return;
+      // A short pause, so typing a word sends one request, not one per
+      // letter; a later query cancels an earlier one's result.
+      let current = true;
+      const timer = setTimeout(() => {
+        searchFullText(config, query)
+          .catch(() => [])
+          .then((hits) => {
+            if (current) this.fullText.set({ query: this.query(), hits });
+          });
+      }, 150);
+      onCleanup(() => {
+        current = false;
+        clearTimeout(timer);
       });
     });
     afterRenderEffect(() => {
@@ -397,6 +444,23 @@ export class CommandPalette {
       context: entry.context,
       run: () => {
         void this.router.navigateByUrl(entry.url);
+      },
+    };
+  }
+
+  /**
+   * A choice that opens a page DocSearch found.
+   *
+   * @param hit - The page.
+   * @returns The choice.
+   */
+  private itemForPage(hit: FullTextHit): PaletteItem {
+    return {
+      id: `fulltext-${hit.path.replace(/[^\w-]/g, '-')}`,
+      title: hit.title,
+      context: hit.section,
+      run: () => {
+        void this.router.navigateByUrl(hit.path);
       },
     };
   }

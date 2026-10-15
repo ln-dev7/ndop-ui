@@ -1,7 +1,7 @@
 # ADR-0008: Docs search on Algolia DocSearch
 
-- Status: Accepted (approved by Valery on 2026-10-03); DocSearch itself
-  waits for ndop.dev to be public
+- Status: Accepted (approved by Valery on 2026-10-03); DocSearch
+  connected on 2026-10-15 (Phase 7)
 - Date: 2026-10-03
 - Phase: 3
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Documentation site",
@@ -46,3 +46,9 @@ actions.
 - Full-text search across guide prose arrives with DocSearch; until then,
   search covers titles, headings, components, props and shortcuts.
 - Valery applies to DocSearch after ndop.dev is live.
+- Connected in Phase 7: the crawler keeps one record per page (title,
+  description, headings, text), so full-text results are pages, listed
+  under "Full text" after the local index's results. The settings are
+  the repository variables `DOCSEARCH_APP_ID`, `DOCSEARCH_API_KEY` (the
+  search-only key) and `DOCSEARCH_INDEX_NAME`, passed to the deploy
+  builds; locally, an untracked `apps/docs/.env.local`.

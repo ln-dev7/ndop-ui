@@ -36,6 +36,19 @@
           "projects": ["size"],
           "target": "check"
         }
+      ],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "env": "DOCSEARCH_APP_ID"
+        },
+        {
+          "env": "DOCSEARCH_API_KEY"
+        },
+        {
+          "env": "DOCSEARCH_INDEX_NAME"
+        }
       ]
     },
     "serve": {

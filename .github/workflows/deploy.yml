@@ -115,6 +115,11 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
           SHA: ${{ github.event.pull_request.head.sha }}
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.json
+          # The palette's full-text search (ADR-0008). The key is Algolia's
+          # search-only key, which ships to every reader anyway.
+          DOCSEARCH_APP_ID: ${{ vars.DOCSEARCH_APP_ID }}
+          DOCSEARCH_API_KEY: ${{ vars.DOCSEARCH_API_KEY }}
+          DOCSEARCH_INDEX_NAME: ${{ vars.DOCSEARCH_INDEX_NAME }}
         # Nx joins the arguments into a shell command, so the branch name,
         # which its author picks, keeps only characters that are safe there.
         run: |
@@ -204,6 +209,11 @@ jobs:
           PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
           SHA: ${{ github.event.workflow_run.head_sha }}
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.json
+          # The palette's full-text search (ADR-0008). The key is Algolia's
+          # search-only key, which ships to every reader anyway.
+          DOCSEARCH_APP_ID: ${{ vars.DOCSEARCH_APP_ID }}
+          DOCSEARCH_API_KEY: ${{ vars.DOCSEARCH_API_KEY }}
+          DOCSEARCH_INDEX_NAME: ${{ vars.DOCSEARCH_INDEX_NAME }}
         run: pnpm nx run docs:deploy -- --project-name="$PROJECT" --branch=master --commit-hash="$SHA"
 
       - name: Read the deployment's URL
