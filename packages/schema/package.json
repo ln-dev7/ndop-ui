@@ -1,6 +1,6 @@
 {
   "name": "@ndop/schema",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JSON schemas and types for Ndop UI registries, registry items, ndop.json, ndop.lock.json and component metadata.",
   "license": "MIT",
   "homepage": "https://ndop.dev",
