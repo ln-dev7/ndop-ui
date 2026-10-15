@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import {
+  existsSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -54,7 +55,7 @@ const ANGULAR_OPTIONS = {
 
 /**
  * The docs guides' check (ADR-0030). Every guide under `guides/<section>/`
- * is read and:
+ * and every blog post under `posts/` is read and:
  *
  * - each `ts` block is written as a file, and each `angular-html` block as
  *   the template of a generated standalone component that imports the
@@ -70,7 +71,8 @@ const ANGULAR_OPTIONS = {
  * it would be checked and with a reason. Errors are reported at their
  * line in the guide.
  *
- * @param options - Guides, built registry, base tsconfig and work folder.
+ * @param options - Guides, posts, built registry, base tsconfig and work
+ *   folder.
  * @param context - Nx executor context.
  * @returns Whether every guide passed.
  *
@@ -78,7 +80,7 @@ const ANGULAR_OPTIONS = {
  * ```json
  * "guides": {
  *   "executor": "@ndop/workspace-plugin:docs-guides",
- *   "options": { "guides": "apps/docs/src/guides" }
+ *   "options": { "guides": "apps/docs/src/guides", "posts": "apps/docs/src/blog" }
  * }
  * ```
  */
@@ -88,11 +90,13 @@ const docsGuides: PromiseExecutor<DocsGuidesExecutorSchema> = async (
 ) => {
   const root = context.root;
   const started = Date.now();
-  const guidesDir = join(root, options.guides);
   const registry = join(root, options.registry ?? 'dist/registry/r');
   const work = join(root, options.workDir ?? 'tmp/docs-guides');
 
-  const guides = readGuides(guidesDir);
+  const guides = new Map([
+    ...readGuides(root, options.guides),
+    ...(options.posts ? readPosts(root, options.posts) : []),
+  ]);
   const { directives, items } = readRegistry(registry);
   const issues: GuideIssue[] = [];
   const blocks: CodeBlock[] = [];
@@ -199,9 +203,9 @@ const docsGuides: PromiseExecutor<DocsGuidesExecutorSchema> = async (
     blocks.filter(
       (block) => blockKind(block) === kind && block.nocheck === undefined,
     ).length;
-  const summary = `${guides.size} guides: ${counted('typescript')} TypeScript, ${counted('template')} template and ${counted('json')} JSON blocks checked, ${skipped} skipped with nocheck, in ${((Date.now() - started) / 1000).toFixed(1)}s.`;
+  const summary = `${guides.size} guides and posts: ${counted('typescript')} TypeScript, ${counted('template')} template and ${counted('json')} JSON blocks checked, ${skipped} skipped with nocheck, in ${((Date.now() - started) / 1000).toFixed(1)}s.`;
   if (issues.length > 0) {
-    logger.error(formatIssues(options.guides, issues));
+    logger.error(formatIssues('', issues));
     logger.error(`${summary} ${issues.length} problems.`);
     return { success: false };
   }
@@ -212,22 +216,46 @@ const docsGuides: PromiseExecutor<DocsGuidesExecutorSchema> = async (
 /**
  * Reads every guide, `guides/<section>/<page>.md`.
  *
- * @param folder - Absolute path of the guides folder.
- * @returns Markdown by path under the folder, such as `getting-started/cli.md`.
+ * @param root - Workspace root.
+ * @param folder - Workspace-relative guides folder.
+ * @returns Markdown by workspace-relative path, such as
+ *   `apps/docs/src/guides/getting-started/cli.md`.
  */
-function readGuides(folder: string): Map<string, string> {
+function readGuides(root: string, folder: string): Map<string, string> {
   return new Map(
-    readdirSync(folder, { withFileTypes: true })
+    readdirSync(join(root, folder), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .flatMap((section) =>
-        readdirSync(join(folder, section.name))
+        readdirSync(join(root, folder, section.name))
           .filter((file) => file.endsWith('.md'))
           .sort()
           .map((file): [string, string] => [
-            `${section.name}/${file}`,
-            readFileSync(join(folder, section.name, file), 'utf-8'),
+            `${folder}/${section.name}/${file}`,
+            readFileSync(join(root, folder, section.name, file), 'utf-8'),
           ]),
       ),
+  );
+}
+
+/**
+ * Reads every blog post, `posts/<slug>.md`.
+ *
+ * @param root - Workspace root.
+ * @param folder - Workspace-relative posts folder.
+ * @returns Markdown by workspace-relative path, such as
+ *   `apps/docs/src/blog/updating-code-you-own.md`; none when the folder
+ *   doesn't exist yet.
+ */
+function readPosts(root: string, folder: string): Map<string, string> {
+  if (!existsSync(join(root, folder))) return new Map();
+  return new Map(
+    readdirSync(join(root, folder))
+      .filter((file) => file.endsWith('.md'))
+      .sort()
+      .map((file): [string, string] => [
+        `${folder}/${file}`,
+        readFileSync(join(root, folder, file), 'utf-8'),
+      ]),
   );
 }
 

@@ -387,7 +387,8 @@ export function compilerErrors(
 /**
  * Formats issues as `path:line: message`, one per line, sorted.
  *
- * @param guidesDir - Workspace-relative guides folder, prefixed to paths.
+ * @param guidesDir - Folder prefixed to the issues' paths, or `''` when
+ *   they are already workspace-relative.
  * @param issues - The issues.
  * @returns The report.
  */
@@ -395,10 +396,9 @@ export function formatIssues(
   guidesDir: string,
   issues: readonly GuideIssue[],
 ): string {
+  const prefix = guidesDir ? `${guidesDir}/` : '';
   return [...issues]
     .sort((a, b) => a.guide.localeCompare(b.guide) || a.line - b.line)
-    .map(
-      (issue) => `${guidesDir}/${issue.guide}:${issue.line}: ${issue.message}`,
-    )
+    .map((issue) => `${prefix}${issue.guide}:${issue.line}: ${issue.message}`)
     .join('\n');
 }

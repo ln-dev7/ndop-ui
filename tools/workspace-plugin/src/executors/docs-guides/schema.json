@@ -2,12 +2,16 @@
   "$schema": "https://json-schema.org/schema",
   "version": 2,
   "title": "Docs guides",
-  "description": "Check the docs guides against the registry: compile their TypeScript and Angular template blocks, validate their ndop.json and registry.json blocks, and check the directives, items and component links they name (ADR-0030).",
+  "description": "Check the docs guides and blog posts against the registry: compile their TypeScript and Angular template blocks, validate their ndop.json and registry.json blocks, and check the directives, items and component links they name (ADR-0030).",
   "type": "object",
   "properties": {
     "guides": {
       "type": "string",
       "description": "Workspace-relative guides folder, holding <section>/<page>.md."
+    },
+    "posts": {
+      "type": "string",
+      "description": "Workspace-relative folder of blog posts, holding <slug>.md, checked as guides are."
     },
     "registry": {
       "type": "string",

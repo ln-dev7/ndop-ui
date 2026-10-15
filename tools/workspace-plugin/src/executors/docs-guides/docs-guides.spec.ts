@@ -300,4 +300,12 @@ describe('formatIssues', () => {
       'apps/docs/src/guides/a.md:9: One.\napps/docs/src/guides/b.md:1: Two.',
     );
   });
+
+  it('prints workspace-relative paths as they are', () => {
+    expect(
+      formatIssues('', [
+        { guide: 'apps/docs/src/blog/a.md', line: 3, message: 'One.' },
+      ]),
+    ).toBe('apps/docs/src/blog/a.md:3: One.');
+  });
 });
