@@ -167,3 +167,31 @@ consequence ("each Phase 6 component adds prompts").
   check when it's in the lockfile and the agent's files import it from
   `blocks/<name>/<name>`, as a route does.
 - A unit test fails if a component in the registry has no prompt.
+
+## Amendment 3 (2026-10-14): the registry first, and the theme's colors
+
+Status: Accepted by Valery on 2026-10-14 (ADR-0017, amendment 1).
+
+A model asked for "a sidebar with a logout button that confirms" built the
+sidebar, cards and table by hand and wrote its own colors in a stylesheet.
+The suite didn't look for either.
+
+- **Three prompts, 90–92,** shaped like that request: an app shell with a
+  sidebar, a logout button that asks for confirmation and an empty main
+  area; an admin overview with stat cards, a sales chart and recent
+  orders, without naming a dashboard; an account page for profile and
+  account details. `prompts.json` has 92 prompts; the first 89 are
+  unchanged.
+- **A `components` entry can list alternatives,** `sidebar|sidebar-01`,
+  met by any one of them, since a block or the components it's built from
+  are both right. `dashboard-01|chart` with `dashboard-01|table` asks for
+  the block, or for each component.
+- **A fourth check, `styles`, on every prompt:** the agent's `.ts` and
+  `.html` files and its stylesheets under `src/` have no color literals
+  (hex in a color, background, border, fill, stroke, outline or shadow, or
+  in a Tailwind arbitrary value; `rgb()`, `hsl()`, `oklch()` and the other
+  color functions with literal values) and define no CSS variables. For a
+  stylesheet the fixture already had, such as `src/styles.css` with its
+  theme, only the lines the agent added count. Earlier results were
+  scored without it, so a rerun of prompts 1–89 can score lower on it.
+- The scorer's tests cover both, with the scripted agent.

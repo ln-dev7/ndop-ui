@@ -1,6 +1,6 @@
 # ADR-0018: `ndop verify` and the ESLint plugin
 
-- Status: Accepted (approved by Valery on 2026-10-05)
+- Status: Accepted (approved by Valery on 2026-10-05), with amendment 1
 - Date: 2026-10-05
 - Phase: 4
 - RFC: [RFC-0001](../../rfcs/0001-ndop-ui.md), "Agent-native DX" (the
@@ -177,3 +177,119 @@ Details settled while building it, within the decision above:
   set up.
 - **Build warnings** are reported only for the checked files; the app's own
   warnings, such as its stylesheet's, aren't the checked code's problem.
+
+## Amendment 1 (2026-10-14): every color comes from the theme's tokens
+
+Status: Accepted by Valery on 2026-10-14, with the refinements below on
+themes split across files and the project's ESLint setting.
+
+**Why:** an agent building a dashboard wrote about 70 hex colors and its
+own custom properties (`--ink`, `--lime`, `--coral`) in `src/app/app.css`,
+which `src/styles.css` imports, and `ndop verify` passed. `no-raw-colors`
+read class lists only, and verify linted `.ts` files only, so external
+templates (`templateUrl`) and stylesheets were never checked. The same
+run's screenshots showed an empty gap where a `log-out` icon belonged:
+the component used `<svg ndIcon="log-out">` without importing `NdIcon`,
+so the attribute did nothing, in the app as in the harness. Angular
+reports nothing for a static attribute no directive matches.
+
+The principle: every color comes from the theme's tokens. It covers every
+place a color can be written, not a list of special cases.
+
+### What counts as a raw color
+
+- Hex colors; `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, `lab()`,
+  `lch()`, `oklab()`, `oklch()` and `color()` with literal arguments; and
+  the CSS named colors in color properties (`color`, `background`,
+  `border-*`, `fill`, `stroke`, shadows, gradients…) and custom
+  properties. Elsewhere a bare word such as `red` may be an animation
+  name, so it isn't one.
+- Allowed: `var(--token)`, `color-mix()` over tokens, relative colors
+  built from a `var()`, `transparent`, `currentColor`, `inherit`,
+  `initial`, `unset`. A `var()` fallback that is a literal is reported.
+- A custom property defined with a color (`--ink: #18332d`) is reported
+  as a palette beside the theme's, whatever uses it, unless it's one of
+  the theme's own definitions (below).
+
+### Where it's checked
+
+- **`ndop/no-raw-colors`** (ESLint, templates and TypeScript), as before
+  for palette utilities and arbitrary values, now with any color literal
+  in an arbitrary value (`bg-[#1e3170]`, `text-[rgb(…)]`,
+  `shadow-[0_0_0_1px_red]`) and arbitrary properties (`[color:#fff]`,
+  `[--ink:#18332d]`); plus `style` attributes, `[style.*]`, `[style]` and
+  `[ngStyle]` bindings, and a component's inline `styles`. Its scope is
+  unchanged: everywhere `recommended` applies, item folders included.
+  Items are owned code that users edit, and the registry already lints
+  clean with it.
+- **Stylesheets**, in verify's lint step, under the same rule name: the
+  checked components' `styleUrl`/`styleUrls`, the project's Tailwind
+  stylesheet (`tailwind.css` in `ndop.json`), and every stylesheet either
+  imports with a relative path (`@import`, `@use`, `@forward`). Package
+  imports (`tailwindcss`, `@ndop/core/styles.css`) aren't app code and
+  aren't read. `@apply` class lists get the class checks.
+- **The theme's own definitions are allowed** only in the theme: the
+  Tailwind stylesheet, where `ndop init` and theme items write them
+  (ADR-0006, ADR-0023), and the stylesheets it imports by relative path,
+  directly or through other imports, for a theme split into its own
+  files. There, custom properties in the top-level `:root` and `.dark`
+  rules, in `[data-ndop-theme='system']` under
+  `@media (prefers-color-scheme: dark)`, and in `@theme` blocks are
+  definitions. The rest of those files is checked like any stylesheet, so
+  `@scope (app-root) { :scope { --ink: #18332d } }` in a file the
+  Tailwind stylesheet imports is still a parallel palette, as is a color
+  in an ordinary rule. To add a color, add it to the theme; anywhere else,
+  including an `@theme` block in a file the Tailwind stylesheet doesn't
+  import, it's a parallel palette. The Tailwind stylesheet's imports are
+  read before components' stylesheets, so a theme file a component also
+  imports is still the theme's.
+- **The project's ESLint config sets the rule everywhere.** Verify lints
+  with Ndop's `recommended` config before the project's config, not after,
+  so the project's setting of an Ndop rule wins in templates and
+  TypeScript. For stylesheets, verify asks ESLint
+  (`ESLint#calculateConfigForFile`) for the setting the project's config
+  gives each stylesheet path, with a base entry naming `**/*.css`,
+  `**/*.scss`, `**/*.sass` and `**/*.less` so they count as linted files:
+  `'off'` skips the file, `'warn'` reports warnings, which don't fail
+  verify, and `'error'`, a config that doesn't set the rule, or no config
+  at all reports errors. A stylesheet the config ignores (`ignores`) isn't
+  checked. `ndop.configs.recommended` names only `.ts` and `.html` files,
+  so stylesheets stay errors unless an entry without `files`, or one
+  naming them, says otherwise.
+- **External templates** (`templateUrl`) are now linted with the `.ts`
+  files they belong to.
+
+ESLint 9 doesn't parse CSS without a language plugin, and verify has no
+CSS parser among its dependencies (PostCSS is the CLI's). The plugin gets
+a small tokenizer, enough for blocks, statements, strings, parentheses
+and comments (`//` too in Sass and Less), and exports
+`stylesheetColors()`, `stylesheetImports()` and `themeColors()`, which
+verify runs on stylesheet files. No new dependency.
+
+**Fixes** name the token utilities (`bg-primary`,
+`text-muted-foreground`, `border-border`) and `var(--primary)`, and in
+verify, the project's color tokens: the custom properties holding colors
+in the top-level `:root` of the Tailwind stylesheet and the stylesheets it
+imports. The token list in the agent files (ADR-0017) still reads the
+Tailwind stylesheet only.
+
+### Icons in renders
+
+Before axe and the screenshot, the render step waits up to two seconds
+for every `svg[ndIcon]` to draw, so screenshots show the icons, then
+reports each one still empty as `render/empty-icon`: without a `viewBox`,
+`NdIcon` never ran, and the fix is to import it from `@ndop/core`; with
+one, no icon of that name is registered in `{lib}/icons.ts`. The harness
+itself needed no change: with `NdIcon` imported, the same app renders the
+icon.
+
+### Consequences
+
+- A project with raw colors in its global stylesheets fails verify on any
+  file, since the Tailwind stylesheet is always checked. That is the
+  point: those colors reach every page. A project that can't fix them yet
+  sets `ndop/no-raw-colors` to `'warn'` or `'off'` in its ESLint config,
+  for every file or with `files`, and verify follows it.
+- `--skip lint` skips the stylesheet check with the rest of the lint step.
+  The JSON output is unchanged; stylesheet problems carry the rule
+  `ndop/no-raw-colors` and a `file` ending in `.css` or `.scss`.

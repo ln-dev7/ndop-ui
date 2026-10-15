@@ -142,3 +142,22 @@ Status: Accepted by Valery on 2026-10-13 (ADR-0031).
 npm refused the `ndop` name. The CLI runs as `npx @ndop/cli <command>`,
 and as `ndop` once installed; the `ndop` package is private and isn't
 published.
+
+## Amendment 3 (2026-10-14): a terminal isn't always a person
+
+Status: Accepted by Valery on 2026-10-14 (ADR-0017, amendment 1).
+
+Amendment 1 said agents and CI never block, since prompts need stdin and
+stdout to be TTYs. VS Code runs a Copilot agent's commands in a
+terminal, so `ndop add` asked an agent to confirm. No variable that
+agents set is documented across Claude Code, Copilot and Cursor, so the
+CLI doesn't guess:
+
+- **Prompts also need `CI` unset** (or `0`, `false` or empty), as CI
+  services set it. Without a prompt, a command applies its plan as
+  `--yes` would; that stays safe because `add` never overwrites a file the
+  user changed without `--overwrite`, and `update` needs a clean tree for
+  the files it changes (ADR-0010).
+- **The agent files tell agents to pass `--yes`** to `add` and
+  `doctor --fix` (ADR-0017, amendment 1); the MCP server's `add_items`
+  never prompts.

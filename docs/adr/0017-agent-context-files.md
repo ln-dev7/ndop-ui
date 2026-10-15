@@ -110,3 +110,104 @@ component details stay behind `get_component`.
 - The registry install test (ADR-0015) checks that `init` writes the
   files, that a second `add` leaves them unchanged, and that text outside
   the markers survives.
+
+## Amendment 1 (2026-10-14): registry first, tokens everywhere, honest MCP
+
+Status: Accepted by Valery on 2026-10-14.
+
+### Context
+
+Valery tested 1.0.0 in a fresh app set up with
+`ndop init --agent claude-code --mcp`, then asked GitHub Copilot in VS Code
+(free plan, so Copilot picked the model) for "a demo sidebar and its main
+content with a logout button that opens a dialog to confirm the logout".
+The model read `AGENTS.md`, used the button, dialog and icons, and ran
+`ndop verify`, but hand-built the sidebar, cards, progress bars, avatars,
+badges, table and chart, and wrote about 70 hex colors and its own CSS
+variables in a stylesheet. Asked why, it said the project had no sidebar
+installed, then ran `npx @ndop/cli add sidebar`, which stopped for a
+confirmation the model had to answer. The section had told it:
+
+1. "For any button, field, dialog or other control, use an installed
+   component": controls only, and installed ones only; nothing said to look
+   in the registry for layouts, screens or blocks first.
+2. "never palette colors such as `bg-zinc-900`": Tailwind terms, so plain
+   CSS with hex values kept to the letter of it.
+3. "call the `get_component` MCP tool" and "The `ndop` MCP server is set
+   up", in `AGENTS.md`, which Copilot reads, though the server was only
+   registered for Claude Code; and no way to search without MCP.
+4. Nothing about `--yes`. VS Code runs an agent's commands in a terminal,
+   so the CLI saw a TTY and asked (ADR-0011, amendment 3).
+
+Narrow rules ("use the alert dialog to confirm") would fix one prompt and
+crowd out the others, so the section states general principles instead.
+
+### Decision
+
+- **Step 1 is one principle: build UI from the registry.** Before writing
+  any component, layout or screen, look for it in the registry, blocks
+  included for whole screens, and install what fits; never hand-build or
+  copy what the registry has. It replaces "use an installed component".
+- **How to search and read depends on who reads the file.** A file read
+  by one agent the MCP server is registered for (`CLAUDE.md`, the skill,
+  the Cursor rule, the Copilot file, with `mcp: true`) names the MCP
+  tools: `search_components` and `list_blocks` to find, `get_component`
+  and `get_block` to read, `add_items` to install, with `ndop list` and
+  `ndop view` as the fallback when the user hasn't approved the server.
+  Every other file names the CLI: `ndop list`, which prints every
+  component and block, and `ndop view <name>`. `AGENTS.md` is always the second kind: any agent may
+  read it, so it never claims the tools are available. When the server is
+  registered for some agents, its "MCP server" section names them and says
+  their tools can replace `ndop list` and `ndop view`; otherwise it keeps
+  the line on `ndop init --mcp`. The files that name the tools drop that
+  section. The commands use the installed-form command of ADR-0031,
+  amendment 1. `ndop view` replaces the `.md` twin URL, so the guidance is
+  the same for third-party registries.
+- **Step 4 is one principle: every color, radius and font comes from the
+  theme's tokens**, listed further down, in templates, stylesheets and
+  inline styles alike; no color values and no CSS variables of the
+  agent's own. Logical utilities keep one short sentence. The token list
+  gains a "Fonts" line, the `--font-*` variables of the stylesheet's
+  `@theme` blocks (`font-sans`, `font-mono`), and the colors line says
+  they also work as `var(--name)`. `get_project_context` returns the
+  fonts too.
+- **Write commands carry `--yes`:** `ndop add <names> --yes` and
+  `ndop doctor --fix --yes`, so an agent never waits on a prompt.
+- **Length.** The default-theme section goes from 2,692 to 2,735
+  characters in `AGENTS.md` (the new fonts line; 36 lines instead of 34),
+  and to 2,679 in the files that name the MCP tools. The text stays in
+  `agents.ts`, its one source.
+- **Detecting Copilot.** `.github/instructions/` and `.vscode/mcp.json`
+  now mean Copilot too, as `.github/copilot-instructions.md` already did.
+  A `.vscode` folder alone doesn't: `ng new` creates one in every app.
+  `init` keeps asking with a multi-select on a terminal, detected agents
+  preselected, as the decision above says; the choice is GitHub Copilot,
+  whatever model it runs, which is why the text names no model.
+
+Checked on 2026-10-14 against each tool's documentation, the files stay
+as the table above lists them:
+
+- Claude Code reads `CLAUDE.md` (or `.claude/CLAUDE.md`), and `AGENTS.md`
+  only when there's no `CLAUDE.md`; skills in
+  `.claude/skills/<name>/SKILL.md`; project MCP servers in `.mcp.json`
+  under `mcpServers`, asking the user to approve them.
+- VS Code with Copilot reads `.github/copilot-instructions.md`,
+  `AGENTS.md` at the root (`chat.useAgentsMdFile`) and
+  `.github/instructions/*.instructions.md`; MCP servers in
+  `.vscode/mcp.json` under `servers`. Its workspace-root `.mcp.json`
+  support is behind an experimental setting
+  (`chat.mcp.workspaceRootConfig.enabled`), so Copilot keeps
+  `.vscode/mcp.json`.
+- Cursor reads `.cursor/rules/*.mdc` (`alwaysApply`) and `AGENTS.md`;
+  MCP servers in `.cursor/mcp.json` under `mcpServers`, `type: "stdio"`.
+
+### Consequences
+
+- An agent without the MCP server, Copilot in the case above, gets a
+  working way to search the registry, and no claim of tools it lacks.
+- The color rule no longer depends on how the agent styles; the eval
+  checks it (ADR-0019, amendment 3), and `ndop verify` reports color
+  literals (ADR-0018).
+- `CLAUDE.md` and `AGENTS.md` no longer carry the same section when the
+  server is registered; the registry install test checks each one for
+  what it should say.
