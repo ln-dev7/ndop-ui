@@ -518,3 +518,29 @@ preview deployments, managed `robots.txt`).
 Consequences: Search Console can be given the sitemap; `ndop.pages.dev`
 URLs, if found, are expected under "Excluded by 'noindex' tag", as are block
 previews and the offline page.
+
+## Amendment 16 (2026-10-15): a blog
+
+Status: Accepted (Phase 7 step 9, approved by Valery on 2026-10-15).
+Follows ADR-0029, which puts the launch write-up under `/blog/`; RFC-0001's
+information architecture gains a Blog row.
+
+- **Routes:** `/blog`, every post newest first, and `/blog/<slug>`, from
+  `apps/docs/src/blog/<slug>.md` with `title`, `description`, `date` and
+  `author` in its front matter. Posts go through the guides' pipeline:
+  Analog's content plugin, Shiki at build time, heading anchors, an "On
+  this page" rail, a `.md` twin, and search entries in the palette. Twins
+  stay out of `llms.txt` and `llms-full.txt`.
+- **Guide code:** the `guides` check (ADR-0030) reads posts too, through
+  the executor's `posts` option, so their code is held to the same rule.
+- **Search engines:** a post has a byline (author linked, date in
+  `<time datetime>`), `BlogPosting` structured data (headline,
+  description, `datePublished`, author as a `Person` with a URL, its OG
+  image), checked against Google's Article structured data documentation
+  on 2026-10-15. Posts and the index are indexed pages, so they get OG
+  images, eyebrow "Blog", and sitemap entries like any other page.
+- **Feed:** `/blog/rss.xml`, RSS 2.0, built from the posts' front matter
+  with the twins, served as `application/rss+xml` from `_headers`, and
+  linked from every blog page with `<link rel="alternate">`.
+- **Navigation:** "Blog" joins Docs, Blocks and Themes in the header and
+  the mobile navigation sheet.

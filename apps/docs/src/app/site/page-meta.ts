@@ -23,7 +23,16 @@ export interface PageInfo {
    * such as the home page's `WebSite`. Only what the page itself shows.
    */
   structuredData?: Record<string, unknown>;
+  /**
+   * A feed the page belongs to, announced with
+   * `<link rel="alternate" type="application/rss+xml">` so feed readers
+   * find it from the page, such as the blog's ({@link BLOG_FEED}).
+   */
+  feed?: { title: string; path: string };
 }
+
+/** The blog's RSS feed, which every blog page links. */
+export const BLOG_FEED = { title: 'Ndop UI blog', path: '/blog/rss.xml' };
 
 /** Marks the JSON-LD script {@link PageMeta} owns, to find it again. */
 const STRUCTURED_DATA = 'data-page-meta';
@@ -36,9 +45,10 @@ const STRUCTURED_DATA = 'data-page-meta';
  * for the page's path (see {@link ogImagePath}). It also keeps one
  * `<link rel="canonical">` in the head, at the page's {@link pageUrl}, the
  * same address as `og:url` and the sitemap's entry, and the page's
- * structured data, if any (ADR-0016, amendment 15). Works on the server,
- * so prerendered pages carry the tags; in the browser it updates the
- * prerendered elements instead of adding new ones.
+ * structured data and the feed it belongs to, if any (ADR-0016,
+ * amendments 15 and 16). Works on the server, so prerendered pages carry
+ * the tags; in the browser it updates the prerendered elements instead of
+ * adding new ones.
  *
  * @example
  * ```ts
@@ -66,6 +76,7 @@ export class PageMeta {
     this.title.setTitle(title);
     this.canonical(url);
     this.structuredData(page.structuredData);
+    this.feed(page.feed);
     this.meta.updateTag({ name: 'description', content: page.description });
     for (const [property, content] of [
       ['og:site_name', 'Ndop UI'],
@@ -111,6 +122,7 @@ export class PageMeta {
     this.meta.updateTag({ name: 'robots', content: 'noindex' });
     this.canonical(undefined);
     this.structuredData(undefined);
+    this.feed(undefined);
   }
 
   /**
@@ -131,6 +143,30 @@ export class PageMeta {
       head.appendChild(link);
     }
     link.setAttribute('href', href);
+  }
+
+  /**
+   * Points the head's feed link at a feed, or removes it.
+   *
+   * @param feed - The feed's title and path, or `undefined` for none.
+   */
+  private feed(feed: PageInfo['feed']): void {
+    const head = this.document.head;
+    let link = head.querySelector<HTMLLinkElement>(
+      'link[rel="alternate"][type="application/rss+xml"]',
+    );
+    if (!feed) {
+      link?.remove();
+      return;
+    }
+    if (!link) {
+      link = this.document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('type', 'application/rss+xml');
+      head.appendChild(link);
+    }
+    link.setAttribute('title', feed.title);
+    link.setAttribute('href', pageUrl(feed.path));
   }
 
   /**

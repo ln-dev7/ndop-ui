@@ -132,7 +132,7 @@ export default defineConfig(() => {
             ignore: [
               (route: string) =>
                 route.includes('?') ||
-                !/^\/(?:$|offline$|404\.html$|docs\/|blocks(?:\/|$)|themes(?:\/|$))/.test(
+                !/^\/(?:$|offline$|404\.html$|docs\/|blocks(?:\/|$)|themes(?:\/|$)|blog(?:\/|$))/.test(
                   route,
                 ),
             ],
@@ -143,6 +143,7 @@ export default defineConfig(() => {
       componentDocs({
         workspace,
         guides: join(import.meta.dirname, 'src/guides'),
+        blog: join(import.meta.dirname, 'src/blog'),
       }),
       // Icons and the web app manifest, from the logo's masters.
       brandAssets(join(import.meta.dirname, 'brand')),

@@ -447,6 +447,7 @@ The docs site is the product's storefront and must be visibly better than shadcn
 | Patterns    | Forms with Signal Forms, data fetching with `resource()`, responsive layouts, i18n and RTL, building your own registry                                                   |
 | Primitives  | Headless API reference for people building their own design system                                                                                                       |
 | Changelog   | Per-item versions with diffs and "what `ndop update` will do" notes                                                                                                      |
+| Blog        | Write-ups on how Ndop works, starting with the launch write-up (ADR-0029)                                                                                                |
 
 ### Component page anatomy (in this order)
 

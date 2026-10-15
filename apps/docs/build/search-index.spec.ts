@@ -1,4 +1,9 @@
-import { blockEntry, componentEntries, guideEntries } from './search-index';
+import {
+  blockEntry,
+  componentEntries,
+  guideEntries,
+  postEntries,
+} from './search-index';
 
 describe('guideEntries', () => {
   it('lists the page and its sections, but not step titles or code', () => {
@@ -126,5 +131,42 @@ describe('blockEntry', () => {
       keywords: ['login-01', 'authentication'],
       url: '/blocks/login-01',
     });
+  });
+});
+
+describe('postEntries', () => {
+  it('lists the post under the blog, then its sections', () => {
+    expect(
+      postEntries({
+        url: '/blog/a-post',
+        title: 'A post: with a colon',
+        description: 'About it.',
+        date: '2026-10-15',
+        author: 'Valery Melou',
+        body: '## First\n\nText.\n\n### Second',
+      }),
+    ).toEqual([
+      {
+        kind: 'page',
+        title: 'A post: with a colon',
+        context: 'Blog',
+        description: 'About it.',
+        url: '/blog/a-post',
+      },
+      {
+        kind: 'heading',
+        title: 'First',
+        context: 'A post: with a colon',
+        description: '',
+        url: '/blog/a-post#first',
+      },
+      {
+        kind: 'heading',
+        title: 'Second',
+        context: 'A post: with a colon',
+        description: '',
+        url: '/blog/a-post#second',
+      },
+    ]);
   });
 });

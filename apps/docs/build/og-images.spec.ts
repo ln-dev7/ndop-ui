@@ -27,6 +27,10 @@ describe('ogEyebrow', () => {
     );
     expect(ogEyebrow('/themes/studio', lookup)).toBe('Themes');
   });
+
+  it('names blog posts', () => {
+    expect(ogEyebrow('/blog/updating-code-you-own', lookup)).toBe('Blog');
+  });
 });
 
 describe('ogHtml', () => {

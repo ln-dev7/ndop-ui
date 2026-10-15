@@ -85,6 +85,7 @@
       "cache": true,
       "inputs": [
         "{projectRoot}/src/guides/**/*.md",
+        "{projectRoot}/src/blog/*.md",
         "{workspaceRoot}/registry/**/*",
         "{workspaceRoot}/packages/core/src/**/*",
         "{workspaceRoot}/packages/primitives/**/*",
@@ -111,7 +112,8 @@
         }
       ],
       "options": {
-        "guides": "apps/docs/src/guides"
+        "guides": "apps/docs/src/guides",
+        "posts": "apps/docs/src/blog"
       }
     },
     "typecheck": {

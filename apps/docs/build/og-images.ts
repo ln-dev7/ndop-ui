@@ -75,6 +75,7 @@ export function ogEyebrow(path: string, lookup: OgLookup): string {
     return title ? `Blocks · ${title}` : 'Blocks';
   }
   if (first === 'themes') return 'Themes';
+  if (first === 'blog') return 'Blog';
   return 'Docs';
 }
 
@@ -207,9 +208,14 @@ export async function ogImages(
     const eyebrow = ogEyebrow(page.path, lookup);
     return {
       ...page,
-      // A gallery's title is its section's name; saying it twice reads
-      // as a mistake.
-      eyebrow: eyebrow === page.title ? 'Gallery' : eyebrow,
+      // A gallery's or the blog's title is its section's name; saying it
+      // twice reads as a mistake.
+      eyebrow:
+        eyebrow !== page.title
+          ? eyebrow
+          : page.path === '/blog'
+            ? 'Articles'
+            : 'Gallery',
       ...(component ? { component } : {}),
     };
   });

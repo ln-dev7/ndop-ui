@@ -115,11 +115,13 @@ export class PaletteOption implements Highlightable {
   ],
   host: { '(document:keydown)': 'onGlobalKeydown($event)' },
   template: `
+    <!-- Narrower from md to lg, where the header also holds the main
+         links and would otherwise wrap the logo. -->
     <button
       ndButton
       variant="outline"
       size="sm"
-      class="w-9 justify-start px-0 text-muted-foreground sm:w-56 sm:px-3"
+      class="w-9 justify-start px-0 text-muted-foreground sm:w-56 sm:px-3 md:w-48 lg:w-56"
       aria-label="Search the docs"
       aria-keyshortcuts="Meta+K Control+K"
       (click)="open.set(true)"

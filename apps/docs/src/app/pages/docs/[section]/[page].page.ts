@@ -6,38 +6,14 @@ import { CodeFrames } from '../../../site/code-frames';
 import { loadGuide } from '../../../site/guides';
 import { Navigation } from '../../../site/navigation';
 import { injectCurrentPath } from '../../../site/current-path';
-import { OnThisPage, type PageHeading } from '../../../site/on-this-page';
+import {
+  OnThisPage,
+  pageHeadings,
+  type PageHeading,
+} from '../../../site/on-this-page';
 import { PageActions } from '../../../site/page-actions';
 import { StaticHtml } from '../../../site/static-html';
 import { PageMeta } from '../../../site/page-meta';
-
-/**
- * Decodes the character references Markdown rendering produces in heading
- * text, such as `&#39;` for an apostrophe.
- *
- * @param text - Text from the rendered HTML.
- * @returns The plain text.
- */
-function decodeEntities(text: string): string {
-  const named: Record<string, string> = {
-    amp: '&',
-    lt: '<',
-    gt: '>',
-    quot: '"',
-    apos: "'",
-  };
-  return text.replace(
-    /&(#x[0-9a-f]+|#\d+|[a-z]+);/gi,
-    (match, entity: string) => {
-      if (entity.startsWith('#x') || entity.startsWith('#X')) {
-        return String.fromCodePoint(parseInt(entity.slice(2), 16));
-      }
-      if (entity.startsWith('#'))
-        return String.fromCodePoint(Number(entity.slice(1)));
-      return named[entity.toLowerCase()] ?? match;
-    },
-  );
-}
 
 /**
  * A guide (`/docs/<section>/<page>`) from `src/guides/<section>/<page>.md`,
@@ -148,15 +124,7 @@ export default class ContentPage {
   protected readonly html = computed(() => this.page.value()?.html ?? '');
 
   protected readonly headings = computed<PageHeading[]>(() =>
-    [
-      ...(this.page.value()?.html ?? '').matchAll(
-        /<h([23])[^>]*\sid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g,
-      ),
-    ].map(([, level, id = '', text = '']) => ({
-      id,
-      level: Number(level),
-      text: decodeEntities(text.replace(/<[^>]+>/g, '').trim()),
-    })),
+    pageHeadings(this.page.value()?.html ?? ''),
   );
 
   protected readonly neighbors = computed(() => {

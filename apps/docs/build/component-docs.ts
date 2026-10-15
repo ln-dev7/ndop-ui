@@ -41,6 +41,7 @@ import {
   previewSnapshots,
 } from './changelog';
 import { blockCode, blockMarkdown, blockSummaries } from './block-docs';
+import { postMarkdown, readPosts, rssXml } from './blog-posts';
 import { themeSummaries } from './theme-docs';
 import { landingData } from './landing-data';
 import { block, inline, partData } from './part-data';
@@ -80,6 +81,8 @@ export interface ComponentDocsOptions {
   workspace: string;
   /** Absolute path of the guides, for the search index. */
   guides: string;
+  /** Absolute path of the blog's posts, for their twins, feed and search. */
+  blog: string;
 }
 
 /** What building a page's data needs. */
@@ -102,7 +105,7 @@ interface PageTools {
  * `virtual:ndop/changelog/<name>` and the files the update preview merges
  * from `virtual:ndop/snapshots/<name>` (ADR-0020);
  * `virtual:ndop/search-index` holds the palette's index (ADR-0008); and
- * `/llms.txt`, `/llms-full.txt` and
+ * `/llms.txt`, `/llms-full.txt`, the blog's feed (`/blog/rss.xml`) and
  * every page's `.md` twin are served in development and emitted with the
  * build (amendment 6), as is the built registry itself, at `/r/`;
  * `virtual:ndop/primitives` lists the headless primitives and loads each
@@ -212,10 +215,20 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
       (summary) =>
         [`/blocks/${summary.name}.md`, blockMarkdown(summary, read)] as const,
     );
+    // Posts are about Ndop rather than how to use it, so they stay out of
+    // llms.txt and llms-full.txt too.
+    const posts = readPosts(options.blog);
+    const postTwins = posts.map(
+      (post) => [`${post.url}.md`, postMarkdown(post)] as const,
+    );
     const markdown = 'text/markdown; charset=utf-8';
     const text = 'text/plain; charset=utf-8';
     return new Map([
-      ...[...twins, ...changelogs, ...blockTwins].map(
+      [
+        '/blog/rss.xml',
+        { type: 'application/rss+xml; charset=utf-8', body: rssXml(posts) },
+      ],
+      ...[...twins, ...changelogs, ...blockTwins, ...postTwins].map(
         ([path, body]) => [path, { type: markdown, body }] as const,
       ),
       [
@@ -290,7 +303,9 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
         }
         const served = path.startsWith('/r/')
           ? registryFiles()
-          : path.endsWith('.md') || path.startsWith('/llms')
+          : path.endsWith('.md') ||
+              path.startsWith('/llms') ||
+              path === '/blog/rss.xml'
             ? machineReadable()
             : undefined;
         const file = served?.get(path);
@@ -341,7 +356,7 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             BLOCK_CATEGORIES.find((c) => c.slug === summary.category)?.title ??
             summary.category,
         }));
-        return `export const entries = ${JSON.stringify(searchIndex(options.guides, components, blocks))};`;
+        return `export const entries = ${JSON.stringify(searchIndex(options.guides, components, blocks, readPosts(options.blog)))};`;
       }
       if (id === `\0${LANDING_ID}`) {
         const data = await landingData({

@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SearchEntry } from '../src/app/search/search-entry';
 import { headingId, plainText } from '../src/markdown/heading-ids';
+import type { BlogPost } from './blog-posts';
 
 /** The metadata fields the index reads. */
 export interface IndexedComponent {
@@ -140,18 +141,43 @@ export function blockEntry(block: IndexedBlock): SearchEntry {
 }
 
 /**
+ * Index entries for one blog post: the post, then its `##` and `###`
+ * sections, as a guide's.
+ *
+ * @param post - The post.
+ * @returns The entries.
+ */
+export function postEntries(post: BlogPost): SearchEntry[] {
+  // The guide reader finds the sections; the post's own entry replaces
+  // the page entry it makes.
+  const [, ...headings] = guideEntries(`---\n\n---\n${post.body}`, post.url);
+  return [
+    {
+      kind: 'page',
+      title: post.title,
+      context: 'Blog',
+      description: post.description,
+      url: post.url,
+    },
+    ...headings.map((heading) => ({ ...heading, context: post.title })),
+  ];
+}
+
+/**
  * The whole index: every guide under `guides/<section>/<page>.md`, then
- * every component, then every block.
+ * every component, then every block, then every blog post.
  *
  * @param guides - Absolute path of the guides folder.
  * @param components - Every component's metadata.
  * @param blocks - Every block.
+ * @param posts - Every blog post.
  * @returns The entries.
  */
 export function searchIndex(
   guides: string,
   components: IndexedComponent[],
   blocks: IndexedBlock[] = [],
+  posts: BlogPost[] = [],
 ): SearchEntry[] {
   const pages = readdirSync(guides, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -171,5 +197,6 @@ export function searchIndex(
       .sort((a, b) => a.title.localeCompare(b.title))
       .flatMap(componentEntries),
     ...blocks.map(blockEntry),
+    ...posts.flatMap(postEntries),
   ];
 }

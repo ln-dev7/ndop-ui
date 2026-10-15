@@ -146,6 +146,9 @@ const SYSTEM = {
                         routerLink="/themes"
                         >Themes</a
                       >
+                      <a ndButton variant="outline" size="sm" routerLink="/blog"
+                        >Blog</a
+                      >
                     </nav>
                   </div>
                   <docs-site-nav />
@@ -157,7 +160,7 @@ const SYSTEM = {
 
         <a
           routerLink="/"
-          class="me-2 flex items-center gap-2 font-semibold tracking-tight"
+          class="me-2 flex shrink-0 items-center gap-2 font-semibold tracking-tight whitespace-nowrap"
         >
           <!-- 1px up centers the leaf on the capitals. -->
           <docs-logo-mark class="h-5 -translate-y-px" />
@@ -173,6 +176,7 @@ const SYSTEM = {
           >
           <a ndButton variant="ghost" size="sm" routerLink="/blocks">Blocks</a>
           <a ndButton variant="ghost" size="sm" routerLink="/themes">Themes</a>
+          <a ndButton variant="ghost" size="sm" routerLink="/blog">Blog</a>
         </nav>
 
         <div class="ms-auto flex items-center gap-2">

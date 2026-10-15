@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
-import { PageMeta } from './page-meta';
+import { BLOG_FEED, PageMeta } from './page-meta';
 
 describe('PageMeta', () => {
   const content = (selector: string) =>
@@ -126,5 +126,37 @@ describe('PageMeta', () => {
     expect(content('name="robots"')).toBe('noindex');
     expect(head.querySelector('link[rel="canonical"]')).toBeNull();
     expect(head.querySelector('script[type="application/ld+json"]')).toBeNull();
+  });
+
+  it('links the feed a page belongs to, and drops it on other pages', () => {
+    const meta = TestBed.inject(PageMeta);
+    const head = TestBed.inject(DOCUMENT).head;
+    const feeds = () =>
+      [...head.querySelectorAll('link[rel="alternate"]')].map((link) => [
+        link.getAttribute('type'),
+        link.getAttribute('title'),
+        link.getAttribute('href'),
+      ]);
+    meta.set({
+      title: 'Blog',
+      description: 'Posts.',
+      path: '/blog',
+      feed: BLOG_FEED,
+    });
+    meta.set({
+      title: 'A post',
+      description: 'A post.',
+      path: '/blog/a-post',
+      feed: BLOG_FEED,
+    });
+    expect(feeds()).toEqual([
+      ['application/rss+xml', 'Ndop UI blog', 'https://ndop.dev/blog/rss.xml'],
+    ]);
+    meta.set({
+      title: 'Button',
+      description: 'A.',
+      path: '/docs/components/button',
+    });
+    expect(feeds()).toEqual([]);
   });
 });

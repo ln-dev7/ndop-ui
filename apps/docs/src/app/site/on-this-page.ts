@@ -22,6 +22,56 @@ export interface PageHeading {
 }
 
 /**
+ * Decodes the character references Markdown rendering produces in heading
+ * text, such as `&#39;` for an apostrophe.
+ *
+ * @param text - Text from the rendered HTML.
+ * @returns The plain text.
+ */
+function decodeEntities(text: string): string {
+  const named: Record<string, string> = {
+    amp: '&',
+    lt: '<',
+    gt: '>',
+    quot: '"',
+    apos: "'",
+  };
+  return text.replace(
+    /&(#x[0-9a-f]+|#\d+|[a-z]+);/gi,
+    (match, entity: string) => {
+      if (entity.startsWith('#x') || entity.startsWith('#X')) {
+        return String.fromCodePoint(parseInt(entity.slice(2), 16));
+      }
+      if (entity.startsWith('#'))
+        return String.fromCodePoint(Number(entity.slice(1)));
+      return named[entity.toLowerCase()] ?? match;
+    },
+  );
+}
+
+/**
+ * The `##` and `###` headings of a page's HTML, rendered at build time
+ * with their `id`s, for the "On this page" rail.
+ *
+ * @param html - The page's rendered Markdown.
+ * @returns Its headings, in order.
+ *
+ * @example
+ * ```ts
+ * pageHeadings('<h2 id="usage">Usage</h2>'); // [{ id: 'usage', level: 2, text: 'Usage' }]
+ * ```
+ */
+export function pageHeadings(html: string): PageHeading[] {
+  return [
+    ...html.matchAll(/<h([23])[^>]*\sid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g),
+  ].map(([, level, id = '', text = '']) => ({
+    id,
+    level: Number(level),
+    text: decodeEntities(text.replace(/<[^>]+>/g, '').trim()),
+  }));
+}
+
+/**
  * The right-hand "On this page" rail, sticky beside the page, with
  * scroll-spy: the section being read is marked with
  * `aria-current="location"` as the page scrolls. Links scroll smoothly
