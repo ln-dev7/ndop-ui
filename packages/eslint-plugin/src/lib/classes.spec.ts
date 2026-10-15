@@ -58,6 +58,33 @@ describe('rawColorClasses', () => {
     ]);
   });
 
+  it('flags color literals in arbitrary values and properties', () => {
+    expect(
+      rawColorClasses(
+        'bg-[#1e3170] text-[rgb(0_0_0/50%)] border-[hwb(0_0%_0%)] from-[red] bg-[color:#fff] shadow-[0_0_0_1px_black] [color:#fff] md:[background-color:oklch(0.5_0_0)] [--ink:#18332d] [&>svg]:[color:tomato]',
+      ).map((problem) => problem.token),
+    ).toEqual([
+      'bg-[#1e3170]',
+      'text-[rgb(0_0_0/50%)]',
+      'border-[hwb(0_0%_0%)]',
+      'from-[red]',
+      'bg-[color:#fff]',
+      'shadow-[0_0_0_1px_black]',
+      '[color:#fff]',
+      'md:[background-color:oklch(0.5_0_0)]',
+      '[--ink:#18332d]',
+      '[&>svg]:[color:tomato]',
+    ]);
+  });
+
+  it('allows tokens in arbitrary values and properties', () => {
+    expect(
+      rawColorClasses(
+        'bg-[var(--sidebar)] text-[color:var(--primary)] bg-[color-mix(in_oklch,var(--primary)_50%,transparent)] [color:var(--muted-foreground)] [--gap:4px] bg-[url(/a.png)] [&>svg]:size-4 shadow-[0_0_0_1px_var(--ring)]',
+      ),
+    ).toEqual([]);
+  });
+
   it('allows tokens, black and white, and non-color utilities', () => {
     expect(
       rawColorClasses(

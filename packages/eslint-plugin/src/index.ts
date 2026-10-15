@@ -6,6 +6,19 @@ import { logicalProperties } from './rules/logical-properties';
 import { noPrivatePrimitives } from './rules/no-private-primitives';
 import { noRawColors } from './rules/no-raw-colors';
 
+export {
+  colorLiterals,
+  isColorProperty,
+  type ColorLiteral,
+} from './lib/colors';
+export {
+  stylesheetColors,
+  stylesheetImports,
+  themeColors,
+  type StylesheetColor,
+  type StylesheetColorsOptions,
+} from './lib/css';
+
 /**
  * `@ndop/eslint-plugin`: rules for Angular apps that use Ndop UI
  * (ADR-0018), for templates and TypeScript.
@@ -13,7 +26,12 @@ import { noRawColors } from './rules/no-raw-colors';
  * - `icon-button-name`, `dialog-title` and `form-control-label` check
  *   templates for accessible names.
  * - `logical-properties` and `no-raw-colors` check class lists in templates
- *   and in `cn()`, `variants()` and `host` classes.
+ *   and in `cn()`, `variants()` and `host` classes; `no-raw-colors` also
+ *   checks `style` attributes and bindings and components' inline
+ *   `styles`.
+ * - {@link stylesheetColors} applies `no-raw-colors` to stylesheet files,
+ *   which ESLint doesn't parse; `ndop verify` runs it on the checked
+ *   components' stylesheets and the project's Tailwind stylesheet.
  * - `no-private-primitives` checks imports.
  *
  * Template rules need angular-eslint's template parser, and its inline

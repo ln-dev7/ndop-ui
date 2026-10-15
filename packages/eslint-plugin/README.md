@@ -68,10 +68,53 @@ works the same in both directions.
 
 ### no-raw-colors
 
-Palette colors (`bg-red-500`, `text-zinc-900`) and arbitrary color values
-(`text-[#333]`) bypass the theme, so they don't follow dark mode or a
-theme change. Use tokens: `bg-primary`, `text-muted-foreground`,
-`border-border`, `bg-destructive`.
+Every color comes from the theme's tokens. Palette colors (`bg-red-500`,
+`text-zinc-900`), color literals (`#18332d`, `rgb()`, `oklch()`, named
+colors such as `tomato`) and a palette of your own (`--ink: #18332d`)
+bypass the theme, so they don't follow dark mode or a theme change. The
+rule reads class lists, arbitrary values and properties (`text-[#333]`,
+`[color:#fff]`), `style` attributes, `[style.*]`, `[style]` and
+`[ngStyle]` bindings, and components' inline `styles`. Use tokens:
+`bg-primary`, `text-muted-foreground`, `border-border`, `bg-destructive`,
+or `var(--primary)` in CSS. `var()`, `color-mix()` over tokens,
+`transparent` and `currentColor` are fine.
+
+Theme tokens are defined in the theme only: the Tailwind stylesheet
+(`tailwind.css` in `ndop.json`) or a stylesheet it imports by relative
+path, in the top-level `:root` and `.dark` rules, the
+`[data-ndop-theme='system']` rule under
+`@media (prefers-color-scheme: dark)`, and `@theme` blocks. To add a
+color, define it there and expose it to Tailwind:
+
+```css
+:root {
+  --brand: #1e3170;
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+}
+```
+
+`bg-brand` and `var(--brand)` then come from the theme. The same property
+defined anywhere else, such as `@scope (app-root) { :scope { … } }`, is a
+palette beside the theme's and is reported.
+
+ESLint doesn't read stylesheet files, so the plugin also exports
+`stylesheetColors(css, { theme })`, which `ndop verify` runs on
+components' stylesheets, on the Tailwind stylesheet and on what they
+import. With `theme: true`, which verify passes for the Tailwind
+stylesheet and the stylesheets it imports, the theme's own blocks are
+allowed. `themeColors(css)` lists a theme file's color tokens, for fixes.
+
+To relax the rule for your project, set it in your ESLint config like any
+rule; `ndop verify` follows the setting for templates, TypeScript and
+stylesheets (`'warn'` doesn't fail verify, `'off'` skips the check, and
+files your config ignores aren't checked):
+
+```js
+export default [...ndop.configs.recommended, { rules: { 'ndop/no-raw-colors': 'warn' } }, { files: ['src/app/legacy/**'], rules: { 'ndop/no-raw-colors': 'off' } }];
+```
 
 ### no-private-primitives
 
