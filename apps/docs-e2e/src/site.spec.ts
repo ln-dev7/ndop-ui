@@ -153,9 +153,14 @@ test('a mapping table fits a phone without widening the page', async ({
   expect(
     await table.evaluate((element) => element.getBoundingClientRect().width),
   ).toBeLessThanOrEqual(column);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
-    375,
-  );
+  // The page doesn't scroll sideways. Compared with the page's own width,
+  // not the viewport's: the scrollbar's reserved gutter takes up room
+  // where scrollbars do.
+  const width = await page.evaluate(() => ({
+    scroll: document.documentElement.scrollWidth,
+    client: document.documentElement.clientWidth,
+  }));
+  expect(width.scroll).toBe(width.client);
 });
 
 test('an opted-out block shows its file name and never its nocheck', async ({

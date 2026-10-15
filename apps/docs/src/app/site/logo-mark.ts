@@ -11,9 +11,11 @@ export { MARK_PATH } from './mark-path';
  */
 @Component({
   selector: 'docs-logo-mark',
+  // min-w-0: in a flex row, WebKit won't shrink an aspect-ratio box below
+  // its content's width, and it counts the percentage-sized SVG as 300px.
   host: {
     class:
-      'inline-block aspect-[39/76] shrink-0 text-brand dark:text-foreground',
+      'inline-block aspect-[39/76] min-w-0 shrink-0 text-brand dark:text-foreground',
   },
   template: `
     <svg
