@@ -15,6 +15,7 @@ const LINK = 'font-medium underline underline-offset-4 hover:text-foreground';
  */
 @Component({
   selector: 'docs-site-footer',
+  host: { class: 'mt-auto' },
   imports: [LogoMark],
   template: `
     <footer>

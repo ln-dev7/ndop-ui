@@ -13,6 +13,13 @@ import { SiteToaster } from './site/toaster';
  */
 @Component({
   selector: 'docs-root',
+  // A column at least the screen's height, so a short page's footer sits
+  // at the bottom rather than halfway up.
+  host: {
+    '[class.flex]': '!bare()',
+    '[class.min-h-dvh]': '!bare()',
+    '[class.flex-col]': '!bare()',
+  },
   imports: [RouterOutlet, SiteHeader, SiteFooter, SiteToaster],
   template: `
     @if (bare()) {
