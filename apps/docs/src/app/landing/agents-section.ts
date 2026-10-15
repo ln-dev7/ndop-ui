@@ -63,7 +63,7 @@ interface TranscriptLine {
             }
           </ul>
           <p class="px-4 text-sm text-muted-foreground">
-            An eval suite of 89 prompts runs an agent with only the MCP server
+            An eval suite of 92 prompts runs an agent with only the MCP server
             and scores each result with ndop verify.
           </p>
           <a

@@ -262,8 +262,11 @@ tested on every change.
 
 ## For agents and CI
 
-Commands ask for confirmation only in an interactive terminal, and
-`--json` prints a single result that a script or a coding agent can read:
+Commands ask for confirmation only in an interactive terminal, and never
+when the `CI` variable is set. An agent's commands can run in a real
+terminal too, as in VS Code, so pass `--yes` there; the Ndop section of
+your agents' instructions does. `--json` prints a single result that a
+script or a coding agent can read:
 
 ```bash pm
 npx @ndop/cli add dialog --yes --json

@@ -13,22 +13,31 @@ it, an MCP server with the components' real documentation, and
 
 `ndop init` writes an Ndop section into `AGENTS.md`, which most agents read.
 It lists the installed components, the theme's tokens, where files go, and
-the workflow: use an installed component first, read its documentation,
-give every field a visible label, style with tokens and logical utilities,
-then verify. `ndop add` refreshes it every time you install something.
+the workflow: look in the registry before building any component, layout
+or screen, and add what fits, blocks included; read an item's API before
+using it; give every field a visible label; take every color, radius and
+font from the theme's tokens, in templates and stylesheets alike; then
+verify. `ndop add` refreshes it every time you install something.
 
-Pick the agents you use with `--agent`, or let `init` detect them:
+The section tells an agent how to search: with the MCP tools in the files
+of agents you registered [the MCP server](#the-mcp-server) for, and with
+`ndop list` and `ndop view` everywhere else. `AGENTS.md` always names the
+CLI, since any agent may read it. Its commands pass `--yes`, so an agent
+running them in a terminal never waits on a question.
+
+Pick every agent you use with `--agent`, or let `init` ask, with the ones
+it detects selected:
 
 ```bash pm
 npx @ndop/cli init --agent claude-code,cursor
 ```
 
-| Agent         | What `init` writes                                                     |
-| ------------- | ---------------------------------------------------------------------- |
-| Every agent   | A section in `AGENTS.md`                                               |
-| `claude-code` | The same section in `CLAUDE.md`, and a skill in `.claude/skills/ndop/` |
-| `cursor`      | A rule in `.cursor/rules/ndop.mdc`                                     |
-| `copilot`     | The same section in `.github/copilot-instructions.md`                  |
+| Agent         | What `init` writes                                                |
+| ------------- | ----------------------------------------------------------------- |
+| Every agent   | A section in `AGENTS.md`                                          |
+| `claude-code` | The section in `CLAUDE.md`, and a skill in `.claude/skills/ndop/` |
+| `cursor`      | A rule in `.cursor/rules/ndop.mdc`                                |
+| `copilot`     | The section in `.github/copilot-instructions.md`                  |
 
 The CLI only rewrites the text between `<!-- ndop:start -->` and
 `<!-- ndop:end -->`, so your own instructions in those files are safe. The
@@ -42,7 +51,8 @@ blocks and theme tokens, read the way `ndop add` reads them, and can
 install items and run `ndop verify` for it. It runs on your machine,
 started by the agent.
 
-Let `init` register it for your agents:
+Let `init` register it for each agent you picked, in the file that agent
+reads:
 
 ```bash pm
 npx @ndop/cli init --agent claude-code --mcp
@@ -63,8 +73,9 @@ Claude Code, in `.mcp.json`:
 }
 ```
 
-Cursor reads the same shape from `.cursor/mcp.json`. VS Code reads it from
-`.vscode/mcp.json`, under `servers` instead of `mcpServers`.
+Cursor reads the same shape from `.cursor/mcp.json`. GitHub Copilot in
+VS Code reads it from `.vscode/mcp.json`, under `servers` instead of
+`mcpServers`.
 
 ### Tools
 
