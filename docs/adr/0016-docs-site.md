@@ -463,3 +463,58 @@ as a contrast failure and non-descriptive link text.
 Consequences: CI no longer blocks on a performance drop, so reading the
 warnings is part of reviewing changes to the docs site. 95 stays the
 target for every page.
+
+## Amendment 15 (2026-10-15): ready for search engines
+
+Status: Accepted by Valery on 2026-10-15.
+
+ndop.dev is live and goes to Google Search Console. It had no sitemap, no
+`robots.txt` of its own (Cloudflare answered with its content signals
+policy), no canonical links, and `ndop.pages.dev` serves the same site.
+Checked on 2026-10-15 against Google Search Central (sitemaps, canonical
+URLs, site names, breadcrumbs) and Cloudflare's Pages docs (headers,
+preview deployments, managed `robots.txt`).
+
+- **Sitemap.** The build writes `/sitemap.xml` after prerendering, from
+  the same list of indexable pages as the OG images: every prerendered
+  page with a share card and without `noindex`. URLs are absolute, on
+  `https://ndop.dev`, without trailing slashes. Analog's
+  `prerender.sitemap` isn't used: it lists only the configured routes,
+  not discovered ones, stamps every page with the build date as
+  `lastmod`, and declares an `https://` namespace that isn't the
+  protocol's. The sitemap has no `lastmod`: Google uses it only when it
+  is consistently accurate, and a page assembled from metadata, the
+  registry and guides has no single modification date.
+- **`robots.txt`:** allows everything and names the sitemap. Pages marked
+  `noindex` stay crawlable, so search engines can see the mark.
+- **Files for tools** (Markdown twins, `llms.txt`, `llms-full.txt`, `/r/`)
+  stay crawlable and carry `X-Robots-Tag: noindex` from `_headers`, so
+  they don't compete with the pages they mirror in results.
+- **Canonical links.** `PageMeta` keeps one `<link rel="canonical">` per
+  page, at the same address as `og:url` and the sitemap entry, rendered
+  on the server and updated on navigation. `noindex` pages get none.
+- **Other hosts.** `ndop.pages.dev` sends `X-Robots-Tag: noindex`, from
+  an absolute URL rule in `_headers` (Valery's choice), so only ndop.dev
+  is indexed; its canonical links still name ndop.dev. Preview
+  deployments already get `X-Robots-Tag: noindex` from Cloudflare. A
+  redirect would need a Function on every request.
+- **Structured data:** the home page has `WebSite` (name and URL), which
+  Google reads for the site's name. A block's page has a
+  `BreadcrumbList` (Blocks, its category, the block), the trail it shows
+  as its category's link above its title, each level a page. Component,
+  primitive and guide pages show no trail, and its middle levels, such as
+  `/docs/components`, aren't pages, so they get none.
+- **No empty `/docs` page.** `/docs` is only the guides' layout. Block
+  previews' placeholder links made the prerender write it as a page with
+  no content and the home page's title; it is no longer prerendered, so
+  `_redirects` sends `/docs` to the introduction with a 301, and the
+  not-found page's "Read the docs" link goes there too.
+- **Checks:** the docs e2e checks every sitemap page (one canonical link,
+  `og:url`, unique title and description, one `h1`, `lang`), that every
+  crawled page is in the sitemap unless `noindex`, and that no internal
+  link redirects; the post-deploy smoke check fetches `/robots.txt` and
+  `/sitemap.xml`.
+
+Consequences: Search Console can be given the sitemap; `ndop.pages.dev`
+URLs, if found, are expected under "Excluded by 'noindex' tag", as are block
+previews and the offline page.

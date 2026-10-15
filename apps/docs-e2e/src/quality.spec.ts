@@ -1,13 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { open } from './support/open';
+import { readSeo, SITE, sitemapPaths } from './support/seo';
 import { SiteMap } from './support/site-map';
 
 // One test walks every route, so a retry's trace records the whole site
 // and can fill a CI runner's disk; the step names say which route failed.
 test.use({ trace: 'off' });
 
-test('every route renders on the server, hydrates cleanly, passes axe and links only to pages that exist', async ({
+test('every route renders on the server, hydrates cleanly, passes axe, is in the sitemap unless noindex, and links only to pages that exist', async ({
   page,
   request,
 }) => {
@@ -17,6 +18,8 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
   const site = new SiteMap('/');
   // Linked from nowhere: the service worker answers with it (ADR-0027).
   site.add(['/offline']);
+  const sitemap = new Set(await sitemapPaths(request));
+  const indexable = new Set<string>();
 
   for (let route = site.next(); route !== undefined; route = site.next()) {
     test.setTimeout(test.info().timeout + 10_000);
@@ -28,6 +31,17 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
       // page was rendered on the server with hydration enabled.
       expect(serverHtml, 'server-rendered content').toContain('<main');
       expect(serverHtml, 'hydration annotations').toContain('ngh=');
+      // Search engines index a page at its canonical address, which the
+      // sitemap lists; a noindex page has neither (ADR-0016, amendment 15).
+      const seo = readSeo(serverHtml);
+      if (seo.noindex) {
+        expect(sitemap.has(route), 'noindex page in the sitemap').toBe(false);
+        expect(seo.canonicals, 'canonical link on a noindex page').toEqual([]);
+      } else {
+        indexable.add(route);
+        expect(sitemap.has(route), 'in the sitemap').toBe(true);
+        expect(seo.canonicals, 'canonical link').toEqual([SITE + route]);
+      }
 
       const problems: string[] = [];
       page.on('console', (message) => {
@@ -66,13 +80,25 @@ test('every route renders on the server, hydrates cleanly, passes axe and links 
         );
       // A block preview's links are placeholders for the app it would
       // sit in, such as /login, not pages of this site (ADR-0022).
-      if (!/^\/blocks\/[^/]+\/preview$/.test(route)) site.add(links);
+      if (!/^\/blocks\/[^/]+\/preview$/.test(route)) {
+        // Pages redirects these forms, and a crawler following a link
+        // that redirects spends a fetch on it (ADR-0016, "Hosting").
+        expect(
+          links.filter((link) => /(?:[^/]\/|\.html)(?:[?#]|$)/.test(link)),
+          'links that redirect',
+        ).toEqual([]);
+        site.add(links);
+      }
       page.removeAllListeners('console');
       page.removeAllListeners('pageerror');
     });
   }
 
   expect(site.size, 'routes found').toBeGreaterThan(10);
+  expect(
+    [...sitemap].filter((path) => !indexable.has(path)),
+    'sitemap pages no link reaches',
+  ).toEqual([]);
   for (const file of site.files) {
     expect((await request.get(file)).status(), file).toBe(200);
   }

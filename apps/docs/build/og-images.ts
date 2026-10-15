@@ -7,7 +7,7 @@ import {
   readFileSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join, relative, sep } from 'node:path';
+import { dirname, join } from 'node:path';
 // By path: Vite bundles this file with its config, and that bundler
 // resolves neither tsconfig paths nor unbuilt workspace packages.
 // eslint-disable-next-line @nx/enforce-module-boundaries
@@ -18,6 +18,7 @@ import {
 import { MARK_PATH } from '../src/app/site/mark-path';
 import { GUIDE_SECTIONS } from '../src/app/site/guide-sections';
 import { OG_SIZE, ogImagePath } from '../src/app/site/og-image';
+import { indexedPages } from './indexed-pages';
 import { serveSite } from './screenshots';
 
 /** A page that gets an OG image. */
@@ -91,20 +92,6 @@ const escape = (text: string) =>
         char
       ] ?? char,
   );
-
-/**
- * Decodes the entities Angular's server renderer writes in attributes.
- *
- * @param text - An attribute's value.
- * @returns Its text.
- */
-const unescape = (text: string) =>
-  text
-    .replace(/&#(\d+);/g, (_, code: string) => String.fromCharCode(+code))
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');
 
 /**
  * The OG image's page: indigo with a lattice of the mark's leaves, the
@@ -187,44 +174,8 @@ export interface OgImageOptions {
 }
 
 /**
- * Lists the prerendered pages that get an OG image: every HTML file under
- * the site with an `og:title`, except pages marked `noindex`, such as
- * block previews, the offline page and the not-found page. Pages are
- * prerendered as `<route>.html`, the home page as `index.html`.
- *
- * @param site - The built site's static files.
- * @returns Each page's path and title.
- */
-export function ogPages(site: string): { path: string; title: string }[] {
-  const pages: { path: string; title: string }[] = [];
-  const walk = (dir: string) => {
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      const full = join(dir, entry.name);
-      if (entry.isDirectory()) {
-        if (entry.name !== 'assets' && entry.name !== 'r') walk(full);
-      } else if (entry.name.endsWith('.html')) {
-        const html = readFileSync(full, 'utf-8');
-        if (/<meta name="robots" content="noindex"/.test(html)) continue;
-        const title = html.match(
-          /<meta property="og:title" content="([^"]*)"/,
-        )?.[1];
-        if (!title) continue;
-        const file = relative(site, full).split(sep).join('/');
-        const path = `/${file.replace(/(?:^|\/)index\.html$|\.html$/, '')}`;
-        pages.push({ path: path === '/' ? '/' : path, title: unescape(title) });
-      }
-    }
-  };
-  walk(site);
-  return pages.map((page) => ({
-    ...page,
-    path: page.path.replace(/\/$/, '') || '/',
-  }));
-}
-
-/**
  * Writes a 1200 by 630 JPEG OG image for every indexed page of the built
- * site (ADR-0026, "OG images"), at {@link ogImagePath}: each composed as
+ * site ({@link indexedPages}; ADR-0026, "OG images"), at {@link ogImagePath}: each composed as
  * an HTML page with the site's own Geist and photographed in Chromium.
  * A component page's image shows its main example, photographed from the
  * prerendered page in light mode. Both shots are cached by content hash
@@ -251,7 +202,7 @@ export async function ogImages(
     componentGroup: (name) => item(name, 'registry:ui')?.categories?.[0],
     blockCategory: (name) => item(name, 'registry:block')?.categories?.[0],
   };
-  const pages: OgPage[] = ogPages(options.site).map((page) => {
+  const pages: OgPage[] = indexedPages(options.site).map((page) => {
     const component = page.path.match(/^\/docs\/components\/([^/]+)$/)?.[1];
     const eyebrow = ogEyebrow(page.path, lookup);
     return {

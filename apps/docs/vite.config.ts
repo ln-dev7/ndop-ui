@@ -13,6 +13,7 @@ import { brandAssets } from './build/brand-assets';
 import { ogImages } from './build/og-images';
 import { componentDocs } from './build/component-docs';
 import { serviceWorker } from './build/service-worker';
+import { writeSitemap } from './build/sitemap';
 import {
   COLOR_REPLACEMENTS,
   LANGUAGES,
@@ -90,6 +91,12 @@ export default defineConfig(() => {
             // (ADR-0026), from the pages just prerendered into Analog's
             // public output.
             'prerender:done': async () => {
+              // Search engines' list of the pages to index (ADR-0016,
+              // amendment 15), from the same pages as the OG images.
+              const listed = writeSitemap(
+                join(workspace, 'dist/apps/docs/analog/public'),
+              );
+              console.log(`Sitemap: ${listed} pages`);
               const { taken, cached } = await blockThumbnails({
                 workspace,
                 site: join(workspace, 'dist/apps/docs/analog/public'),
@@ -118,11 +125,14 @@ export default defineConfig(() => {
             // link, and a query has no place in a static file's name.
             // Block previews link to the app routes a block would sit
             // among, such as /login, which aren't pages of this site
-            // (ADR-0022).
+            // (ADR-0022). Among them is /docs, which here is only the
+            // guides' layout, with no page of its own: prerendered, it was
+            // an empty page titled like the home page for search engines
+            // to find (ADR-0016, amendment 15).
             ignore: [
               (route: string) =>
                 route.includes('?') ||
-                !/^\/(?:$|offline$|404\.html$|docs(?:\/|$)|blocks(?:\/|$)|themes(?:\/|$))/.test(
+                !/^\/(?:$|offline$|404\.html$|docs\/|blocks(?:\/|$)|themes(?:\/|$))/.test(
                   route,
                 ),
             ],

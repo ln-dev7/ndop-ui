@@ -1,12 +1,18 @@
 /*.md
   Content-Type: text/markdown; charset=utf-8
+  X-Robots-Tag: noindex
 /llms.txt
   Content-Type: text/plain; charset=utf-8
+  X-Robots-Tag: noindex
 /llms-full.txt
   Content-Type: text/plain; charset=utf-8
+  X-Robots-Tag: noindex
 /manifest.webmanifest
   Content-Type: application/manifest+json
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 /r/*
   Access-Control-Allow-Origin: *
+  X-Robots-Tag: noindex
+https://ndop.pages.dev/*
+  X-Robots-Tag: noindex
