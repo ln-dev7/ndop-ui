@@ -90,7 +90,7 @@ export interface NdopServerOptions {
 
 /** What every client is told about using the server. */
 const INSTRUCTIONS = `Ndop UI: accessible Angular components installed as source files into the user's app.
-Start with get_project_context. Before writing UI, find components with search_components, then read get_component for each one you use: it has the exact selectors, inputs, required nesting, keyboard behavior and a minimal correct usage. Never guess an Ndop API. Install what's missing with add_items. Use theme tokens (ndop://tokens), never palette colors. After writing, run verify on your files and fix every problem until it passes. The build-screen prompt walks through a whole screen.`;
+Start with get_project_context. Build UI from the registry: before writing any component, layout or screen, look for it with search_components and list_blocks (blocks are whole screens), and never hand-build what the registry has. Read get_component for each one you use: it has the exact selectors, inputs, required nesting, keyboard behavior and a minimal correct usage. Never guess an Ndop API. Install what you need with add_items. Take every color, radius and font from the theme tokens (ndop://tokens), in templates, stylesheets and inline styles alike; never write color values or define CSS variables of your own. After writing, run verify on your files and fix every problem until it passes. The build-screen prompt walks through a whole screen.`;
 
 const fileShape = z.object({
   target: z
@@ -625,7 +625,7 @@ export function buildScreenPrompt(description: string): string {
 2. Call list_blocks; if a block fits, read it with get_block and start from it.
 3. Otherwise call search_components for each part of the screen, then get_component for every component you'll use. Follow its usage, required nesting and agent notes exactly; never guess a selector or input.
 4. Call add_items with every block and component the screen needs that isn't installed yet.
-5. Write the screen as a standalone component, using only installed Ndop components for interactive and form elements, labels on every form control, and theme tokens (ndop://tokens) for every color.
+5. Write the screen as a standalone component, built from the installed blocks and components, with labels on every form control, and theme tokens (ndop://tokens) for every color, radius and font, with no color values or CSS variables of your own.
 6. Call verify with the files you wrote. Fix every problem it reports, then verify again, until it passes.`;
 }
 

@@ -85,7 +85,7 @@ export function tokensMarkdown(theme: string, tokens: Token[]): string {
   ];
   return [
     `# ${theme} theme tokens`,
-    'Use tokens, never palette colors: `bg-primary text-primary-foreground`, `border-border`, `text-muted-foreground`, not `bg-zinc-900`. Each color token is a Tailwind color, so every color utility takes it. Pair a surface with its `-foreground`. Dark mode switches the values, so never add `dark:` variants for token colors.',
+    'Every color comes from a token, in templates, stylesheets and inline styles alike: `bg-primary text-primary-foreground`, `border-border`, `text-muted-foreground`, or `var(--primary)` in CSS; never `bg-zinc-900`, a hex or rgb() value, or a color variable of your own. Each color token is a Tailwind color, so every color utility takes it. Pair a surface with its `-foreground`. Dark mode switches the values, so never add `dark:` variants for token colors.',
     [
       `| Token | Purpose | ${schemes.join(' | ')} |`,
       `| --- | --- | ${schemes.map(() => '---').join(' | ')} |`,
