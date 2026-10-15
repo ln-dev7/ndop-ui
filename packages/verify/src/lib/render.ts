@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { createRequire } from 'node:module';
 import { extname, join, normalize, relative, sep } from 'node:path';
-import { chromium } from 'playwright-core';
+import { chromium, type Page } from 'playwright-core';
 import { VERIFY_DIR } from './build';
 import type { FoundComponent } from './components';
 import type { Problem } from './types';
@@ -32,6 +32,96 @@ export interface RenderResult {
   skipped?: string;
 }
 
+/** An `svg[ndIcon]` that drew nothing. */
+export interface EmptyIcon {
+  /** The icon name it asks for. */
+  name: string;
+  /**
+   * Whether the `NdIcon` directive ran on it. When it didn't, the
+   * component doesn't import `NdIcon`; when it did, no icon of that name
+   * is registered.
+   */
+  applied: boolean;
+}
+
+/**
+ * Waits for every `svg[ndIcon]` on a page to draw, so a screenshot shows
+ * the icons, and returns the ones that still haven't when the time is up.
+ *
+ * @param page - A rendered page.
+ * @param timeout - How long to wait, in milliseconds.
+ * @returns The empty icons, in document order.
+ */
+export async function emptyIcons(
+  page: Page,
+  timeout = 2_000,
+): Promise<EmptyIcon[]> {
+  // Static attributes on an SVG element keep their case when Angular sets
+  // them, but the HTML parser lowercases them, so both spellings count.
+  const selector = 'svg[ndIcon], svg[ndicon]';
+  await page
+    .waitForFunction(
+      (icons) =>
+        [...document.querySelectorAll(icons)].every(
+          (svg) => svg.childElementCount > 0,
+        ),
+      selector,
+      { timeout },
+    )
+    .catch(() => undefined);
+  return page.evaluate(
+    (icons) =>
+      [...document.querySelectorAll(icons)]
+        .filter((svg) => svg.childElementCount === 0)
+        .map((svg) => ({
+          name: svg.getAttribute('ndIcon') ?? svg.getAttribute('ndicon') ?? '',
+          // NdIcon always binds viewBox, so without one it never ran.
+          applied: svg.hasAttribute('viewBox'),
+        })),
+    selector,
+  );
+}
+
+/**
+ * Problems for a component's empty icons, one per icon name.
+ *
+ * @param component - The component.
+ * @param icons - Its empty icons.
+ * @returns The problems, at the line of each icon in the template.
+ */
+function iconProblems(
+  component: FoundComponent,
+  icons: readonly EmptyIcon[],
+): Problem[] {
+  const seen = new Set<string>();
+  return icons.flatMap((icon) => {
+    if (seen.has(icon.name)) return [];
+    seen.add(icon.name);
+    const template = component.template;
+    const before = template?.text.split(`ndIcon="${icon.name}"`)[0];
+    const line =
+      (template?.start.line ?? 0) +
+      (before !== undefined && before !== template?.text
+        ? before.split('\n').length
+        : 1);
+    return [
+      {
+        file: template?.file ?? component.file,
+        line,
+        column: 1,
+        rule: 'render/empty-icon',
+        severity: 'error' as const,
+        message: icon.applied
+          ? `<svg ndIcon="${icon.name}"> in ${component.name} drew nothing: no icon named "${icon.name}" is registered.`
+          : `<svg ndIcon="${icon.name}"> in ${component.name} drew nothing: ${component.name} doesn't import NdIcon, so the attribute does nothing.`,
+        fix: icon.applied
+          ? `Add "${icon.name}" to the icons in the lib folder's icons.ts, and keep provideIcons() in app.config.ts's providers.`
+          : "Add NdIcon to the component's imports: import { NdIcon } from '@ndop/core'.",
+      },
+    ];
+  });
+}
+
 /** One axe violation, as `axe.run` returns it. */
 interface Violation {
   id: string;
@@ -42,8 +132,9 @@ interface Violation {
 
 /**
  * Renders each component in the built harness, in Chromium, in light and
- * dark (ADR-0018): runs axe on it, reports console errors, and saves a
- * screenshot of each to `.ndop/verify/<Name>.<scheme>.png`. Components
+ * dark (ADR-0018): waits for its icons to draw and reports those that
+ * don't, runs axe on it, reports console errors, and saves a screenshot
+ * of each to `.ndop/verify/<Name>.<scheme>.png`. Components
  * with required inputs are skipped, since verify can't invent their data.
  *
  * @param root - Workspace root.
@@ -126,6 +217,10 @@ export async function renderComponents(
             errors.push(`${component.name} didn't render within 10 seconds.`),
           );
         await page.waitForLoadState('networkidle');
+        const icons = await emptyIcons(page);
+        if (scheme === 'light') {
+          problems.push(...iconProblems(component, icons));
+        }
         await page.addScriptTag({ content: axe });
         const violations = (await page.evaluate(
           (rules) =>

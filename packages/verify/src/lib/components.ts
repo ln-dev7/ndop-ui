@@ -24,11 +24,13 @@ export interface FoundComponent {
   template?: TemplateSource;
   /** Names of its required inputs, which the harness can't fill in. */
   requiredInputs: string[];
+  /** Project-relative paths of its `styleUrl` and `styleUrls` stylesheets. */
+  stylesheets: string[];
 }
 
 /**
- * Finds the components a file declares, with their templates and required
- * inputs, by parsing it with the project's TypeScript.
+ * Finds the components a file declares, with their templates, required
+ * inputs and stylesheets, by parsing it with the project's TypeScript.
  *
  * @param ts - The project's TypeScript.
  * @param root - Workspace root.
@@ -84,6 +86,18 @@ export async function findComponents(
       };
     }
 
+    const styleUrls = property('styleUrls');
+    const stylesheets = [
+      property('styleUrl'),
+      ...(styleUrls && ts.isArrayLiteralExpression(styleUrls)
+        ? styleUrls.elements
+        : []),
+    ].flatMap((node) =>
+      node && ts.isStringLiteralLike(node)
+        ? [relative(root, join(dirname(file), node.text))]
+        : [],
+    );
+
     const requiredInputs = statement.members.flatMap((member) => {
       if (!ts.isPropertyDeclaration(member) || !member.initializer) return [];
       const call = member.initializer;
@@ -106,6 +120,7 @@ export async function findComponents(
         false,
       ...(template ? { template } : {}),
       requiredInputs,
+      stylesheets,
     });
   }
   return found;

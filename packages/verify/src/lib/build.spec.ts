@@ -63,6 +63,7 @@ describe('harnessSource', () => {
           file: 'src/app/settings.ts',
           exported: true,
           requiredInputs: [],
+          stylesheets: [],
         },
       ],
       'src/app/app.config.ts',

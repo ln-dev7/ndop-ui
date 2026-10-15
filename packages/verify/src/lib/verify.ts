@@ -2,8 +2,9 @@ import { readdir, stat } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 import { buildHarness } from './build';
 import { findComponents, type FoundComponent } from './components';
-import { lintFiles } from './lint';
+import { lintFiles, stylesheetRuleSetting } from './lint';
 import { renderComponents } from './render';
+import { checkStylesheets } from './styles';
 import type {
   Problem,
   StepName,
@@ -49,7 +50,9 @@ async function sourceFiles(
 /**
  * Checks files the way RFC-0001's verify loop describes (ADR-0018): their
  * templates against component metadata, a type-checked build of a harness
- * rendering them, Ndop's lint rules, then axe and screenshots in Chromium.
+ * rendering them, Ndop's lint rules on their code, templates and
+ * stylesheets and on the project's Tailwind stylesheet, then icons, axe and
+ * screenshots in Chromium.
  * A failed step doesn't stop the next ones, except that rendering needs the
  * build; any step can be skipped. Nothing in the project changes except
  * `.ndop/verify/`.
@@ -114,9 +117,30 @@ export async function verify(options: VerifyOptions): Promise<VerifyResult> {
     return { problems: built.problems };
   });
   await step('lint', async () => {
-    const linted = await lintFiles(app.root, files);
+    // External templates hold markup too; ESLint only reaches inline ones
+    // through the `.ts` files.
+    const templates = components.flatMap((component) =>
+      component.template?.file.endsWith('.html')
+        ? [join(app.root, component.template.file)]
+        : [],
+    );
+    const linted = await lintFiles(app.root, [
+      ...new Set([...files, ...templates]),
+    ]);
+    const styled = await checkStylesheets(
+      app.root,
+      components.flatMap((component) => component.stylesheets),
+      await stylesheetRuleSetting(app.root, 'ndop/no-raw-colors'),
+    );
     return {
-      problems: linted.problems,
+      problems: [
+        ...linted.problems.map((problem) =>
+          problem.rule === 'ndop/no-raw-colors' && !problem.fix
+            ? { ...problem, fix: styled.fix }
+            : problem,
+        ),
+        ...styled.problems,
+      ],
       ...(linted.note ? { skipped: linted.note } : {}),
     };
   });

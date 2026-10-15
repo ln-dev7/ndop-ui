@@ -11,16 +11,16 @@ beforeEach(async () => {
 afterEach(() => rm(root, { recursive: true, force: true }));
 
 describe('findComponents', () => {
-  it('reads inline and external templates and required inputs', async () => {
+  it('reads inline and external templates, required inputs and stylesheets', async () => {
     await writeFile(join(root, 'page.html'), '<p>External</p>\n');
     await writeFile(
       join(root, 'page.ts'),
       `import { Component, input, model } from '@angular/core';
 
-@Component({ selector: 'app-a', template: \`<h1>A</h1>\` })
+@Component({ selector: 'app-a', template: \`<h1>A</h1>\`, styleUrl: './a.css' })
 export class A {}
 
-@Component({ selector: 'app-b', templateUrl: './page.html' })
+@Component({ selector: 'app-b', templateUrl: './page.html', styleUrls: ['./b.css', './shared/b.scss'] })
 class B {
   readonly user = input.required<string>();
   readonly open = model.required<boolean>();
@@ -39,6 +39,7 @@ class B {
           start: { line: 2, column: 43 },
         },
         requiredInputs: [],
+        stylesheets: ['a.css'],
       },
       {
         name: 'B',
@@ -50,6 +51,7 @@ class B {
           start: { line: 0, column: 0 },
         },
         requiredInputs: ['user', 'open'],
+        stylesheets: ['b.css', 'shared/b.scss'],
       },
     ]);
   });

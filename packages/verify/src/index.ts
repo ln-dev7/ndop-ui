@@ -18,8 +18,20 @@ export {
   type FoundComponent,
   type TemplateSource,
 } from './lib/components';
-export { lintFiles, ndopLintConfig, type LintResult } from './lib/lint';
-export { renderComponents, type RenderResult } from './lib/render';
+export {
+  lintFiles,
+  ndopLintConfig,
+  stylesheetRuleSetting,
+  type LintResult,
+  type RuleSetting,
+} from './lib/lint';
+export {
+  emptyIcons,
+  renderComponents,
+  type EmptyIcon,
+  type RenderResult,
+} from './lib/render';
+export { checkStylesheets, colorFix, type StylesheetCheck } from './lib/styles';
 export type {
   ComponentDoc,
   MetadataSource,
