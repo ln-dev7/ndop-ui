@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/schema",
   "version": 2,
   "title": "Docs smoke check",
-  "description": "Checks a deployed docs site (ADR-0028): pages without trailing-slash redirects and their slashed and .html forms redirecting to them, the 404 page with a 404 status, /r/index.json as fresh JSON, a theme URL served by the Function, /sw.js, and, in Chromium, that the service worker registers and leaves /r/ uncached.",
+  "description": "Checks a deployed docs site (ADR-0028): pages without trailing-slash redirects and their slashed and .html forms redirecting to them, the 404 page with a 404 status, /r/index.json as fresh JSON, a theme URL served by the Function, /sw.js, /robots.txt naming the sitemap, /sitemap.xml, and, in Chromium, that the service worker registers and leaves /r/ uncached.",
   "type": "object",
   "properties": {
     "url": {

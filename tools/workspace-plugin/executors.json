@@ -53,7 +53,7 @@
     "docs-smoke": {
       "implementation": "./src/executors/docs-smoke/docs-smoke",
       "schema": "./src/executors/docs-smoke/schema.json",
-      "description": "Check a deployed docs site: trailing-slash redirects, the 404 page, the registry index, a theme URL and the service worker (ADR-0028)."
+      "description": "Check a deployed docs site: trailing-slash redirects, the 404 page, the registry index, a theme URL, the service worker, robots.txt and the sitemap (ADR-0028)."
     },
     "release-bootstrap": {
       "implementation": "./src/executors/release-bootstrap/release-bootstrap",

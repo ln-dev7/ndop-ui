@@ -17,6 +17,15 @@ export type Fetcher = (url: string, init?: RequestInit) => Promise<Response>;
 export const PAGE = '/docs/components/dialog';
 
 /**
+ * The sitemap's address, which `robots.txt` names, on the production host
+ * whatever host is checked (ADR-0016, amendment 15).
+ */
+export const SITEMAP = 'https://ndop.dev/sitemap.xml';
+
+/** A page every sitemap lists, by its canonical address. */
+export const SITEMAP_PAGE = 'https://ndop.dev/docs/components/button';
+
+/**
  * A theme URL's `t` for a one-token theme, which the theme URL Function
  * answers with a `registry:theme` item (ADR-0023).
  */
@@ -117,6 +126,10 @@ function summary(response: Response): string {
  *   missing theme with a 400.
  * - `/sw.js` is JavaScript that caches revalidate, so a deploy's new
  *   worker is found on the next visit (ADR-0027).
+ * - `/robots.txt` is the site's own, naming {@link SITEMAP}, and
+ *   `/sitemap.xml` is XML listing {@link SITEMAP_PAGE} (ADR-0016,
+ *   amendment 15). Without the site's file, Cloudflare answers
+ *   `/robots.txt` with its content signals policy, which names no sitemap.
  *
  * Redirects are never followed, so each answer is checked as sent.
  *
@@ -222,6 +235,38 @@ export async function fetchChecks(
       ensure(
         alwaysRevalidated(cacheControl),
         `expected caches to revalidate it, got Cache-Control: ${cacheControl ?? 'none'}`,
+      );
+    }),
+    check(`GET /robots.txt names the sitemap`, async () => {
+      const response = await get('/robots.txt');
+      ensure(
+        response.status === 200 &&
+          response.headers.get('content-type')?.startsWith('text/plain'),
+        `expected 200 text/plain, got ${summary(response)}`,
+      );
+      const lines = (await response.text())
+        .split(/\r?\n/)
+        .map((line) => line.trim());
+      ensure(
+        lines.some(
+          (line) => /^sitemap:/i.test(line) && line.slice(8).trim() === SITEMAP,
+        ),
+        `expected a "Sitemap: ${SITEMAP}" line`,
+      );
+    }),
+    check(`GET /sitemap.xml lists the site's pages`, async () => {
+      const response = await get('/sitemap.xml');
+      ensure(
+        response.status === 200 &&
+          /^(?:application|text)\/xml\b/.test(
+            response.headers.get('content-type') ?? '',
+          ),
+        `expected 200 XML, got ${summary(response)}`,
+      );
+      const xml = await response.text();
+      ensure(
+        xml.includes('<urlset') && xml.includes(`<loc>${SITEMAP_PAGE}</loc>`),
+        `expected a urlset with ${SITEMAP_PAGE}`,
       );
     }),
   ]);

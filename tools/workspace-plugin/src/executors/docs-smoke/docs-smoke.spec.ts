@@ -4,6 +4,8 @@ import {
   fetchChecks,
   maxAge,
   PAGE,
+  SITEMAP,
+  SITEMAP_PAGE,
   settledChecks,
   waitForSite,
   type Fetcher,
@@ -48,6 +50,18 @@ function site(...overrides: Route[]): Fetcher {
         return searchParams.get('t')
           ? Response.json({ name: 'custom', type: 'registry:theme' })
           : new Response('Add the theme as the t parameter', { status: 400 });
+      case '/robots.txt':
+        return new Response(
+          `User-agent: *\nAllow: /\n\nSitemap: ${SITEMAP}\n`,
+          {
+            headers: { 'content-type': 'text/plain; charset=utf-8' },
+          },
+        );
+      case '/sitemap.xml':
+        return new Response(
+          `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${SITEMAP_PAGE}</loc>\n  </url>\n</urlset>\n`,
+          { headers: { 'content-type': 'application/xml' } },
+        );
       case '/sw.js':
         return new Response('self.addEventListener', {
           headers: {
@@ -195,6 +209,51 @@ describe('fetchChecks', () => {
     );
     expect(problems).toEqual([
       'GET /sw.js is the service worker, always fresh: expected 200 JavaScript, got 404 text/html',
+    ]);
+  });
+
+  it("fails Cloudflare's robots.txt, which names no sitemap", async () => {
+    const problems = await failures(
+      site(({ pathname }) =>
+        pathname === '/robots.txt'
+          ? new Response('# As a condition of accessing this website…\n', {
+              headers: { 'content-type': 'text/plain; charset=utf-8' },
+            })
+          : undefined,
+      ),
+    );
+    expect(problems).toEqual([
+      `GET /robots.txt names the sitemap: expected a "Sitemap: ${SITEMAP}" line`,
+    ]);
+  });
+
+  it('fails a missing sitemap, and one without the pages', async () => {
+    expect(
+      await failures(
+        site(({ pathname }) =>
+          pathname === '/sitemap.xml'
+            ? new Response('<h1>Page not found</h1>', {
+                status: 404,
+                headers: { 'content-type': 'text/html' },
+              })
+            : undefined,
+        ),
+      ),
+    ).toEqual([
+      "GET /sitemap.xml lists the site's pages: expected 200 XML, got 404 text/html",
+    ]);
+    expect(
+      await failures(
+        site(({ pathname }) =>
+          pathname === '/sitemap.xml'
+            ? new Response('<urlset></urlset>', {
+                headers: { 'content-type': 'application/xml' },
+              })
+            : undefined,
+        ),
+      ),
+    ).toEqual([
+      `GET /sitemap.xml lists the site's pages: expected a urlset with ${SITEMAP_PAGE}`,
     ]);
   });
 
