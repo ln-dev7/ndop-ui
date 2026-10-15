@@ -7,6 +7,35 @@ import { stripVTControlCharacters } from 'node:util';
 const MIN_LAST_COLUMN = 20;
 
 /**
+ * Whether the CLI may ask questions: standard input and output are both
+ * terminals and the `CI` variable isn't set, as CI services set it
+ * (ADR-0011, amendment 3). A terminal an agent drives can be a TTY too,
+ * so the agent files tell agents to pass `--yes`.
+ *
+ * @param stdinTty - Whether standard input is a terminal.
+ * @param stdoutTty - Whether standard output is a terminal.
+ * @param env - Environment variables.
+ * @returns Whether prompts are allowed.
+ *
+ * @example
+ * ```ts
+ * canPrompt(true, true, {}); // true
+ * canPrompt(true, true, { CI: 'true' }); // false
+ * ```
+ */
+export function canPrompt(
+  stdinTty: boolean | undefined,
+  stdoutTty: boolean | undefined,
+  env: Record<string, string | undefined>,
+): boolean {
+  const ci = env['CI'];
+  return (
+    Boolean(stdinTty && stdoutTty) &&
+    (ci === undefined || ci === '' || ci === '0' || ci === 'false')
+  );
+}
+
+/**
  * How many columns text takes in a terminal, ignoring color codes.
  *
  * @param text - One line, possibly colored.

@@ -400,10 +400,12 @@ export const TEAM_NOTE = '# Team notes\n\nKeep components small.\n';
 
 /**
  * Checks the agent context files `ndop init --agent claude-code --mcp` and
- * `ndop add` wrote (ADR-0017): the team's own note in `AGENTS.md` survived
- * above one Ndop section, which lists the added item and runs the app's own
- * `ndop` (ADR-0031); `CLAUDE.md` carries the same section; the skill
- * exists; and `.mcp.json` registers the server.
+ * `ndop add` wrote (ADR-0017 and its amendment 1): the team's own note in
+ * `AGENTS.md` survived above one Ndop section, which lists the added item,
+ * runs the app's own `ndop` (ADR-0031) and, since any agent may read it,
+ * searches with `ndop list` instead of the MCP tools; `CLAUDE.md`, whose
+ * agent the server is registered for, lists the item and sends Claude Code
+ * to the MCP tools; the skill exists; and `.mcp.json` registers the server.
  *
  * @param files - The files' text, by project-relative path.
  * @param item - The item `ndop add` installed.
@@ -426,12 +428,21 @@ export function agentFileProblems(
   if (!agents.includes(`\`${item}\``)) {
     problems.push(`AGENTS.md doesn't list ${item}`);
   }
-  if (!agents.includes('`npx ndop add <name>`')) {
+  if (!agents.includes('`npx ndop add <names> --yes`')) {
     problems.push("AGENTS.md doesn't run the app's own ndop");
   }
-  const section = agents.slice(agents.indexOf('<!-- ndop:start -->'));
-  if (files['CLAUDE.md'] !== section) {
-    problems.push("CLAUDE.md doesn't carry the same section as AGENTS.md");
+  if (!agents.includes('`npx ndop list`') || agents.includes('MCP tool')) {
+    problems.push("AGENTS.md doesn't search with ndop list");
+  }
+  const claude = files['CLAUDE.md'] ?? '';
+  if (
+    !claude.startsWith('<!-- ndop:start -->') ||
+    !claude.includes(`\`${item}\``) ||
+    !claude.includes('`search_components` and `list_blocks` MCP tools')
+  ) {
+    problems.push(
+      "CLAUDE.md doesn't list the item and send Claude Code to the MCP tools",
+    );
   }
   if (!files['.claude/skills/ndop/SKILL.md']?.startsWith('---\nname: ndop\n')) {
     problems.push('.claude/skills/ndop/SKILL.md is missing');

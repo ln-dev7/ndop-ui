@@ -260,7 +260,7 @@ export class Page {}
             files: [{ path: 'src/app/ui/dialog/dialog.ts', state: 'edited' }],
           },
         ],
-        tokens: { colors: ['primary'], other: ['radius'] },
+        tokens: { colors: ['primary'], fonts: [], other: ['radius'] },
       }),
     );
     expect(context.text).toContain(

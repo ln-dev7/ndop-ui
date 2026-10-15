@@ -18,6 +18,13 @@ export const AGENTS = ['claude-code', 'cursor', 'copilot'] as const;
 /** A coding agent whose context files the CLI writes. */
 export type Agent = (typeof AGENTS)[number];
 
+/** How each agent is named in prompts and in the agent files. */
+export const AGENT_LABELS: Record<Agent, string> = {
+  'claude-code': 'Claude Code',
+  cursor: 'Cursor',
+  copilot: 'GitHub Copilot',
+};
+
 /** Opens the section the CLI owns in a shared file. */
 export const SECTION_START = '<!-- ndop:start -->';
 
@@ -58,11 +65,18 @@ const MCP_FILES: { path: string; agent: Agent; key: string }[] = [
   { path: '.vscode/mcp.json', agent: 'copilot', key: 'servers' },
 ];
 
-/** What reveals that a project already uses an agent. */
+/**
+ * What reveals that a project already uses an agent. A `.vscode` folder
+ * alone isn't a sign of Copilot: `ng new` creates one in every app.
+ */
 const SIGNS: Record<Agent, string[]> = {
   'claude-code': ['CLAUDE.md', '.claude'],
   cursor: ['.cursor', '.cursorrules'],
-  copilot: ['.github/copilot-instructions.md'],
+  copilot: [
+    '.github/copilot-instructions.md',
+    '.github/instructions',
+    '.vscode/mcp.json',
+  ],
 };
 
 /**
@@ -73,9 +87,10 @@ interface ExistsReader {
 }
 
 /**
- * The agents a project already uses, from their files (ADR-0017):
- * `CLAUDE.md` or `.claude/` for Claude Code, `.cursor/` for Cursor and
- * `.github/copilot-instructions.md` for Copilot.
+ * The agents a project already uses, from their files (ADR-0017,
+ * amendment 1): `CLAUDE.md` or `.claude/` for Claude Code, `.cursor/` for
+ * Cursor, and `.github/copilot-instructions.md`, `.github/instructions/`
+ * or `.vscode/mcp.json` for Copilot.
  *
  * @param fs - The project.
  * @returns The agents found, in {@link AGENTS} order.
@@ -127,7 +142,10 @@ export function parseAgents(values: readonly string[]): Agent[] | false {
  * (ADR-0017): the Ndop section of `AGENTS.md` and the agents' shared files,
  * between {@link SECTION_START} and {@link SECTION_END}; the files Ndop
  * owns outright, unless the user edited them; and, when `mcp` is set, the
- * `ndop` server in each agent's MCP configuration. Shared files are staged
+ * `ndop` server in each agent's MCP configuration. Only the files of an
+ * agent the server is registered for tell it to use the MCP tools;
+ * `AGENTS.md`, which any agent may read, points to `ndop list` and
+ * `ndop view` (amendment 1). Shared files are staged
  * unformatted, since formatting would also change the user's text. The
  * content comes from the lockfile, the stylesheet and `package.json`, so
  * it's always true for the project: its commands run the project's own
@@ -157,11 +175,20 @@ export async function planAgentFiles(
 
   for (const file of FILES) {
     if (file.agent && !agents.includes(file.agent)) continue;
+    const reader: Reader = file.agent
+      ? { agent: file.agent, mcp: Boolean(config.mcp) }
+      : {
+          mcpAgents: config.mcp
+            ? AGENTS.filter((agent) => agents.includes(agent))
+            : [],
+        };
     if (file.kind === 'section') {
-      await stageSection(builder, file.path, section(facts));
+      await stageSection(builder, file.path, section(facts, reader));
     } else {
       const content =
-        file.kind === 'skill' ? skillFile(facts) : cursorRule(facts);
+        file.kind === 'skill'
+          ? skillFile(facts, reader)
+          : cursorRule(facts, reader);
       await stageOwned(builder, lock, file.path, content);
     }
   }
@@ -180,12 +207,19 @@ export async function planAgentFiles(
   }
 }
 
+/**
+ * Who reads a file: one agent, and whether the MCP server is registered
+ * for it; or any agent, as `AGENTS.md`, with the agents it's registered
+ * for.
+ */
+type Reader = { agent: Agent; mcp: boolean } | { mcpAgents: Agent[] };
+
 /** What the generated guidance is written from. */
 interface Facts {
   config: NdopConfig;
   aliasBase: string | undefined;
   lock: NdopLock;
-  tokens: { colors: string[]; other: string[] };
+  tokens: ThemeTokens;
   /** How to run the CLI in this project, such as `npx ndop`. */
   cli: string;
 }
@@ -286,14 +320,27 @@ async function stageMcpServer(
   });
 }
 
+/** A theme's token names, grouped as the agent files list them. */
+export interface ThemeTokens {
+  /** Color tokens, without `--`, such as `primary`. */
+  colors: string[];
+  /** Font utilities the theme defines, such as `font-sans`. */
+  fonts: string[];
+  /** Every other token, without `--`, such as `radius`. */
+  other: string[];
+}
+
 /**
- * The tokens a stylesheet's `:root` rules define: colors, and the rest.
+ * The tokens a stylesheet defines: its `:root` rules' variables, split into
+ * colors and the rest, and the `--font-*` variables of its `@theme`
+ * blocks, which Tailwind turns into `font-*` utilities.
  *
  * @param css - The Tailwind stylesheet.
- * @returns Token names without `--`, sorted.
+ * @returns Token names, sorted.
  */
-export function tokenNames(css: string): { colors: string[]; other: string[] } {
+export function tokenNames(css: string): ThemeTokens {
   const colors = new Set<string>();
+  const fonts = new Set<string>();
   const other = new Set<string>();
   for (const rule of css.matchAll(/:root\s*\{([^}]*)\}/g)) {
     for (const [, name = '', value = ''] of (rule[1] ?? '').matchAll(
@@ -302,25 +349,35 @@ export function tokenNames(css: string): { colors: string[]; other: string[] } {
       (isColorValue(value) ? colors : other).add(name);
     }
   }
-  return { colors: [...colors].sort(), other: [...other].sort() };
+  for (const rule of css.matchAll(/@theme\b[^{]*\{([^}]*)\}/g)) {
+    for (const [, name = ''] of (rule[1] ?? '').matchAll(
+      /--(font-[a-z0-9-]+)\s*:/g,
+    )) {
+      fonts.add(name);
+    }
+  }
+  return {
+    colors: [...colors].sort(),
+    fonts: [...fonts].sort(),
+    other: [...other].sort(),
+  };
 }
 
 /**
  * The guidance every agent file carries, as Markdown that Prettier leaves
- * unchanged.
+ * unchanged (ADR-0017, amendment 1). Its search and read steps name the
+ * MCP tools only for an agent the server is registered for, and
+ * `ndop list` and `ndop view` otherwise.
  *
  * @param facts - The project's configuration, lockfile and tokens.
+ * @param reader - Who reads the file.
  * @param heading - The level of its subheadings.
  * @returns The lines.
  */
-function guidance(facts: Facts, heading: string): string[] {
+function guidance(facts: Facts, reader: Reader, heading: string): string[] {
   const { config, lock, tokens, cli } = facts;
   const prefix = aliasPrefix(config.importAlias ?? '@/');
-  const docs = config.mcp
-    ? 'call the `get_component` MCP tool'
-    : config.registry === undefined
-      ? 'read `https://ndop.dev/docs/components/<name>.md`'
-      : 'read its page in your registry';
+  const mcp = 'agent' in reader && reader.mcp;
   const installed = Object.entries(lock.items)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, item]) =>
@@ -332,56 +389,78 @@ function guidance(facts: Facts, heading: string): string[] {
     facts.aliasBase !== undefined && alias.startsWith(`${facts.aliasBase}/`)
       ? `\`${alias}\` (\`${prefix}${posix.relative(facts.aliasBase, alias)}/…\`)`
       : `\`${alias}\``;
+  const code = (names: string[]) =>
+    names.map((name) => `\`${name}\``).join(', ');
+  const tokenLines = [
+    ...(tokens.colors.length
+      ? [
+          `Colors, as \`bg-*\`, \`text-*\` and \`border-*\` utilities or \`var(--name)\`: ${code(tokens.colors)}.`,
+        ]
+      : []),
+    ...(tokens.fonts.length ? [`Fonts: ${code(tokens.fonts)}.`] : []),
+    ...(tokens.other.length ? [`Others: ${code(tokens.other)}.`] : []),
+  ];
+  const mcpAgents = 'mcpAgents' in reader ? reader.mcpAgents : [];
   return [
     'This app uses [Ndop UI](https://ndop.dev): accessible Angular components installed as source files you own. The ndop CLI writes this section and refreshes it on `ndop add`; keep your own notes outside it.',
     `${heading} Workflow`,
     [
-      `1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run \`${cli} add <name>\`; never copy component code by hand.`,
-      `2. Before using a component, ${docs}. Use its selectors, inputs and nesting exactly; never guess an API.`,
+      mcp
+        ? '1. Build UI from the registry. Before writing any component, layout or screen, look for it with the `search_components` and `list_blocks` MCP tools (blocks are whole screens) and install what fits with `add_items`. Never hand-build or copy what the registry has.'
+        : `1. Build UI from the registry. Before writing any component, layout or screen, look for it in \`${cli} list\` (every component, and blocks for whole screens) and install what fits with \`${cli} add <names> --yes\`. Never hand-build or copy what the registry has.`,
+      mcp
+        ? `2. Before using an item, read it with the \`get_component\` or \`get_block\` MCP tool (if the tools are unavailable, \`${cli} list\` and \`${cli} view <name>\` do the same). Use its selectors, inputs and nesting exactly; never guess an API.`
+        : `2. Before using an item, read it with \`${cli} view <name>\`. Use its selectors, inputs and nesting exactly; never guess an API.`,
       '3. Give every form field a visible label with the `label` component (`<label ndLabel>`); a placeholder or `aria-label` alone is not a label.',
-      '4. Style with theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`), never palette colors such as `bg-zinc-900`, and with logical utilities (`ms-`, `pe-`, `start-`, `text-start`), never `ml-`, `pr-`, `left-` or `text-left`.',
+      '4. Take every color, radius and font from the theme tokens below, in templates, stylesheets and inline styles alike; never write color values or define CSS variables of your own. Use logical utilities (`ms-`, `pe-`, `start-`, `text-start`), not `ml-`, `pr-`, `left-` or `text-left`.',
       `5. Change how a component looks in its own file under \`${config.aliases.ui}\`. Don't edit \`@ndop/primitives\` or import its private paths.`,
       `6. Run \`${cli} verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.`,
-      `7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`${cli} doctor --json\`; \`${cli} doctor --fix\` applies its safe fixes.`,
+      `7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`${cli} doctor --json\`; \`${cli} doctor --fix --yes\` applies its safe fixes.`,
     ].join('\n'),
     `${heading} Installed`,
     installed.length
       ? `${installed.join(', ')}.`
-      : `Nothing yet; add components with \`${cli} add <name>\`.`,
+      : `Nothing yet; add components with \`${cli} add <names> --yes\`.`,
     `Components are in ${folder(config.aliases.ui)}, helpers in ${folder(config.aliases.lib)} and blocks in ${folder(config.aliases.blocks)}.`,
     `${heading} Tokens`,
-    tokens.colors.length || tokens.other.length
-      ? [
-          ...(tokens.colors.length
-            ? [
-                `Colors, as \`bg-*\`, \`text-*\` and \`border-*\` utilities: ${tokens.colors.map((name) => `\`${name}\``).join(', ')}.`,
-              ]
-            : []),
-          ...(tokens.other.length
-            ? [
-                `Others: ${tokens.other.map((name) => `\`${name}\``).join(', ')}.`,
-              ]
-            : []),
-        ].join('\n\n')
+    tokenLines.length
+      ? tokenLines.join('\n\n')
       : `The theme's tokens are in \`${config.tailwind.css}\`.`,
-    `${heading} MCP server`,
-    config.mcp
-      ? 'The `ndop` MCP server is set up for this project: `get_project_context` describes it, `search_components` finds components, `get_component` documents one, `list_blocks` and `get_block` offer whole sections, `add_items` installs them, and `verify` checks your files.'
-      : `To let your agent search and read the Ndop docs directly, run \`${cli} init --mcp\`.`,
+    ...(mcp
+      ? []
+      : [
+          `${heading} MCP server`,
+          mcpAgents.length
+            ? `The \`ndop\` MCP server is registered for ${listed(mcpAgents.map((agent) => AGENT_LABELS[agent]))}. If you have its tools, they can replace \`ndop list\` and \`ndop view\`.`
+            : `To let your agent search and read the registry through the \`ndop\` MCP server, run \`${cli} init --mcp\`.`,
+        ]),
   ];
+}
+
+/**
+ * Joins names as a sentence lists them: `a, b and c`.
+ *
+ * @param names - At least one name.
+ * @returns The list.
+ */
+function listed(names: readonly string[]): string {
+  return names.length > 1
+    ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
+    : (names[0] ?? '');
 }
 
 /**
  * The Ndop section of a shared file, markers included.
  *
  * @param facts - What it's written from.
+ * @param reader - Who reads the file.
  * @returns The section.
  */
-function section(facts: Facts): string {
+function section(facts: Facts, reader: Reader): string {
   return [
     SECTION_START,
     '## Ndop UI',
-    ...guidance(facts, '###'),
+    ...guidance(facts, reader, '###'),
     SECTION_END,
   ].join('\n\n');
 }
@@ -390,13 +469,14 @@ function section(facts: Facts): string {
  * The Claude Code skill, `.claude/skills/ndop/SKILL.md`.
  *
  * @param facts - What it's written from.
+ * @param reader - Claude Code.
  * @returns The file.
  */
-function skillFile(facts: Facts): string {
+function skillFile(facts: Facts, reader: Reader): string {
   return `${[
-    "---\nname: ndop\ndescription: Builds and changes this Angular app's UI with its Ndop UI components. Use when adding or editing screens, forms, dialogs, buttons or other controls, or choosing colors and spacing.\n---",
+    "---\nname: ndop\ndescription: Builds and changes this Angular app's UI from the Ndop UI registry. Use when adding or editing any screen, layout, form or control, or choosing colors, fonts and spacing.\n---",
     '# Ndop UI',
-    ...guidance(facts, '##'),
+    ...guidance(facts, reader, '##'),
   ].join('\n\n')}\n`;
 }
 
@@ -404,12 +484,13 @@ function skillFile(facts: Facts): string {
  * The Cursor rule, `.cursor/rules/ndop.mdc`, applied to every request.
  *
  * @param facts - What it's written from.
+ * @param reader - Cursor.
  * @returns The file.
  */
-function cursorRule(facts: Facts): string {
+function cursorRule(facts: Facts, reader: Reader): string {
   return `${[
     "---\ndescription: How to build this app's UI with its Ndop UI components.\nalwaysApply: true\n---",
     '# Ndop UI',
-    ...guidance(facts, '##'),
+    ...guidance(facts, reader, '##'),
   ].join('\n\n')}\n`;
 }

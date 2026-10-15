@@ -136,10 +136,12 @@ describe('run', () => {
 
 describe('agentFileProblems', () => {
   const section =
-    '<!-- ndop:start -->\n\n## Ndop UI\n\nRun `npx ndop add <name>`.\n\n`dialog` 0.1.2.\n\n<!-- ndop:end -->\n';
+    '<!-- ndop:start -->\n\n## Ndop UI\n\nSearch `npx ndop list`; run `npx ndop add <names> --yes`.\n\n`dialog` 0.1.2.\n\n<!-- ndop:end -->\n';
+  const claude =
+    '<!-- ndop:start -->\n\n## Ndop UI\n\nUse the `search_components` and `list_blocks` MCP tools.\n\n`dialog` 0.1.2.\n\n<!-- ndop:end -->\n';
   const good = {
     'AGENTS.md': `${TEAM_NOTE}\n${section}`,
-    'CLAUDE.md': section,
+    'CLAUDE.md': claude,
     '.claude/skills/ndop/SKILL.md': '---\nname: ndop\n---\n',
     '.mcp.json': JSON.stringify({
       mcpServers: { ndop: { args: ['-y', '@ndop/mcp'] } },
@@ -150,13 +152,13 @@ describe('agentFileProblems', () => {
     expect(agentFileProblems(good, 'dialog')).toEqual([]);
   });
 
-  it('reports a lost note, a missing item, a different CLAUDE.md and no server', () => {
+  it('reports a lost note, a missing item, a wrong CLAUDE.md and no server', () => {
     expect(
       agentFileProblems(
         {
           ...good,
           'AGENTS.md': section,
-          'CLAUDE.md': 'other',
+          'CLAUDE.md': section,
           '.mcp.json': undefined,
         },
         'popover',
@@ -164,8 +166,20 @@ describe('agentFileProblems', () => {
     ).toEqual([
       "AGENTS.md doesn't keep the team's note above the Ndop section",
       "AGENTS.md doesn't list popover",
-      "CLAUDE.md doesn't carry the same section as AGENTS.md",
+      "CLAUDE.md doesn't list the item and send Claude Code to the MCP tools",
       ".mcp.json doesn't register the ndop server",
+    ]);
+  });
+
+  it('reports MCP tools in AGENTS.md, which any agent reads', () => {
+    expect(
+      agentFileProblems(
+        { ...good, 'AGENTS.md': `${TEAM_NOTE}\n${claude}` },
+        'dialog',
+      ),
+    ).toEqual([
+      "AGENTS.md doesn't run the app's own ndop",
+      "AGENTS.md doesn't search with ndop list",
     ]);
   });
 });

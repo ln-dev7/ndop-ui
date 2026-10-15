@@ -11,6 +11,7 @@ import {
   type ImportModule,
 } from '../project/format';
 import { defaultFetcher, type Fetcher } from '../registry/client';
+import { canPrompt } from '../terminal';
 import type { AngularCompiler } from '../update/codemods';
 
 /**
@@ -82,7 +83,7 @@ export interface CommandEnvironment {
    * @returns The compiler, or `undefined` when the project has none.
    */
   angularCompiler(root: string): Promise<AngularCompiler | undefined>;
-  /** Whether the user can answer prompts. */
+  /** Whether the user can answer prompts; see {@link canPrompt}. */
   interactive: boolean;
   /**
    * The terminal's width, which `ndop list` and `ndop view` fit their
@@ -135,7 +136,11 @@ export function nodeEnvironment(
         return undefined;
       }
     },
-    interactive: Boolean(process.stdin.isTTY && process.stdout.isTTY),
+    interactive: canPrompt(
+      process.stdin.isTTY,
+      process.stdout.isTTY,
+      process.env,
+    ),
     columns: process.stdout.isTTY ? process.stdout.columns : undefined,
     env: process.env,
   };

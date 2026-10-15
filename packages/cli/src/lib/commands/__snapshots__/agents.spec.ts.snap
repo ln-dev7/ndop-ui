@@ -9,13 +9,13 @@ This app uses [Ndop UI](https://ndop.dev): accessible Angular components install
 
 ### Workflow
 
-1. For any button, field, dialog or other control, use an installed component before writing your own markup. If one is missing, run \`npx ndop add <name>\`; never copy component code by hand.
-2. Before using a component, call the \`get_component\` MCP tool. Use its selectors, inputs and nesting exactly; never guess an API.
+1. Build UI from the registry. Before writing any component, layout or screen, look for it in \`npx ndop list\` (every component, and blocks for whole screens) and install what fits with \`npx ndop add <names> --yes\`. Never hand-build or copy what the registry has.
+2. Before using an item, read it with \`npx ndop view <name>\`. Use its selectors, inputs and nesting exactly; never guess an API.
 3. Give every form field a visible label with the \`label\` component (\`<label ndLabel>\`); a placeholder or \`aria-label\` alone is not a label.
-4. Style with theme tokens (\`bg-primary\`, \`text-muted-foreground\`, \`border-border\`), never palette colors such as \`bg-zinc-900\`, and with logical utilities (\`ms-\`, \`pe-\`, \`start-\`, \`text-start\`), never \`ml-\`, \`pr-\`, \`left-\` or \`text-left\`.
+4. Take every color, radius and font from the theme tokens below, in templates, stylesheets and inline styles alike; never write color values or define CSS variables of your own. Use logical utilities (\`ms-\`, \`pe-\`, \`start-\`, \`text-start\`), not \`ml-\`, \`pr-\`, \`left-\` or \`text-left\`.
 5. Change how a component looks in its own file under \`src/app/ui\`. Don't edit \`@ndop/primitives\` or import its private paths.
 6. Run \`npx ndop verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.
-7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`npx ndop doctor --json\`; \`npx ndop doctor --fix\` applies its safe fixes.
+7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`npx ndop doctor --json\`; \`npx ndop doctor --fix --yes\` applies its safe fixes.
 
 ### Installed
 
@@ -25,13 +25,50 @@ Components are in \`src/app/ui\` (\`@/ui/…\`), helpers in \`src/app/lib\` (\`@
 
 ### Tokens
 
-Colors, as \`bg-*\`, \`text-*\` and \`border-*\` utilities: \`accent\`, \`accent-foreground\`, \`background\`, \`border\`, \`card\`, \`card-foreground\`, \`chart-1\`, \`chart-2\`, \`chart-3\`, \`chart-4\`, \`chart-5\`, \`destructive\`, \`foreground\`, \`input\`, \`muted\`, \`muted-foreground\`, \`popover\`, \`popover-foreground\`, \`primary\`, \`primary-foreground\`, \`ring\`, \`secondary\`, \`secondary-foreground\`, \`sidebar\`, \`sidebar-accent\`, \`sidebar-accent-foreground\`, \`sidebar-border\`, \`sidebar-foreground\`, \`sidebar-primary\`, \`sidebar-primary-foreground\`, \`sidebar-ring\`.
+Colors, as \`bg-*\`, \`text-*\` and \`border-*\` utilities or \`var(--name)\`: \`accent\`, \`accent-foreground\`, \`background\`, \`border\`, \`card\`, \`card-foreground\`, \`chart-1\`, \`chart-2\`, \`chart-3\`, \`chart-4\`, \`chart-5\`, \`destructive\`, \`foreground\`, \`input\`, \`muted\`, \`muted-foreground\`, \`popover\`, \`popover-foreground\`, \`primary\`, \`primary-foreground\`, \`ring\`, \`secondary\`, \`secondary-foreground\`, \`sidebar\`, \`sidebar-accent\`, \`sidebar-accent-foreground\`, \`sidebar-border\`, \`sidebar-foreground\`, \`sidebar-primary\`, \`sidebar-primary-foreground\`, \`sidebar-ring\`.
+
+Fonts: \`font-mono\`, \`font-sans\`.
 
 Others: \`radius\`.
 
 ### MCP server
 
-The \`ndop\` MCP server is set up for this project: \`get_project_context\` describes it, \`search_components\` finds components, \`get_component\` documents one, \`list_blocks\` and \`get_block\` offer whole sections, \`add_items\` installs them, and \`verify\` checks your files.
+The \`ndop\` MCP server is registered for Claude Code, Cursor and GitHub Copilot. If you have its tools, they can replace \`ndop list\` and \`ndop view\`.
+
+<!-- ndop:end -->
+"
+`;
+
+exports[`agent context files > writes every agent file and registers the MCP server 2`] = `
+"<!-- ndop:start -->
+
+## Ndop UI
+
+This app uses [Ndop UI](https://ndop.dev): accessible Angular components installed as source files you own. The ndop CLI writes this section and refreshes it on \`ndop add\`; keep your own notes outside it.
+
+### Workflow
+
+1. Build UI from the registry. Before writing any component, layout or screen, look for it with the \`search_components\` and \`list_blocks\` MCP tools (blocks are whole screens) and install what fits with \`add_items\`. Never hand-build or copy what the registry has.
+2. Before using an item, read it with the \`get_component\` or \`get_block\` MCP tool (if the tools are unavailable, \`npx ndop list\` and \`npx ndop view <name>\` do the same). Use its selectors, inputs and nesting exactly; never guess an API.
+3. Give every form field a visible label with the \`label\` component (\`<label ndLabel>\`); a placeholder or \`aria-label\` alone is not a label.
+4. Take every color, radius and font from the theme tokens below, in templates, stylesheets and inline styles alike; never write color values or define CSS variables of your own. Use logical utilities (\`ms-\`, \`pe-\`, \`start-\`, \`text-start\`), not \`ml-\`, \`pr-\`, \`left-\` or \`text-left\`.
+5. Change how a component looks in its own file under \`src/app/ui\`. Don't edit \`@ndop/primitives\` or import its private paths.
+6. Run \`npx ndop verify <files> --json\` on the files you changed, fix every problem it reports, and repeat until it passes. If it says \`@ndop/verify\` is missing, install it as a dev dependency first.
+7. When styles, icons or a build fail in a way that points at the setup (missing tokens, providers, packages or aliases), run \`npx ndop doctor --json\`; \`npx ndop doctor --fix --yes\` applies its safe fixes.
+
+### Installed
+
+\`default\` 1.0.0, \`icons\` 1.0.0, \`utils\` 1.0.0.
+
+Components are in \`src/app/ui\` (\`@/ui/…\`), helpers in \`src/app/lib\` (\`@/lib/…\`) and blocks in \`src/app/blocks\` (\`@/blocks/…\`).
+
+### Tokens
+
+Colors, as \`bg-*\`, \`text-*\` and \`border-*\` utilities or \`var(--name)\`: \`accent\`, \`accent-foreground\`, \`background\`, \`border\`, \`card\`, \`card-foreground\`, \`chart-1\`, \`chart-2\`, \`chart-3\`, \`chart-4\`, \`chart-5\`, \`destructive\`, \`foreground\`, \`input\`, \`muted\`, \`muted-foreground\`, \`popover\`, \`popover-foreground\`, \`primary\`, \`primary-foreground\`, \`ring\`, \`secondary\`, \`secondary-foreground\`, \`sidebar\`, \`sidebar-accent\`, \`sidebar-accent-foreground\`, \`sidebar-border\`, \`sidebar-foreground\`, \`sidebar-primary\`, \`sidebar-primary-foreground\`, \`sidebar-ring\`.
+
+Fonts: \`font-mono\`, \`font-sans\`.
+
+Others: \`radius\`.
 
 <!-- ndop:end -->
 "

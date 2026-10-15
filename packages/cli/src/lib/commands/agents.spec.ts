@@ -71,12 +71,32 @@ describe('agent context files', () => {
       servers: { ndop: server },
     });
 
-    const section = files.get('AGENTS.md') ?? '';
-    expect(section).toMatchSnapshot();
-    expect(files.get('CLAUDE.md')).toBe(section);
-    expect(files.get('.github/copilot-instructions.md')).toBe(section);
+    // AGENTS.md is read by agents the server isn't registered for, so only
+    // the agents' own files send them to the MCP tools.
+    const shared = files.get('AGENTS.md') ?? '';
+    expect(shared).toMatchSnapshot();
+    expect(shared).toContain(
+      'install what fits with `npx ndop add <names> --yes`',
+    );
+    expect(shared).toContain('read it with `npx ndop view <name>`');
+    expect(shared).toContain(
+      'registered for Claude Code, Cursor and GitHub Copilot. If you have its tools',
+    );
+    const own = files.get('CLAUDE.md') ?? '';
+    expect(own).toMatchSnapshot();
+    expect(own).toContain(
+      'the `search_components` and `list_blocks` MCP tools',
+    );
+    expect(own).not.toContain('### MCP server');
+    expect(files.get('.github/copilot-instructions.md')).toBe(own);
     expect(files.get('.claude/skills/ndop/SKILL.md')).toMatch(
       /^---\nname: ndop\ndescription: Builds and changes this Angular app's UI/,
+    );
+    expect(files.get('.claude/skills/ndop/SKILL.md')).toContain(
+      '`get_component` or `get_block` MCP tool',
+    );
+    expect(files.get('.cursor/rules/ndop.mdc')).toContain(
+      '`get_component` or `get_block` MCP tool',
     );
     expect(files.get('.cursor/rules/ndop.mdc')).toMatch(
       /^---\ndescription: .+\nalwaysApply: true\n---\n\n# Ndop UI\n/,
@@ -108,9 +128,8 @@ describe('agent context files', () => {
     expect(before).toContain(
       `\`default\` ${version('default')}, \`icons\` ${version('icons')}, \`utils\` ${version('utils')}.`,
     );
-    expect(before).toContain(
-      'read `https://ndop.dev/docs/components/<name>.md`',
-    );
+    expect(before).toContain('read it with `npx ndop view <name>`');
+    expect(before).not.toContain('MCP tool');
     expect(before).toContain('run `npx ndop init --mcp`');
 
     await ndop(environment, 'add', 'dialog');
@@ -123,7 +142,7 @@ describe('agent context files', () => {
     const environment = app();
     await ndop(environment, 'init', '--no-cli');
     const agents = () => environment.project.files.get('AGENTS.md') ?? '';
-    expect(agents()).toContain('run `npx @ndop/cli add <name>`');
+    expect(agents()).toContain('`npx @ndop/cli add <names> --yes`');
     expect(agents()).not.toContain('npx ndop');
 
     const manifest = JSON.parse(
@@ -135,7 +154,7 @@ describe('agent context files', () => {
       JSON.stringify(manifest, null, 2),
     );
     await ndop(environment, 'add', 'dialog');
-    expect(agents()).toContain('run `npx ndop add <name>`');
+    expect(agents()).toContain('`npx ndop add <names> --yes`');
     expect(agents()).not.toContain('npx @ndop/cli');
   });
 
@@ -149,6 +168,22 @@ describe('agent context files', () => {
     expect(config.agents).toEqual(['claude-code', 'cursor']);
     expect(config.mcp).toBe(false);
     expect(environment.project.files.has('.mcp.json')).toBe(false);
+  });
+
+  it("detects Copilot from its own files, not from ng new's .vscode", async () => {
+    const plain = app({ '.vscode/extensions.json': '{}\n' });
+    await ndop(plain, 'init');
+    expect(
+      JSON.parse(plain.project.files.get('ndop.json') ?? '').agents,
+    ).toEqual([]);
+
+    const copilot = app({
+      '.github/instructions/style.instructions.md': 'Tabs.\n',
+    });
+    await ndop(copilot, 'init');
+    expect(
+      JSON.parse(copilot.project.files.get('ndop.json') ?? '').agents,
+    ).toEqual(['copilot']);
   });
 
   it('keeps the text outside the markers', async () => {
@@ -263,11 +298,15 @@ describe('parseAgents', () => {
 });
 
 describe('tokenNames', () => {
-  it('splits :root tokens into colors and others', () => {
+  it('splits :root tokens into colors and others, and finds fonts', () => {
     expect(
       tokenNames(
-        ':root {\n  --radius: 0.625rem;\n  --primary: oklch(0.2 0 0);\n  --ring: #000;\n}\n.dark { --muted: oklch(0 0 0); }',
+        "@theme {\n  --font-sans:\n    'Geist Variable', sans-serif;\n  --color-x: red;\n}\n:root {\n  --radius: 0.625rem;\n  --primary: oklch(0.2 0 0);\n  --ring: #000;\n}\n.dark { --muted: oklch(0 0 0); }",
       ),
-    ).toEqual({ colors: ['primary', 'ring'], other: ['radius'] });
+    ).toEqual({
+      colors: ['primary', 'ring'],
+      fonts: ['font-sans'],
+      other: ['radius'],
+    });
   });
 });

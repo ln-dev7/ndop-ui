@@ -14,7 +14,7 @@ import { createTwoFilesPatch } from 'diff';
 import { runDoctor, type DoctorResult } from './lib/commands/doctor';
 import { nodeEnvironment } from './lib/commands/environment';
 import { executeWriteCommand, type CommandResult } from './lib/commands/run';
-import { tokenNames } from './lib/install/agents';
+import { tokenNames, type ThemeTokens } from './lib/install/agents';
 import { planAdd } from './lib/install/add';
 import { CONFIG_FILE, readConfig, readLock } from './lib/install/project-files';
 import { nodeFs } from './lib/project/fs';
@@ -143,7 +143,7 @@ export interface ProjectContext {
     files: { path: string; state: LocalState }[];
   }[];
   /** The theme's tokens, from the Tailwind stylesheet. */
-  tokens: { colors: string[]; other: string[] };
+  tokens: ThemeTokens;
   /** What `ndop doctor --offline` finds wrong with the setup (ADR-0024). */
   doctor: DoctorResult;
 }

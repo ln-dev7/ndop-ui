@@ -1,5 +1,5 @@
 import { pc } from './colors';
-import { table, truncate, visibleWidth, wrap } from './terminal';
+import { canPrompt, table, truncate, visibleWidth, wrap } from './terminal';
 
 describe('terminal text', () => {
   it('wraps at spaces, keeping long words and line breaks', () => {
@@ -53,5 +53,16 @@ describe('terminal text', () => {
       '    two',
       'bb',
     ]);
+  });
+});
+
+describe('canPrompt', () => {
+  it('prompts only on a terminal outside CI', () => {
+    expect(canPrompt(true, true, {})).toBe(true);
+    expect(canPrompt(true, true, { CI: 'false' })).toBe(true);
+    expect(canPrompt(true, true, { CI: 'true' })).toBe(false);
+    expect(canPrompt(true, true, { CI: '1' })).toBe(false);
+    expect(canPrompt(undefined, true, {})).toBe(false);
+    expect(canPrompt(true, false, {})).toBe(false);
   });
 });

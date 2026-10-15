@@ -1,5 +1,10 @@
 import type { Command } from 'commander';
-import { AGENTS, parseAgents, type Agent } from '../install/agents';
+import {
+  AGENT_LABELS,
+  AGENTS,
+  parseAgents,
+  type Agent,
+} from '../install/agents';
 import { planInit } from '../install/init';
 import type { CommandEnvironment } from './environment';
 import { runWriteCommand, type WriteOptions } from './run';
@@ -15,13 +20,6 @@ interface InitCommandOptions extends WriteOptions {
   verify?: boolean;
   cli: boolean;
 }
-
-/** How each agent is named in the prompt. */
-const AGENT_LABELS: Record<Agent, string> = {
-  'claude-code': 'Claude Code',
-  cursor: 'Cursor',
-  copilot: 'GitHub Copilot',
-};
 
 /**
  * Registers `ndop init`: sets an Angular app up for Ndop UI (RFC-0001,
