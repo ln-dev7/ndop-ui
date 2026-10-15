@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
-import { PageMeta } from '../site/page-meta';
+import { PageMeta, pageUrl } from '../site/page-meta';
 import { RouterLink } from '@angular/router';
 import { BLOCK_CATEGORIES } from '@/categories';
 import { blocks } from 'virtual:ndop/blocks';
@@ -120,16 +120,59 @@ export class BlocksGallery {
     const meta = inject(PageMeta);
     effect(() => {
       const block = this.block();
-      const name = block?.title ?? this.category()?.title;
+      const category = this.category();
+      const name = block?.title ?? category?.title;
       meta.set({
         title: name ?? 'Blocks',
         ...(name ? { section: 'Blocks' } : {}),
         description:
           block?.description ??
-          'Pages and sections built from Ndop UI components, to copy into your Angular app.',
+          (category
+            ? this.categoryDescription(category.slug, category.title)
+            : 'Pages and sections built from Ndop UI components, to copy into your Angular app.'),
         path: this.slug() ? `/blocks/${this.slug()}` : '/blocks',
+        // The trail the page shows: its category's link above its title,
+        // under the header's Blocks.
+        ...(block
+          ? {
+              structuredData: {
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  { name: 'Blocks', item: pageUrl('/blocks') },
+                  {
+                    name: this.categoryTitle(block.category),
+                    item: pageUrl(`/blocks/${block.category}`),
+                  },
+                  { name: block.title },
+                ].map((entry, index) => ({
+                  '@type': 'ListItem',
+                  position: index + 1,
+                  ...entry,
+                })),
+              },
+            }
+          : {}),
       });
     });
+  }
+
+  /**
+   * A category page's description for search results, naming its blocks,
+   * so no two category pages share one.
+   *
+   * @param slug - The category's slug.
+   * @param title - Its title, such as "Authentication".
+   * @returns Such as "Ndop UI blocks for authentication: Login 01 and
+   *   Login 02, …".
+   */
+  private categoryDescription(slug: string, title: string): string {
+    const names = new Intl.ListFormat('en', { type: 'conjunction' }).format(
+      blocks
+        .filter((block) => block.category === slug)
+        .map((block) => block.title),
+    );
+    return `Ndop UI blocks for ${title.toLowerCase()}: ${names}, built from its components, to copy into your Angular app.`;
   }
 
   /**

@@ -1,6 +1,25 @@
 /** The site's address, for absolute links in share cards. */
 export const SITE = 'https://ndop.dev';
 
+/**
+ * A page's one public address: its canonical link, its `og:url` and its
+ * sitemap entry, so the three can't disagree (ADR-0016, amendment 15).
+ * Paths have no trailing slash, as Cloudflare Pages serves them; the home
+ * page keeps its `/`.
+ *
+ * @param path - The page's path, such as `/docs/components/button`.
+ * @returns Its absolute URL, such as `https://ndop.dev/docs/components/button`.
+ *
+ * @example
+ * ```ts
+ * pageUrl('/'); // 'https://ndop.dev/'
+ * ```
+ */
+export function pageUrl(path: string): string {
+  const clean = path.split(/[?#]/)[0]?.replace(/\/+$/, '') ?? '';
+  return `${SITE}${clean || '/'}`;
+}
+
 /** The X account credited as the author of share cards (`twitter:creator`). */
 export const CREATOR = '@valerymelou';
 

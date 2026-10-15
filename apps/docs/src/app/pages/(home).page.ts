@@ -7,7 +7,7 @@ import { Hero } from '../landing/hero';
 import { MergeSection } from '../landing/merge-section';
 import { ProofSection } from '../landing/proof-section';
 import { Showcase } from '../landing/showcase';
-import { PageMeta } from '../site/page-meta';
+import { PageMeta, pageUrl } from '../site/page-meta';
 
 /**
  * Landing page (`/`), ADR-0026 and its amendment 1: the hero and the
@@ -46,6 +46,13 @@ export default class HomePage {
       description:
         'Accessible Angular components you own and can still update, built for you and your agent.',
       path: '/',
+      // Google reads the site's name from the home page's WebSite.
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Ndop UI',
+        url: pageUrl('/'),
+      },
     });
   }
 }

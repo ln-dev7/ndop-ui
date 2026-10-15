@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 import { PageMeta } from './page-meta';
@@ -49,5 +50,81 @@ describe('PageMeta', () => {
     expect(content('property="og:image"')).toBe(
       'https://ndop.dev/og/index.jpg',
     );
+  });
+
+  it('keeps one canonical link, at the same address as og:url', () => {
+    const meta = TestBed.inject(PageMeta);
+    const head = TestBed.inject(DOCUMENT).head;
+    const canonicals = () =>
+      [...head.querySelectorAll('link[rel="canonical"]')].map((link) =>
+        link.getAttribute('href'),
+      );
+    meta.set({
+      title: 'Button',
+      description: 'A.',
+      path: '/docs/components/button',
+    });
+    meta.set({
+      title: 'Dialog',
+      description: 'B.',
+      path: '/docs/components/dialog',
+    });
+    expect(canonicals()).toEqual(['https://ndop.dev/docs/components/dialog']);
+    expect(content('property="og:url"')).toBe(canonicals()[0]);
+    meta.set({ title: 'Ndop UI', description: 'Home.', path: '/' });
+    expect(canonicals()).toEqual(['https://ndop.dev/']);
+  });
+
+  it('writes structured data as JSON-LD, and drops it on the next page', () => {
+    const meta = TestBed.inject(PageMeta);
+    const head = TestBed.inject(DOCUMENT).head;
+    const scripts = () =>
+      head.querySelectorAll('script[type="application/ld+json"]');
+    meta.set({
+      title: 'Ndop UI',
+      description: 'Home.',
+      path: '/',
+      structuredData: { '@type': 'WebSite', name: '</script>' },
+    });
+    meta.set({
+      title: 'Ndop UI',
+      description: 'Home.',
+      path: '/',
+      structuredData: { '@type': 'WebSite', name: 'Ndop UI' },
+    });
+    expect(scripts()).toHaveLength(1);
+    expect(JSON.parse(scripts()[0]?.textContent ?? '')).toEqual({
+      '@type': 'WebSite',
+      name: 'Ndop UI',
+    });
+    meta.set({
+      title: 'Ndop UI',
+      description: 'Home.',
+      path: '/',
+      structuredData: { name: '</script>' },
+    });
+    expect(scripts()[0]?.textContent).toBe('{"name":"\\u003c/script>"}');
+    meta.set({
+      title: 'Button',
+      description: 'A.',
+      path: '/docs/components/button',
+    });
+    expect(scripts()).toHaveLength(0);
+  });
+
+  it('marks an excluded page noindex, without a canonical link', () => {
+    const meta = TestBed.inject(PageMeta);
+    const head = TestBed.inject(DOCUMENT).head;
+    meta.set({
+      title: 'Ndop UI',
+      description: 'Home.',
+      path: '/',
+      structuredData: { '@type': 'WebSite' },
+    });
+    meta.exclude('Page not found · Ndop UI');
+    expect(TestBed.inject(Title).getTitle()).toBe('Page not found · Ndop UI');
+    expect(content('name="robots"')).toBe('noindex');
+    expect(head.querySelector('link[rel="canonical"]')).toBeNull();
+    expect(head.querySelector('script[type="application/ld+json"]')).toBeNull();
   });
 });

@@ -3,6 +3,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
+import { PageMeta } from '../site/page-meta';
 
 /**
  * What the service worker answers with for a page that wasn't saved, when
@@ -37,8 +38,7 @@ export default class OfflinePage {
   constructor() {
     const meta = inject(Meta);
     const title = inject(Title);
-    title.setTitle("You're offline · Ndop UI");
-    meta.updateTag({ name: 'robots', content: 'noindex' });
+    inject(PageMeta).exclude("You're offline · Ndop UI");
     // The home page, the one page linked from here, sets neither.
     inject(DestroyRef).onDestroy(() => {
       meta.removeTag('name="robots"');

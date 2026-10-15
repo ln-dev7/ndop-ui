@@ -1,10 +1,10 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { blockComponents, blocks } from 'virtual:ndop/blocks';
+import { PageMeta } from '../../../site/page-meta';
 import { Preferences } from '../../../site/preferences';
 
 /**
@@ -36,15 +36,13 @@ export default class BlockPreviewPage {
     ),
     { requireSync: true },
   );
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly meta = inject(PageMeta);
 
   protected readonly block = resource({
     params: () => this.name(),
     loader: async ({ params }) => {
       const summary = blocks.find((block) => block.name === params);
-      this.title.setTitle(`${summary?.title ?? params} preview · Ndop UI`);
-      this.meta.updateTag({ name: 'robots', content: 'noindex' });
+      this.meta.exclude(`${summary?.title ?? params} preview · Ndop UI`);
       return blockComponents[params]?.();
     },
   });

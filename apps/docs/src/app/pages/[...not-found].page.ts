@@ -3,6 +3,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
+import { PageMeta } from '../site/page-meta';
 
 /**
  * The page for any path the site doesn't have. It is prerendered as the
@@ -31,7 +32,12 @@ import { Button } from '@/ui/button/button';
       </p>
       <div class="mt-8 flex flex-wrap justify-center gap-3">
         <a ndButton routerLink="/">Go to the home page</a>
-        <a ndButton variant="outline" routerLink="/docs">Read the docs</a>
+        <a
+          ndButton
+          variant="outline"
+          routerLink="/docs/getting-started/introduction"
+          >Read the docs</a
+        >
       </div>
     </main>
   `,
@@ -40,8 +46,7 @@ export default class NotFoundPage {
   constructor() {
     const meta = inject(Meta);
     const title = inject(Title);
-    title.setTitle('Page not found · Ndop UI');
-    meta.updateTag({ name: 'robots', content: 'noindex' });
+    inject(PageMeta).exclude('Page not found · Ndop UI');
     // The pages linked from here set their own title, but not robots.
     inject(DestroyRef).onDestroy(() => {
       meta.removeTag('name="robots"');
