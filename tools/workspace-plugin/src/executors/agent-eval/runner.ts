@@ -2,7 +2,13 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isUsageLimit, type Agent, type AgentRun } from './agent';
 import type { EvalPrompt } from './prompts';
-import { authoredFiles, score, type Check, type VerifyOutput } from './score';
+import {
+  authoredFiles,
+  authoredStylesheets,
+  score,
+  type Check,
+  type VerifyOutput,
+} from './score';
 
 /** One prompt attempt's outcome. */
 export interface PromptResult {
@@ -79,6 +85,13 @@ export interface Workspace {
    * @returns Its text.
    */
   read(copy: string, path: string): Promise<string>;
+  /**
+   * Reads a file of the fixture every copy starts from.
+   *
+   * @param path - Project-relative path.
+   * @returns Its text, or `undefined` when the fixture doesn't have it.
+   */
+  original(path: string): Promise<string | undefined>;
   /**
    * Runs `ndop verify --json`.
    *
@@ -189,6 +202,11 @@ export async function runEval(
       const sources: Record<string, string> = {};
       for (const file of files)
         sources[file] = await workspace.read(copy, file);
+      const styles = await stylesheetAdditions(
+        workspace,
+        copy,
+        authoredStylesheets(changed, locked.files),
+      );
       const typescript = files.filter((file) => file.endsWith('.ts'));
       const verified = typescript.length
         ? await workspace.verify(copy, typescript)
@@ -199,6 +217,7 @@ export async function runEval(
         ndopFiles: locked.files,
         installed: locked.installed,
         sources,
+        styles,
         ...(verified ? { verify: verified } : {}),
       });
       const screenshots = await workspace.keep(
@@ -236,6 +255,39 @@ export async function runEval(
     }
   }
   return report;
+}
+
+/**
+ * What the agent wrote in stylesheets: a new one whole, and only the lines
+ * it added to one the fixture had, such as the global stylesheet, whose
+ * theme isn't the agent's. A deleted stylesheet adds nothing.
+ *
+ * @param workspace - The work around the agent.
+ * @param copy - The prompt's copy.
+ * @param paths - The agent's stylesheets.
+ * @returns Their text, by path.
+ */
+async function stylesheetAdditions(
+  workspace: Workspace,
+  copy: string,
+  paths: readonly string[],
+): Promise<Record<string, string>> {
+  const styles: Record<string, string> = {};
+  for (const path of paths) {
+    const now = await workspace.read(copy, path).catch(() => undefined);
+    if (now === undefined) continue;
+    const before = await workspace.original(path);
+    if (before === undefined) {
+      styles[path] = now;
+      continue;
+    }
+    const kept = new Set(before.split('\n'));
+    styles[path] = now
+      .split('\n')
+      .filter((line) => !kept.has(line))
+      .join('\n');
+  }
+  return styles;
 }
 
 /**

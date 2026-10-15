@@ -532,5 +532,35 @@
     "prompt": "Add a pricing page with three plans and a monthly or yearly toggle.",
     "components": ["pricing-01"],
     "category": "page"
+  },
+  {
+    "id": 90,
+    "prompt": "Add an app shell around every page: a sidebar with navigation links and a logout button that asks for confirmation before logging out, and an empty main area.",
+    "components": [
+      "sidebar|sidebar-01|sidebar-02",
+      "button",
+      "alert-dialog|dialog"
+    ],
+    "category": "page"
+  },
+  {
+    "id": 91,
+    "prompt": "Make the home page an admin overview with stat cards for revenue, orders and customers, a sales chart and a table of recent orders.",
+    "components": [
+      "dashboard-01|card",
+      "dashboard-01|chart",
+      "dashboard-01|table"
+    ],
+    "category": "page"
+  },
+  {
+    "id": 92,
+    "prompt": "Add an account page where users update their profile and account details.",
+    "components": [
+      "settings-01|input",
+      "settings-01|label",
+      "settings-01|button"
+    ],
+    "category": "page"
   }
 ]

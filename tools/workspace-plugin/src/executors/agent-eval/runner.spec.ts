@@ -54,6 +54,10 @@ function fakes(scripts: Script[]) {
     changed: async (copy) => Object.keys(copies.get(copy) ?? {}),
     locked: async () => ({ installed: new Set(['button']), files: new Set() }),
     read: async (copy, path) => copies.get(copy)?.[path] ?? '',
+    original: async (path) =>
+      path === 'src/styles.css'
+        ? "@import 'tailwindcss';\n:root {\n  --primary: oklch(0.2 0 0);\n}\n"
+        : undefined,
     verify: async (copy, files): Promise<VerifyOutput> => {
       const broken = files.some((file) =>
         copies.get(copy)?.[file]?.includes('broken'),
@@ -182,6 +186,37 @@ describe('runEval', () => {
     expect(second.seen).toEqual(['Sign-in form']);
     expect(resumed.results.map((result) => result.id)).toEqual([1, 2]);
     expect(resumed.results[1]?.error).toBeUndefined();
+  });
+
+  it("scores the agent's own stylesheets, not the theme it started with", async () => {
+    const { agent, workspace } = fakes([
+      {
+        files: {
+          'src/app/settings.ts': GOOD,
+          'src/styles.css':
+            "@import 'tailwindcss';\n@import './app/app.css';\n:root {\n  --primary: oklch(0.2 0 0);\n}\n",
+        },
+      },
+      {
+        files: {
+          'src/app/sign-in.ts': "import { Input } from '@/ui/input/input';",
+          'src/app/app.css': '.shell {\n  --brand: #0f172a;\n}\n',
+        },
+      },
+    ]);
+    const report = await runEval(options(), agent, workspace);
+    expect(report.results.map((result) => result.passed)).toEqual([
+      true,
+      false,
+    ]);
+    expect(
+      report.results[1]?.checks.find((check) => check.name === 'styles'),
+    ).toEqual({
+      name: 'styles',
+      ok: false,
+      detail:
+        'Colors or CSS variables of its own: src/app/app.css (#0f172a, --brand).',
+    });
   });
 
   it('runs each prompt several times with repeat', async () => {

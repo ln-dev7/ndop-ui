@@ -110,6 +110,10 @@ const agentEval: PromiseExecutor<AgentEvalExecutorSchema> = async (
         changed: (copy) => changedFiles(fixture, copy),
         locked: (copy) => lockedFiles(copy),
         read: (copy, path) => readFile(join(copy, path), 'utf-8'),
+        original: (path) =>
+          readFile(join(fixture.template, path), 'utf-8').catch(
+            () => undefined,
+          ),
         verify: (copy, files) => verifyFiles(copy, files, packages.env, log),
         keep: async (copy, folder, run, files, screenshots) => {
           await rm(folder, { recursive: true, force: true });

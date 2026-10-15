@@ -31,7 +31,9 @@ describe("the suite's prompts", () => {
     const prompts = await readPrompts(
       join(workspace, 'tools/agent-eval/prompts.json'),
     );
-    const asked = prompts.flatMap((entry) => entry.components);
+    const asked = prompts.flatMap((entry) =>
+      entry.components.flatMap((name) => name.split('|')),
+    );
     expect(asked.filter((name) => !known.has(name))).toEqual([]);
     // RFC-0001's definition of done: every component is covered by the
     // suite (ADR-0019).
