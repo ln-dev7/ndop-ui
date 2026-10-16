@@ -153,14 +153,12 @@ test('a mapping table fits a phone without widening the page', async ({
   expect(
     await table.evaluate((element) => element.getBoundingClientRect().width),
   ).toBeLessThanOrEqual(column);
-  // The page doesn't scroll sideways. Compared with the page's own width,
-  // not the viewport's: the scrollbar's reserved gutter takes up room
-  // where scrollbars do.
-  const width = await page.evaluate(() => ({
-    scroll: document.documentElement.scrollWidth,
-    client: document.documentElement.clientWidth,
-  }));
-  expect(width.scroll).toBe(width.client);
+  // The page is no wider than the screen. Not compared with the page's
+  // own width: headless Chromium hides scrollbars but still reserves the
+  // gutter, and then reports the full screen as the scroll width.
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(375);
 });
 
 test('an opted-out block shows its file name and never its nocheck', async ({
