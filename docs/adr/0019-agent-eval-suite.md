@@ -211,3 +211,32 @@ and the docs recommend, while the prompt asked for `label` and `dialog`.
 - `dialog` becomes `alert-dialog|dialog` on the prompts that confirm an
   action or ask to accept or decline: 1, 11, 13, 19, 31, 34, 35 and 39.
 - Prompt 5's message field is `input|textarea`.
+- Prompt 16's formatting buttons are `button|toggle-group|toggle`: bold,
+  italic and underline are on/off toggles.
+- **A block counts for the components it's built from.** Prompts 2 and 3
+  routed to the `login-01` block, as the agent files advise, and failed
+  because the scorer read only the agent's own files. The scorer now also
+  reads the installed blocks' files, and the components a block the agent
+  imports is built from count as used.
+
+The full 1.1.0 run scored 74/92 (80.4%). Of its 18 failures:
+
+- **4 used a block** (2, 3, 21, 51): scored by the rule above.
+- **3 were a verify bug** (64, 65, 69): the metadata asked menu items to
+  sit inside sub-menu triggers, so documented Dropdown Menu, Context Menu
+  and Menubar templates failed `usage/wrong-nesting`. Fixed in
+  `@ndop/metadata`.
+- **7 chose a fitting component the prompt didn't list:** Toggle Group for
+  formatting toggles (16, 58), the Sidebar's own separator and menu button
+  (25, 90), Textarea for a bio (38), Label beside a Select (54), and an
+  `aria-labelledby` name on a Slider whose prompt asks for no label (56).
+  Those entries accept them now.
+- **1 was the prompt's wording** (46): "between two buttons in a toolbar"
+  in an app with no toolbar made the agent ask where it was. It now reads
+  "Add a toolbar with two buttons and a vertical divider between them."
+- **3 are real failures:** 49 routed to a settings block and built no
+  popover; 53 ran out of time without writing a file; 77 sized its image
+  with a Tailwind class, not the Aspect Ratio item.
+
+The 18 prompts are run again with these fixes, and the accuracy recorded
+is the full run's passes plus the rerun's.

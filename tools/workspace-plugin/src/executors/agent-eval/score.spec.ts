@@ -90,6 +90,36 @@ describe('score', () => {
     });
   });
 
+  it('counts the components a routed block is built from', () => {
+    const result = score({
+      ...passing,
+      components: ['input', 'label|form-field', 'button'],
+      installed: new Set(['login-01', 'input', 'form-field', 'button']),
+      sources: {
+        'src/app/app.routes.ts':
+          "export const routes = [{ path: 'sign-in', loadComponent: () => import('./blocks/login-01/login-01').then((m) => m.Login01Block) }];",
+      },
+      blockSources: {
+        'src/app/blocks/login-01/login-01.ts':
+          "import { Button } from '@/ui/button/button';\nimport { Field } from '@/ui/form-field/form-field';\nimport { Input } from '@/ui/input/input';",
+        'src/app/blocks/signup-01/signup-01.ts':
+          "import { Checkbox } from '@/ui/checkbox/checkbox';",
+      },
+    });
+    expect(result.checks[1]?.ok).toBe(true);
+    expect(
+      score({
+        ...passing,
+        components: ['checkbox'],
+        installed: new Set(['checkbox', 'signup-01']),
+        blockSources: {
+          'src/app/blocks/signup-01/signup-01.ts':
+            "import { Checkbox } from '@/ui/checkbox/checkbox';",
+        },
+      }).checks[1]?.ok,
+    ).toBe(false);
+  });
+
   it('fails verify errors and skipped steps', () => {
     const failed = score({
       ...passing,

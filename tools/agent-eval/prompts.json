@@ -97,7 +97,7 @@
   {
     "id": 16,
     "prompt": "Add a toolbar of icon-only buttons for bold, italic and underline, each with a tooltip.",
-    "components": ["button", "tooltip"],
+    "components": ["button|toggle-group|toggle", "tooltip"],
     "category": "edge"
   },
   {
@@ -151,7 +151,7 @@
   {
     "id": 25,
     "prompt": "Add a sidebar section with grouped links separated by dividers.",
-    "components": ["separator"],
+    "components": ["separator|sidebar"],
     "category": "layout"
   },
   {
@@ -229,7 +229,7 @@
   {
     "id": 38,
     "prompt": "Add a profile page showing the user's details with an edit button that opens a dialog to change their bio.",
-    "components": ["button", "dialog", "input", "label|form-field"],
+    "components": ["button", "dialog", "input|textarea", "label|form-field"],
     "category": "page"
   },
   {
@@ -281,7 +281,7 @@
   },
   {
     "id": 46,
-    "prompt": "Add a vertical divider between two buttons in a toolbar.",
+    "prompt": "Add a toolbar with two buttons and a vertical divider between them.",
     "components": ["separator", "button"],
     "category": "edge"
   },
@@ -330,7 +330,7 @@
   {
     "id": 54,
     "prompt": "Add a country picker that lists countries in a dropdown and shows the chosen one.",
-    "components": ["select", "form-field"],
+    "components": ["select", "form-field|label"],
     "category": "form"
   },
   {
@@ -342,7 +342,7 @@
   {
     "id": 56,
     "prompt": "Add a volume control slider from 0 to 100 that shows its value.",
-    "components": ["slider", "label|form-field"],
+    "components": ["slider"],
     "category": "form"
   },
   {
@@ -354,7 +354,7 @@
   {
     "id": 58,
     "prompt": "Add a text formatting toolbar with bold, italic and underline toggles and an alignment choice of left, center or right.",
-    "components": ["toggle", "toggle-group"],
+    "components": ["toggle|toggle-group", "toggle-group"],
     "category": "form"
   },
   {
@@ -548,7 +548,7 @@
     "prompt": "Add an app shell around every page: a sidebar with navigation links and a logout button that asks for confirmation before logging out, and an empty main area.",
     "components": [
       "sidebar|sidebar-01|sidebar-02",
-      "button",
+      "button|sidebar",
       "alert-dialog|dialog"
     ],
     "category": "page"

@@ -202,6 +202,10 @@ export async function runEval(
       const sources: Record<string, string> = {};
       for (const file of files)
         sources[file] = await workspace.read(copy, file);
+      const blockSources: Record<string, string> = {};
+      for (const file of locked.files)
+        if (/\/blocks\/[^/]+\/.+\.(?:ts|html)$/.test(file))
+          blockSources[file] = await workspace.read(copy, file);
       const styles = await stylesheetAdditions(
         workspace,
         copy,
@@ -217,6 +221,7 @@ export async function runEval(
         ndopFiles: locked.files,
         installed: locked.installed,
         sources,
+        blockSources,
         styles,
         ...(verified ? { verify: verified } : {}),
       });

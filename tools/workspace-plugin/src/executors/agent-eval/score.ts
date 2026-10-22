@@ -42,6 +42,11 @@ export interface ScoreInput {
   /** Text of the agent's own source files, by path. */
   sources: Readonly<Record<string, string>>;
   /**
+   * Text of the installed blocks' files, by path. A block the agent imports
+   * counts for the components it's built from.
+   */
+  blockSources?: Readonly<Record<string, string>>;
+  /**
    * The agent's stylesheet text under `src/`, by path: a new file whole,
    * and only the added lines of one the fixture already had.
    */
@@ -229,11 +234,22 @@ export function score(input: ScoreInput): { passed: boolean; checks: Check[] } {
               },
   );
 
+  const imports = (texts: readonly string[], item: string) =>
+    texts.some((text) =>
+      new RegExp(`/(?:ui|blocks)/${item}/${item}['"]`).test(text),
+    );
+  const own = Object.values(input.sources);
+  // The registry tells agents to start from a block, so a sign-in page
+  // that routes to login-01 uses the input and button it's built from.
+  const fromBlocks = Object.entries(input.blockSources ?? {})
+    .filter(([path]) => {
+      const block = /\/blocks\/([^/]+)\//.exec(path)?.[1];
+      return block !== undefined && imports(own, block);
+    })
+    .map(([, text]) => text);
   const used = (component: string) =>
     input.installed.has(component) &&
-    Object.values(input.sources).some((source) =>
-      new RegExp(`/(?:ui|blocks)/${component}/${component}['"]`).test(source),
-    );
+    imports([...own, ...fromBlocks], component);
   const missing = input.components.filter(
     (entry) => !entry.split('|').some(used),
   );
