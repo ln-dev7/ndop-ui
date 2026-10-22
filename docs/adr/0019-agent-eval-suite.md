@@ -195,3 +195,19 @@ The suite didn't look for either.
   theme, only the lines the agent added count. Earlier results were
   scored without it, so a rerun of prompts 1–89 can score lower on it.
 - The scorer's tests cover both, with the scripted agent.
+
+## Amendment 4 (2026-10-22): the components the agent files point to count
+
+Status: Applied; a scoring fix within amendment 3's alternatives, no new
+check.
+
+The 1.1.0 run's first prompt built a correct settings page that passed
+`ndop verify`, the styles check and the scope check, and failed
+`components`: it labelled its fields with Form Field (`FieldLabel`) and
+confirmed the deletion with Alert Dialog, which is what the agent files
+and the docs recommend, while the prompt asked for `label` and `dialog`.
+
+- Every `label` becomes `label|form-field`.
+- `dialog` becomes `alert-dialog|dialog` on the prompts that confirm an
+  action or ask to accept or decline: 1, 11, 13, 19, 31, 34, 35 and 39.
+- Prompt 5's message field is `input|textarea`.
