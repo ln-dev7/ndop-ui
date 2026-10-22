@@ -603,6 +603,10 @@ function addRequires(
     const required = new Set<string>();
     for (const declaration of classes.get(part) ?? []) {
       for (const token of injectedTokens(context, declaration)) {
+        // Its own host directives answer it, as NdMenuItem's inject of the
+        // CdkMenuItem it composes, so a sub-trigger that composes one too
+        // isn't somewhere it must sit.
+        if (provided.get(part)?.has(token)) continue;
         for (const other of parts) {
           if (other !== part && provided.get(other)?.has(token)) {
             required.add(other.selector);
@@ -617,25 +621,28 @@ function addRequires(
 }
 
 /**
- * What a directive makes injectable: its own class and every token in its
- * `providers`.
+ * What a directive makes injectable: its own class, every token in its
+ * `providers`, and the same for each directive it composes through
+ * `hostDirectives`, all the way down, since Angular resolves those on the
+ * same element.
  *
  * @param context - Extraction state.
- * @param declaration - The directive's class.
+ * @param declaration - The class.
+ * @param seen - Classes already visited, so a cycle stops.
  * @returns The symbols.
  */
 function providedTokens(
   context: Context,
   declaration: Ts.ClassDeclaration,
+  seen = new Set<Ts.ClassDeclaration>(),
 ): Ts.Symbol[] {
+  if (seen.has(declaration)) return [];
+  seen.add(declaration);
   const tokens: Ts.Symbol[] = [];
   const own = declaration.name && symbolOf(context, declaration.name);
   if (own) tokens.push(own);
-  const providers = property(
-    context,
-    decoratorObject(context, declaration),
-    'providers',
-  );
+  const decorator = decoratorObject(context, declaration);
+  const providers = property(context, decorator, 'providers');
   if (providers && context.ts.isArrayLiteralExpression(providers)) {
     for (const provider of providers.elements) {
       const token = context.ts.isObjectLiteralExpression(provider)
@@ -644,6 +651,9 @@ function providedTokens(
       const symbol = token && symbolOf(context, token);
       if (symbol) tokens.push(symbol);
     }
+  }
+  for (const host of hostDirectives(context, decorator)) {
+    tokens.push(...providedTokens(context, host.declaration, seen));
   }
   return tokens;
 }

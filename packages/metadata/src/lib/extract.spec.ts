@@ -288,6 +288,44 @@ export class Thing {}
     });
   });
 
+  it("doesn't count what a part's own host directives provide", async () => {
+    await fixture({
+      'primitives/thing/thing.ts': `import { Directive, inject } from '@angular/core';
+
+/** Behavior both the item and the sub-trigger compose. */
+@Directive({ selector: '[cdkItem]' })
+export class CdkItem {}
+
+/** Headless item. */
+@Directive({ selector: '[ndThingItem]', hostDirectives: [CdkItem] })
+export class NdThingItem {
+  protected readonly item = inject(CdkItem);
+}
+
+/** An item that opens a submenu. */
+@Directive({ selector: '[ndThingSubTrigger]', hostDirectives: [CdkItem] })
+export class NdThingSubTrigger {}
+`,
+      'ui/thing/thing.ts': `import { Directive } from '@angular/core';
+import { NdThingItem } from '../../primitives/thing/thing';
+
+export { NdThingSubTrigger } from '../../primitives/thing/thing';
+
+/** Styled item. */
+@Directive({ selector: '[ndThingItem]', hostDirectives: [NdThingItem] })
+export class ThingItem {}
+`,
+      'ui/thing/docs.md': DOCS,
+    });
+    const { metadata } = await extract();
+    expect(
+      metadata[0]?.parts.map((part) => [part.name, part.requires]),
+    ).toEqual([
+      ['ThingItem', undefined],
+      ['NdThingSubTrigger', undefined],
+    ]);
+  });
+
   it('reports missing descriptions, specs and docs', async () => {
     await fixture({
       'ui/thing/thing.ts': STYLED.replace('  /** Color tone. */\n', ''),

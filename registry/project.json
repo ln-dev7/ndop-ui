@@ -18,6 +18,7 @@
         "^production",
         "{workspaceRoot}/packages/cli/src/**/*",
         "{workspaceRoot}/packages/schema/src/**/*",
+        "{workspaceRoot}/packages/metadata/src/**/*",
         "{workspaceRoot}/tools/workspace-plugin/src/executors/registry-build/**/*",
         "{workspaceRoot}/tsconfig.base.json",
         {
