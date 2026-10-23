@@ -78,3 +78,32 @@ Complete when all are true:
 - Phase 7 has a concrete, checkable finish line.
 - Heavy reference pages are measured but don't block launch; the pages
   most readers land on are held to 95.
+
+## Result (2026-10-23): Phase 7 accepted
+
+Status: Accepted by Valery on 2026-10-23.
+
+1. **Success metrics:** CI on `bda5214` was green: Lighthouse on every
+   page as amended above, axe and keyboard tests in three browsers, size
+   budgets, the update fixtures at 36/39 (92.3%), and new app to built app
+   in 21–44 s across the install cases, against a 120 s budget. Agent
+   accuracy is item 7.
+2. **Packages:** the nine `@ndop/*` packages are at 1.1.0 on npm with SLSA
+   provenance (1.0.0 on 2026-10-14); all 210 registry items are 1.x.
+3. **ndop.dev:** deployed by the Deploy workflow, whose smoke check covers
+   the theme URL Function, the service worker, `404.html` and `/r/`; PR
+   previews post their URL; `ndop.pages.dev` is `noindex`.
+4. **Landing, OG images, favicons, PWA:** live (manifest, icons, `/offline`,
+   per-page OG images).
+5. **Content:** both migration guides, the write-up at
+   `/blog/updating-code-you-own`, the roadmap (`ROADMAP.md` and
+   `/docs/getting-started/roadmap`) and CONTRIBUTING (definition of done,
+   theme and block generators) are published.
+6. **Template repo:** `ndop-ui/registry-template` is a template repository
+   and its Deploy registry workflow passed.
+7. **Agent eval on 1.1.0:** 92/92 after ADR-0019 amendment 4 (89/92,
+   96.7%, counting the three prompts that passed only on their second
+   attempt as failures).
+
+Also shipped in Phase 7: Algolia DocSearch in the ⌘K palette (ADR-0008),
+SEO (ADR-0016 amendment 15) and the blog (amendment 16).

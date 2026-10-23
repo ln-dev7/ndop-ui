@@ -240,3 +240,9 @@ The full 1.1.0 run scored 74/92 (80.4%). Of its 18 failures:
 
 The 18 prompts are run again with these fixes, and the accuracy recorded
 is the full run's passes plus the rerun's.
+
+**Result (2026-10-23):** the rerun passed 18/18, so 1.1.0 scores 92/92
+on `claude-sonnet-5`. The three real failures (49, 53, 77) passed on
+their second attempt, so one run of each prompt can't separate them from
+chance: counting them as failures gives 89/92 (96.7%), still above the
+95% target.

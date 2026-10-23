@@ -642,9 +642,9 @@ Eight phases, each ending in something demonstrable; the riskiest piece (three-w
 
 ### Phase 7 — Launch (weeks 17–18)
 
-- [ ] Migration guides, landing page with live hero demo, OG images, Changelog.
-- [ ] Launch write-up: "Updating code you own: three-way merges in a component registry."
-- [ ] Public roadmap and contribution guide; 1.0.0 release.
+- [x] Migration guides, landing page with live hero demo, OG images, Changelog.
+- [x] Launch write-up: "Updating code you own: three-way merges in a component registry."
+- [x] Public roadmap and contribution guide; 1.0.0 release.
 
 * **Accept when:** every success metric with a CI measurement is met and the launch checklist is complete.
 
