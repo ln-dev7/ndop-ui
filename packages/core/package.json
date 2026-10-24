@@ -1,6 +1,6 @@
 {
   "name": "@ndop/core",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Utilities shared by Ndop UI styled items: class merging, app configuration and the token mechanics CSS.",
   "license": "MIT",
   "homepage": "https://ndop.dev",

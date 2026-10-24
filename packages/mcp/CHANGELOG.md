@@ -1,5 +1,15 @@
 # @ndop/mcp
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [b3c3abd]
+  - @ndop/metadata@1.1.1
+  - @ndop/cli@1.1.1
+  - @ndop/schema@1.1.1
+  - @ndop/verify@1.1.1
+
 ## 1.1.0
 
 ### Patch Changes

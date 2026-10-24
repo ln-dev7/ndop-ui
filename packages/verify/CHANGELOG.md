@@ -1,5 +1,13 @@
 # @ndop/verify
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [b3c3abd]
+  - @ndop/metadata@1.1.1
+  - @ndop/eslint-plugin@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes

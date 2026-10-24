@@ -1,6 +1,6 @@
 {
   "name": "@ndop/primitives",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Headless, signal-based Angular directives for Ndop UI: state, keyboard, focus, ARIA and overlay wiring, with no styles.",
   "license": "MIT",
   "homepage": "https://ndop.dev",

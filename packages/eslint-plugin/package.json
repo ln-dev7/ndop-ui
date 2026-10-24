@@ -1,6 +1,6 @@
 {
   "name": "@ndop/eslint-plugin",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "ESLint rules for apps that use Ndop UI: accessible names, labels, dialog titles, tokens and logical utilities.",
   "license": "MIT",
   "homepage": "https://ndop.dev",
