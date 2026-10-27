@@ -540,8 +540,18 @@ async function planItem(
   const base = (await baseOf(pristine, { ...ref, version: entry.version }))
     ?.item;
   await planStyles(builder, context, base, target.item);
-  builder.depend(target.item.dependencies ?? []);
-  builder.depend(target.item.devDependencies ?? [], true);
+  // A newly required range must replace an installed older package too;
+  // name-only dependency checks would leave native markup on 1.x runtimes.
+  for (const dev of [false, true]) {
+    const field = dev ? 'devDependencies' : 'dependencies';
+    const previous = new Map(
+      (base?.[field] ?? []).map((spec) => [dependencyName(spec), spec]),
+    );
+    for (const spec of target.item[field] ?? []) {
+      const name = dependencyName(spec);
+      builder.depend([spec], dev, spec !== name && previous.get(name) !== spec);
+    }
+  }
   const kept = new Set(
     [
       ...(target.item.dependencies ?? []),

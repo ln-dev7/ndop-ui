@@ -82,6 +82,11 @@ export const codemodSchema = {
       properties: {
         since: { type: 'string', pattern: SEMVER_PATTERN },
         kind: { const: 'rename-input' },
+        renameExportAs: {
+          type: 'boolean',
+          description:
+            'Also rename matching template reference exportAs values when a directive selector changes.',
+        },
         selector: { type: 'string', minLength: 1 },
         from: { type: 'string', pattern: IDENTIFIER_PATTERN },
         to: { type: 'string', pattern: IDENTIFIER_PATTERN },

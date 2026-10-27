@@ -813,6 +813,29 @@ export class Page {
       expect(environment.project.files).toEqual(before);
     });
 
+    it('updates a changed explicit runtime range even when the package is already installed', async () => {
+      const environment = await sizesProject(
+        sizes(
+          '1.0.0',
+          { 'sizes.ts': V1 },
+          { dependencies: ['@ndop/primitives@^1.0.0'] },
+        ),
+        sizes(
+          '2.0.0',
+          { 'sizes.ts': V1 },
+          { dependencies: ['@ndop/primitives@^2.0.0'] },
+        ),
+      );
+      const result = await update(environment);
+      expect(result.dependencies).toContain('@ndop/primitives@^2.0.0');
+      expect(environment.installs.at(-1)?.specs).toContain(
+        '@ndop/primitives@^2.0.0',
+      );
+      const count = environment.installs.length;
+      expect((await update(environment)).dependencies).toEqual([]);
+      expect(environment.installs).toHaveLength(count);
+    });
+
     it('asks you to rename inputs yourself without an Angular compiler', async () => {
       const environment = await sizesProject(
         sizes('1.0.0', { 'sizes.ts': V1 }),

@@ -324,3 +324,25 @@ describe('dynamic primitive migration imports', () => {
     ).toThrow('dynamic or require');
   });
 });
+
+describe('directive selector migration', () => {
+  it('renames exportAs references only when explicitly requested', () => {
+    const mod: Codemod = {
+      since: '2.0.0',
+      kind: 'rename-input',
+      selector: '[ndSheet]',
+      from: 'ndSheet',
+      to: 'ndDialog',
+      renameExportAs: true,
+    };
+    const before =
+      '<ng-container ndSheet #panel="ndSheet">{{ panel.open() }}</ng-container>';
+    const after =
+      '<ng-container ndDialog #panel="ndDialog">{{ panel.open() }}</ng-container>';
+    expect(renameInputs(compiler, before, [mod])).toBe(after);
+    expect(renameInputs(compiler, after, [mod])).toBe(after);
+    expect(
+      renameInputs(compiler, before, [{ ...mod, renameExportAs: false }]),
+    ).toContain('#panel="ndSheet"');
+  });
+});

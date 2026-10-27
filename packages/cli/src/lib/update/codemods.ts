@@ -48,6 +48,7 @@ interface TemplateElement {
   attributes: { name: string; value: string; keySpan?: Span }[];
   inputs: { name: string; type: number; keySpan: Span }[];
   outputs: { name: string; type: number; keySpan: Span }[];
+  references?: { value: string; valueSpan?: Span }[];
 }
 
 // BindingType.Property and BindingType.TwoWay; Attribute, Class, Style
@@ -190,6 +191,12 @@ export function renameInputs(
               edits.set(span.start.offset, { end: span.end.offset, text });
             }
           };
+          if (codemod.renameExportAs) {
+            for (const reference of element.references ?? []) {
+              if (reference.value === codemod.from)
+                rename(reference.valueSpan, codemod.to);
+            }
+          }
           for (const attribute of element.attributes) {
             if (attribute.name === codemod.from) {
               rename(attribute.keySpan, codemod.to);
@@ -525,7 +532,6 @@ interface NativeElement extends TemplateElement {
   sourceSpan: Span;
   startSourceSpan?: Span;
   endSourceSpan?: Span | null;
-  references?: unknown[];
   children?: unknown[];
 }
 
