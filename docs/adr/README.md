@@ -38,5 +38,4 @@ number. A superseded ADR stays, with its status pointing to the replacement.
 | [0029](0029-launch.md)                                   | Launch checklist and success metrics                      | Accepted                       |
 | [0030](0030-compiled-guide-code.md)                      | Compiled guide code                                       | Accepted                       |
 | [0031](0031-cli-entry-point.md)                          | `@ndop/cli` as the CLI's entry point                      | Accepted                       |
-
-| [0032](0032-native-overlays.md) | Native modal dialogs and top-layer popovers | Proposed with issue #3 |
+| [0032](0032-native-overlays.md)                          | Native modal dialogs and top-layer popovers               | Proposed with issue #3         |
