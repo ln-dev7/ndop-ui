@@ -68,9 +68,16 @@ export function injectModalScrollLock(): NdModalScrollLock {
       body.style.overflow = 'hidden';
       if (scrollbar)
         body.style.paddingInlineEnd = `calc(${padding || '0px'} + ${scrollbar}px)`;
+      // WebKit can report viewport scrolling through an inert fixed body.
+      // Only the viewport is clamped; nested dialog/listbox scrollers still work.
+      const guardViewport = () => {
+        if (window.scrollX || window.scrollY) window.scrollTo(0, 0);
+      };
+      window.addEventListener('scroll', guardViewport, { passive: true });
       locks.set(document, {
         count: 1,
         restore() {
+          window.removeEventListener('scroll', guardViewport);
           for (const { name, value, priority } of previous) {
             if (value) body.style.setProperty(name, value, priority);
             else body.style.removeProperty(name);

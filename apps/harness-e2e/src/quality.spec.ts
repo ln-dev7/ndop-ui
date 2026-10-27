@@ -51,10 +51,20 @@ test('every route renders on the server, hydrates cleanly and passes axe', async
       );
       await page.goto(route);
       await hydrated;
+      await page.evaluate(() => document.fonts.ready);
       expect(problems).toEqual([]);
 
       const axe = await new AxeBuilder({ page }).analyze();
-      expect(axe.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+      expect(
+        axe.violations.map((v) => ({
+          id: v.id,
+          help: v.help,
+          nodes: v.nodes.map((node) => ({
+            html: node.html,
+            summary: node.failureSummary,
+          })),
+        })),
+      ).toEqual([]);
 
       page.removeAllListeners('console');
       page.removeAllListeners('pageerror');

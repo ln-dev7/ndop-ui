@@ -110,6 +110,31 @@ test.describe('Dialog', () => {
     await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
     await page.mouse.wheel(0, 600);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    await page.evaluate(() => window.scrollTo(0, 400));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test('allows scrolling inside a modal while its page stays locked', async ({
+    page,
+  }) => {
+    const { dialog } = await openDialog(page);
+    await dialog.evaluate((element) => {
+      const scroller = document.createElement('div');
+      scroller.dataset['testid'] = 'modal-scroller';
+      scroller.style.cssText = 'height: 80px; overflow: auto';
+      const content = document.createElement('div');
+      content.style.height = '800px';
+      content.textContent = 'Scrollable modal content';
+      scroller.append(content);
+      element.append(scroller);
+    });
+    const scroller = page.getByTestId('modal-scroller');
+    await scroller.hover();
+    await page.mouse.wheel(0, 300);
+    await expect
+      .poll(() => scroller.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
 
   test('preserves the document position and styles when the last modal closes', async ({

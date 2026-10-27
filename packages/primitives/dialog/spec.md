@@ -56,7 +56,7 @@ adapter for lazy local views; it no longer uses a CDK overlay or portal.
 - **DialogClose** (a `button`): closes the dialog on click.
 - `data-state` is `open` or `closed` on trigger and content. Legacy overlay directives are compatibility-only;
   new markup uses the native `::backdrop`.
-- While open, a reference-counted fixed-body lock preserves the document position; native inertness alone does not block scrolling.
+- While open, a reference-counted fixed-body lock preserves the document position; native inertness alone does not block scrolling. A passive viewport-only guard covers WebKit scrolling through the fixed body; scrolling inside modal content remains available.
 - Server rendering: the dialog never renders open on the server. A
   `defaultOpen` or bound `open` of `true` opens it after hydration.
 

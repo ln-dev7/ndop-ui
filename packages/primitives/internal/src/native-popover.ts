@@ -10,7 +10,6 @@ import {
   type TemplateRef,
   type ViewContainerRef,
 } from '@angular/core';
-import { injectId } from './id';
 
 /** A popover anchor: a real element or context-menu viewport coordinates. */
 export type NdNativeAnchor = HTMLElement | { x: number; y: number };
@@ -167,7 +166,6 @@ export function injectNativePopover(
   const document = inject(DOCUMENT);
   const directionality = inject(Directionality, { optional: true });
   const browser = inject(Platform).isBrowser;
-  const anchorName = `--${injectId('nd-popover-anchor')}`;
   let element: HTMLElement | null = null;
   let template: TemplateRef<unknown> | undefined;
   let container: ViewContainerRef | undefined;
@@ -177,22 +175,10 @@ export function injectNativePopover(
   let shown = false;
   let cleanup: (() => void) | undefined;
   let cleanupPosition: (() => void) | undefined;
-  let namedAnchor: HTMLElement | undefined;
 
   const clearPosition = () => {
     cleanupPosition?.();
     cleanupPosition = undefined;
-    if (namedAnchor) {
-      const names = namedAnchor.style
-        .getPropertyValue('anchor-name')
-        .split(',')
-        .map((name) => name.trim())
-        .filter((name) => name && name !== anchorName);
-      if (names.length)
-        namedAnchor.style.setProperty('anchor-name', names.join(', '));
-      else namedAnchor.style.removeProperty('anchor-name');
-      namedAnchor = undefined;
-    }
   };
 
   const updatePosition = () => {
@@ -250,51 +236,16 @@ export function injectNativePopover(
     );
     const cssAnchor =
       isElement &&
-      window.CSS?.supports('position-anchor', anchorName) &&
-      window.CSS.supports('left', 'anchor(left)') &&
+      (options.source?.() ?? anchor) === anchor &&
+      window.CSS?.supports('position-anchor', 'auto') &&
+      window.CSS.supports('left', 'anchor(left, 0px)') &&
       !result.shifted;
     if (cssAnchor) {
-      if (namedAnchor !== anchor) {
-        if (namedAnchor) {
-          const names = namedAnchor.style
-            .getPropertyValue('anchor-name')
-            .split(',')
-            .filter((name) => name.trim() !== anchorName)
-            .join(',');
-          if (names) namedAnchor.style.setProperty('anchor-name', names);
-          else namedAnchor.style.removeProperty('anchor-name');
-        }
-        const existing = anchor.style.getPropertyValue('anchor-name');
-        anchor.style.setProperty(
-          'anchor-name',
-          !existing || existing === 'none'
-            ? anchorName
-            : `${existing}, ${anchorName}`,
-        );
-        namedAnchor = anchor;
-      }
-      const position = result.position;
-      const x =
-        position.originX === 'center'
-          ? 'center'
-          : (position.originX === 'start') === rtl
-            ? 'right'
-            : 'left';
-      const ownX =
-        position.overlayX === 'center'
-          ? 0.5
-          : (position.overlayX === 'start') === rtl
-            ? 1
-            : 0;
-      const ownY =
-        position.overlayY === 'center'
-          ? 0.5
-          : position.overlayY === 'top'
-            ? 0
-            : 1;
-      element.style.setProperty('position-anchor', anchorName);
-      element.style.left = `calc(anchor(${x}) + ${(position.offsetX ?? 0) - dimensions.width * ownX}px)`;
-      element.style.top = `calc(anchor(${position.originY}) + ${(position.offsetY ?? 0) - dimensions.height * ownY}px)`;
+      // showPopover's source is the implicit anchor. Numeric fallbacks also
+      // cover engines that implement anchor() before implicit source anchoring.
+      element.style.setProperty('position-anchor', 'auto');
+      element.style.left = `calc(anchor(left, ${rect.left}px) + ${result.left - rect.left}px)`;
+      element.style.top = `calc(anchor(top, ${rect.top}px) + ${result.top - rect.top}px)`;
     } else {
       element.style.removeProperty('position-anchor');
       element.style.left = `${result.left}px`;

@@ -25,3 +25,6 @@ selectors still fail and the application build validates primitive bindings.
 Retained native menu content updates its data-state before close transitions,
 including programmatic close, Escape and light dismiss. Menubar root content
 also supplies its missing exit animation class.
+
+Preserve modal viewport position when WebKit scrolls through a fixed body,
+while allowing nested content scrolling and restoring styles and position on close.

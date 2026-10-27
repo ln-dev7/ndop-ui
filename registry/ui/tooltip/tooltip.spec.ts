@@ -41,7 +41,10 @@ describe('Tooltip', () => {
     await vi.advanceTimersByTimeAsync(50);
     await vi.advanceTimersByTimeAsync(20);
     view.fixture.detectChanges();
-    const tooltip = screen.getByRole('tooltip');
+    // This style test needs the rendered bubble, not JSDOM's costly role/style traversal.
+    const tooltip = screen.getByText('Delete permanently');
+    expect(tooltip.getAttribute('role')).toBe('tooltip');
+    expect(tooltip.matches(':popover-open')).toBe(true);
     expect(tooltip.getAttribute('data-slot')).toBe('tooltip-content');
     expect(tooltip.classList).toContain('bg-foreground');
   });

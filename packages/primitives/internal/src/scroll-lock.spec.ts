@@ -40,6 +40,24 @@ describe('native modal scroll lock', () => {
     expect(window.scrollTo).toHaveBeenCalledExactlyOnceWith(0, 400);
   });
 
+  it('clamps only the viewport while locked and removes the guard before restoring', () => {
+    const lock = TestBed.runInInjectionContext(injectModalScrollLock);
+    lock.acquire();
+    const scroller = document.createElement('div');
+    document.body.append(scroller);
+    scroller.dispatchEvent(new Event('scroll'));
+    expect(window.scrollTo).not.toHaveBeenCalled();
+    scroller.remove();
+    window.dispatchEvent(new Event('scroll'));
+    expect(window.scrollTo).toHaveBeenLastCalledWith(0, 0);
+    vi.mocked(window.scrollTo).mockClear();
+    lock.release();
+    expect(window.scrollTo).toHaveBeenCalledExactlyOnceWith(0, 400);
+    vi.mocked(window.scrollTo).mockClear();
+    window.dispatchEvent(new Event('scroll'));
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
   it('makes repeated acquire and release idempotent and releases on destruction', () => {
     const lock = TestBed.runInInjectionContext(injectModalScrollLock);
     lock.acquire();
