@@ -2,6 +2,8 @@
 export interface SizeExecutorSchema {
   /** Budgets JSON. */
   budgets: string;
+  /** Public primitive entry points needed alongside each styled item. */
+  compositionEntries?: Record<string, string[]>;
   /** Whole primitive entry points to measure alongside styled items. */
   primitiveEntries?: string[];
   /** Registry source. */

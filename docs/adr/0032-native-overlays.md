@@ -26,7 +26,10 @@ Focus return has a fallback for browsers that leave focus on the document body.
 A modal dialog does not itself prevent document scrolling. A reference-counted
 fixed-body lock preserves the current document position, including in WebKit,
 where root `overflow: hidden` alone was inconsistent under wheel input. The
-last modal restores the original inline styles and scroll position. This
+last modal restores the original inline styles and scroll position. A passive
+viewport-only scroll guard also covers WebKit reporting document movement through
+the fixed body; it leaves nested element scrollers alone and is removed before
+restoration. This
 policy replaces the CDK scroll-block strategy because the platform does not
 supply it.
 
@@ -133,20 +136,48 @@ code formerly delegated to the budget-exempt CDK into Ndop. Context-only pointer
 release and touch machinery is a separate directive so ordinary menu triggers
 can omit it. This reduced measured menu bundles by roughly 0.2 kB gzip, while
 retaining the same public CDK menu stack contract and all tested interactions.
-The remaining native implementation cannot fit the previous 4 kB own-code
-allowance without dropping requested fallback/interaction behavior or replacing
-CDK's menu engine. This ADR proposes explicit 8 kB own-code exceptions for
-Dropdown Menu, Context Menu and Menubar (amending ADR-0021 for these three
-items only). The original 4 kB criterion is not met for these menus; accepting
-these exceptions is a maintainer trade-off. The default allowance stays unchanged.
+The review also found that measuring styled exports alone omitted the required
+Dropdown/Context root triggers after forwarding removal. The size target now
+retains the complete public menu composition on both sides: styled exports,
+the family primitive entry point and the generic menu primitive entry point.
+An esbuild regression test protects this accounting even when the styled file
+has no import of the root trigger.
 
-This is a cost tradeoff, not a claim that every overlay becomes smaller. Full
-Dialog decreases by about 76% when its required CDK dependencies are included;
-its own implementation grows because native scroll/focus fallbacks now belong
-to Ndop. Menu bundles currently grow by about 2 kB including CDK compared with
-base bb3560d. Reports include own and dependency-inclusive costs on both sides.
-The size executor's optional primitiveEntries measurement keeps all exports of
-the primitive entry point so removing styled forwarding exports cannot produce
-a misleading primitive-only comparison. Both sides use identical dependencies,
-compiler, linker, minifier and gzip settings. See the PR's validation report for
-exact final measurements and the independent local visual comparison.
+Native anchoring now reuses the invoker's implicit anchor with numeric CSS
+fallbacks and already computed physical offsets. This removes generated names,
+mutations to anchor styles and duplicate logical-position arithmetic. It reduces
+the complete compositions by 317/309/322 bytes net, including the state fix.
+
+| Complete composition, bytes gzip | Base own | Optimized own | Base with CDK | Optimized with CDK |
+| -------------------------------- | -------: | ------------: | ------------: | -----------------: |
+| Dropdown Menu                    |    3,584 |         6,442 |        23,363 |             25,666 |
+| Context Menu                     |    3,037 |         6,867 |        23,364 |             26,104 |
+| Menubar                          |    3,481 |         6,368 |        23,413 |             25,753 |
+
+**The original 4 kB allowance remains unmet.** The retained cost includes native
+popover lifecycle/model synchronization, retained Angular views for exit motion,
+CSS/JavaScript positioning with fractional geometry, flipping/shifting, direction
+and scroll/resize/anchor-removal observation, and integration with public CDK
+menu stack/focus contracts. Context Menu also needs pointer-release, touch and
+keyboard-context opening. These features are covered by interaction tests.
+
+The unused hint and direct-element branches are small compared with the common
+positioning and view lifecycle code that menus actually need. Splitting those
+branches alone does not resolve a 2.4–2.9 kB gap. Replacing the CDK menu engine or
+its rendering integration would be a broader interoperability design and requires
+its own full regression review; dropping fallback/nesting/focus behavior or
+moving code into budget-exempt packages would not be an acceptable shortcut.
+
+The technical recommendation is to retain the tested native implementation and
+explicitly review 8 kB exceptions for these three complex components, consistent
+with existing complex-component allowances. The alternative is to keep 4 kB and
+approve a separate adapter redesign before this PR becomes ready. This is the
+remaining maintainer policy decision, not a completed acceptance check. The
+budget file currently contains the proposed exceptions; the default stays 4 kB.
+
+Full Dialog decreases by about 76% including required CDK, while its own
+implementation grows because native scroll/focus compatibility belongs to Ndop.
+The optional primitiveEntries measurement retains every export of the primitive
+entry point. Both revisions use identical composition entries, dependencies,
+compiler, linker, minifier and gzip settings. See tools/size/README.md for the
+reproduction command and the corrected comparison with pre-review PR sizes.

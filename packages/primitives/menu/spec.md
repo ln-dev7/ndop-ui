@@ -13,7 +13,8 @@ one, each with its own `spec.md`.
 
 ## Markup
 
-A menu is an `ng-template` its trigger renders into a CDK overlay.
+A menu is an `ng-template` its native trigger retains in the local Angular view
+and opens in the browser top layer with the Popover API.
 
 ```html
 <ng-template #actions>
@@ -48,8 +49,11 @@ A menu is an `ng-template` its trigger renders into a CDK overlay.
 | MenuSeparator     | `[ndMenuSeparator]`     | `separator`        |                                                   |                               |
 | MenuSubTrigger    | `[ndMenuSubTrigger]`    | `menuitem`         | `aria-haspopup`, `aria-expanded`, `aria-controls` | `data-state`, `data-disabled` |
 
-- **MenuContent** composes `CdkMenu`. `data-state` is `open`;
-  `data-side` is the side of its trigger it was asked to open on.
+- **MenuContent** composes `CdkMenu`. Retained native popup content has
+  `data-state="open"` or `"closed"`, synchronized during `beforetoggle` before
+  browser visibility changes. `data-side` is the side its trigger requested.
+  Exit motion retains the top layer where CSS `overlay` transitions are
+  supported. Other engines close immediately, preserving state and focus.
 - Items are `div`s, as in the APG examples: on a `button`, browsers turn
   Space and Enter into a click, which always closes the menu.
 - **MenuItem** composes `CdkMenuItem`: activating it emits `triggered`

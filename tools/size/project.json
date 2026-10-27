@@ -24,7 +24,12 @@
       ],
       "outputs": ["{workspaceRoot}/dist/size"],
       "options": {
-        "budgets": "tools/size/budgets.json"
+        "budgets": "tools/size/budgets.json",
+        "compositionEntries": {
+          "dropdown-menu": ["dropdown-menu", "menu"],
+          "context-menu": ["context-menu", "menu"],
+          "menubar": ["menubar", "menu"]
+        }
       }
     }
   }

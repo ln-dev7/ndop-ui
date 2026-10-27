@@ -31,6 +31,17 @@
         "pattern": "^[a-z][a-z0-9-]*$"
       },
       "description": "Also measure whole primitive entry points, preserving all public exports."
+    },
+    "compositionEntries": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      },
+      "description": "Include required public primitive entry points in each named styled composition, so removing forwarding exports does not hide their cost."
     }
   },
   "required": ["budgets"]

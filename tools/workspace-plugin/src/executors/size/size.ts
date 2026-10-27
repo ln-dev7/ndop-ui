@@ -83,7 +83,17 @@ const size: PromiseExecutor<SizeExecutorSchema> = async (options, context) => {
     JSON.parse(readFileSync(join(registry, 'registry.json'), 'utf-8')) as {
       items: { name: string; type: string; files?: { path: string }[] }[];
     }
-  ).items.filter((item) => item.type === 'registry:ui');
+  ).items
+    .filter((item) => item.type === 'registry:ui')
+    .map((item) => ({
+      ...item,
+      files: compositionFiles(
+        item.files ?? [],
+        options.compositionEntries?.[item.name] ?? [],
+        root,
+        registry,
+      ),
+    }));
 
   for (const name of options.primitiveEntries ?? []) {
     items.push({
@@ -259,6 +269,36 @@ const size: PromiseExecutor<SizeExecutorSchema> = async (options, context) => {
   logger.info(report);
   return { success: true };
 };
+
+/**
+ * Includes the public primitive APIs a styled item no longer forwards. Both
+ * compilation and bundling consume this same list, retaining complete exports
+ * on either side of a comparison rather than relying on incidental imports.
+ *
+ * @param files - The styled item's source files.
+ * @param entries - Required primitive entry point names.
+ * @param root - Absolute workspace root.
+ * @param registry - Absolute registry root.
+ * @returns Deduplicated registry-relative sources for one complete composition.
+ */
+export function compositionFiles(
+  files: readonly { path: string }[],
+  entries: readonly string[],
+  root: string,
+  registry: string,
+): { path: string }[] {
+  return [
+    ...new Set([
+      ...files.map((file) => file.path),
+      ...entries.map((name) =>
+        relative(
+          registry,
+          join(root, 'packages/primitives', name, 'src/index.ts'),
+        ),
+      ),
+    ]),
+  ].map((path) => ({ path }));
+}
 
 /**
  * Compares measured sizes with their budgets.
