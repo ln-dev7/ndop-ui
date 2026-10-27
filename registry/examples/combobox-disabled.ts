@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Combobox,
   ComboboxContent,
   ComboboxControl,
   ComboboxEmpty,
@@ -10,6 +9,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/ui/combobox/combobox';
+import { NdCombobox as Combobox } from '@ndop/primitives/combobox';
 
 /**
  * A disabled combobox, and one with a disabled option, which the arrow

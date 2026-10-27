@@ -1,0 +1,32 @@
+{
+  "name": "select-sizes",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Select sizes",
+  "description": "The default and small triggers.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "icons",
+    "select"
+  ],
+  "files": [
+    {
+      "path": "examples/select-sizes.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/select-sizes.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  SelectContent,\n  SelectItem,\n  SelectItemIndicator,\n  SelectTrigger,\n} from '@/ui/select/select';\nimport {\n  NdSelect as Select,\n  NdSelectItemText as SelectItemText,\n  NdSelectValue as SelectValue,\n} from '@ndop/primitives/select';\n\n/** The default and small triggers. */\n@Component({\n  selector: 'example-select-sizes',\n  imports: [\n    NdIcon,\n    Select,\n    SelectContent,\n    SelectItem,\n    SelectItemIndicator,\n    SelectItemText,\n    SelectTrigger,\n    SelectValue,\n  ],\n  template: `\n    <div class=\"flex flex-wrap items-center gap-4\">\n      @for (size of sizes; track size) {\n        <ng-container ndSelect defaultValue=\"week\">\n          <button\n            ndSelectTrigger\n            [size]=\"size\"\n            [attr.aria-label]=\"'Range, ' + size + ' size'\"\n            class=\"w-[140px]\"\n          >\n            <span ndSelectValue></span>\n            <svg ndIcon=\"chevron-down\" class=\"size-4 opacity-50\"></svg>\n          </button>\n          <div ndSelectContent>\n            @for (range of ranges; track range.value) {\n              <div ndSelectItem [value]=\"range.value\">\n                <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n                <span ndSelectItemText>{{ range.label }}</span>\n              </div>\n            }\n          </div>\n        </ng-container>\n      }\n    </div>\n  `,\n})\nexport class SelectSizesExample {\n  protected readonly sizes = ['default', 'sm'] as const;\n  protected readonly ranges = [\n    { value: 'day', label: 'Today' },\n    { value: 'week', label: 'This week' },\n    { value: 'month', label: 'This month' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SelectSizesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

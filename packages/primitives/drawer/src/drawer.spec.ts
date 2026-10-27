@@ -27,13 +27,12 @@ import {
     <ng-container ndDrawer [(open)]="open">
       <button ndDrawerTrigger>Open</button>
       <ng-template ndDrawerPortal>
-        <div ndDrawerOverlay data-testid="overlay"></div>
-        <div ndDrawerContent data-testid="content" [direction]="direction()">
+        <dialog ndDrawerContent data-testid="content" [direction]="direction()">
           <div ndDrawerHandle data-testid="handle"></div>
           <h2 ndDrawerTitle>Move goal</h2>
           <input aria-label="Goal" />
           <button ndDrawerClose>Done</button>
-        </div>
+        </dialog>
       </ng-template>
     </ng-container>
   `,

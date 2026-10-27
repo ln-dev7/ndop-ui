@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Combobox,
   ComboboxChip,
   ComboboxChipRemove,
   ComboboxChips,
@@ -12,6 +11,7 @@ import {
   ComboboxItemIndicator,
   ComboboxList,
 } from '@/ui/combobox/combobox';
+import { NdCombobox as Combobox } from '@ndop/primitives/combobox';
 
 /**
  * Several frameworks, chosen as chips. Picking an option toggles it and

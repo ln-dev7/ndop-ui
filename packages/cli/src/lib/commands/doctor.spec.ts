@@ -224,7 +224,7 @@ describe('ndop doctor', () => {
         specs: [
           '@angular/cdk@~22.2.0',
           '@lucide/angular@^1.50.0',
-          '@ndop/primitives',
+          '@ndop/primitives@^2.0.0',
         ],
         dev: false,
       },

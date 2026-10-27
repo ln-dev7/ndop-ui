@@ -34,6 +34,27 @@ keyboardContract('tooltip', {
 });
 
 test.describe('Tooltip', () => {
+  test('centers fractional-width content without rounding drift', async ({
+    page,
+  }) => {
+    await gotoHydrated(page, '/examples/tooltip-demo');
+    const trigger = page.getByRole('button', { name: 'Hover', exact: true });
+    await trigger.hover();
+    const tooltip = page.getByRole('tooltip');
+    await expect(tooltip).toBeVisible();
+    await expect
+      .poll(async () => {
+        const anchor = await trigger.boundingBox();
+        const content = await tooltip.boundingBox();
+        return anchor && content
+          ? Math.abs(
+              anchor.x + anchor.width / 2 - content.x - content.width / 2,
+            )
+          : Infinity;
+      })
+      .toBeLessThan(0.05);
+  });
+
   test('is never rendered open on the server', async ({ request }) => {
     const html = await (await request.get('/primitives/tooltip')).text();
     expect(html).not.toContain('role="tooltip"');

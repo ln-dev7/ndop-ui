@@ -211,6 +211,7 @@ export interface KnownDirective {
  *
  * @param metadata - Each component's metadata, by item name.
  * @param itemFiles - Each item's TypeScript files, by item name.
+ * @param primitives - Extracted primitive entry points; styled selectors take precedence.
  * @returns Directives by attribute name.
  */
 export function knownDirectives(
@@ -219,11 +220,22 @@ export function knownDirectives(
     { parts?: { name: string; selector: string }[] }
   >,
   itemFiles: ReadonlyMap<string, { path: string; content: string }[]>,
+  primitives: readonly {
+    importPath: string;
+    parts: { name: string; selector: string }[];
+  }[] = [],
 ): Map<string, KnownDirective> {
   // NdIcon is @ndop/core's, not an item's, so no metadata lists it.
   const known = new Map<string, KnownDirective>([
     ['ndIcon', { className: 'NdIcon', module: '@ndop/core' }],
   ]);
+  for (const primitive of primitives) {
+    for (const part of primitive.parts) {
+      for (const [, name = ''] of part.selector.matchAll(/\[(nd\w+)\]/g)) {
+        known.set(name, { className: part.name, module: primitive.importPath });
+      }
+    }
+  }
   for (const [item, component] of metadata) {
     for (const part of component.parts ?? []) {
       const file = itemFiles

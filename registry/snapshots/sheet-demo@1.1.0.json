@@ -1,0 +1,35 @@
+{
+  "name": "sheet-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Sheet demo",
+  "description": "A profile form in a sheet from the end side, saved from its footer.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "button",
+    "input",
+    "label",
+    "sheet",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/sheet-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/sheet-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { form, FormField, required } from '@angular/forms/signals';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport { Input } from '@/ui/input/input';\nimport { Label } from '@/ui/label/label';\nimport {\n  SheetCloseButton,\n  SheetContent,\n  SheetDescription,\n  SheetFooter,\n  SheetHeader,\n  SheetTitle,\n} from '@/ui/sheet/sheet';\nimport {\n  NdDialog as Sheet,\n  NdDialogClose as SheetClose,\n  NdDialogTrigger as SheetTrigger,\n} from '@ndop/primitives/dialog';\n\n/**\n * A profile form in a sheet from the end side, bound to Signal Forms and\n * saved from its footer, which closes the sheet.\n */\n@Component({\n  selector: 'example-sheet-demo',\n  imports: [\n    Button,\n    FormField,\n    Input,\n    Label,\n    NdIcon,\n    Sheet,\n    SheetClose,\n    SheetCloseButton,\n    SheetContent,\n    SheetDescription,\n    SheetFooter,\n    SheetHeader,\n\n    SheetTitle,\n    SheetTrigger,\n  ],\n  template: `\n    <ng-container ndDialog [(open)]=\"open\">\n      <button ndButton variant=\"outline\" ndDialogTrigger>Edit profile</button>\n\n      <dialog ndSheetContent>\n        <div ndSheetHeader>\n          <h2 ndSheetTitle>Edit profile</h2>\n          <p ndSheetDescription>\n            Make changes to your profile here. Save when you're done.\n          </p>\n        </div>\n        <form\n          class=\"grid flex-1 auto-rows-min gap-6 px-4\"\n          (submit)=\"save($event)\"\n          id=\"sheet-demo-form\"\n        >\n          <div class=\"grid gap-3\">\n            <label ndLabel for=\"sheet-demo-name\">Name</label>\n            <input ndInput id=\"sheet-demo-name\" [formField]=\"profile.name\" />\n          </div>\n          <div class=\"grid gap-3\">\n            <label ndLabel for=\"sheet-demo-username\">Username</label>\n            <input\n              ndInput\n              id=\"sheet-demo-username\"\n              [formField]=\"profile.username\"\n            />\n          </div>\n        </form>\n        <div ndSheetFooter>\n          <button ndButton type=\"submit\" form=\"sheet-demo-form\">\n            Save changes\n          </button>\n          <button ndButton variant=\"outline\" ndDialogClose>Cancel</button>\n        </div>\n        <button ndSheetCloseButton>\n          <svg ndIcon=\"x\"></svg>\n          <span class=\"sr-only\">Close</span>\n        </button>\n      </dialog>\n    </ng-container>\n  `,\n})\nexport class SheetDemoExample {\n  protected readonly open = signal(false);\n\n  protected readonly model = signal({ name: 'Ada Lovelace', username: 'ada' });\n\n  protected readonly profile = form(this.model, (path) => {\n    required(path.name);\n    required(path.username);\n  });\n\n  /**\n   * Closes the sheet once the profile is valid, instead of reloading.\n   *\n   * @param event - The form's submit event.\n   */\n  protected save(event: Event): void {\n    event.preventDefault();\n    this.profile().markAsTouched();\n    if (this.profile().valid()) {\n      this.open.set(false);\n    }\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SheetDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

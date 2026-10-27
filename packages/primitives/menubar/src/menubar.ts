@@ -1,5 +1,6 @@
+import { NdNativeMenuTrigger } from '@ndop/primitives/internal';
 import { Directionality } from '@angular/cdk/bidi';
-import { CdkMenuBar, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
+import { CdkMenuBar, CdkMenuItem } from '@angular/cdk/menu';
 import {
   DestroyRef,
   Directive,
@@ -62,7 +63,7 @@ export class NdMenubar {}
   selector: '[ndMenubarTrigger]',
   exportAs: 'ndMenubarTrigger',
   providers: [{ provide: ND_MENU_PLACEMENT, useExisting: NdMenubarTrigger }],
-  hostDirectives: [CdkMenuItem, CdkMenuTrigger],
+  hostDirectives: [CdkMenuItem, NdNativeMenuTrigger],
   host: { '[attr.data-state]': 'isOpen() ? "open" : "closed"' },
 })
 export class NdMenubarTrigger implements NdMenuPlacement, OnInit {
@@ -81,7 +82,7 @@ export class NdMenubarTrigger implements NdMenuPlacement, OnInit {
   /** Whether its menu is open. */
   readonly isOpen = signal(false);
 
-  private readonly trigger = inject(CdkMenuTrigger);
+  private readonly trigger = inject(NdNativeMenuTrigger);
 
   constructor() {
     effect(() => (this.trigger.menuTemplateRef = this.ndMenubarTrigger()));
@@ -92,6 +93,7 @@ export class NdMenubarTrigger implements NdMenuPlacement, OnInit {
         this.sideOffset(),
         directionality.value === 'rtl',
       );
+      this.trigger.updatePosition();
     });
     const subscriptions = [
       this.trigger.opened.subscribe(() => this.isOpen.set(true)),

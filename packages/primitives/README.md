@@ -18,6 +18,24 @@ Each primitive is its own entry point (ADR-0004):
 import { NdDialog, NdDialogContent, NdDialogTrigger } from '@ndop/primitives/dialog';
 ```
 
+Modal content is a native `dialog`, opened with `showModal()` after hydration:
+
+```html
+<ng-container ndDialog>
+  <button ndDialogTrigger>Open</button>
+  <dialog ndDialogContent aria-label="Details">Details</dialog>
+</ng-container>
+```
+
+Import `@ndop/core/styles.css` for the native closed-state and transition rules.
+Native modality makes the background inert; Tab can visit browser controls
+before re-entering the modal. Popover families use the Popover API with native
+light dismiss and CSS anchor positioning plus a JavaScript fallback. Native
+APIs must be available in the application browser. Legacy modal Portal/Overlay
+parts remain compatibility adapters; new markup uses direct content and
+`::backdrop`. See [ADR-0032](../../docs/adr/0032-native-overlays.md) and the
+[migration guide](https://ndop.dev/docs/getting-started/native-overlays).
+
 | Entry point                        | Directives                                                                                                                                                                 | Contract                           |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
 | `@ndop/primitives/accordion`       | `NdAccordion`, `…Item`, `…Header`, `…Trigger`, `…Content`                                                                                                                  | [spec.md](accordion/spec.md)       |

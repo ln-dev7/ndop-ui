@@ -1,11 +1,5 @@
 import { Directionality } from '@angular/cdk/bidi';
 import {
-  createFlexibleConnectedPositionStrategy,
-  createRepositionScrollStrategy,
-  type FlexibleConnectedPositionStrategy,
-  type OverlayRef,
-} from '@angular/cdk/overlay';
-import {
   afterNextRender,
   afterRenderEffect,
   booleanAttribute,
@@ -34,7 +28,7 @@ import {
   injectFieldDescribedBy,
   injectFormState,
   injectId,
-  injectOverlay,
+  injectNativePopover,
   NdActiveList,
   ndContainsFilter,
   placementOf,
@@ -81,7 +75,7 @@ interface ComboboxOption extends NdActiveOption {
  * autocomplete, a text field that filters a popup listbox of options.
  * Focus stays in the field while `aria-activedescendant` points at the
  * highlighted option, on the CDK's `ActiveDescendantKeyManager`; the popup
- * is written in place and opening moves it into a CDK overlay. With
+ * is written in place and opens in a native top-layer popover. With
  * `multiple`, chosen options show as chips. Put it on an `ng-container`,
  * and bind forms on the {@link NdComboboxInput}.
  *
@@ -206,28 +200,13 @@ export class NdCombobox {
   private readonly directionality = inject(Directionality);
   private preferred: NdPlacement = { side: 'bottom', align: 'start' };
   private offset = 6;
-  private strategy: FlexibleConnectedPositionStrategy | null = null;
-  private listening = false;
 
-  private readonly overlay = injectOverlay({
-    config: (injector) => {
-      const strategy = createFlexibleConnectedPositionStrategy(
-        injector,
-        this.anchor(),
-      )
-        .withPositions(this.positions())
-        .withFlexibleDimensions(false)
-        .withPush(false);
-      strategy.positionChanges.subscribe((change) =>
-        this.placement.set(placementOf(change.connectionPair)),
-      );
-      this.strategy = strategy;
-      return {
-        positionStrategy: strategy,
-        scrollStrategy: createRepositionScrollStrategy(injector),
-        direction: this.directionality,
-      };
-    },
+  private readonly overlay = injectNativePopover({
+    anchor: () => this.anchor(),
+    positions: () => this.positions(),
+    rtl: () => this.directionality.value === 'rtl',
+    onPosition: (position) => this.placement.set(placementOf(position)),
+    onDismiss: () => this.open.set(false),
   });
 
   constructor() {
@@ -451,7 +430,7 @@ export class NdCombobox {
     this.preferred = placement;
     this.offset = offset;
     this.placement.set(placement);
-    this.strategy?.withPositions(this.positions());
+    this.overlay.updatePosition();
   }
 
   /**
@@ -497,14 +476,13 @@ export class NdCombobox {
     );
   }
 
-  /** Moves the popup into the overlay below the anchor. */
+  /** Shows the native popup below the anchor. */
   private show(): void {
     untracked(() => this.nameList());
     const ref = this.overlay.attach();
     if (!ref) {
       return;
     }
-    this.listen(ref);
     afterNextRender(
       () => {
         if (untracked(this.open) && this.content) {
@@ -538,24 +516,6 @@ export class NdCombobox {
       own || labels.map((label) => label.id).join(' ') || null,
     );
     this.label.set(field?.getAttribute('aria-label') ?? null);
-  }
-
-  /**
-   * Closes on presses outside the combobox.
-   *
-   * @param ref - The overlay, subscribed once.
-   */
-  private listen(ref: OverlayRef): void {
-    if (this.listening) {
-      return;
-    }
-    this.listening = true;
-    ref.outsidePointerEvents().subscribe((event) => {
-      const target = event.target as Node | null;
-      if (!target || !this.contains(target)) {
-        this.open.set(false);
-      }
-    });
   }
 }
 
@@ -785,7 +745,7 @@ export class NdComboboxClear {
 
 /**
  * The popup. Write it after the field: it has the `hidden` attribute while
- * closed, and opening moves it into an overlay below the chips, or else
+ * closed, and opening shows it as a native popover below the chips, or else
  * the field. `data-empty` marks it while no option is shown.
  *
  * @example

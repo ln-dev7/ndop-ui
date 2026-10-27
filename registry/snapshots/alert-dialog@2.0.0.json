@@ -1,0 +1,87 @@
+{
+  "name": "alert-dialog",
+  "type": "registry:ui",
+  "version": "2.0.0",
+  "title": "Alert Dialog",
+  "description": "A modal dialog that interrupts with an important question, such as confirming a deletion, and expects an answer.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "utils",
+    "button"
+  ],
+  "categories": [
+    "overlays"
+  ],
+  "files": [
+    {
+      "path": "ui/alert-dialog/alert-dialog.ts",
+      "type": "registry:ui",
+      "target": "{ui}/alert-dialog/alert-dialog.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdAlertDialogAction,\n  NdAlertDialogCancel,\n  NdAlertDialogContent,\n  NdAlertDialogDescription,\n  NdAlertDialogTitle,\n} from '@ndop/primitives/alert-dialog';\nimport {\n  buttonVariants,\n  type ButtonSize,\n  type ButtonVariant,\n} from '@/ui/button/button';\nimport { cn } from '@/lib/utils';\n\n/**\n * The alert dialog box (`@ndop/primitives/alert-dialog`): an\n * `alertdialog` labelled by its title, with focus starting on Cancel.\n * `size=\"sm\"` is a compact, centered layout with side-by-side buttons.\n *\n * @example\n * ```html\n * <dialog ndAlertDialogContent>\n *   <div ndAlertDialogHeader>\n *     <h2 ndAlertDialogTitle>Delete this project?</h2>\n *     <p ndAlertDialogDescription>This can't be undone.</p>\n *   </div>\n *   <div ndAlertDialogFooter>\n *     <button ndAlertDialogCancel>Cancel</button>\n *     <button ndAlertDialogAction variant=\"destructive\">Delete</button>\n *   </div>\n * </dialog>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDialogContent]',\n  hostDirectives: [NdAlertDialogContent],\n  host: {\n    'data-slot': 'alert-dialog-content',\n    '[attr.data-size]': 'size()',\n    '[class]': 'classes()',\n  },\n})\nexport class AlertDialogContent {\n  /** `default`, or `sm` for a compact, centered dialog. */\n  readonly size = input<'default' | 'sm'>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'backdrop:bg-black/50 group/alert-dialog-content fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[size=sm]:max-w-xs data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[size=default]:sm:max-w-lg',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Lays out an alert dialog's media, title and description.\n *\n * @example\n * ```html\n * <div ndAlertDialogHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDialogHeader]',\n  host: { 'data-slot': 'alert-dialog-header', '[class]': 'classes()' },\n})\nexport class AlertDialogHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-6 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-start sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Lays out an alert dialog's buttons: stacked on small screens, in a row\n * at the end side otherwise.\n *\n * @example\n * ```html\n * <div ndAlertDialogFooter>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDialogFooter]',\n  host: { 'data-slot': 'alert-dialog-footer', '[class]': 'classes()' },\n})\nexport class AlertDialogFooter {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The question an alert dialog asks; it labels the dialog.\n *\n * @example\n * ```html\n * <h2 ndAlertDialogTitle>Delete this project?</h2>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDialogTitle]',\n  hostDirectives: [NdAlertDialogTitle],\n  host: { 'data-slot': 'alert-dialog-title', '[class]': 'classes()' },\n})\nexport class AlertDialogTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'text-lg font-semibold sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * What answering means; it describes the dialog.\n *\n * @example\n * ```html\n * <p ndAlertDialogDescription>This can't be undone.</p>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDialogDescription]',\n  hostDirectives: [NdAlertDialogDescription],\n  host: { 'data-slot': 'alert-dialog-description', '[class]': 'classes()' },\n})\nexport class AlertDialogDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-sm text-muted-foreground', this.class()),\n  );\n}\n\n/**\n * An icon above or beside the title, hidden from assistive technology.\n *\n * @example\n * ```html\n * <div ndAlertDialogMedia><svg ndIcon=\"circle-alert\"></svg></div>\n * ```\n */\n@Directive({\n  selector: '[ndAlertDialogMedia]',\n  host: {\n    'data-slot': 'alert-dialog-media',\n    'aria-hidden': 'true',\n    '[class]': 'classes()',\n  },\n})\nexport class AlertDialogMedia {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      \"mb-2 inline-flex size-16 items-center justify-center rounded-md bg-muted sm:group-data-[size=default]/alert-dialog-content:row-span-2 *:[svg:not([class*='size-'])]:size-8\",\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The button that confirms, styled as a Button: its `(click)` runs, then\n * the dialog closes. Use `variant=\"destructive\"` for destructive actions.\n *\n * @example\n * ```html\n * <button ndAlertDialogAction (click)=\"delete()\">Delete</button>\n * ```\n */\n@Directive({\n  selector: 'button[ndAlertDialogAction]',\n  hostDirectives: [NdAlertDialogAction],\n  host: {\n    'data-slot': 'alert-dialog-action',\n    '[class]': 'classes()',\n  },\n})\nexport class AlertDialogAction {\n  /** Button style. */\n  readonly variant = input<ButtonVariant>('default');\n\n  /** Button size. */\n  readonly size = input<ButtonSize>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({ variant: this.variant(), size: this.size() }),\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The button that cancels and closes, styled as an outline Button; focus\n * starts here.\n *\n * @example\n * ```html\n * <button ndAlertDialogCancel>Cancel</button>\n * ```\n */\n@Directive({\n  selector: 'button[ndAlertDialogCancel]',\n  hostDirectives: [NdAlertDialogCancel],\n  host: {\n    'data-slot': 'alert-dialog-cancel',\n    '[class]': 'classes()',\n  },\n})\nexport class AlertDialogCancel {\n  /** Button style. */\n  readonly variant = input<ButtonVariant>('outline');\n\n  /** Button size. */\n  readonly size = input<ButtonSize>('default');\n\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      buttonVariants({ variant: this.variant(), size: this.size() }),\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AlertDialogContent",
+      "AlertDialogHeader",
+      "AlertDialogFooter",
+      "AlertDialogTitle",
+      "AlertDialogDescription",
+      "AlertDialogMedia",
+      "AlertDialogAction",
+      "AlertDialogCancel"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/alert-dialog.json",
+    "examples": [
+      "alert-dialog-demo",
+      "alert-dialog-destructive",
+      "alert-dialog-small"
+    ]
+  },
+  "codemods": [
+    {
+      "since": "2.0.0",
+      "kind": "native-dialog",
+      "from": "ndAlertDialogContent",
+      "to": "dialog",
+      "overlay": "ndAlertDialogOverlay"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "AlertDialog",
+      "to": "NdAlertDialog",
+      "module": "@ndop/primitives/alert-dialog"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "AlertDialogTrigger",
+      "to": "NdAlertDialogTrigger",
+      "module": "@ndop/primitives/alert-dialog"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "AlertDialogPortal",
+      "to": "NdAlertDialogPortal",
+      "module": "@ndop/primitives/alert-dialog"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "AlertDialogOverlay",
+      "to": "NdAlertDialogOverlay",
+      "module": "@ndop/primitives/alert-dialog"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

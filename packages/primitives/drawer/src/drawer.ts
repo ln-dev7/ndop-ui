@@ -41,12 +41,12 @@ const DRAG_THRESHOLD = 4;
  * <ng-container ndDrawer [(open)]="open">
  *   <button ndDrawerTrigger>Open</button>
  *   <ng-template ndDrawerPortal>
- *     <div ndDrawerOverlay></div>
- *     <div ndDrawerContent>
+ *
+ *     <dialog ndDrawerContent>
  *       <div ndDrawerHandle></div>
  *       <h2 ndDrawerTitle>Move goal</h2>
  *       <button ndDrawerClose>Done</button>
- *     </div>
+ *     </dialog>
  *   </ng-template>
  * </ng-container>
  * ```
@@ -93,12 +93,14 @@ export class NdDrawerTrigger {}
 export class NdDrawerPortal {}
 
 /**
- * The backdrop behind an {@link NdDrawer}; clicking it closes the drawer
- * unless `closeOnOverlayClick` is `false`.
+ * Legacy separate backdrop marker, retained for migration compatibility.
+ * Native modal rendering uses the content element's `::backdrop` instead.
+ *
+ * @deprecated Style the native dialog's `::backdrop`; no overlay node is needed.
  *
  * @example
  * ```html
- * <div ndDrawerOverlay></div>
+ * <dialog ndDrawerContent aria-label="Details" class="backdrop:bg-black/50">…</dialog>
  * ```
  */
 @Directive({
@@ -115,7 +117,7 @@ export class NdDrawerOverlay {}
  *
  * @example
  * ```html
- * <div ndDrawerContent>…</div>
+ * <dialog ndDrawerContent>…</dialog>
  * ```
  */
 @Directive({

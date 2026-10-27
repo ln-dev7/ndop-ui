@@ -170,3 +170,36 @@ describe('postEntries', () => {
     ]);
   });
 });
+
+describe('primitive property discovery', () => {
+  it('links behavior-only bindings to the actual primitive API anchor', () => {
+    const entries = componentEntries(
+      {
+        name: 'dialog',
+        title: 'Dialog primitive',
+        description: 'Native modal behavior.',
+        keyboard: [],
+        parts: [
+          {
+            name: 'NdDialog',
+            inputs: [
+              {
+                name: 'closeOnEscape',
+                type: 'boolean',
+                description: 'Closes on Escape.',
+              },
+            ],
+            models: [],
+            outputs: [],
+          },
+        ],
+      },
+      '/docs/primitives/dialog',
+      'Primitive',
+    );
+    expect(entries[0]?.context).toBe('Primitive');
+    expect(entries.find((entry) => entry.kind === 'prop')?.url).toBe(
+      '/docs/primitives/dialog#api-NdDialog',
+    );
+  });
+});

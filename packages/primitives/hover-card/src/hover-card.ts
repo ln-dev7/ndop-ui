@@ -75,7 +75,10 @@ export class NdHoverCardTrigger {
 
   constructor() {
     this.card.trigger = this.element;
-    inject(DestroyRef).onDestroy(() => (this.card.trigger = null));
+    inject(DestroyRef).onDestroy(() => {
+      this.card.trigger = null;
+      this.card.hideNow();
+    });
   }
 
   /** Opens on keyboard focus only; a click's focus is the pointer's. */

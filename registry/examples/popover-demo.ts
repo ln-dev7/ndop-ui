@@ -3,14 +3,16 @@ import { Button } from '@/ui/button/button';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
 import {
-  Popover,
-  PopoverPortal,
-  PopoverTrigger,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,
   PopoverTitle,
 } from '@/ui/popover/popover';
+import {
+  NdPopover as Popover,
+  NdPopoverPortal as PopoverPortal,
+  NdPopoverTrigger as PopoverTrigger,
+} from '@ndop/primitives/popover';
 
 /** A popover holding a small dimensions form. */
 @Component({

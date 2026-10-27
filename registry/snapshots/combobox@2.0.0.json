@@ -1,0 +1,75 @@
+{
+  "name": "combobox",
+  "type": "registry:ui",
+  "version": "2.0.0",
+  "title": "Combobox",
+  "description": "A text field that filters a list of options as the user types.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "button",
+    "utils"
+  ],
+  "categories": [
+    "inputs"
+  ],
+  "files": [
+    {
+      "path": "ui/combobox/combobox.ts",
+      "type": "registry:ui",
+      "target": "{ui}/combobox/combobox.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdComboboxChip,\n  NdComboboxChipRemove,\n  NdComboboxChips,\n  NdComboboxClear,\n  NdComboboxContent,\n  NdComboboxEmpty,\n  NdComboboxInput,\n  NdComboboxItem,\n  NdComboboxItemIndicator,\n  NdComboboxLabel,\n  NdComboboxList,\n  NdComboboxSeparator,\n  NdComboboxTrigger,\n} from '@ndop/primitives/combobox';\nimport { buttonVariants } from '@/ui/button/button';\nimport { cn } from '@/lib/utils';\n\n/** Classes of the small icon buttons beside the field and in chips. */\nconst iconButton = buttonVariants({ variant: 'ghost', size: 'icon-xs' });\n\n/**\n * The bordered row around a single-value combobox's field and its buttons.\n * The trigger hides while the clear button shows.\n *\n * @example\n * ```html\n * <div ndComboboxControl>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxControl]',\n  host: { 'data-slot': 'combobox-control', '[class]': 'classes()' },\n})\nexport class ComboboxControl {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group/combobox-control relative flex h-9 w-auto min-w-0 items-center gap-1 rounded-md border border-input bg-transparent pe-1 shadow-xs transition-[color,box-shadow] has-[input:focus-visible]:border-ring has-[input:focus-visible]:ring-[3px] has-[input:focus-visible]:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-destructive/20 dark:bg-input/30 dark:has-aria-invalid:ring-destructive/40',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The text field of a single-value combobox, inside its\n * {@link ComboboxControl}.\n *\n * @example\n * ```html\n * <input ndComboboxInput aria-label=\"Framework\" />\n * ```\n */\n@Directive({\n  selector: 'input[ndComboboxInput]',\n  hostDirectives: [NdComboboxInput],\n  host: { 'data-slot': 'combobox-input', '[class]': 'classes()' },\n})\nexport class ComboboxInput {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'h-full w-full min-w-0 flex-1 bg-transparent px-3 py-1 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The button that opens and closes the list with the pointer. Put the\n * chevron icon in it.\n *\n * @example\n * ```html\n * <button ndComboboxTrigger><svg ndIcon=\"chevron-down\"></svg></button>\n * ```\n */\n@Directive({\n  selector: 'button[ndComboboxTrigger]',\n  hostDirectives: [NdComboboxTrigger],\n  host: { 'data-slot': 'combobox-trigger', '[class]': 'classes()' },\n})\nexport class ComboboxTrigger {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      iconButton,\n      \"[&_svg:not([class*='size-'])]:size-4\",\n      '[&>svg]:pointer-events-none [&>svg]:size-4 [&>svg]:text-muted-foreground',\n      'group-has-[[data-slot=combobox-clear]:not([hidden])]/combobox-control:hidden',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The button that empties the field and the value with the pointer. Put\n * the x icon in it.\n *\n * @example\n * ```html\n * <button ndComboboxClear><svg ndIcon=\"x\"></svg></button>\n * ```\n */\n@Directive({\n  selector: 'button[ndComboboxClear]',\n  hostDirectives: [NdComboboxClear],\n  host: { 'data-slot': 'combobox-clear', '[class]': 'classes()' },\n})\nexport class ComboboxClear {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(iconButton, '[&>svg]:pointer-events-none', this.class()),\n  );\n}\n\n/**\n * The popup, written after the field; it opens below the field or the\n * chips, as wide as them.\n *\n * @example\n * ```html\n * <div ndComboboxContent>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxContent]',\n  hostDirectives: [\n    { directive: NdComboboxContent, inputs: ['side', 'align', 'sideOffset'] },\n  ],\n  host: { 'data-slot': 'combobox-content', '[class]': 'classes()' },\n})\nexport class ComboboxContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'group/combobox-content relative max-h-96 w-(--nd-combobox-anchor-width) overflow-hidden rounded-md bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',\n      'isolate z-50',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The scrolling list of options.\n *\n * @example\n * ```html\n * <div ndComboboxList>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxList]',\n  hostDirectives: [NdComboboxList],\n  host: { 'data-slot': 'combobox-list', '[class]': 'classes()' },\n})\nexport class ComboboxList {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'max-h-[calc(--spacing(96)---spacing(9))] scroll-py-1 overflow-y-auto p-1 data-empty:p-0',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * One option. Put its {@link ComboboxItemIndicator} last.\n *\n * @example\n * ```html\n * <div ndComboboxItem value=\"angular\">Angular</div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxItem]',\n  hostDirectives: [\n    { directive: NdComboboxItem, inputs: ['value', 'disabled', 'label'] },\n  ],\n  host: { 'data-slot': 'combobox-item', '[class]': 'classes()' },\n})\nexport class ComboboxItem {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      \"relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pe-8 ps-2 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4\",\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The check of a chosen option, at its end.\n *\n * @example\n * ```html\n * <span ndComboboxItemIndicator><svg ndIcon=\"check\"></svg></span>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxItemIndicator]',\n  hostDirectives: [NdComboboxItemIndicator],\n  host: { 'data-slot': 'combobox-item-indicator', '[class]': 'classes()' },\n})\nexport class ComboboxItemIndicator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'pointer-events-none absolute end-2 flex size-4 items-center justify-center',\n      '[&>svg]:pointer-events-none [&>svg]:size-4 pointer-coarse:[&>svg]:size-5',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The heading of a {@link ComboboxGroup}.\n *\n * @example\n * ```html\n * <div ndComboboxLabel>Frontend</div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxLabel]',\n  hostDirectives: [NdComboboxLabel],\n  host: { 'data-slot': 'combobox-label', '[class]': 'classes()' },\n})\nexport class ComboboxLabel {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'px-2 py-1.5 text-xs text-muted-foreground pointer-coarse:px-3 pointer-coarse:py-2 pointer-coarse:text-sm',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * What shows while no option matches the field's text.\n *\n * @example\n * ```html\n * <div ndComboboxEmpty>No framework found.</div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxEmpty]',\n  hostDirectives: [NdComboboxEmpty],\n  host: { 'data-slot': 'combobox-empty', '[class]': 'classes()' },\n})\nexport class ComboboxEmpty {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'hidden w-full justify-center py-2 text-center text-sm text-muted-foreground group-data-empty/combobox-content:flex',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * A line between groups of options.\n *\n * @example\n * ```html\n * <div ndComboboxSeparator></div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxSeparator]',\n  hostDirectives: [NdComboboxSeparator],\n  host: { 'data-slot': 'combobox-separator', '[class]': 'classes()' },\n})\nexport class ComboboxSeparator {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('-mx-1 my-1 h-px bg-border', this.class()),\n  );\n}\n\n/**\n * The bordered box around the chips and the field of a combobox with\n * `multiple`.\n *\n * @example\n * ```html\n * <div ndComboboxChips>…<input ndComboboxChipsInput /></div>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxChips]',\n  hostDirectives: [NdComboboxChips],\n  host: { 'data-slot': 'combobox-chips', '[class]': 'classes()' },\n})\nexport class ComboboxChips {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex min-h-9 flex-wrap items-center gap-1.5 rounded-md border border-input bg-transparent bg-clip-padding px-2.5 py-1.5 text-sm shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-aria-invalid:border-destructive has-aria-invalid:ring-[3px] has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1.5 dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * One chosen value, as a chip. Put its {@link ComboboxChipRemove} last.\n *\n * @example\n * ```html\n * <span ndComboboxChip [value]=\"value\">{{ value }}</span>\n * ```\n */\n@Directive({\n  selector: '[ndComboboxChip]',\n  hostDirectives: [{ directive: NdComboboxChip, inputs: ['value'] }],\n  host: { 'data-slot': 'combobox-chip', '[class]': 'classes()' },\n})\nexport class ComboboxChip {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex h-[calc(--spacing(5.5))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50 has-data-[slot=combobox-chip-remove]:pe-0',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The button that removes its chip's value with the pointer. Put the x\n * icon in it.\n *\n * @example\n * ```html\n * <button ndComboboxChipRemove><svg ndIcon=\"x\"></svg></button>\n * ```\n */\n@Directive({\n  selector: 'button[ndComboboxChipRemove]',\n  hostDirectives: [NdComboboxChipRemove],\n  host: { 'data-slot': 'combobox-chip-remove', '[class]': 'classes()' },\n})\nexport class ComboboxChipRemove {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      iconButton,\n      '-ms-1 opacity-50 hover:opacity-100',\n      '[&>svg]:pointer-events-none',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The text field among the chips of a combobox with `multiple`.\n *\n * @example\n * ```html\n * <input ndComboboxChipsInput aria-label=\"Frameworks\" />\n * ```\n */\n@Directive({\n  selector: 'input[ndComboboxChipsInput]',\n  hostDirectives: [NdComboboxInput],\n  host: { 'data-slot': 'combobox-chip-input', '[class]': 'classes()' },\n})\nexport class ComboboxChipsInput {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('min-w-16 flex-1 bg-transparent outline-none', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "ComboboxControl",
+      "ComboboxInput",
+      "ComboboxTrigger",
+      "ComboboxClear",
+      "ComboboxContent",
+      "ComboboxList",
+      "ComboboxItem",
+      "ComboboxItemIndicator",
+      "ComboboxLabel",
+      "ComboboxEmpty",
+      "ComboboxSeparator",
+      "ComboboxChips",
+      "ComboboxChip",
+      "ComboboxChipRemove",
+      "ComboboxChipsInput"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/combobox.json",
+    "examples": [
+      "combobox-demo",
+      "combobox-clear",
+      "combobox-multiple",
+      "combobox-groups",
+      "combobox-disabled"
+    ]
+  },
+  "codemods": [
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "Combobox",
+      "to": "NdCombobox",
+      "module": "@ndop/primitives/combobox"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "ComboboxGroup",
+      "to": "NdComboboxGroup",
+      "module": "@ndop/primitives/combobox"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

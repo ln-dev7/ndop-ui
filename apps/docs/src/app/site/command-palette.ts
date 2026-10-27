@@ -22,13 +22,7 @@ import { Router } from '@angular/router';
 import { NdIcon } from '@ndop/core';
 import { components } from 'virtual:ndop/components';
 import { Button } from '@/ui/button/button';
-import {
-  DialogContent,
-  DialogOverlay,
-  DialogTitle,
-  Dialog,
-  DialogPortal,
-} from '@/ui/dialog/dialog';
+import { DialogContent, DialogTitle } from '@/ui/dialog/dialog';
 import { commandFor, type PackageManager } from '../../highlight/shiki';
 import type { SearchEntry } from '../search/search-entry';
 import { score, search } from '../search/search';
@@ -41,6 +35,7 @@ import { savedPackageManager } from './code-frames';
 import { injectCurrentPath } from './current-path';
 import { copyPageMarkdown } from './page-actions';
 import { Preferences } from './preferences';
+import { NdDialog as Dialog } from '@ndop/primitives/dialog';
 
 /** One choice in the palette: a page to open or an action to run. */
 interface PaletteItem {
@@ -110,16 +105,7 @@ export class PaletteOption implements Highlightable {
  */
 @Component({
   selector: 'docs-command-palette',
-  imports: [
-    NdIcon,
-    Button,
-    Dialog,
-    DialogPortal,
-    DialogOverlay,
-    DialogContent,
-    DialogTitle,
-    PaletteOption,
-  ],
+  imports: [NdIcon, Button, Dialog, DialogContent, DialogTitle, PaletteOption],
   host: { '(document:keydown)': 'onGlobalKeydown($event)' },
   template: `
     <!-- Narrower from md to lg, where the header also holds the main
@@ -141,71 +127,68 @@ export class PaletteOption implements Highlightable {
       >
     </button>
     <ng-container ndDialog [(open)]="open">
-      <ng-template ndDialogPortal>
-        <div ndDialogOverlay></div>
-        <div
-          ndDialogContent
-          class="top-[15%] translate-y-0 gap-0 overflow-hidden p-0"
-        >
-          <h2 ndDialogTitle class="sr-only">Search the docs</h2>
-          <div class="flex items-center gap-2 border-b px-3">
-            <svg
-              ndIcon="search"
-              class="size-4 shrink-0 text-muted-foreground"
-            ></svg>
-            <input
-              class="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-              role="combobox"
-              aria-label="Search the docs"
-              aria-autocomplete="list"
-              aria-expanded="true"
-              aria-controls="palette-results"
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="Search components, props, guides…"
-              [attr.aria-activedescendant]="activeId()"
-              [value]="query()"
-              (input)="query.set(text($event))"
-              (keydown)="onKeydown($event)"
-            />
-          </div>
-          <div
-            id="palette-results"
-            role="listbox"
-            aria-label="Results"
-            class="max-h-[min(60vh,24rem)] overflow-y-auto p-2"
-          >
-            @for (group of groups(); track group.title) {
-              <div role="group" [attr.aria-labelledby]="'palette-' + $index">
-                <div
-                  class="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground"
-                  [id]="'palette-' + $index"
-                >
-                  {{ group.title }}
-                </div>
-                @for (item of group.items; track item.id) {
-                  <div
-                    class="flex cursor-pointer items-baseline gap-2 rounded-md px-2 py-1.5 text-sm data-active:bg-accent data-active:text-accent-foreground"
-                    [docsPaletteOption]="item"
-                    (pointed)="highlight(item)"
-                    (chosen)="choose(item)"
-                  >
-                    <span class="truncate">{{ item.title }}</span>
-                    <span
-                      class="ms-auto shrink-0 truncate text-xs text-muted-foreground"
-                      >{{ item.context }}</span
-                    >
-                  </div>
-                }
-              </div>
-            } @empty {
-              <p class="py-6 text-center text-sm text-muted-foreground">
-                {{ entries() ? 'No results.' : 'Loading…' }}
-              </p>
-            }
-          </div>
+      <dialog
+        ndDialogContent
+        class="top-[15%] translate-y-0 gap-0 overflow-hidden p-0"
+      >
+        <h2 ndDialogTitle class="sr-only">Search the docs</h2>
+        <div class="flex items-center gap-2 border-b px-3">
+          <svg
+            ndIcon="search"
+            class="size-4 shrink-0 text-muted-foreground"
+          ></svg>
+          <input
+            class="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            role="combobox"
+            aria-label="Search the docs"
+            aria-autocomplete="list"
+            aria-expanded="true"
+            aria-controls="palette-results"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Search components, props, guides…"
+            [attr.aria-activedescendant]="activeId()"
+            [value]="query()"
+            (input)="query.set(text($event))"
+            (keydown)="onKeydown($event)"
+          />
         </div>
-      </ng-template>
+        <div
+          id="palette-results"
+          role="listbox"
+          aria-label="Results"
+          class="max-h-[min(60vh,24rem)] overflow-y-auto p-2"
+        >
+          @for (group of groups(); track group.title) {
+            <div role="group" [attr.aria-labelledby]="'palette-' + $index">
+              <div
+                class="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground"
+                [id]="'palette-' + $index"
+              >
+                {{ group.title }}
+              </div>
+              @for (item of group.items; track item.id) {
+                <div
+                  class="flex cursor-pointer items-baseline gap-2 rounded-md px-2 py-1.5 text-sm data-active:bg-accent data-active:text-accent-foreground"
+                  [docsPaletteOption]="item"
+                  (pointed)="highlight(item)"
+                  (chosen)="choose(item)"
+                >
+                  <span class="truncate">{{ item.title }}</span>
+                  <span
+                    class="ms-auto shrink-0 truncate text-xs text-muted-foreground"
+                    >{{ item.context }}</span
+                  >
+                </div>
+              }
+            </div>
+          } @empty {
+            <p class="py-6 text-center text-sm text-muted-foreground">
+              {{ entries() ? 'No results.' : 'Loading…' }}
+            </p>
+          }
+        </div>
+      </dialog>
     </ng-container>
     <p aria-live="polite" class="sr-only">{{ announcement() }}</p>
   `,

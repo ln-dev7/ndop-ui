@@ -102,7 +102,7 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
       ...(options.registryPath ? { registryPath: options.registryPath } : {}),
       ...(options.packDir ? { packDir: options.packDir } : {}),
     },
-    async ({ env, version }) => {
+    async ({ env, version, registryPath }) => {
       const done: CaseResult[] = [];
       for (const installCase of cases) {
         if (installCase.shadcn) {
@@ -111,10 +111,7 @@ const registryE2e: PromiseExecutor<RegistryE2eExecutorSchema> = async (
               workDir,
               env,
               item,
-              registryPath: join(
-                context.root,
-                options.registryPath ?? 'dist/registry',
-              ),
+              registryPath,
             }),
           );
           continue;

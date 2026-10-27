@@ -10,17 +10,20 @@ import { ND_DIALOG } from './dialog';
 /**
  * The dialog box: `role="dialog"`, `aria-modal="true"`, `tabindex="-1"`,
  * and `aria-labelledby` / `aria-describedby` pointing at the title and
- * description. Focus is trapped inside it while open.
+ * description. Native modality makes the background page inert while open.
  *
  * @example
  * ```html
- * <div ndDialogContent class="fixed left-1/2 top-1/2 -translate-1/2">…</div>
+ * <dialog ndDialogContent class="fixed left-1/2 top-1/2 -translate-1/2">…</dialog>
  * ```
  */
 @Directive({
-  selector: '[ndDialogContent]',
+  selector: 'dialog[ndDialogContent]',
   host: {
-    role: 'dialog',
+    '(cancel)': 'dialog.cancel($event)',
+    '(close)': 'dialog.closed()',
+    '(pointerdown)': 'dialog.pointerDown($event)',
+    '(click)': 'dialog.backdropClick($event)',
     'aria-modal': 'true',
     tabindex: '-1',
     '[attr.id]': 'dialog.contentId()',

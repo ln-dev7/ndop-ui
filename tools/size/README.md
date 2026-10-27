@@ -20,3 +20,10 @@ left out, since every app has them once.
 
 It fails when an item's own code is over budget, and writes
 `dist/size/report.json`.
+
+To include every export of a whole primitive entry point in the same AOT and
+bundle pipeline, run `pnpm nx check size --primitiveEntries=dialog`. Compare the
+own-code and dependency-inclusive columns with the same dependencies/toolchain
+on the base revision. Native menu families have explicit 8 kB own-code budgets
+because native positioning and interaction adapters replace previously shared
+CDK behavior; see ADR-0032. The default remains 4 kB.

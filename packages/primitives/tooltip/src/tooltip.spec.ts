@@ -45,6 +45,16 @@ async function setup() {
 describe('NdTooltip', () => {
   afterEach(() => vi.useRealTimers());
 
+  it('does not emit model changes while destroying an open trigger and root', async () => {
+    const view = await render(Host);
+    view.fixture.componentInstance.open.set(true);
+    await view.fixture.whenStable();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    view.fixture.destroy();
+    expect(warn.mock.calls.flat().join(' ')).not.toContain('NG0953');
+    warn.mockRestore();
+  });
+
   it('opens on hover after the open delay', async () => {
     const { host, trigger, settle } = await setup();
     fireEvent.pointerEnter(trigger);
@@ -91,11 +101,11 @@ describe('NdTooltip', () => {
     expect(host.open()).toBe(false);
   });
 
-  it('closes on Escape and on blur', async () => {
+  it('synchronizes native dismissal and closes on blur', async () => {
     const { host, trigger, settle } = await setup();
     host.open.set(true);
     await settle();
-    fireEvent.keyDown(document.body, { key: 'Escape' });
+    screen.getByRole('tooltip').hidePopover();
     await settle();
     expect(host.open()).toBe(false);
 

@@ -1,107 +1,11 @@
 import { computed, Directive, input } from '@angular/core';
-import { NdDialog } from '@ndop/primitives/dialog';
 import {
-  NdDrawerClose,
   NdDrawerContent,
   NdDrawerDescription,
   NdDrawerHandle,
-  NdDrawerOverlay,
-  NdDrawerPortal,
   NdDrawerTitle,
-  NdDrawerTrigger,
 } from '@ndop/primitives/drawer';
 import { cn } from '@/lib/utils';
-
-/**
- * A drawer (`@ndop/primitives/drawer`): a modal panel that slides in from
- * an edge and can be dragged back out. Put it on an `ng-container`; `open`
- * is two-way bindable, and the content's `direction` sets the edge.
- *
- * @example
- * ```html
- * <ng-container ndDrawer>…</ng-container>
- * ```
- */
-@Directive({
-  selector: '[ndDrawer]',
-  hostDirectives: [
-    {
-      directive: NdDialog,
-      inputs: ['open', 'defaultOpen', 'closeOnEscape', 'closeOnOverlayClick'],
-      outputs: ['openChange'],
-    },
-  ],
-})
-export class Drawer {}
-
-/**
- * The button that opens its drawer.
- *
- * @example
- * ```html
- * <button ndButton variant="outline" ndDrawerTrigger>Open</button>
- * ```
- */
-@Directive({
-  selector: '[ndDrawerTrigger]',
-  hostDirectives: [NdDrawerTrigger],
-  host: { 'data-slot': 'drawer-trigger' },
-})
-export class DrawerTrigger {}
-
-/**
- * Marks the `ng-template` its drawer renders while open.
- *
- * @example
- * ```html
- * <ng-template ndDrawerPortal>…</ng-template>
- * ```
- */
-@Directive({
-  selector: 'ng-template[ndDrawerPortal]',
-  hostDirectives: [NdDrawerPortal],
-})
-export class DrawerPortal {}
-
-/**
- * A button that closes its drawer.
- *
- * @example
- * ```html
- * <button ndButton ndDrawerClose>Done</button>
- * ```
- */
-@Directive({
-  selector: '[ndDrawerClose]',
-  hostDirectives: [NdDrawerClose],
-  host: { 'data-slot': 'drawer-close' },
-})
-export class DrawerClose {}
-
-/**
- * The dimmed backdrop behind a drawer; clicking it closes the drawer.
- *
- * @example
- * ```html
- * <div ndDrawerOverlay></div>
- * ```
- */
-@Directive({
-  selector: '[ndDrawerOverlay]',
-  hostDirectives: [NdDrawerOverlay],
-  host: { 'data-slot': 'drawer-overlay', '[class]': 'classes()' },
-})
-export class DrawerOverlay {
-  /** Extra classes, merged last so they win. */
-  readonly class = input('');
-
-  protected readonly classes = computed(() =>
-    cn(
-      'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-      this.class(),
-    ),
-  );
-}
 
 /**
  * The drawer panel (`@ndop/primitives/drawer`): a modal dialog at the edge
@@ -112,10 +16,10 @@ export class DrawerOverlay {
  *
  * @example
  * ```html
- * <div ndDrawerContent>
+ * <dialog ndDrawerContent>
  *   <div ndDrawerHandle></div>
  *   <div ndDrawerHeader><h2 ndDrawerTitle>Move goal</h2></div>
- * </div>
+ * </dialog>
  * ```
  */
 @Directive({
@@ -129,7 +33,7 @@ export class DrawerContent {
 
   protected readonly classes = computed(() =>
     cn(
-      'group/drawer-content fixed z-50 flex h-auto flex-col bg-background',
+      'backdrop:bg-black/50 group/drawer-content fixed z-50 flex h-auto flex-col bg-background',
       'data-[direction=top]:inset-x-0 data-[direction=top]:top-0 data-[direction=top]:mb-24 data-[direction=top]:max-h-[80vh] data-[direction=top]:rounded-b-lg data-[direction=top]:border-b',
       'data-[direction=bottom]:inset-x-0 data-[direction=bottom]:bottom-0 data-[direction=bottom]:mt-24 data-[direction=bottom]:max-h-[80vh] data-[direction=bottom]:rounded-t-lg data-[direction=bottom]:border-t',
       'data-[direction=end]:inset-y-0 data-[direction=end]:end-0 data-[direction=end]:w-3/4 data-[direction=end]:border-s data-[direction=end]:sm:max-w-sm',

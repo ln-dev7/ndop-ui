@@ -4,9 +4,11 @@ keywords: modal, popup, confirm, confirmation, overlay, lightbox
 
 A dialog interrupts the page to ask for a decision or information, and
 blocks the rest of the page until it closes. It follows the WAI-ARIA modal
-dialog pattern: focus moves into the dialog and stays there, Escape and the
-close button close it, and focus returns to the trigger. Its content renders
-in an `ng-template` portal, so nothing is in the page until it opens.
+dialog pattern: the background becomes inert, Escape and the close button
+close it, and focus returns to the trigger. Native `dialog` content stays in
+its declaring view and opens with `showModal()`. Tab follows native modality,
+including browser controls. Import `NdDialog`, `NdDialogTrigger` and
+`NdDialogClose` from `@ndop/primitives/dialog`; keep styled content locally.
 
 ## Do
 

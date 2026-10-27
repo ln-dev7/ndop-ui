@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { nativeDialogBoundary } from '../native-dialog';
 import { keyboardContract } from '../keyboard';
 import { gotoHydrated } from '../navigation';
 
@@ -16,22 +17,27 @@ async function openAlert(page: Page) {
 keyboardContract('alert-dialog', {
   Tab: async ({ page, browserName }) => {
     test.skip(browserName === 'webkit', 'Safari skips buttons on Tab');
-    await openAlert(page);
+    const { dialog } = await openAlert(page);
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(
       page.getByRole('button', { name: 'Delete', exact: true }),
     ).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(page.getByRole('button', { name: 'Cancel' })).toBeFocused();
+    await nativeDialogBoundary(
+      page,
+      dialog,
+      page.getByRole('button', { name: 'Cancel' }),
+    );
   },
   'Shift + Tab': async ({ page, browserName }) => {
     test.skip(browserName === 'webkit', 'Safari skips buttons on Tab');
-    await openAlert(page);
-    await page.keyboard.press('Shift+Tab');
-    await expect(
+    const { dialog } = await openAlert(page);
+    await nativeDialogBoundary(
+      page,
+      dialog,
       page.getByRole('button', { name: 'Delete', exact: true }),
-    ).toBeFocused();
+      true,
+    );
   },
   Escape: async ({ page }) => {
     const { trigger, dialog } = await openAlert(page);
@@ -46,7 +52,7 @@ test.describe('Alert Dialog', () => {
   test('starts on Cancel and ignores overlay clicks', async ({ page }) => {
     const { dialog } = await openAlert(page);
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeFocused();
-    await page.getByTestId('overlay').click({ position: { x: 10, y: 10 } });
+    await page.mouse.click(10, 10);
     await expect(dialog).toBeVisible();
   });
 

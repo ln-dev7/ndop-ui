@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
+import { TooltipContent } from '@/ui/tooltip/tooltip';
 import {
-  Tooltip,
-  TooltipPortal,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/ui/tooltip/tooltip';
+  NdTooltip as Tooltip,
+  NdTooltipPortal as TooltipPortal,
+  NdTooltipTrigger as TooltipTrigger,
+} from '@ndop/primitives/tooltip';
 
 /**
  * An icon-only button with its own accessible name and a tooltip on the

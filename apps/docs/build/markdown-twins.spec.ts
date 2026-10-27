@@ -94,9 +94,7 @@ describe('componentMarkdown', () => {
     expect(markdown).toContain('npx @ndop/cli add dialog');
     expect(markdown).toContain('### src/app/ui/dialog/dialog.ts');
     expect(markdown).toContain('### src/app/lib/utils.ts');
-    expect(markdown).toMatch(
-      /\| `\[closeOnEscape\]` \| `boolean` \| `true` \|/,
-    );
+    expect(markdown).toMatch(/\| `\[class\]` \| `string` \|/);
     expect(markdown).not.toContain('{@link');
   });
 });

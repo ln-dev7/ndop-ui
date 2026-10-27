@@ -96,28 +96,26 @@ in the page that asks:
 
 ```ts title="delete-project.ts"
 import { Component, output } from '@angular/core';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger } from '@/ui/alert-dialog/alert-dialog';
+import { AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/ui/alert-dialog/alert-dialog';
 import { Button } from '@/ui/button/button';
+import { NdAlertDialog as AlertDialog, NdAlertDialogTrigger as AlertDialogTrigger } from '@ndop/primitives/alert-dialog';
 
 @Component({
   selector: 'app-delete-project',
-  imports: [AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger, Button],
+  imports: [AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, Button],
   template: `
     <ng-container ndAlertDialog>
       <button ndButton variant="destructive" ndAlertDialogTrigger>Delete project</button>
-      <ng-template ndAlertDialogPortal>
-        <div ndAlertDialogOverlay></div>
-        <div ndAlertDialogContent>
-          <div ndAlertDialogHeader>
-            <h2 ndAlertDialogTitle>Delete project?</h2>
-            <p ndAlertDialogDescription>Its tasks are deleted for everyone.</p>
-          </div>
-          <div ndAlertDialogFooter>
-            <button ndAlertDialogCancel>Cancel</button>
-            <button ndAlertDialogAction variant="destructive" (click)="deleted.emit()">Delete</button>
-          </div>
+      <dialog ndAlertDialogContent>
+        <div ndAlertDialogHeader>
+          <h2 ndAlertDialogTitle>Delete project?</h2>
+          <p ndAlertDialogDescription>Its tasks are deleted for everyone.</p>
         </div>
-      </ng-template>
+        <div ndAlertDialogFooter>
+          <button ndAlertDialogCancel>Cancel</button>
+          <button ndAlertDialogAction variant="destructive" (click)="deleted.emit()">Delete</button>
+        </div>
+      </dialog>
     </ng-container>
   `,
 })

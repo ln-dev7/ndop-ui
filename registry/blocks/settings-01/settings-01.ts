@@ -35,16 +35,18 @@ import {
   RadioGroupItem,
 } from '@/ui/radio-group/radio-group';
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectTrigger,
-  SelectValue,
 } from '@/ui/select/select';
 import { Separator } from '@/ui/separator/separator';
 import { Textarea } from '@/ui/textarea/textarea';
+import {
+  NdSelect as Select,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /**
  * A settings page: a secondary nav of settings sections, which scrolls

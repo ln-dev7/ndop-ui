@@ -8,15 +8,15 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
   DialogTitle,
-  Dialog,
-  DialogClose,
-  DialogPortal,
-  DialogTrigger,
 } from '@/ui/dialog/dialog';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
+import {
+  NdDialog as Dialog,
+  NdDialogClose as DialogClose,
+  NdDialogTrigger as DialogTrigger,
+} from '@ndop/primitives/dialog';
 
 interface Profile {
   name: string;
@@ -32,9 +32,9 @@ interface Profile {
   imports: [
     Dialog,
     DialogTrigger,
-    DialogPortal,
+
     DialogClose,
-    DialogOverlay,
+
     DialogContent,
     DialogHeader,
     DialogFooter,
@@ -50,47 +50,41 @@ interface Profile {
   template: `
     <ng-container ndDialog [(open)]="open">
       <button ndButton ndDialogTrigger variant="outline">Edit profile</button>
-      <ng-template ndDialogPortal>
-        <div ndDialogOverlay></div>
-        <div ndDialogContent class="sm:max-w-[425px]">
-          <form class="grid gap-4" (submit)="save($event)">
-            <div ndDialogHeader>
-              <h2 ndDialogTitle>Edit profile</h2>
-              <p ndDialogDescription>
-                Make changes to your profile here. Click save when you're done.
-              </p>
+
+      <dialog ndDialogContent class="sm:max-w-[425px]">
+        <form class="grid gap-4" (submit)="save($event)">
+          <div ndDialogHeader>
+            <h2 ndDialogTitle>Edit profile</h2>
+            <p ndDialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </p>
+          </div>
+          <div class="grid gap-4">
+            <div class="grid gap-3">
+              <label ndLabel for="dialog-demo-name">Name</label>
+              <input ndInput id="dialog-demo-name" [formField]="profile.name" />
             </div>
-            <div class="grid gap-4">
-              <div class="grid gap-3">
-                <label ndLabel for="dialog-demo-name">Name</label>
-                <input
-                  ndInput
-                  id="dialog-demo-name"
-                  [formField]="profile.name"
-                />
-              </div>
-              <div class="grid gap-3">
-                <label ndLabel for="dialog-demo-username">Username</label>
-                <input
-                  ndInput
-                  id="dialog-demo-username"
-                  [formField]="profile.username"
-                />
-              </div>
+            <div class="grid gap-3">
+              <label ndLabel for="dialog-demo-username">Username</label>
+              <input
+                ndInput
+                id="dialog-demo-username"
+                [formField]="profile.username"
+              />
             </div>
-            <div ndDialogFooter>
-              <button ndButton ndDialogClose type="button" variant="outline">
-                Cancel
-              </button>
-              <button ndButton type="submit">Save changes</button>
-            </div>
-          </form>
-          <button ndDialogCloseButton>
-            <svg ndIcon="x"></svg>
-            <span class="sr-only">Close</span>
-          </button>
-        </div>
-      </ng-template>
+          </div>
+          <div ndDialogFooter>
+            <button ndButton ndDialogClose type="button" variant="outline">
+              Cancel
+            </button>
+            <button ndButton type="submit">Save changes</button>
+          </div>
+        </form>
+        <button ndDialogCloseButton>
+          <svg ndIcon="x"></svg>
+          <span class="sr-only">Close</span>
+        </button>
+      </dialog>
     </ng-container>
   `,
 })

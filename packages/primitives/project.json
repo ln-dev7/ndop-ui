@@ -32,7 +32,8 @@
       "executor": "@nx/angular:unit-test",
       "options": {
         "watch": false,
-        "providersFile": "packages/primitives/test-providers.ts"
+        "providersFile": "packages/primitives/test-providers.ts",
+        "runnerConfig": "packages/primitives/vitest-base.config.mts"
       }
     },
     "lint": {

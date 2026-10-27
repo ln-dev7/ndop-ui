@@ -5,14 +5,14 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogOverlay,
   AlertDialogTitle,
   AlertDialogDescription,
-  AlertDialog,
-  AlertDialogPortal,
-  AlertDialogTrigger,
 } from '@/ui/alert-dialog/alert-dialog';
 import { Button } from '@/ui/button/button';
+import {
+  NdAlertDialog as AlertDialog,
+  NdAlertDialogTrigger as AlertDialogTrigger,
+} from '@ndop/primitives/alert-dialog';
 
 /** The small size: a short question with side-by-side buttons. */
 @Component({
@@ -24,11 +24,11 @@ import { Button } from '@/ui/button/button';
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogOverlay,
+
     AlertDialogTitle,
     Button,
     AlertDialog,
-    AlertDialogPortal,
+
     AlertDialogTrigger,
   ],
   template: `
@@ -36,19 +36,17 @@ import { Button } from '@/ui/button/button';
       <button ndButton variant="outline" ndAlertDialogTrigger>
         Discard draft
       </button>
-      <ng-template ndAlertDialogPortal>
-        <div ndAlertDialogOverlay></div>
-        <div ndAlertDialogContent size="sm">
-          <div ndAlertDialogHeader>
-            <h2 ndAlertDialogTitle>Discard draft?</h2>
-            <p ndAlertDialogDescription>Your changes will be lost.</p>
-          </div>
-          <div ndAlertDialogFooter>
-            <button ndAlertDialogCancel>Cancel</button>
-            <button ndAlertDialogAction>Discard</button>
-          </div>
+
+      <dialog ndAlertDialogContent size="sm">
+        <div ndAlertDialogHeader>
+          <h2 ndAlertDialogTitle>Discard draft?</h2>
+          <p ndAlertDialogDescription>Your changes will be lost.</p>
         </div>
-      </ng-template>
+        <div ndAlertDialogFooter>
+          <button ndAlertDialogCancel>Cancel</button>
+          <button ndAlertDialogAction>Discard</button>
+        </div>
+      </dialog>
     </ng-container>
   `,
 })

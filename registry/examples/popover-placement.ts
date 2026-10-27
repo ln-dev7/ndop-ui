@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { Button } from '@/ui/button/button';
+import { PopoverContent } from '@/ui/popover/popover';
 import {
-  Popover,
-  PopoverClose,
-  PopoverPortal,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/ui/popover/popover';
+  NdPopover as Popover,
+  NdPopoverClose as PopoverClose,
+  NdPopoverPortal as PopoverPortal,
+  NdPopoverTrigger as PopoverTrigger,
+} from '@ndop/primitives/popover';
 
 /**
  * Popovers on each logical side, with a close button inside. `start` and

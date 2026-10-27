@@ -1,48 +1,15 @@
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
-import { NdDropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 import {
   NdMenuContent,
-  NdMenuGroup,
   NdMenuItem,
   NdMenuItemCheckbox,
   NdMenuItemIndicator,
   NdMenuItemRadio,
   NdMenuLabel,
-  NdMenuRadioGroup,
   NdMenuSeparator,
   NdMenuSubTrigger,
 } from '@ndop/primitives/menu';
 import { cn } from '@/lib/utils';
-
-/**
- * The button that opens a dropdown menu (`@ndop/primitives/dropdown-menu`):
- * its value is the menu's `ng-template`. Enter, Space and the arrow keys
- * open it on an item; closing returns focus here.
- *
- * @example
- * ```html
- * <button ndButton [ndDropdownMenuTrigger]="menu">Open</button>
- * ```
- */
-@Directive({
-  selector: '[ndDropdownMenuTrigger]',
-  hostDirectives: [
-    {
-      directive: NdDropdownMenuTrigger,
-      inputs: [
-        'ndDropdownMenuTrigger',
-        'open',
-        'defaultOpen',
-        'side',
-        'align',
-        'sideOffset',
-      ],
-      outputs: ['openChange'],
-    },
-  ],
-  host: { 'data-slot': 'dropdown-menu-trigger' },
-})
-export class DropdownMenuTrigger {}
 
 /**
  * A dropdown menu's list (`@ndop/primitives/menu`), in the `ng-template` a
@@ -96,22 +63,6 @@ export class DropdownMenuSubContent {
     ),
   );
 }
-
-/**
- * Groups related items (`role="group"`). Name it with `aria-labelledby`
- * pointing at a label.
- *
- * @example
- * ```html
- * <div ndDropdownMenuGroup aria-labelledby="account">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndDropdownMenuGroup]',
-  hostDirectives: [NdMenuGroup],
-  host: { 'data-slot': 'dropdown-menu-group' },
-})
-export class DropdownMenuGroup {}
 
 /**
  * One action (`role="menuitem"`): activating it emits `triggered` and
@@ -184,28 +135,6 @@ export class DropdownMenuCheckboxItem {
     ),
   );
 }
-
-/**
- * Groups radio items (`role="group"`) and holds the checked value, bound
- * with `[(value)]`.
- *
- * @example
- * ```html
- * <div ndDropdownMenuRadioGroup aria-label="Panel position" [(value)]="position">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndDropdownMenuRadioGroup]',
-  hostDirectives: [
-    {
-      directive: NdMenuRadioGroup,
-      inputs: ['value'],
-      outputs: ['valueChange'],
-    },
-  ],
-  host: { 'data-slot': 'dropdown-menu-radio-group' },
-})
-export class DropdownMenuRadioGroup {}
 
 /**
  * One choice of a radio group (`role="menuitemradio"`). Put an indicator

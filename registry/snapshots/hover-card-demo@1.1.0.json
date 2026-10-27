@@ -1,0 +1,33 @@
+{
+  "name": "hover-card-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Hover Card demo",
+  "description": "A profile preview behind a username link.",
+  "registryDependencies": [
+    "avatar",
+    "button",
+    "hover-card"
+  ],
+  "files": [
+    {
+      "path": "examples/hover-card-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/hover-card-demo.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Avatar, AvatarFallback } from '@/ui/avatar/avatar';\nimport { Button } from '@/ui/button/button';\nimport { HoverCardContent } from '@/ui/hover-card/hover-card';\nimport {\n  NdHoverCard as HoverCard,\n  NdHoverCardPortal as HoverCardPortal,\n  NdHoverCardTrigger as HoverCardTrigger,\n} from '@ndop/primitives/hover-card';\n\n/**\n * A profile preview behind a username link. The link says where it goes\n * on its own; the card adds a glance for sighted users.\n */\n@Component({\n  selector: 'example-hover-card-demo',\n  imports: [\n    Avatar,\n    AvatarFallback,\n    Button,\n    HoverCardContent,\n    HoverCard,\n    HoverCardPortal,\n    HoverCardTrigger,\n  ],\n  template: `\n    <ng-container ndHoverCard>\n      <a ndButton variant=\"link\" ndHoverCardTrigger href=\"#angular\">\n        &#64;angular\n      </a>\n      <ng-template ndHoverCardPortal>\n        <div ndHoverCardContent class=\"w-80\">\n          <div class=\"flex justify-between gap-4\">\n            <span ndAvatar><span ndAvatarFallback>NG</span></span>\n            <div class=\"space-y-1\">\n              <p class=\"text-sm font-semibold\">&#64;angular</p>\n              <p class=\"text-sm\">\n                The web development framework for building modern apps.\n              </p>\n              <p class=\"text-xs text-muted-foreground\">Joined September 2016</p>\n            </div>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class HoverCardDemoExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "HoverCardDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -18,14 +18,11 @@ matching Dialog part.
 ```html
 <ng-container ndDrawer [(open)]="open">
   <button ndDrawerTrigger>Open</button>
-  <ng-template ndDrawerPortal>
-    <div ndDrawerOverlay></div>
-    <div ndDrawerContent>
-      <div ndDrawerHandle></div>
-      <h2 ndDrawerTitle>Move goal</h2>
-      <button ndDrawerClose>Done</button>
-    </div>
-  </ng-template>
+  <dialog ndDrawerContent>
+    <div ndDrawerHandle></div>
+    <h2 ndDrawerTitle>Move goal</h2>
+    <button ndDrawerClose>Done</button>
+  </dialog>
 </ng-container>
 ```
 
@@ -36,8 +33,7 @@ matching Dialog part.
 | Drawer            | `[ndDrawer]`                  |          |                                                     |                                                 |
 | DrawerTrigger     | `[ndDrawerTrigger]`           |          | `aria-haspopup`, `aria-expanded`, `aria-controls`   | `data-state`                                    |
 | DrawerPortal      | `ng-template[ndDrawerPortal]` |          |                                                     |                                                 |
-| DrawerOverlay     | `[ndDrawerOverlay]`           |          | `aria-hidden`                                       | `data-state`                                    |
-| DrawerContent     | `[ndDrawerContent]`           | `dialog` | `aria-modal`, `aria-labelledby`, `aria-describedby` | `data-state`, `data-direction`, `data-dragging` |
+| DrawerContent     | `dialog[ndDrawerContent]`     | `dialog` | `aria-modal`, `aria-labelledby`, `aria-describedby` | `data-state`, `data-direction`, `data-dragging` |
 | DrawerHandle      | `[ndDrawerHandle]`            |          | `aria-hidden`                                       |                                                 |
 | DrawerTitle       | `[ndDrawerTitle]`             |          |                                                     |                                                 |
 | DrawerDescription | `[ndDrawerDescription]`       |          |                                                     |                                                 |
@@ -65,19 +61,27 @@ matching Dialog part.
 
 ## Keyboard map
 
-| Key           | Action                                                                          |
-| ------------- | ------------------------------------------------------------------------------- |
-| `Tab`         | Moves focus to the next focusable element inside; wraps from last to first.     |
-| `Shift + Tab` | Moves focus to the previous focusable element inside; wraps from first to last. |
-| `Escape`      | Closes the drawer, unless `closeOnEscape` is `false`.                           |
+| Key           | Action                                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `Tab`         | Moves forward through native focusable controls. Browser controls remain reachable; the background page is inert. |
+| `Shift + Tab` | Moves backward through native focusable controls; browser controls remain reachable.                              |
+| `Escape`      | Closes the drawer, unless `closeOnEscape` is `false`.                                                             |
 
 ## Focus behavior
 
-As Dialog: focus moves into the content on open, is trapped while open,
-and returns on close.
+As Dialog: focus moves into the native content on open, the background stays
+inert, and focus returns on close. Browser controls remain reachable with Tab.
 
 ## RTL behavior
 
 `start` and `end` drawers come from the right and left in right-to-left
 layouts, and are dragged toward those edges. Direction comes from the
 nearest `dir` attribute.
+
+## Native rendering
+
+The panel is a native `<dialog>` opened with `showModal()` (ADR-0032).
+The browser owns modal inertness and focus containment. Browser `close` and
+`cancel` events keep the open model synchronized; content never opens on the
+server. Use the dialog's `::backdrop` instead of a separate overlay element.
+The legacy portal directive is an optional local-view compatibility adapter.

@@ -5,18 +5,18 @@ import { Button } from '@/ui/button/button';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
 import {
-  Sheet,
-  SheetClose,
   SheetCloseButton,
   SheetContent,
   SheetDescription,
   SheetFooter,
   SheetHeader,
-  SheetOverlay,
-  SheetPortal,
   SheetTitle,
-  SheetTrigger,
 } from '@/ui/sheet/sheet';
+import {
+  NdDialog as Sheet,
+  NdDialogClose as SheetClose,
+  NdDialogTrigger as SheetTrigger,
+} from '@ndop/primitives/dialog';
 
 /**
  * A profile form in a sheet from the end side, bound to Signal Forms and
@@ -37,53 +37,50 @@ import {
     SheetDescription,
     SheetFooter,
     SheetHeader,
-    SheetOverlay,
-    SheetPortal,
+
     SheetTitle,
     SheetTrigger,
   ],
   template: `
-    <ng-container ndSheet [(open)]="open">
-      <button ndButton variant="outline" ndSheetTrigger>Edit profile</button>
-      <ng-template ndSheetPortal>
-        <div ndSheetOverlay></div>
-        <div ndSheetContent>
-          <div ndSheetHeader>
-            <h2 ndSheetTitle>Edit profile</h2>
-            <p ndSheetDescription>
-              Make changes to your profile here. Save when you're done.
-            </p>
-          </div>
-          <form
-            class="grid flex-1 auto-rows-min gap-6 px-4"
-            (submit)="save($event)"
-            id="sheet-demo-form"
-          >
-            <div class="grid gap-3">
-              <label ndLabel for="sheet-demo-name">Name</label>
-              <input ndInput id="sheet-demo-name" [formField]="profile.name" />
-            </div>
-            <div class="grid gap-3">
-              <label ndLabel for="sheet-demo-username">Username</label>
-              <input
-                ndInput
-                id="sheet-demo-username"
-                [formField]="profile.username"
-              />
-            </div>
-          </form>
-          <div ndSheetFooter>
-            <button ndButton type="submit" form="sheet-demo-form">
-              Save changes
-            </button>
-            <button ndButton variant="outline" ndSheetClose>Cancel</button>
-          </div>
-          <button ndSheetCloseButton>
-            <svg ndIcon="x"></svg>
-            <span class="sr-only">Close</span>
-          </button>
+    <ng-container ndDialog [(open)]="open">
+      <button ndButton variant="outline" ndDialogTrigger>Edit profile</button>
+
+      <dialog ndSheetContent>
+        <div ndSheetHeader>
+          <h2 ndSheetTitle>Edit profile</h2>
+          <p ndSheetDescription>
+            Make changes to your profile here. Save when you're done.
+          </p>
         </div>
-      </ng-template>
+        <form
+          class="grid flex-1 auto-rows-min gap-6 px-4"
+          (submit)="save($event)"
+          id="sheet-demo-form"
+        >
+          <div class="grid gap-3">
+            <label ndLabel for="sheet-demo-name">Name</label>
+            <input ndInput id="sheet-demo-name" [formField]="profile.name" />
+          </div>
+          <div class="grid gap-3">
+            <label ndLabel for="sheet-demo-username">Username</label>
+            <input
+              ndInput
+              id="sheet-demo-username"
+              [formField]="profile.username"
+            />
+          </div>
+        </form>
+        <div ndSheetFooter>
+          <button ndButton type="submit" form="sheet-demo-form">
+            Save changes
+          </button>
+          <button ndButton variant="outline" ndDialogClose>Cancel</button>
+        </div>
+        <button ndSheetCloseButton>
+          <svg ndIcon="x"></svg>
+          <span class="sr-only">Close</span>
+        </button>
+      </dialog>
     </ng-container>
   `,
 })

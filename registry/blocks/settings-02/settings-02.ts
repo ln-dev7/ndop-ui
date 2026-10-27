@@ -2,7 +2,6 @@ import { Component, signal } from '@angular/core';
 import { disabled, form, FormField } from '@angular/forms/signals';
 import { NdIcon } from '@ndop/core';
 import {
-  AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -10,10 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogMedia,
-  AlertDialogOverlay,
-  AlertDialogPortal,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/ui/alert-dialog/alert-dialog';
 import { Button } from '@/ui/button/button';
 import {
@@ -38,6 +34,10 @@ import {
 } from '@/ui/radio-group/radio-group';
 import { Separator } from '@/ui/separator/separator';
 import { Switch, SwitchThumb } from '@/ui/switch/switch';
+import {
+  NdAlertDialog as AlertDialog,
+  NdAlertDialogTrigger as AlertDialogTrigger,
+} from '@ndop/primitives/alert-dialog';
 
 /** One notification switch: its form key, label and help text. */
 interface NotificationRow {
@@ -63,8 +63,7 @@ interface NotificationRow {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogMedia,
-    AlertDialogOverlay,
-    AlertDialogPortal,
+
     AlertDialogTitle,
     AlertDialogTrigger,
     Button,
@@ -244,31 +243,29 @@ interface NotificationRow {
                   <svg ndIcon="trash-2"></svg>
                   Delete account
                 </button>
-                <ng-template ndAlertDialogPortal>
-                  <div ndAlertDialogOverlay></div>
-                  <div ndAlertDialogContent>
-                    <div ndAlertDialogHeader>
-                      <div ndAlertDialogMedia>
-                        <svg ndIcon="triangle-alert"></svg>
-                      </div>
-                      <h2 ndAlertDialogTitle>Delete your account?</h2>
-                      <p ndAlertDialogDescription>
-                        Your profile, 12 projects and their files are deleted
-                        for everyone. This can't be undone.
-                      </p>
+
+                <dialog ndAlertDialogContent>
+                  <div ndAlertDialogHeader>
+                    <div ndAlertDialogMedia>
+                      <svg ndIcon="triangle-alert"></svg>
                     </div>
-                    <div ndAlertDialogFooter>
-                      <button ndAlertDialogCancel>Keep account</button>
-                      <button
-                        ndAlertDialogAction
-                        variant="destructive"
-                        (click)="deleted.set(true)"
-                      >
-                        Delete account
-                      </button>
-                    </div>
+                    <h2 ndAlertDialogTitle>Delete your account?</h2>
+                    <p ndAlertDialogDescription>
+                      Your profile, 12 projects and their files are deleted for
+                      everyone. This can't be undone.
+                    </p>
                   </div>
-                </ng-template>
+                  <div ndAlertDialogFooter>
+                    <button ndAlertDialogCancel>Keep account</button>
+                    <button
+                      ndAlertDialogAction
+                      variant="destructive"
+                      (click)="deleted.set(true)"
+                    >
+                      Delete account
+                    </button>
+                  </div>
+                </dialog>
               </ng-container>
             </div>
             <p class="mt-4 text-sm text-muted-foreground" aria-live="polite">

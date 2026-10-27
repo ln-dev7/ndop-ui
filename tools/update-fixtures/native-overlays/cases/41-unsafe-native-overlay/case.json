@@ -1,0 +1,12 @@
+{
+  "description": "An actual dialog update refuses an overlay event handler before writing any consumer or item changes.",
+  "kind": "behavior",
+  "item": "dialog",
+  "from": "1.0.0",
+  "to": "2.0.0",
+  "expect": {
+    "exit": 1,
+    "error": "Custom ndDialogOverlay behavior cannot be moved automatically",
+    "contains": {"src/app/pages/unsafe.html": ["<div ndDialogOverlay (click)=\"track()\"></div>", "<div ndDialogContent>My content</div>"], "src/app/ui/dialog/dialog.ts": ["export class Dialog {}", "export class DialogOverlay"]}
+  }
+}

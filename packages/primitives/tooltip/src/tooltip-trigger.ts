@@ -30,7 +30,10 @@ export class NdTooltipTrigger {
 
   constructor() {
     this.tooltip.trigger = this.element;
-    inject(DestroyRef).onDestroy(() => (this.tooltip.trigger = null));
+    inject(DestroyRef).onDestroy(() => {
+      this.tooltip.trigger = null;
+      this.tooltip.hideNow();
+    });
   }
 
   /**

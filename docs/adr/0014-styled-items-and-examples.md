@@ -1,5 +1,7 @@
 # ADR-0014: Styled items and examples
 
+Native overlay rendering and forwarding directives for the migrated overlay families are superseded by [ADR-0032](0032-native-overlays.md), proposed with issue #3. The remaining decisions below still apply.
+
 - Status: Accepted (approved by Valery on 2026-10-02), with Amendments
   1–3
 - Date: 2026-10-02

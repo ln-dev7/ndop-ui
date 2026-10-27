@@ -122,6 +122,10 @@
         {
           "projects": ["registry"],
           "target": "build"
+        },
+        {
+          "projects": ["primitives"],
+          "target": "api"
         }
       ],
       "options": {

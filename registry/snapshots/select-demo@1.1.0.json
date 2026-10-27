@@ -1,0 +1,33 @@
+{
+  "name": "select-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Select demo",
+  "description": "A fruit picker with a placeholder.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "icons",
+    "label",
+    "select"
+  ],
+  "files": [
+    {
+      "path": "examples/select-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/select-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Label } from '@/ui/label/label';\nimport {\n  SelectContent,\n  SelectItem,\n  SelectItemIndicator,\n  SelectTrigger,\n} from '@/ui/select/select';\nimport {\n  NdSelect as Select,\n  NdSelectItemText as SelectItemText,\n  NdSelectValue as SelectValue,\n} from '@ndop/primitives/select';\n\n/**\n * A fruit picker with a placeholder. Typing a letter on the closed select\n * picks the next fruit starting with it.\n */\n@Component({\n  selector: 'example-select-demo',\n  imports: [\n    Label,\n    NdIcon,\n    Select,\n    SelectContent,\n    SelectItem,\n    SelectItemIndicator,\n    SelectItemText,\n    SelectTrigger,\n    SelectValue,\n  ],\n  template: `\n    <div class=\"grid gap-3\">\n      <label ndLabel for=\"select-demo-fruit\">Fruit</label>\n      <ng-container ndSelect [(value)]=\"fruit\">\n        <button ndSelectTrigger id=\"select-demo-fruit\" class=\"w-[180px]\">\n          <span ndSelectValue placeholder=\"Select a fruit\"></span>\n          <svg ndIcon=\"chevron-down\" class=\"size-4 opacity-50\"></svg>\n        </button>\n        <div ndSelectContent>\n          @for (option of fruits; track option.value) {\n            <div ndSelectItem [value]=\"option.value\">\n              <span ndSelectItemIndicator><svg ndIcon=\"check\"></svg></span>\n              <span ndSelectItemText>{{ option.label }}</span>\n            </div>\n          }\n        </div>\n      </ng-container>\n    </div>\n  `,\n})\nexport class SelectDemoExample {\n  protected readonly fruit = signal<string | null>(null);\n  protected readonly fruits = [\n    { value: 'apple', label: 'Apple' },\n    { value: 'banana', label: 'Banana' },\n    { value: 'blueberry', label: 'Blueberry' },\n    { value: 'grapes', label: 'Grapes' },\n    { value: 'pineapple', label: 'Pineapple' },\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SelectDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

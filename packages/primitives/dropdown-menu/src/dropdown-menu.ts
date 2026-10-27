@@ -1,5 +1,5 @@
+import { NdNativeMenuTrigger } from '@ndop/primitives/internal';
 import { Directionality } from '@angular/cdk/bidi';
-import { CdkMenuTrigger } from '@angular/cdk/menu';
 import {
   booleanAttribute,
   DestroyRef,
@@ -45,7 +45,7 @@ export type { NdAlign, NdSide } from '@ndop/primitives/internal';
   providers: [
     { provide: ND_MENU_PLACEMENT, useExisting: NdDropdownMenuTrigger },
   ],
-  hostDirectives: [CdkMenuTrigger],
+  hostDirectives: [NdNativeMenuTrigger],
   host: { '[attr.data-state]': 'open() ? "open" : "closed"' },
 })
 export class NdDropdownMenuTrigger implements NdMenuPlacement, OnInit {
@@ -67,7 +67,7 @@ export class NdDropdownMenuTrigger implements NdMenuPlacement, OnInit {
   /** Gap between the trigger and the menu, in pixels. */
   readonly sideOffset = input(4, { transform: numberAttribute });
 
-  private readonly trigger = inject(CdkMenuTrigger);
+  private readonly trigger = inject(NdNativeMenuTrigger);
 
   constructor() {
     effect(() => (this.trigger.menuTemplateRef = this.ndDropdownMenuTrigger()));
@@ -78,6 +78,7 @@ export class NdDropdownMenuTrigger implements NdMenuPlacement, OnInit {
         this.sideOffset(),
         directionality.value === 'rtl',
       );
+      this.trigger.updatePosition();
     });
 
     const subscriptions = [

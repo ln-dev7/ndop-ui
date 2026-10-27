@@ -110,7 +110,12 @@
       "@ndop/primitives/calendar": [
         "./packages/primitives/calendar/src/index.ts"
       ],
-      "@ndop/primitives/sidebar": ["./packages/primitives/sidebar/src/index.ts"]
+      "@ndop/primitives/sidebar": [
+        "./packages/primitives/sidebar/src/index.ts"
+      ],
+      "@ndop/testing/native-overlays": [
+        "./packages/primitives/src/testing/native-overlays.ts"
+      ]
     },
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,

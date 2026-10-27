@@ -1,8 +1,3 @@
-import { FocusTrapFactory, type FocusTrap } from '@angular/cdk/a11y';
-import {
-  createBlockScrollStrategy,
-  createGlobalPositionStrategy,
-} from '@angular/cdk/overlay';
 import {
   afterNextRender,
   booleanAttribute,
@@ -15,6 +10,8 @@ import {
   model,
   signal,
   untracked,
+  DestroyRef,
+  type EmbeddedViewRef,
   type TemplateRef,
   type ViewContainerRef,
 } from '@angular/core';
@@ -22,7 +19,7 @@ import {
   bindOpenState,
   focusReturnTarget,
   injectId,
-  injectOverlay,
+  injectModalScrollLock,
 } from '@ndop/primitives/internal';
 
 /**
@@ -32,9 +29,9 @@ export const ND_DIALOG = new InjectionToken<NdDialog>('ND_DIALOG');
 
 /**
  * Root of a modal dialog (WAI-ARIA Dialog (Modal) pattern). Holds the open
- * state and renders the `ng-template[ndDialogPortal]` content into a CDK
- * overlay while open: page scroll is blocked, focus is trapped in the
- * content and returned on close, and Escape closes. Put it on an
+ * state and opens its native `<dialog ndDialogContent>` with `showModal()`.
+ * The browser makes the rest of the page inert, handles focus and Escape,
+ * and returns focus on close. Put it on an
  * `ng-container` so it adds no element.
  *
  * The dialog never renders open on the server; an initial open state takes
@@ -48,11 +45,11 @@ export const ND_DIALOG = new InjectionToken<NdDialog>('ND_DIALOG');
  * <ng-container ndDialog [(open)]="open">
  *   <button ndDialogTrigger>Edit profile</button>
  *   <ng-template ndDialogPortal>
- *     <div ndDialogOverlay></div>
- *     <div ndDialogContent>
+ *
+ *     <dialog ndDialogContent>
  *       <h2 ndDialogTitle>Edit profile</h2>
  *       <button ndDialogClose>Close</button>
- *     </div>
+ *     </dialog>
  *   </ng-template>
  * </ng-container>
  * ```
@@ -86,25 +83,16 @@ export class NdDialog {
 
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
-  private readonly focusTrapFactory = inject(FocusTrapFactory);
-  private content: HTMLElement | null = null;
+  private readonly scrollLock = injectModalScrollLock();
+  private content: HTMLDialogElement | null = null;
   private trigger: HTMLElement | null = null;
-  private focusTrap: FocusTrap | null = null;
+  private view: EmbeddedViewRef<unknown> | null = null;
+  private template: TemplateRef<unknown> | null = null;
+  private viewContainer: ViewContainerRef | null = null;
+  private pointerStartedInside = false;
+  private openedFromTrigger = false;
+  private focusBeforeOpen: Element | null = null;
   private restoreFocusTo: HTMLElement | null = null;
-
-  private readonly overlay = injectOverlay({
-    config: (injector) => ({
-      positionStrategy: createGlobalPositionStrategy(injector),
-      scrollStrategy: createBlockScrollStrategy(injector),
-      hasBackdrop: false,
-    }),
-    onEscape: (event) => {
-      if (this.closeOnEscape()) {
-        event.preventDefault();
-        this.open.set(false);
-      }
-    },
-  });
 
   private readonly hydrated = bindOpenState(this.open, this.defaultOpen, {
     show: () => this.show(),
@@ -113,6 +101,7 @@ export class NdDialog {
 
   /** Flips the open state. */
   toggle(): void {
+    this.openedFromTrigger = !this.open();
     this.open.update((open) => !open);
   }
 
@@ -126,7 +115,8 @@ export class NdDialog {
     template: TemplateRef<unknown>,
     viewContainer: ViewContainerRef,
   ): void {
-    this.overlay.setTemplate(template, viewContainer);
+    this.template = template;
+    this.viewContainer = viewContainer;
     if (untracked(this.open) && untracked(this.hydrated)) {
       this.show();
     }
@@ -142,45 +132,131 @@ export class NdDialog {
   }
 
   /**
-   * Registers the content element so focus can be trapped in it.
+   * Registers the native content element for browser modality and focus.
    *
    * @param element - The `[ndDialogContent]` element, or `null` on destroy.
    */
   registerContent(element: HTMLElement | null): void {
-    this.content = element;
+    this.content = element as HTMLDialogElement | null;
+    if (element && untracked(this.open) && untracked(this.hydrated)) {
+      afterNextRender(() => this.show(), { injector: this.injector });
+    }
   }
 
-  /** Renders the content and moves focus into it. */
-  private show(): void {
-    this.restoreFocusTo = focusReturnTarget(this.document, this.trigger);
-    if (!this.overlay.attach()) {
+  /**
+   * Synchronizes native Escape cancellation with the open model.
+   *
+   * @param event - The browser cancel event.
+   */
+  cancel(event: Event): void {
+    event.preventDefault();
+    if (this.closeOnEscape()) {
+      this.open.set(false);
+    }
+  }
+
+  /** Synchronizes browser closes, including forms using `method="dialog"`. */
+  closed(): void {
+    if (!this.content?.open) {
+      this.open.set(false);
+    }
+  }
+
+  /**
+   * Records whether a pointer interaction started inside the panel.
+   *
+   * @param event - The pointerdown event from the dialog.
+   */
+  pointerDown(event: PointerEvent): void {
+    const rect = this.content?.getBoundingClientRect();
+    this.pointerStartedInside =
+      !!rect &&
+      (event.target !== this.content ||
+        (event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom));
+  }
+
+  /**
+   * Dismisses a click on the native backdrop, outside the panel bounds.
+   *
+   * @param event - The click event from the dialog.
+   */
+  backdropClick(event: MouseEvent): void {
+    const startedInside = this.pointerStartedInside;
+    this.pointerStartedInside = false;
+    const content = this.content;
+    if (
+      startedInside ||
+      !content ||
+      event.target !== content ||
+      !this.closeOnOverlayClick()
+    ) {
       return;
     }
-    // The content's own children render with the next change detection, so
-    // the trap looks for focusable elements once they exist.
+    const rect = content.getBoundingClientRect();
+    if (
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
+    ) {
+      this.open.set(false);
+    }
+  }
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      if (untracked(this.hydrated)) {
+        this.content?.close();
+      }
+      this.view?.destroy();
+    });
+  }
+
+  /** Opens in the browser's modal top layer, after the view has rendered. */
+  private show(): void {
+    if (!this.view && this.template && this.viewContainer) {
+      this.view = this.viewContainer.createEmbeddedView(this.template);
+      this.view.detectChanges();
+    }
+    const content = this.content;
+    if (!content || content.open || !untracked(this.open)) {
+      return;
+    }
+    this.focusBeforeOpen = this.document.activeElement;
+    this.restoreFocusTo = this.openedFromTrigger
+      ? this.trigger
+      : focusReturnTarget(this.document, this.trigger);
+    this.openedFromTrigger = false;
+    this.scrollLock.acquire();
+    content.showModal();
+    if (!content.contains(this.document.activeElement)) {
+      content.focus();
+    }
+  }
+
+  /** Closes the native dialog and restores focus if the browser did not. */
+  private hide(): void {
+    this.content?.close();
+    this.scrollLock.release();
+    const target = this.restoreFocusTo;
+    const previous = this.focusBeforeOpen;
+    this.restoreFocusTo = null;
+    this.focusBeforeOpen = null;
     afterNextRender(
       () => {
-        if (!this.content || !untracked(this.open)) {
-          return;
-        }
-        this.focusTrap = this.focusTrapFactory.create(this.content);
-        if (!this.focusTrap.focusInitialElement()) {
-          this.content.focus();
+        if (
+          target?.isConnected &&
+          (this.document.activeElement === this.document.body ||
+            this.document.activeElement === previous ||
+            !!this.content?.contains(this.document.activeElement))
+        ) {
+          target.focus({ preventScroll: true });
         }
       },
       { injector: this.injector },
     );
-  }
-
-  /** Removes the content and restores focus. */
-  private hide(): void {
-    this.focusTrap?.destroy();
-    this.focusTrap = null;
-    this.overlay.detach();
-    const target = this.restoreFocusTo;
-    this.restoreFocusTo = null;
-    // Restore after the overlay has detached; restoring earlier lets the
-    // focus trap's anchors take focus back while they are being removed.
-    afterNextRender(() => target?.focus(), { injector: this.injector });
   }
 }

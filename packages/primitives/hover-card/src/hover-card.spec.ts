@@ -45,7 +45,10 @@ describe('NdHoverCard', () => {
     expect(link.getAttribute('data-state')).toBe('open');
     fireEvent.pointerLeave(link);
     await settle(view);
-    expect(screen.queryByTestId('card')).toBeNull();
+    expect(screen.getByTestId('card').matches(':popover-open')).toBe(false);
+    expect(screen.getByTestId('card').getAttribute('data-state')).toBe(
+      'closed',
+    );
   });
 
   it('stays open while the pointer is over the card', async () => {

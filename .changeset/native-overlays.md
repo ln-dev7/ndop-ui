@@ -1,0 +1,18 @@
+---
+'@ndop/primitives': major
+'@ndop/core': major
+'@ndop/cli': minor
+'@ndop/schema': minor
+---
+
+Use native modal dialogs and top-layer popovers for overlay components. Modal
+content must be a native `dialog`; native Tab navigation can visit browser
+controls while the background page remains inert. Core supplies native closed
+states, backdrop styling and discrete transitions.
+
+The overlay registry items remove behavior-only styled forwarding directives.
+Import those parts from the primitives package. `ndop update` migrates imports,
+selectors, Sheet exportAs references, native modal markup and simple static
+backdrop customizations. Unsafe custom templates or overlays stop preparation
+with instructions before any files are written. See the native overlay migration
+guide for markup, focus behavior and customization details.

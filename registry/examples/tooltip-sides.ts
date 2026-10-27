@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import type { NdSide } from '@ndop/primitives/tooltip';
 import { Button } from '@/ui/button/button';
+import { TooltipContent } from '@/ui/tooltip/tooltip';
 import {
-  Tooltip,
-  TooltipPortal,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/ui/tooltip/tooltip';
+  NdTooltip as Tooltip,
+  NdTooltipPortal as TooltipPortal,
+  NdTooltipTrigger as TooltipTrigger,
+} from '@ndop/primitives/tooltip';
 
 /**
  * Tooltips on each side of their triggers. `start` and `end` follow the

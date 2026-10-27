@@ -4,11 +4,11 @@ import { Button } from '@/ui/button/button';
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItemIndicator,
   DropdownMenuLabel,
-  DropdownMenuTrigger,
 } from '@/ui/dropdown-menu/dropdown-menu';
+import { NdMenuGroup as DropdownMenuGroup } from '@ndop/primitives/menu';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 
 /**
  * Checkbox items that show or hide panels. Space toggles one and keeps the
@@ -32,10 +32,7 @@ import {
     </button>
     <ng-template #panels>
       <div ndDropdownMenuContent class="w-56">
-        <div
-          ndDropdownMenuGroup
-          aria-labelledby="dropdown-menu-checkboxes-label"
-        >
+        <div ndMenuGroup aria-labelledby="dropdown-menu-checkboxes-label">
           <div ndDropdownMenuLabel id="dropdown-menu-checkboxes-label">
             Panels
           </div>

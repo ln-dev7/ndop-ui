@@ -1,40 +1,15 @@
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
-import { NdContextMenuTrigger } from '@ndop/primitives/context-menu';
 import {
   NdMenuContent,
-  NdMenuGroup,
   NdMenuItem,
   NdMenuItemCheckbox,
   NdMenuItemIndicator,
   NdMenuItemRadio,
   NdMenuLabel,
-  NdMenuRadioGroup,
   NdMenuSeparator,
   NdMenuSubTrigger,
 } from '@ndop/primitives/menu';
 import { cn } from '@/lib/utils';
-
-/**
- * An area with a context menu (`@ndop/primitives/context-menu`): its value
- * is the menu's `ng-template`, opened at the pointer on a right click or
- * long press, or at its corner on Shift + F10. Make it focusable and named.
- *
- * @example
- * ```html
- * <div [ndContextMenuTrigger]="menu" tabindex="0" aria-label="Canvas">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndContextMenuTrigger]',
-  hostDirectives: [
-    {
-      directive: NdContextMenuTrigger,
-      inputs: ['ndContextMenuTrigger', 'disabled'],
-    },
-  ],
-  host: { 'data-slot': 'context-menu-trigger' },
-})
-export class ContextMenuTrigger {}
 
 /**
  * A context menu's list (`@ndop/primitives/menu`), in the `ng-template` a
@@ -88,22 +63,6 @@ export class ContextMenuSubContent {
     ),
   );
 }
-
-/**
- * Groups related items (`role="group"`). Name it with `aria-labelledby`
- * pointing at a label.
- *
- * @example
- * ```html
- * <div ndContextMenuGroup aria-labelledby="account">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndContextMenuGroup]',
-  hostDirectives: [NdMenuGroup],
-  host: { 'data-slot': 'context-menu-group' },
-})
-export class ContextMenuGroup {}
 
 /**
  * One action (`role="menuitem"`): activating it emits `triggered` and
@@ -176,28 +135,6 @@ export class ContextMenuCheckboxItem {
     ),
   );
 }
-
-/**
- * Groups radio items (`role="group"`) and holds the checked value, bound
- * with `[(value)]`.
- *
- * @example
- * ```html
- * <div ndContextMenuRadioGroup aria-label="Panel position" [(value)]="position">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndContextMenuRadioGroup]',
-  hostDirectives: [
-    {
-      directive: NdMenuRadioGroup,
-      inputs: ['value'],
-      outputs: ['valueChange'],
-    },
-  ],
-  host: { 'data-slot': 'context-menu-radio-group' },
-})
-export class ContextMenuRadioGroup {}
 
 /**
  * One choice of a radio group (`role="menuitemradio"`). Put an indicator

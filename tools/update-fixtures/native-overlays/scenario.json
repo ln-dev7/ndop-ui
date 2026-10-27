@@ -1,0 +1,4 @@
+{
+  "description": "Real 1.x-to-2.x overlay snapshots: customized consumer aliases, external native modal markup, Sheet exportAs references and safe rejection of behavioral backdrops.",
+  "snapshots": ["dialog", "sheet", "select", "dropdown-menu"]
+}

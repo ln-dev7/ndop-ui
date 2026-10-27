@@ -47,6 +47,28 @@ keyboardContract('popover', {
 });
 
 test.describe('Popover', () => {
+  test('preserves the styled native popover border token', async ({ page }) => {
+    await gotoHydrated(page, '/examples/popover-demo');
+    await page.getByRole('button', { name: 'Open popover' }).click();
+    const content = page.locator('[ndPopoverContent]');
+    await expect(content).toBeVisible();
+    const colors = await content.evaluate((element) => {
+      const probe = document.createElement('span');
+      probe.style.borderColor = 'var(--border)';
+      element.append(probe);
+      const expected = getComputedStyle(probe).borderTopColor;
+      probe.remove();
+      const actual = getComputedStyle(element);
+      return {
+        expected,
+        actual: actual.borderTopColor,
+        width: actual.borderTopWidth,
+      };
+    });
+    expect(colors.actual).toBe(colors.expected);
+    expect(colors.width).toBe('1px');
+  });
+
   test('is never rendered open on the server', async ({ request }) => {
     const html = await (await request.get('/primitives/popover')).text();
     expect(html).toContain('Filters');

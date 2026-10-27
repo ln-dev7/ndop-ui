@@ -1,4 +1,7 @@
-import { CdkContextMenuTrigger } from '@angular/cdk/menu';
+import {
+  NdNativeMenuTrigger,
+  NdNativeContextMenuTrigger,
+} from '@ndop/primitives/internal';
 import {
   afterNextRender,
   booleanAttribute,
@@ -17,7 +20,7 @@ import {
 import { ND_MENU_PLACEMENT } from '@ndop/primitives/menu';
 
 /**
- * An area with its own menu, composing `CdkContextMenuTrigger`: its value
+ * An area with its own native popover menu: its value
  * is the `ng-template` of the menu. A right click or long press opens the
  * menu at the pointer; Shift + F10 or the context-menu key opens it at the
  * area's corner and focuses its first item. The menu's parts are
@@ -40,7 +43,7 @@ import { ND_MENU_PLACEMENT } from '@ndop/primitives/menu';
   providers: [
     { provide: ND_MENU_PLACEMENT, useValue: { side: () => 'bottom' } },
   ],
-  hostDirectives: [CdkContextMenuTrigger],
+  hostDirectives: [NdNativeContextMenuTrigger],
   host: {
     '[attr.data-state]': 'isOpen() ? "open" : "closed"',
     '[attr.data-disabled]': 'disabled() ? "" : null',
@@ -54,7 +57,7 @@ export class NdContextMenuTrigger implements OnInit {
   /** Leaves the browser's own context menu. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
-  private readonly trigger = inject(CdkContextMenuTrigger);
+  private readonly trigger = inject(NdNativeMenuTrigger);
   private readonly element =
     inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 

@@ -4,20 +4,20 @@ import {
   missingShadcnClasses,
   registrySource,
 } from '../../testing/shadcn-parity';
+import { SheetCloseButton, SheetContent, SheetTitle } from './sheet';
 import {
-  Sheet,
-  SheetCloseButton,
-  SheetContent,
-  SheetOverlay,
-  SheetPortal,
-  SheetTitle,
-  SheetTrigger,
-} from './sheet';
+  NdDialog as Sheet,
+  NdDialogOverlay as SheetOverlay,
+  NdDialogPortal as SheetPortal,
+  NdDialogTrigger as SheetTrigger,
+} from '@ndop/primitives/dialog';
 
 describe('Sheet', () => {
   it('matches shadcn new-york-v4 classes, except its documented changes', () => {
     expect(
       missingShadcnClasses('sheet', registrySource('ui/sheet/sheet.ts'), {
+        // Native ::backdrop replaces the styled overlay element (ADR-0032).
+        'fixed inset-0 z-50': null,
         // Logical sides: shadcn's right and left become end and start.
         'inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm':
           'inset-y-0 end-0 h-full w-3/4 border-s data-[state=closed]:slide-out-to-end data-[state=open]:slide-in-from-end sm:max-w-sm',
@@ -32,14 +32,13 @@ describe('Sheet', () => {
 
   it('slides in from its side, labelled by its title', async () => {
     const view = await render(
-      `<ng-container ndSheet>
-        <button ndSheetTrigger>Open</button>
-        <ng-template ndSheetPortal>
-          <div ndSheetOverlay></div>
-          <div ndSheetContent side="start">
+      `<ng-container ndDialog>
+        <button ndDialogTrigger>Open</button>
+        <ng-template ndDialogPortal>
+          <dialog ndSheetContent side="start">
             <h2 ndSheetTitle>Filters</h2>
             <button ndSheetCloseButton aria-label="Close">×</button>
-          </div>
+          </dialog>
         </ng-template>
       </ng-container>`,
       {

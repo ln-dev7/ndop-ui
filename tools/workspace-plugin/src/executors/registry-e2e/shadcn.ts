@@ -147,27 +147,23 @@ export const routes: Routes = [
 
 /** A page that uses the Dialog the shadcn CLI installed. */
 export const SHADCN_PAGE = `import { Component } from '@angular/core';
+import { NdDialog, NdDialogTrigger } from '@ndop/primitives/dialog';
 import {
-  Dialog,
   DialogCloseButton,
   DialogContent,
-  DialogPortal,
   DialogTitle,
-  DialogTrigger,
 } from './ui/dialog/dialog';
 
 @Component({
   selector: 'app-ndop-page',
-  imports: [Dialog, DialogTrigger, DialogPortal, DialogContent, DialogTitle, DialogCloseButton],
+  imports: [NdDialog, NdDialogTrigger, DialogContent, DialogTitle, DialogCloseButton],
   template: \`
     <ng-container ndDialog>
       <button type="button" ndDialogTrigger>Delete account</button>
-      <ng-template ndDialogPortal>
-        <div ndDialogContent>
-          <h2 ndDialogTitle>Delete your account?</h2>
-          <button type="button" ndDialogCloseButton><span class="sr-only">Close</span></button>
-        </div>
-      </ng-template>
+      <dialog ndDialogContent>
+        <h2 ndDialogTitle>Delete your account?</h2>
+        <button type="button" ndDialogCloseButton><span class="sr-only">Close</span></button>
+      </dialog>
     </ng-container>
   \`,
 })

@@ -1,13 +1,11 @@
 import { computed, Directive, input } from '@angular/core';
 import {
-  NdCombobox,
   NdComboboxChip,
   NdComboboxChipRemove,
   NdComboboxChips,
   NdComboboxClear,
   NdComboboxContent,
   NdComboboxEmpty,
-  NdComboboxGroup,
   NdComboboxInput,
   NdComboboxItem,
   NdComboboxItemIndicator,
@@ -21,51 +19,6 @@ import { cn } from '@/lib/utils';
 
 /** Classes of the small icon buttons beside the field and in chips. */
 const iconButton = buttonVariants({ variant: 'ghost', size: 'icon-xs' });
-
-/**
- * A combobox (`@ndop/primitives/combobox`): a text field that filters a
- * list of options below it as the user types. With `multiple`, chosen
- * options show as chips. Put it on an `ng-container`, and bind forms on
- * its field.
- *
- * @example
- * ```html
- * <ng-container ndCombobox [(value)]="framework">
- *   <div ndComboboxControl>
- *     <input ndComboboxInput aria-label="Framework" placeholder="Select a framework" />
- *     <button ndComboboxTrigger><svg ndIcon="chevron-down"></svg></button>
- *   </div>
- *   <div ndComboboxContent>
- *     <div ndComboboxList>
- *       <div ndComboboxEmpty>No framework found.</div>
- *       <div ndComboboxItem value="angular">Angular</div>
- *     </div>
- *   </div>
- * </ng-container>
- * ```
- */
-@Directive({
-  selector: '[ndCombobox]',
-  hostDirectives: [
-    {
-      directive: NdCombobox,
-      inputs: [
-        'value',
-        'values',
-        'multiple',
-        'search',
-        'open',
-        'filter',
-        'autoHighlight',
-        'disabled',
-        'required',
-        'invalid',
-      ],
-      outputs: ['valueChange', 'valuesChange', 'searchChange', 'openChange'],
-    },
-  ],
-})
-export class Combobox {}
 
 /**
  * The bordered row around a single-value combobox's field and its buttons.
@@ -276,21 +229,6 @@ export class ComboboxItemIndicator {
     ),
   );
 }
-
-/**
- * Groups options, named by its {@link ComboboxLabel}.
- *
- * @example
- * ```html
- * <div ndComboboxGroup><div ndComboboxLabel>Frontend</div>…</div>
- * ```
- */
-@Directive({
-  selector: '[ndComboboxGroup]',
-  hostDirectives: [NdComboboxGroup],
-  host: { 'data-slot': 'combobox-group' },
-})
-export class ComboboxGroup {}
 
 /**
  * The heading of a {@link ComboboxGroup}.

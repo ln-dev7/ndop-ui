@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { Avatar, AvatarFallback } from '@/ui/avatar/avatar';
 import { Button } from '@/ui/button/button';
+import { HoverCardContent } from '@/ui/hover-card/hover-card';
 import {
-  HoverCardContent,
-  HoverCard,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@/ui/hover-card/hover-card';
+  NdHoverCard as HoverCard,
+  NdHoverCardPortal as HoverCardPortal,
+  NdHoverCardTrigger as HoverCardTrigger,
+} from '@ndop/primitives/hover-card';
 
 /**
  * A profile preview behind a username link. The link says where it goes

@@ -1,11 +1,5 @@
 import { Directionality } from '@angular/cdk/bidi';
 import {
-  createCloseScrollStrategy,
-  createFlexibleConnectedPositionStrategy,
-  type FlexibleConnectedPositionStrategy,
-  type OverlayRef,
-} from '@angular/cdk/overlay';
-import {
   afterNextRender,
   booleanAttribute,
   DestroyRef,
@@ -26,7 +20,8 @@ import {
   bindOpenState,
   connectedPositions,
   injectId,
-  injectOverlay,
+  injectNativePopover,
+  type NdNativePopover,
   placementOf,
   type NdPlacement,
 } from '@ndop/primitives/internal';
@@ -85,34 +80,22 @@ export class NdTooltip {
   trigger: HTMLElement | null = null;
 
   private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly directionality = inject(Directionality);
   private preferred: NdPlacement = { side: 'bottom', align: 'center' };
   private offset = 4;
-  private strategy: FlexibleConnectedPositionStrategy | null = null;
-  private ref: OverlayRef | null = null;
+  private ref: NdNativePopover | null = null;
   private timer: ReturnType<typeof setTimeout> | undefined;
 
-  private readonly overlay = injectOverlay({
-    config: (injector) => {
-      const strategy = createFlexibleConnectedPositionStrategy(
-        injector,
-        this.trigger ?? this.document.body,
-      )
-        .withPositions(this.positions())
-        .withFlexibleDimensions(false)
-        .withPush(false);
-      strategy.positionChanges.subscribe((change) =>
-        this.placement.set(placementOf(change.connectionPair)),
-      );
-      this.strategy = strategy;
-      return {
-        positionStrategy: strategy,
-        scrollStrategy: createCloseScrollStrategy(injector),
-        direction: this.directionality,
-      };
-    },
-    onEscape: () => this.hideNow(),
+  private readonly overlay = injectNativePopover({
+    anchor: () => this.trigger ?? this.document.body,
+    positions: () => this.positions(),
+    rtl: () => this.directionality.value === 'rtl',
+    onPosition: (position) => this.placement.set(placementOf(position)),
+    mode: 'hint',
+    closeOnScroll: true,
+    onDismiss: () => this.hideNow(),
   });
 
   private readonly hydrated = bindOpenState(this.open, this.defaultOpen, {
@@ -143,7 +126,7 @@ export class NdTooltip {
   /** Closes immediately. */
   hideNow(): void {
     clearTimeout(this.timer);
-    this.open.set(false);
+    if (!this.destroyRef.destroyed) this.open.set(false);
   }
 
   /** Keeps the tooltip open while the pointer is over it. */
@@ -178,9 +161,7 @@ export class NdTooltip {
     this.preferred = placement;
     this.offset = offset;
     this.placement.set(placement);
-    this.strategy?.withPositions(this.positions());
-    // The content's inputs arrive while the CDK is still attaching the
-    // portal; reposition once rendering is done.
+    // Measure after content inputs and layout have settled.
     afterNextRender(
       () => {
         if (this.ref?.hasAttached()) {

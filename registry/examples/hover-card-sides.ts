@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { Button } from '@/ui/button/button';
+import { HoverCardContent } from '@/ui/hover-card/hover-card';
 import {
-  HoverCardContent,
-  HoverCard,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@/ui/hover-card/hover-card';
+  NdHoverCard as HoverCard,
+  NdHoverCardPortal as HoverCardPortal,
+  NdHoverCardTrigger as HoverCardTrigger,
+} from '@ndop/primitives/hover-card';
 
 /**
  * Cards on each side of their links; they flip when there's no room.

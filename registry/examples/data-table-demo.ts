@@ -12,7 +12,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuItemIndicator,
-  DropdownMenuTrigger,
 } from '@/ui/dropdown-menu/dropdown-menu';
 import { Input } from '@/ui/input/input';
 import {
@@ -24,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/ui/table/table';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 
 interface Payment {
   id: string;

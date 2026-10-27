@@ -1,62 +1,6 @@
 import { computed, Directive, input } from '@angular/core';
-import { NdTooltip } from '@ndop/primitives/tooltip';
-import {
-  NdHoverCardContent,
-  NdHoverCardPortal,
-  NdHoverCardTrigger,
-} from '@ndop/primitives/hover-card';
+import { NdHoverCardContent } from '@ndop/primitives/hover-card';
 import { cn } from '@/lib/utils';
-
-/**
- * A hover card (`@ndop/primitives/hover-card`): a preview of what's behind
- * a link, for sighted users, after a short delay on hover or keyboard
- * focus. Put it on an `ng-container`.
- *
- * @example
- * ```html
- * <ng-container ndHoverCard>…</ng-container>
- * ```
- */
-@Directive({
-  selector: '[ndHoverCard]',
-  hostDirectives: [
-    {
-      directive: NdTooltip,
-      inputs: ['open', 'defaultOpen', 'openDelay', 'closeDelay'],
-      outputs: ['openChange'],
-    },
-  ],
-})
-export class HoverCard {}
-
-/**
- * The link its card previews.
- *
- * @example
- * ```html
- * <a ndButton variant="link" ndHoverCardTrigger href="/ada">&#64;ada</a>
- * ```
- */
-@Directive({
-  selector: '[ndHoverCardTrigger]',
-  hostDirectives: [NdHoverCardTrigger],
-  host: { 'data-slot': 'hover-card-trigger' },
-})
-export class HoverCardTrigger {}
-
-/**
- * Marks the `ng-template` its card renders while open.
- *
- * @example
- * ```html
- * <ng-template ndHoverCardPortal>…</ng-template>
- * ```
- */
-@Directive({
-  selector: 'ng-template[ndHoverCardPortal]',
-  hostDirectives: [NdHoverCardPortal],
-})
-export class HoverCardPortal {}
 
 /**
  * A hover card (`@ndop/primitives/hover-card`): a preview of what's behind

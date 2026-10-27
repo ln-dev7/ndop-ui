@@ -181,7 +181,7 @@ Primitives are headless, directive-first and signal-driven; they own behavior an
 - **Signals everywhere.** `input()`, `input.required()`, `model()` for two-way state (`open`, `value`, `checked`), `output()` for events, `computed()` for derived state. No `@Input()` decorators, no `EventEmitter`, no RxJS in public APIs.
 - **Zoneless and OnPush safe.** Every primitive works in an app using `provideZonelessChangeDetection()`. No `setTimeout`-based change detection hacks.
 - **SSR and hydration safe.** No direct `window`/`document` access outside `afterNextRender` or injected `DOCUMENT`; no layout reads during SSR.
-- **Build on the CDK.** Use CDK overlay, menu, listbox, accordion, a11y, key-manager and focus-trap utilities where they exist. Write custom behavior only where the CDK doesn't cover the pattern, and record it in an ADR. `@angular/aria` was the original plan; ADR-0004, amendment 3, defers it until its API holds steady across two majors.
+- **Use native overlays and CDK behavior.** Dialog, Alert Dialog, Sheet and Drawer use native modal `dialog` elements; Popover, Tooltip, Hover Card, Dropdown/Context Menu and Select/Combobox use the Popover API. Native modality, top-layer rendering, cancellation and light dismiss replace CDK overlays and focus traps for these families (ADR-0032). Keep CDK menu, listbox, accordion, a11y and key-manager utilities for interaction behavior; other components retain their existing overlay implementation. Use CSS anchor positioning where supported and a JavaScript positioning fallback otherwise. Record custom behavior in an ADR. `@angular/aria` was the original plan; ADR-0004, amendment 3, defers it until its API holds steady across two majors.
 - **State exposed as data attributes.** `data-state="open|closed"`, `data-disabled`, `data-highlighted`, `data-orientation`, so styles never reach into private APIs.
 - **Context via DI.** Compound parts (Dialog, Trigger, Content, Title) communicate through an injection token that provides a signal-based context, never through `@ContentChild` chains.
 - **Controlled and uncontrolled.** Every stateful primitive works with `[(open)]` binding or with no binding (internal default from a `defaultOpen` input).
@@ -223,7 +223,7 @@ Styled items are small, boring files the user owns: one primitive (or native ele
 - `variants()` in `@ndop/core` mirrors the cva API (base, variants, compoundVariants, defaults) and returns a typed function; variant prop types are derived from it.
 - A `class` input on every styled item, merged with `cn()` (clsx + tailwind-merge) so user classes always win.
 - One file per component where possible; at most one `.ts` plus one `.css` for animations. No barrel files that hide where things live.
-- Every part a styled item offers is its own directive without the `Nd` prefix, even when it adds no classes, so users import one naming scheme from one local path, e.g. `Dialog`, `DialogTrigger` and `DialogContent` from `@/ui/dialog`. `Nd<Part>` names belong to `@ndop/primitives` (ADR-0014, amendment 3).
+- Styled overlay parts exist only when they carry classes or behavior. Import behavior-only parts directly from `@ndop/primitives`, e.g. `NdDialog` and `NdDialogTrigger`; import `DialogContent` from the local styled file. This supersedes ADR-0014 amendment 3 for the migrated overlay families (ADR-0032). Registry major releases provide import, selector and native-dialog markup codemods through `ndop update`.
 
 ```ts
 const buttonVariants = variants({

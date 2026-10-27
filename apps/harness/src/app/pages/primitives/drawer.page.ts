@@ -5,8 +5,6 @@ import {
   NdDrawerContent,
   NdDrawerDescription,
   NdDrawerHandle,
-  NdDrawerOverlay,
-  NdDrawerPortal,
   NdDrawerTitle,
   NdDrawerTrigger,
 } from '@ndop/primitives/drawer';
@@ -17,8 +15,7 @@ import {
   imports: [
     NdDrawer,
     NdDrawerTrigger,
-    NdDrawerPortal,
-    NdDrawerOverlay,
+
     NdDrawerContent,
     NdDrawerHandle,
     NdDrawerTitle,
@@ -32,25 +29,23 @@ import {
         <button ndDrawerTrigger class="rounded-md border px-4 py-2">
           Set goal
         </button>
-        <ng-template ndDrawerPortal>
-          <div ndDrawerOverlay class="fixed inset-0 bg-black/50"></div>
+
+        <dialog
+          ndDrawerContent
+          data-testid="drawer"
+          class="backdrop:bg-black/50 bg-background fixed inset-x-0 bottom-0 grid h-80 translate-y-(--nd-drawer-drag) gap-3 rounded-t-lg p-6"
+        >
           <div
-            ndDrawerContent
-            data-testid="drawer"
-            class="bg-background fixed inset-x-0 bottom-0 grid h-80 translate-y-(--nd-drawer-drag) gap-3 rounded-t-lg p-6"
-          >
-            <div
-              ndDrawerHandle
-              class="bg-muted mx-auto h-2 w-24 rounded-full"
-            ></div>
-            <h2 ndDrawerTitle class="text-lg font-semibold">Move goal</h2>
-            <p ndDrawerDescription>Set your daily activity goal.</p>
-            <input aria-label="Calories" class="rounded-md border px-3 py-2" />
-            <button ndDrawerClose class="rounded-md border px-3 py-1">
-              Done
-            </button>
-          </div>
-        </ng-template>
+            ndDrawerHandle
+            class="bg-muted mx-auto h-2 w-24 rounded-full"
+          ></div>
+          <h2 ndDrawerTitle class="text-lg font-semibold">Move goal</h2>
+          <p ndDrawerDescription>Set your daily activity goal.</p>
+          <input aria-label="Calories" class="rounded-md border px-3 py-2" />
+          <button ndDrawerClose class="rounded-md border px-3 py-1">
+            Done
+          </button>
+        </dialog>
       </ng-container>
     </main>
   `,

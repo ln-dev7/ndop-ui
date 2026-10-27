@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { Button } from '@/ui/button/button';
 import {
-  Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetOverlay,
-  SheetPortal,
   SheetTitle,
-  SheetTrigger,
   type SheetSide,
 } from '@/ui/sheet/sheet';
+import {
+  NdDialog as Sheet,
+  NdDialogClose as SheetClose,
+  NdDialogTrigger as SheetTrigger,
+} from '@ndop/primitives/dialog';
 
 /**
  * A sheet from each edge. `start` and `end` are logical, so they swap in
@@ -26,30 +26,27 @@ import {
     SheetContent,
     SheetDescription,
     SheetHeader,
-    SheetOverlay,
-    SheetPortal,
+
     SheetTitle,
     SheetTrigger,
   ],
   template: `
     <div class="grid grid-cols-2 gap-2">
       @for (side of sides; track side) {
-        <ng-container ndSheet>
-          <button ndButton variant="outline" ndSheetTrigger class="capitalize">
+        <ng-container ndDialog>
+          <button ndButton variant="outline" ndDialogTrigger class="capitalize">
             {{ side }}
           </button>
-          <ng-template ndSheetPortal>
-            <div ndSheetOverlay></div>
-            <div ndSheetContent [side]="side">
-              <div ndSheetHeader>
-                <h2 ndSheetTitle class="capitalize">{{ side }} sheet</h2>
-                <p ndSheetDescription>It slides in from the {{ side }}.</p>
-              </div>
-              <div class="p-4">
-                <button ndButton variant="outline" ndSheetClose>Close</button>
-              </div>
+
+          <dialog ndSheetContent [side]="side">
+            <div ndSheetHeader>
+              <h2 ndSheetTitle class="capitalize">{{ side }} sheet</h2>
+              <p ndSheetDescription>It slides in from the {{ side }}.</p>
             </div>
-          </ng-template>
+            <div class="p-4">
+              <button ndButton variant="outline" ndDialogClose>Close</button>
+            </div>
+          </dialog>
         </ng-container>
       }
     </div>

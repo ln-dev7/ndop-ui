@@ -1,0 +1,33 @@
+{
+  "name": "dropdown-menu-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Dropdown Menu demo",
+  "description": "An account menu with groups, shortcuts, a submenu, a disabled item and a destructive action.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "button",
+    "dropdown-menu",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/dropdown-menu-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dropdown-menu-demo.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DropdownMenuContent,\n  DropdownMenuItem,\n  DropdownMenuLabel,\n  DropdownMenuSeparator,\n  DropdownMenuShortcut,\n  DropdownMenuSubContent,\n  DropdownMenuSubTrigger,\n} from '@/ui/dropdown-menu/dropdown-menu';\nimport { NdMenuGroup as DropdownMenuGroup } from '@ndop/primitives/menu';\nimport { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';\n\n/**\n * An account menu: labelled groups, shortcuts, a submenu, a disabled item\n * and a destructive action, reporting what was chosen.\n */\n@Component({\n  selector: 'example-dropdown-menu-demo',\n  imports: [\n    Button,\n    DropdownMenuContent,\n    DropdownMenuGroup,\n    DropdownMenuItem,\n    DropdownMenuLabel,\n    DropdownMenuSeparator,\n    DropdownMenuShortcut,\n    DropdownMenuSubContent,\n    DropdownMenuSubTrigger,\n    DropdownMenuTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"flex flex-col items-start gap-3\">\n      <button ndButton variant=\"outline\" [ndDropdownMenuTrigger]=\"account\">\n        Open\n      </button>\n      <p class=\"text-sm text-muted-foreground\" aria-live=\"polite\">\n        {{ chosen() }}\n      </p>\n    </div>\n    <ng-template #account>\n      <div ndDropdownMenuContent class=\"w-56\">\n        <div ndMenuGroup aria-labelledby=\"dropdown-menu-demo-account\">\n          <div ndDropdownMenuLabel id=\"dropdown-menu-demo-account\">\n            My account\n          </div>\n          <div ndDropdownMenuItem (triggered)=\"choose('Profile')\">\n            Profile <span ndDropdownMenuShortcut>⇧⌘P</span>\n          </div>\n          <div ndDropdownMenuItem (triggered)=\"choose('Billing')\">\n            Billing <span ndDropdownMenuShortcut>⌘B</span>\n          </div>\n          <div ndDropdownMenuItem (triggered)=\"choose('Settings')\">\n            Settings <span ndDropdownMenuShortcut>⌘S</span>\n          </div>\n        </div>\n        <div ndDropdownMenuSeparator></div>\n        <div ndMenuGroup aria-label=\"Team\">\n          <div ndDropdownMenuItem (triggered)=\"choose('Team')\">Team</div>\n          <div [ndDropdownMenuSubTrigger]=\"invite\">\n            Invite users\n            <svg ndIcon=\"chevron-right\" class=\"ms-auto rtl:rotate-180\"></svg>\n          </div>\n          <div ndDropdownMenuItem disabled>API (coming soon)</div>\n        </div>\n        <div ndDropdownMenuSeparator></div>\n        <div\n          ndDropdownMenuItem\n          variant=\"destructive\"\n          (triggered)=\"choose('Log out')\"\n        >\n          Log out <span ndDropdownMenuShortcut>⇧⌘Q</span>\n        </div>\n      </div>\n    </ng-template>\n    <ng-template #invite>\n      <div ndDropdownMenuSubContent>\n        <div ndDropdownMenuItem (triggered)=\"choose('Invite by email')\">\n          Email\n        </div>\n        <div ndDropdownMenuItem (triggered)=\"choose('Invite by message')\">\n          Message\n        </div>\n      </div>\n    </ng-template>\n  `,\n})\nexport class DropdownMenuDemoExample {\n  protected readonly chosen = signal('');\n\n  /**\n   * Reports what was chosen.\n   *\n   * @param action - The item's name.\n   */\n  protected choose(action: string): void {\n    this.chosen.set(`Chose ${action}.`);\n  }\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DropdownMenuDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "alert-dialog-destructive",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Alert Dialog destructive",
+  "description": "Deleting a project, with an icon and a destructive action that runs before the dialog closes.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "alert-dialog",
+    "button",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/alert-dialog-destructive.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/alert-dialog-destructive.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  AlertDialogAction,\n  AlertDialogCancel,\n  AlertDialogContent,\n  AlertDialogDescription,\n  AlertDialogFooter,\n  AlertDialogHeader,\n  AlertDialogMedia,\n  AlertDialogTitle,\n} from '@/ui/alert-dialog/alert-dialog';\nimport { Button } from '@/ui/button/button';\nimport {\n  NdAlertDialog as AlertDialog,\n  NdAlertDialogTrigger as AlertDialogTrigger,\n} from '@ndop/primitives/alert-dialog';\n\n/**\n * Deleting a project: an icon, a destructive action whose handler runs\n * before the dialog closes, and the result reported on the page.\n */\n@Component({\n  selector: 'example-alert-dialog-destructive',\n  imports: [\n    AlertDialogAction,\n    AlertDialogCancel,\n    AlertDialogContent,\n    AlertDialogDescription,\n    AlertDialogFooter,\n    AlertDialogHeader,\n    AlertDialogMedia,\n\n    AlertDialogTitle,\n    Button,\n    AlertDialog,\n\n    AlertDialogTrigger,\n    NdIcon,\n  ],\n  template: `\n    <div class=\"flex flex-col items-start gap-3\">\n      <ng-container ndAlertDialog>\n        <button ndButton variant=\"destructive\" ndAlertDialogTrigger>\n          Delete project\n        </button>\n\n        <dialog ndAlertDialogContent>\n          <div ndAlertDialogHeader>\n            <div ndAlertDialogMedia><svg ndIcon=\"circle-alert\"></svg></div>\n            <h2 ndAlertDialogTitle>Delete \"Website redesign\"?</h2>\n            <p ndAlertDialogDescription>\n              Its 24 tasks and their comments are deleted for everyone. This\n              can't be undone.\n            </p>\n          </div>\n          <div ndAlertDialogFooter>\n            <button ndAlertDialogCancel>Keep project</button>\n            <button\n              ndAlertDialogAction\n              variant=\"destructive\"\n              (click)=\"deleted.set(true)\"\n            >\n              Delete project\n            </button>\n          </div>\n        </dialog>\n      </ng-container>\n      <p class=\"text-sm text-muted-foreground\" aria-live=\"polite\">\n        @if (deleted()) {\n          Project deleted.\n        }\n      </p>\n    </div>\n  `,\n})\nexport class AlertDialogDestructiveExample {\n  protected readonly deleted = signal(false);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "AlertDialogDestructiveExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

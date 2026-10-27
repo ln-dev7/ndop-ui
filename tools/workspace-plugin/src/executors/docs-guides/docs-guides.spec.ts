@@ -309,3 +309,67 @@ describe('formatIssues', () => {
     ).toBe('apps/docs/src/blog/a.md:3: One.');
   });
 });
+
+describe('primitive directive imports', () => {
+  const primitives = [
+    {
+      importPath: '@ndop/primitives/dialog',
+      parts: [
+        { name: 'NdDialog', selector: '[ndDialog]' },
+        { name: 'NdDialogContent', selector: 'dialog[ndDialogContent]' },
+      ],
+    },
+  ];
+  const known = knownDirectives(
+    new Map([
+      [
+        'dialog',
+        {
+          parts: [
+            { name: 'DialogContent', selector: 'dialog[ndDialogContent]' },
+          ],
+        },
+      ],
+    ]),
+    new Map([
+      [
+        'dialog',
+        [
+          {
+            path: 'ui/dialog/dialog.ts',
+            content: 'export class DialogContent {}',
+          },
+        ],
+      ],
+    ]),
+    primitives,
+  );
+
+  it('imports behavior from extracted primitive metadata and styling from the registry', () => {
+    const code = templateComponent(
+      '<ng-container ndDialog><dialog ndDialogContent></dialog></ng-container>',
+      known,
+      './template.html',
+    );
+    expect(code).toContain(
+      "import { NdDialog } from '@ndop/primitives/dialog';",
+    );
+    expect(code).toContain(
+      "import { DialogContent } from '@/ui/dialog/dialog';",
+    );
+    expect(code).toContain('imports: [DialogContent, NdDialog]');
+    expect(code).not.toContain('NdDialogContent');
+  });
+
+  it('still rejects misspelled primitive selectors', () => {
+    expect(
+      unknownDirectives('guide.md', 'Use ndDialog and ndDialg.', known),
+    ).toEqual([
+      {
+        guide: 'guide.md',
+        line: 1,
+        message: "ndDialg isn't a directive of any Ndop item.",
+      },
+    ]);
+  });
+});

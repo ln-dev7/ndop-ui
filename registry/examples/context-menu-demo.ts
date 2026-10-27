@@ -6,14 +6,14 @@ import {
   ContextMenuItem,
   ContextMenuItemIndicator,
   ContextMenuLabel,
-  ContextMenuRadioGroup,
   ContextMenuRadioItem,
   ContextMenuSeparator,
   ContextMenuShortcut,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
-  ContextMenuTrigger,
 } from '@/ui/context-menu/context-menu';
+import { NdMenuRadioGroup as ContextMenuRadioGroup } from '@ndop/primitives/menu';
+import { NdContextMenuTrigger as ContextMenuTrigger } from '@ndop/primitives/context-menu';
 
 /**
  * Browser-style actions on an area: shortcuts, a disabled item, a submenu,
@@ -69,7 +69,7 @@ import {
         <div ndContextMenuSeparator></div>
         <div ndContextMenuLabel inset id="context-menu-demo-people">People</div>
         <div
-          ndContextMenuRadioGroup
+          ndMenuRadioGroup
           aria-labelledby="context-menu-demo-people"
           [(value)]="person"
         >

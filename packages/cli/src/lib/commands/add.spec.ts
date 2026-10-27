@@ -67,7 +67,7 @@ describe('ndop add', () => {
     ]);
     expect(result.dependencies).toEqual([
       '@angular/cdk@^22.0.0',
-      '@ndop/primitives',
+      '@ndop/primitives@^2.0.0',
     ]);
     expect(environment.project.files.get('src/app/ui/dialog/dialog.ts')).toBe(
       environment.registry['dialog']?.files?.[0]?.content,

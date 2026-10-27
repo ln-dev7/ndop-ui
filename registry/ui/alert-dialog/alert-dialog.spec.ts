@@ -11,12 +11,14 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogOverlay,
   AlertDialogTitle,
-  AlertDialog,
-  AlertDialogPortal,
-  AlertDialogTrigger,
 } from './alert-dialog';
+import {
+  NdAlertDialogOverlay as AlertDialogOverlay,
+  NdAlertDialog as AlertDialog,
+  NdAlertDialogPortal as AlertDialogPortal,
+  NdAlertDialogTrigger as AlertDialogTrigger,
+} from '@ndop/primitives/alert-dialog';
 
 describe('AlertDialog', () => {
   it('matches shadcn new-york-v4 classes, except its documented changes', () => {
@@ -25,6 +27,8 @@ describe('AlertDialog', () => {
         'alert-dialog',
         registrySource('ui/alert-dialog/alert-dialog.ts'),
         {
+          // Native ::backdrop replaces the overlay element (ADR-0032).
+          'fixed inset-0 z-50': null,
           'alert-dialog-content:text-left': 'alert-dialog-content:text-start',
         },
       ),
@@ -36,8 +40,7 @@ describe('AlertDialog', () => {
       `<ng-container ndAlertDialog>
         <button ndAlertDialogTrigger>Delete</button>
         <ng-template ndAlertDialogPortal>
-          <div ndAlertDialogOverlay></div>
-          <div ndAlertDialogContent size="sm">
+          <dialog ndAlertDialogContent size="sm">
             <div ndAlertDialogHeader>
               <h2 ndAlertDialogTitle>Delete project?</h2>
               <p ndAlertDialogDescription>This can't be undone.</p>
@@ -46,7 +49,7 @@ describe('AlertDialog', () => {
               <button ndAlertDialogCancel>Cancel</button>
               <button ndAlertDialogAction variant="destructive">Delete it</button>
             </div>
-          </div>
+          </dialog>
         </ng-template>
       </ng-container>`,
       {

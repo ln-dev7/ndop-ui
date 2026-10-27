@@ -15,7 +15,7 @@ everyone must reach.
 ## Markup
 
 The Tooltip convention: a root on an `ng-container`, the content in an
-`ng-template` portal. It composes the Tooltip primitive's root, so it
+`ng-template` local view, shown as a native hint popover. It composes the Tooltip primitive's root, so it
 shares its delays and positioning.
 
 ```html
@@ -63,3 +63,14 @@ shares its delays and positioning.
 ## RTL behavior
 
 `start` and `end` sides are logical and swap in right-to-left layouts.
+
+## Native top-layer behavior
+
+The popup uses `popover="hint"` and native `toggle` events synchronize its
+open state. Hint popovers keep an enclosing auto popover open. Where hint mode is unavailable, manual mode with Escape handling supplies the same behavior.
+Content remains in its declaring Angular view. Nothing opens on the server;
+bound initial state applies after hydration. Positioning uses CSS anchors where
+supported, with JavaScript flipping/shifting and a fallback that tracks resize,
+scroll and disconnected anchors. Closing cleans up listeners and observers.
+`data-state` supports native discrete display/overlay transitions and
+`@starting-style`; reduced motion is respected. See ADR-0032.

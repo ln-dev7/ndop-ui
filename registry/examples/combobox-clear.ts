@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Combobox,
   ComboboxClear,
   ComboboxContent,
   ComboboxControl,
@@ -12,6 +11,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/ui/combobox/combobox';
+import { NdCombobox as Combobox } from '@ndop/primitives/combobox';
 
 /**
  * A combobox with a button that clears it, shown in place of the chevron

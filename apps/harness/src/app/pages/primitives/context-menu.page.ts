@@ -18,6 +18,15 @@ import { NdMenuContent, NdMenuItem } from '@ndop/primitives/menu';
       >
         Right click here
       </div>
+      <div
+        [ndContextMenuTrigger]="menu"
+        tabindex="0"
+        aria-label="Second canvas"
+        data-testid="second-canvas"
+        class="grid h-24 w-80 place-items-center rounded-md border"
+      >
+        Another context area
+      </div>
       <ng-template #menu>
         <div
           ndMenuContent

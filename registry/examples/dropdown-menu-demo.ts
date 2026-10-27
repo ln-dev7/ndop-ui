@@ -3,15 +3,15 @@ import { NdIcon } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import {
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
 } from '@/ui/dropdown-menu/dropdown-menu';
+import { NdMenuGroup as DropdownMenuGroup } from '@ndop/primitives/menu';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 
 /**
  * An account menu: labelled groups, shortcuts, a submenu, a disabled item
@@ -43,7 +43,7 @@ import {
     </div>
     <ng-template #account>
       <div ndDropdownMenuContent class="w-56">
-        <div ndDropdownMenuGroup aria-labelledby="dropdown-menu-demo-account">
+        <div ndMenuGroup aria-labelledby="dropdown-menu-demo-account">
           <div ndDropdownMenuLabel id="dropdown-menu-demo-account">
             My account
           </div>
@@ -58,7 +58,7 @@ import {
           </div>
         </div>
         <div ndDropdownMenuSeparator></div>
-        <div ndDropdownMenuGroup aria-label="Team">
+        <div ndMenuGroup aria-label="Team">
           <div ndDropdownMenuItem (triggered)="choose('Team')">Team</div>
           <div [ndDropdownMenuSubTrigger]="invite">
             Invite users

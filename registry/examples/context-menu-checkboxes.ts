@@ -4,8 +4,8 @@ import {
   ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItemIndicator,
-  ContextMenuTrigger,
 } from '@/ui/context-menu/context-menu';
+import { NdContextMenuTrigger as ContextMenuTrigger } from '@ndop/primitives/context-menu';
 
 /**
  * Checkbox items on a right click, for showing and hiding a map's

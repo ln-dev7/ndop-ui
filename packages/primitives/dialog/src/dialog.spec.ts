@@ -34,13 +34,12 @@ const parts = [
     >
       <button ndDialogTrigger>Edit profile</button>
       <ng-template ndDialogPortal>
-        <div ndDialogOverlay data-testid="overlay"></div>
-        <div ndDialogContent>
+        <dialog ndDialogContent>
           <h2 ndDialogTitle>Edit profile</h2>
           <p ndDialogDescription>Changes are saved when you close.</p>
           <input aria-label="Name" />
           <button ndDialogClose>Close</button>
-        </div>
+        </dialog>
       </ng-template>
     </ng-container>
   `,
@@ -100,8 +99,7 @@ describe('NdDialog', () => {
     trigger.focus();
     await userEvent.click(trigger);
     await settle();
-    // jsdom has no layout, so the CDK can't tell which element is tabbable;
-    // the e2e suite checks that the first focusable element gets focus.
+    // Real native focus containment is verified in all three browser engines.
     expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(
       true,
     );
@@ -116,14 +114,18 @@ describe('NdDialog', () => {
     const { host, trigger, settle } = await setup();
     await userEvent.click(trigger);
     await settle();
-    await userEvent.keyboard('{Escape}');
+    screen
+      .getByRole('dialog')
+      .dispatchEvent(new Event('cancel', { cancelable: true }));
     await settle();
     expect(host.open()).toBe(false);
 
     host.closeOnEscape.set(false);
     await userEvent.click(trigger);
     await settle();
-    await userEvent.keyboard('{Escape}');
+    screen
+      .getByRole('dialog')
+      .dispatchEvent(new Event('cancel', { cancelable: true }));
     await settle();
     expect(host.open()).toBe(true);
   });
@@ -132,10 +134,9 @@ describe('NdDialog', () => {
     const { host, trigger, settle } = await setup();
     await userEvent.click(trigger);
     await settle();
-    expect(screen.getByTestId('overlay').getAttribute('aria-hidden')).toBe(
-      'true',
-    );
-    await userEvent.click(screen.getByTestId('overlay'));
+    screen
+      .getByRole('dialog')
+      .dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: -1 }));
     await settle();
     expect(host.open()).toBe(false);
   });
@@ -158,7 +159,7 @@ describe('NdDialog defaultOpen', () => {
       <ng-container ndDialog defaultOpen>
         <button ndDialogTrigger>Open</button>
         <ng-template ndDialogPortal>
-          <div ndDialogContent aria-label="Initially open">Hello</div>
+          <dialog ndDialogContent aria-label="Initially open">Hello</dialog>
         </ng-template>
       </ng-container>
     `,

@@ -49,6 +49,7 @@ import {
   primitiveMarkdown,
   primitivePage,
   readPrimitives,
+  readReference as readPrimitiveReference,
 } from './primitive-docs';
 import { searchIndex, type IndexedComponent } from './search-index';
 // By path, for the same reason as the renderer above.
@@ -356,7 +357,17 @@ export function componentDocs(options: ComponentDocsOptions): Plugin {
             BLOCK_CATEGORIES.find((c) => c.slug === summary.category)?.title ??
             summary.category,
         }));
-        return `export const entries = ${JSON.stringify(searchIndex(options.guides, components, blocks, readPosts(options.blog)))};`;
+        return `export const entries = ${JSON.stringify(
+          searchIndex(
+            options.guides,
+            components,
+            blocks,
+            readPosts(options.blog),
+            readPrimitives(options.workspace).map((primitive) =>
+              readPrimitiveReference(options.workspace, primitive.name),
+            ),
+          ),
+        )};`;
       }
       if (id === `\0${LANDING_ID}`) {
         const data = await landingData({

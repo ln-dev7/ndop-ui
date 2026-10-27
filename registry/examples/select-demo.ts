@@ -2,14 +2,16 @@ import { Component, signal } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import { Label } from '@/ui/label/label';
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectTrigger,
-  SelectValue,
 } from '@/ui/select/select';
+import {
+  NdSelect as Select,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /**
  * A fruit picker with a placeholder. Typing a letter on the closed select

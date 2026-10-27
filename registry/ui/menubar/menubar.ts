@@ -1,13 +1,11 @@
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import {
   NdMenuContent,
-  NdMenuGroup,
   NdMenuItem,
   NdMenuItemCheckbox,
   NdMenuItemIndicator,
   NdMenuItemRadio,
   NdMenuLabel,
-  NdMenuRadioGroup,
   NdMenuSeparator,
   NdMenuSubTrigger,
 } from '@ndop/primitives/menu';
@@ -129,22 +127,6 @@ export class MenubarSubContent {
 }
 
 /**
- * Groups related items (`role="group"`). Name it with `aria-labelledby`
- * pointing at a label.
- *
- * @example
- * ```html
- * <div ndMenubarGroup aria-labelledby="account">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndMenubarGroup]',
-  hostDirectives: [NdMenuGroup],
-  host: { 'data-slot': 'menubar-group' },
-})
-export class MenubarGroup {}
-
-/**
  * One action (`role="menuitem"`): activating it emits `triggered` and
  * closes the menu. Disabled items stay focusable and do nothing. Use a
  * `div`: on a `button`, Space would close the menu.
@@ -215,28 +197,6 @@ export class MenubarCheckboxItem {
     ),
   );
 }
-
-/**
- * Groups radio items (`role="group"`) and holds the checked value, bound
- * with `[(value)]`.
- *
- * @example
- * ```html
- * <div ndMenubarRadioGroup aria-label="Panel position" [(value)]="position">…</div>
- * ```
- */
-@Directive({
-  selector: '[ndMenubarRadioGroup]',
-  hostDirectives: [
-    {
-      directive: NdMenuRadioGroup,
-      inputs: ['value'],
-      outputs: ['valueChange'],
-    },
-  ],
-  host: { 'data-slot': 'menubar-radio-group' },
-})
-export class MenubarRadioGroup {}
 
 /**
  * One choice of a radio group (`role="menuitemradio"`). Put an indicator

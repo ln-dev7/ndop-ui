@@ -1,0 +1,33 @@
+{
+  "name": "dropdown-menu-radio-group",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Dropdown Menu radio group",
+  "description": "Radio items that choose one panel position.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "button",
+    "dropdown-menu",
+    "icons"
+  ],
+  "files": [
+    {
+      "path": "examples/dropdown-menu-radio-group.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dropdown-menu-radio-group.ts",
+      "content": "import { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DropdownMenuContent,\n  DropdownMenuItemIndicator,\n  DropdownMenuLabel,\n  DropdownMenuRadioItem,\n  DropdownMenuSeparator,\n} from '@/ui/dropdown-menu/dropdown-menu';\nimport { NdMenuRadioGroup as DropdownMenuRadioGroup } from '@ndop/primitives/menu';\nimport { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';\n\n/** Radio items that choose one panel position. */\n@Component({\n  selector: 'example-dropdown-menu-radio-group',\n  imports: [\n    Button,\n    DropdownMenuContent,\n    DropdownMenuItemIndicator,\n    DropdownMenuLabel,\n    DropdownMenuRadioGroup,\n    DropdownMenuRadioItem,\n    DropdownMenuSeparator,\n    DropdownMenuTrigger,\n    NdIcon,\n  ],\n  template: `\n    <button ndButton variant=\"outline\" [ndDropdownMenuTrigger]=\"positions\">\n      Panel: {{ position() }}\n    </button>\n    <ng-template #positions>\n      <div ndDropdownMenuContent class=\"w-56\">\n        <div ndDropdownMenuLabel id=\"dropdown-menu-radio-group-label\">\n          Panel position\n        </div>\n        <div ndDropdownMenuSeparator></div>\n        <div\n          ndMenuRadioGroup\n          aria-labelledby=\"dropdown-menu-radio-group-label\"\n          [(value)]=\"position\"\n        >\n          @for (option of options; track option) {\n            <div ndDropdownMenuRadioItem [value]=\"option\" class=\"capitalize\">\n              <span ndDropdownMenuItemIndicator>\n                <svg ndIcon=\"circle\" class=\"size-2 fill-current\"></svg>\n              </span>\n              {{ option }}\n            </div>\n          }\n        </div>\n      </div>\n    </ng-template>\n  `,\n})\nexport class DropdownMenuRadioGroupExample {\n  protected readonly options = ['top', 'bottom', 'end'];\n  protected readonly position = signal<string | null>('bottom');\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DropdownMenuRadioGroupExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -12,18 +12,22 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
   DialogTitle,
-  Dialog,
-  DialogClose,
-  DialogPortal,
-  DialogTrigger,
 } from './dialog';
+import {
+  NdDialogOverlay as DialogOverlay,
+  NdDialog as Dialog,
+  NdDialogClose as DialogClose,
+  NdDialogPortal as DialogPortal,
+  NdDialogTrigger as DialogTrigger,
+} from '@ndop/primitives/dialog';
 
 describe('Dialog', () => {
   it('matches shadcn new-york-v4 classes', () => {
     expect(
       missingShadcnClasses('dialog', registrySource('ui/dialog/dialog.ts'), {
+        // Native ::backdrop replaces the styled overlay element (ADR-0032).
+        'fixed inset-0 z-50': null,
         'top-4 right-4': 'top-4 end-4',
         'sm:text-left': 'sm:text-start',
       }),
@@ -35,15 +39,14 @@ describe('Dialog', () => {
       `<ng-container ndDialog>
         <button ndDialogTrigger>Open</button>
         <ng-template ndDialogPortal>
-          <div ndDialogOverlay data-testid="overlay"></div>
-          <div ndDialogContent>
+          <dialog ndDialogContent>
             <div ndDialogHeader data-testid="header">
               <h2 ndDialogTitle>Edit profile</h2>
               <p ndDialogDescription>Saved on close.</p>
             </div>
             <div ndDialogFooter data-testid="footer"><button ndDialogClose>Done</button></div>
             <button ndDialogCloseButton><svg ndIcon="x"></svg><span class="sr-only">Close</span></button>
-          </div>
+          </dialog>
         </ng-template>
       </ng-container>`,
       {
@@ -72,7 +75,9 @@ describe('Dialog', () => {
     const dialog = screen.getByRole('dialog', { name: 'Edit profile' });
     expect(dialog.getAttribute('data-slot')).toBe('dialog-content');
     expect(dialog.classList).toContain('sm:max-w-lg');
-    expect(screen.getByTestId('overlay').classList).toContain('bg-black/50');
+    expect(screen.getByRole('dialog').classList).toContain(
+      'backdrop:bg-black/50',
+    );
     expect(screen.getByTestId('header').classList).toContain('sm:text-start');
     expect(screen.getByTestId('footer').classList).toContain('sm:justify-end');
     expect(screen.getByText('Edit profile').classList).toContain(

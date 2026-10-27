@@ -9,18 +9,22 @@ import {
   DrawerContent,
   DrawerHandle,
   DrawerHeader,
-  DrawerOverlay,
   DrawerTitle,
-  Drawer,
-  DrawerPortal,
-  DrawerTrigger,
 } from './drawer';
+import {
+  NdDrawerOverlay as DrawerOverlay,
+  NdDrawer as Drawer,
+  NdDrawerPortal as DrawerPortal,
+  NdDrawerTrigger as DrawerTrigger,
+} from '@ndop/primitives/drawer';
 
 /**
  * shadcn's classes as Ndop writes them: the primitive's `data-direction`
  * instead of vaul's attribute, and logical sides.
  */
-function ndopClasses(classes: string): string {
+function ndopClasses(classes: string): string | null {
+  // Native ::backdrop replaces the overlay element (ADR-0032).
+  if (classes.includes('fixed inset-0 z-50')) return null;
   return classes
     .replaceAll('data-[vaul-drawer-direction=', 'data-[direction=')
     .replaceAll('direction=right', 'direction=end')
@@ -54,11 +58,10 @@ describe('Drawer', () => {
       `<ng-container ndDrawer>
         <button ndDrawerTrigger>Open</button>
         <ng-template ndDrawerPortal>
-          <div ndDrawerOverlay></div>
-          <div ndDrawerContent>
+          <dialog ndDrawerContent>
             <div ndDrawerHandle data-testid="handle"></div>
             <div ndDrawerHeader><h2 ndDrawerTitle>Move goal</h2></div>
-          </div>
+          </dialog>
         </ng-template>
       </ng-container>`,
       {

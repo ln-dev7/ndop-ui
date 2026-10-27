@@ -4,10 +4,8 @@ import {
   Menubar,
   MenubarCheckboxItem,
   MenubarContent,
-  MenubarGroup,
   MenubarItem,
   MenubarItemIndicator,
-  MenubarRadioGroup,
   MenubarRadioItem,
   MenubarSeparator,
   MenubarShortcut,
@@ -15,6 +13,10 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from '@/ui/menubar/menubar';
+import {
+  NdMenuGroup as MenubarGroup,
+  NdMenuRadioGroup as MenubarRadioGroup,
+} from '@ndop/primitives/menu';
 
 /**
  * An editor's File, Edit, View and Profiles menus, with shortcuts, a
@@ -120,7 +122,7 @@ import {
     </ng-template>
     <ng-template #profiles>
       <div ndMenubarContent>
-        <div ndMenubarRadioGroup aria-label="Profile" [(value)]="profile">
+        <div ndMenuRadioGroup aria-label="Profile" [(value)]="profile">
           @for (name of names; track name) {
             <div ndMenubarRadioItem [value]="name">
               <span ndMenubarItemIndicator>
@@ -131,7 +133,7 @@ import {
           }
         </div>
         <div ndMenubarSeparator></div>
-        <div ndMenubarGroup aria-label="Manage">
+        <div ndMenuGroup aria-label="Manage">
           <div ndMenubarItem inset (triggered)="choose('Edit profiles')">
             Edit…
           </div>

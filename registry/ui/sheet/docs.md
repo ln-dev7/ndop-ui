@@ -4,10 +4,17 @@ keywords: sheet, side panel, slide over, drawer, off canvas, panel, settings, fi
 
 A sheet is a dialog that slides in from an edge of the screen, for
 content that goes with the page without replacing it, such as settings,
-filters or a cart. It's a modal dialog: focus is trapped inside while
-it's open and returns when it closes, and Escape or the backdrop closes
+filters or a cart. Native modality makes the background inert while
+it's open and restores focus when it closes. Escape or the backdrop closes
 it. It comes from the end side by default; `start` and `end` are logical,
 so they swap in right-to-left layouts.
+
+Behavior-only parts now come directly from `@ndop/primitives`; styled parts
+remain in your local item file. See [Migrating native overlays](/docs/getting-started/native-overlays)
+for the imports, selectors and customization changes.
+
+Content must be a native `dialog`. Style its `::backdrop` with `backdrop:`
+utilities; a separate overlay element is unnecessary.
 
 ## Do
 

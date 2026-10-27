@@ -30,13 +30,10 @@ import {
   RadioGroupItem,
 } from '@/ui/radio-group/radio-group';
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectTrigger,
-  SelectValue,
 } from '@/ui/select/select';
 import { Skeleton } from '@/ui/skeleton/skeleton';
 import { Switch, SwitchThumb } from '@/ui/switch/switch';
@@ -51,6 +48,11 @@ import {
 } from '@/ui/table/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs/tabs';
 import { Textarea } from '@/ui/textarea/textarea';
+import {
+  NdSelect as Select,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /** The chart's plot size, in viewBox units. */
 const WIDTH = 400;

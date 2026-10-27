@@ -10,3 +10,7 @@ export * from './overlay';
 export * from './position';
 export * from './roving-focus';
 export * from './text';
+export * from './scroll-lock';
+export * from './native-popover';
+export * from './native-menu-trigger';
+export * from './native-context-menu-trigger';

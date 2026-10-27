@@ -1,0 +1,32 @@
+{
+  "name": "sheet-sides",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Sheet sides",
+  "description": "A sheet from each edge: top, end, bottom and start.",
+  "registryDependencies": [
+    "button",
+    "sheet"
+  ],
+  "files": [
+    {
+      "path": "examples/sheet-sides.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/sheet-sides.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  SheetContent,\n  SheetDescription,\n  SheetHeader,\n  SheetTitle,\n  type SheetSide,\n} from '@/ui/sheet/sheet';\nimport {\n  NdDialog as Sheet,\n  NdDialogClose as SheetClose,\n  NdDialogTrigger as SheetTrigger,\n} from '@ndop/primitives/dialog';\n\n/**\n * A sheet from each edge. `start` and `end` are logical, so they swap in\n * right-to-left layouts.\n */\n@Component({\n  selector: 'example-sheet-sides',\n  imports: [\n    Button,\n    Sheet,\n    SheetClose,\n    SheetContent,\n    SheetDescription,\n    SheetHeader,\n\n    SheetTitle,\n    SheetTrigger,\n  ],\n  template: `\n    <div class=\"grid grid-cols-2 gap-2\">\n      @for (side of sides; track side) {\n        <ng-container ndDialog>\n          <button ndButton variant=\"outline\" ndDialogTrigger class=\"capitalize\">\n            {{ side }}\n          </button>\n\n          <dialog ndSheetContent [side]=\"side\">\n            <div ndSheetHeader>\n              <h2 ndSheetTitle class=\"capitalize\">{{ side }} sheet</h2>\n              <p ndSheetDescription>It slides in from the {{ side }}.</p>\n            </div>\n            <div class=\"p-4\">\n              <button ndButton variant=\"outline\" ndDialogClose>Close</button>\n            </div>\n          </dialog>\n        </ng-container>\n      }\n    </div>\n  `,\n})\nexport class SheetSidesExample {\n  protected readonly sides: readonly SheetSide[] = [\n    'top',\n    'end',\n    'bottom',\n    'start',\n  ];\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "SheetSidesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

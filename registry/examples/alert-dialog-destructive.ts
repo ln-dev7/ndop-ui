@@ -8,13 +8,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogMedia,
-  AlertDialogOverlay,
   AlertDialogTitle,
-  AlertDialog,
-  AlertDialogPortal,
-  AlertDialogTrigger,
 } from '@/ui/alert-dialog/alert-dialog';
 import { Button } from '@/ui/button/button';
+import {
+  NdAlertDialog as AlertDialog,
+  NdAlertDialogTrigger as AlertDialogTrigger,
+} from '@ndop/primitives/alert-dialog';
 
 /**
  * Deleting a project: an icon, a destructive action whose handler runs
@@ -30,11 +30,11 @@ import { Button } from '@/ui/button/button';
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogMedia,
-    AlertDialogOverlay,
+
     AlertDialogTitle,
     Button,
     AlertDialog,
-    AlertDialogPortal,
+
     AlertDialogTrigger,
     NdIcon,
   ],
@@ -44,29 +44,27 @@ import { Button } from '@/ui/button/button';
         <button ndButton variant="destructive" ndAlertDialogTrigger>
           Delete project
         </button>
-        <ng-template ndAlertDialogPortal>
-          <div ndAlertDialogOverlay></div>
-          <div ndAlertDialogContent>
-            <div ndAlertDialogHeader>
-              <div ndAlertDialogMedia><svg ndIcon="circle-alert"></svg></div>
-              <h2 ndAlertDialogTitle>Delete "Website redesign"?</h2>
-              <p ndAlertDialogDescription>
-                Its 24 tasks and their comments are deleted for everyone. This
-                can't be undone.
-              </p>
-            </div>
-            <div ndAlertDialogFooter>
-              <button ndAlertDialogCancel>Keep project</button>
-              <button
-                ndAlertDialogAction
-                variant="destructive"
-                (click)="deleted.set(true)"
-              >
-                Delete project
-              </button>
-            </div>
+
+        <dialog ndAlertDialogContent>
+          <div ndAlertDialogHeader>
+            <div ndAlertDialogMedia><svg ndIcon="circle-alert"></svg></div>
+            <h2 ndAlertDialogTitle>Delete "Website redesign"?</h2>
+            <p ndAlertDialogDescription>
+              Its 24 tasks and their comments are deleted for everyone. This
+              can't be undone.
+            </p>
           </div>
-        </ng-template>
+          <div ndAlertDialogFooter>
+            <button ndAlertDialogCancel>Keep project</button>
+            <button
+              ndAlertDialogAction
+              variant="destructive"
+              (click)="deleted.set(true)"
+            >
+              Delete project
+            </button>
+          </div>
+        </dialog>
       </ng-container>
       <p class="text-sm text-muted-foreground" aria-live="polite">
         @if (deleted()) {

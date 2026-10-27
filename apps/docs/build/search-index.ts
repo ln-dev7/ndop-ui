@@ -70,15 +70,20 @@ export function guideEntries(markdown: string, url: string): SearchEntry[] {
  * part, and its keyboard map.
  *
  * @param component - Its metadata.
+ * @param url - Styled component or primitive page route.
+ * @param context - Page category shown in search results.
  * @returns The entries.
  */
-export function componentEntries(component: IndexedComponent): SearchEntry[] {
-  const url = `/docs/components/${component.name}`;
+export function componentEntries(
+  component: IndexedComponent,
+  url = `/docs/components/${component.name}`,
+  context = 'Component',
+): SearchEntry[] {
   return [
     {
       kind: 'component',
       title: component.title,
-      context: 'Component',
+      context,
       description: plainText(component.description),
       ...(component.keywords?.length
         ? {
@@ -171,6 +176,7 @@ export function postEntries(post: BlogPost): SearchEntry[] {
  * @param components - Every component's metadata.
  * @param blocks - Every block.
  * @param posts - Every blog post.
+ * @param primitives - Extracted headless APIs, including behavior-only parts.
  * @returns The entries.
  */
 export function searchIndex(
@@ -178,6 +184,7 @@ export function searchIndex(
   components: IndexedComponent[],
   blocks: IndexedBlock[] = [],
   posts: BlogPost[] = [],
+  primitives: IndexedComponent[] = [],
 ): SearchEntry[] {
   const pages = readdirSync(guides, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -195,7 +202,16 @@ export function searchIndex(
     ),
     ...[...components]
       .sort((a, b) => a.title.localeCompare(b.title))
-      .flatMap(componentEntries),
+      .flatMap((component) => componentEntries(component)),
+    ...[...primitives]
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .flatMap((primitive) =>
+        componentEntries(
+          { ...primitive, title: `${primitive.title} primitive` },
+          `/docs/primitives/${primitive.name}`,
+          'Primitive',
+        ),
+      ),
     ...blocks.map(blockEntry),
     ...posts.flatMap(postEntries),
   ];

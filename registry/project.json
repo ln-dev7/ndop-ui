@@ -44,6 +44,9 @@
         "tsconfig": "tsconfig.base.json",
         "compat": "shadcn"
       }
+    },
+    "test": {
+      "parallelism": false
     }
   },
   "implicitDependencies": ["eslint-plugin"]

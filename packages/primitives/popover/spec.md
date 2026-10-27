@@ -12,7 +12,8 @@ WAI-ARIA [dialog role](https://www.w3.org/TR/wai-aria-1.2/#dialog) without
 
 ## Markup
 
-Same overlay convention as Dialog's `spec.md`.
+Content templates instantiate a local Angular view. Native popovers render that
+view in the top layer without moving it into a CDK overlay (ADR-0032).
 
 ```html
 <ng-container ndPopover>
@@ -60,9 +61,8 @@ Same overlay convention as Dialog's `spec.md`.
 | `Tab`         | Moves focus through the content; past the last element, the popover closes and focus moves to what follows the trigger.   |
 | `Shift + Tab` | Moves focus backwards through the content; before the first element, the popover closes and focus returns to the trigger. |
 
-The overlay is rendered at the end of the document, so Ndop moves focus at
-the content's edges itself; otherwise tabbing out would skip the page
-content after the trigger.
+Ndop closes the popup at its content's Tab boundaries and explicitly restores
+trigger-relative page navigation. The popup remains in its declaring view.
 
 ## Focus behavior
 
@@ -78,3 +78,14 @@ content after the trigger.
 `side="start"` and `side="end"` place the content on the inline start and
 end of the trigger, which swap in RTL; `align="start"` and `align="end"`
 swap likewise.
+
+## Native top-layer behavior
+
+The popup uses `popover="auto"` and native `toggle` events synchronize its
+open state. Native light dismiss and Escape close the active popup before a containing modal.
+Content remains in its declaring Angular view. Nothing opens on the server;
+bound initial state applies after hydration. Positioning uses CSS anchors where
+supported, with JavaScript flipping/shifting and a fallback that tracks resize,
+scroll and disconnected anchors. Closing cleans up listeners and observers.
+`data-state` supports native discrete display/overlay transitions and
+`@starting-style`; reduced motion is respected. See ADR-0032.

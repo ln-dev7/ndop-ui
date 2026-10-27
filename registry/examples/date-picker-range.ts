@@ -19,12 +19,12 @@ import {
   type DateRange,
 } from '@/ui/calendar/calendar';
 import { DatePickerTrigger } from '@/ui/date-picker/date-picker';
+import { PopoverContent } from '@/ui/popover/popover';
 import {
-  Popover,
-  PopoverContent,
-  PopoverPortal,
-  PopoverTrigger,
-} from '@/ui/popover/popover';
+  NdPopover as Popover,
+  NdPopoverPortal as PopoverPortal,
+  NdPopoverTrigger as PopoverTrigger,
+} from '@ndop/primitives/popover';
 
 /**
  * A button that opens two months to pick a range of days; it shows both

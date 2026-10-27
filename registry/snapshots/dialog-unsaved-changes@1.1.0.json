@@ -1,0 +1,34 @@
+{
+  "name": "dialog-unsaved-changes",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Dialog unsaved changes",
+  "description": "A dialog that only closes through its buttons, so a click outside doesn't lose the user's changes.",
+  "registryDependencies": [
+    "button",
+    "dialog",
+    "label",
+    "textarea"
+  ],
+  "files": [
+    {
+      "path": "examples/dialog-unsaved-changes.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/dialog-unsaved-changes.ts",
+      "content": "import { Component } from '@angular/core';\nimport { Button } from '@/ui/button/button';\nimport {\n  DialogContent,\n  DialogDescription,\n  DialogFooter,\n  DialogHeader,\n  DialogTitle,\n} from '@/ui/dialog/dialog';\nimport { Label } from '@/ui/label/label';\nimport { Textarea } from '@/ui/textarea/textarea';\nimport {\n  NdDialog as Dialog,\n  NdDialogClose as DialogClose,\n  NdDialogTrigger as DialogTrigger,\n} from '@ndop/primitives/dialog';\n\n/**\n * A dialog that a click outside doesn't close, so the user doesn't lose\n * what they typed by accident. Escape and the buttons still close it.\n */\n@Component({\n  selector: 'example-dialog-unsaved-changes',\n  imports: [\n    Button,\n    DialogContent,\n    DialogDescription,\n    DialogFooter,\n    DialogHeader,\n\n    DialogTitle,\n    Label,\n    Dialog,\n    DialogClose,\n\n    DialogTrigger,\n    Textarea,\n  ],\n  template: `\n    <ng-container ndDialog [closeOnOverlayClick]=\"false\">\n      <button ndButton ndDialogTrigger variant=\"outline\">Write a note</button>\n\n      <dialog ndDialogContent class=\"sm:max-w-[425px]\">\n        <div ndDialogHeader>\n          <h2 ndDialogTitle>New note</h2>\n          <p ndDialogDescription>\n            The note is kept until you save or discard it.\n          </p>\n        </div>\n        <div class=\"grid gap-2\">\n          <label ndLabel for=\"dialog-unsaved-changes-note\">Note</label>\n          <textarea ndTextarea id=\"dialog-unsaved-changes-note\"></textarea>\n        </div>\n        <div ndDialogFooter>\n          <button ndButton ndDialogClose variant=\"outline\">Discard</button>\n          <button ndButton ndDialogClose>Save note</button>\n        </div>\n      </dialog>\n    </ng-container>\n  `,\n})\nexport class DialogUnsavedChangesExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DialogUnsavedChangesExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

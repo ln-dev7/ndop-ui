@@ -29,15 +29,14 @@ import {
     <ng-container ndAlertDialog [(open)]="open">
       <button ndAlertDialogTrigger>Delete project</button>
       <ng-template ndAlertDialogPortal>
-        <div ndAlertDialogOverlay data-testid="overlay"></div>
-        <div ndAlertDialogContent>
+        <dialog ndAlertDialogContent>
           <h2 ndAlertDialogTitle>Delete this project?</h2>
           <p ndAlertDialogDescription>This can't be undone.</p>
           <button ndAlertDialogAction (click)="deleted.set(true)">
             Delete
           </button>
           <button ndAlertDialogCancel>Cancel</button>
-        </div>
+        </dialog>
       </ng-template>
     </ng-container>
   `,
@@ -72,12 +71,10 @@ describe('NdAlertDialog', () => {
     expect(dialog.getAttribute('aria-describedby')).toBe(
       screen.getByText("This can't be undone.").id,
     );
-    // The CDK focus trap focuses this element first; jsdom has no layout,
-    // so its visibility check fails here, and the e2e test checks focus.
+    // Native autofocus selects Cancel; the browser tests verify focus because
+    // JSDOM does not implement the native modal focusing steps.
     expect(
-      screen
-        .getByRole('button', { name: 'Cancel' })
-        .hasAttribute('cdkfocusinitial'),
+      screen.getByRole('button', { name: 'Cancel' }).hasAttribute('autofocus'),
     ).toBe(true);
   });
 
@@ -85,10 +82,14 @@ describe('NdAlertDialog', () => {
     const { host, settle } = await setup();
     host.open.set(true);
     await settle();
-    await userEvent.click(screen.getByTestId('overlay'));
+    screen
+      .getByRole('alertdialog')
+      .dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: -1 }));
     await settle();
     expect(host.open()).toBe(true);
-    await userEvent.keyboard('{Escape}');
+    screen
+      .getByRole('alertdialog')
+      .dispatchEvent(new Event('cancel', { cancelable: true }));
     await settle();
     expect(host.open()).toBe(false);
     host.open.set(true);

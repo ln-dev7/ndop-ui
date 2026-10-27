@@ -148,11 +148,18 @@ export function changeList(
         (path) =>
           `Leaves ${code(path)} to you; it's no longer part of the item.`,
       ),
-    ...changes.codemods.map((codemod) =>
-      codemod.kind === 'rename-export'
-        ? `Renames ${code(codemod.from)} to ${code(codemod.to)} where your code imports it.`
-        : `Renames the ${code(codemod.from)} input to ${code(codemod.to)} in your templates, on ${code(codemod.selector)}.`,
-    ),
+    ...changes.codemods.map((codemod) => {
+      switch (codemod.kind) {
+        case 'rename-export':
+          return `Renames ${code(codemod.from)} to ${code(codemod.to)} where your code imports it.`;
+        case 'rename-input':
+          return `Renames the ${code(codemod.from)} input to ${code(codemod.to)} in your templates, on ${code(codemod.selector)}.${codemod.renameExportAs ? ' Updates matching template export references too.' : ''}`;
+        case 'move-export':
+          return `Moves ${code(codemod.from)} to ${code(codemod.to)} from ${code(codemod.module)}, preserving your aliases.`;
+        case 'native-dialog':
+          return `Converts ${code(codemod.from)} content to native ${code('<dialog>')} markup and moves static ${code(codemod.overlay)} classes to its backdrop.`;
+      }
+    }),
     ...changes.dependencies.added.map((spec) => `Installs ${code(spec)}.`),
     ...changes.dependencies.changed.map((spec) => `Needs ${code(spec)}.`),
     ...changes.dependencies.removed.map(

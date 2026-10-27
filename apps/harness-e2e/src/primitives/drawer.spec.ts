@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { nativeDialogBoundary } from '../native-dialog';
 import { keyboardContract } from '../keyboard';
 import { gotoHydrated } from '../navigation';
 
@@ -21,9 +22,13 @@ keyboardContract('drawer', {
   },
   'Shift + Tab': async ({ page, browserName }) => {
     test.skip(browserName === 'webkit', 'Safari skips buttons on Tab');
-    await openDrawer(page);
-    await page.keyboard.press('Shift+Tab');
-    await expect(page.getByRole('button', { name: 'Done' })).toBeFocused();
+    const { drawer } = await openDrawer(page);
+    await nativeDialogBoundary(
+      page,
+      drawer,
+      page.getByRole('button', { name: 'Done' }),
+      true,
+    );
   },
   Escape: async ({ page }) => {
     const { trigger, drawer } = await openDrawer(page);
@@ -34,6 +39,24 @@ keyboardContract('drawer', {
 });
 
 test.describe('Drawer', () => {
+  test('keeps a styled bottom drawer stretched across the viewport', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await gotoHydrated(page, '/examples/drawer-demo');
+    await page.getByRole('button', { name: 'Set goal', exact: true }).click();
+    const drawer = page.locator('dialog[ndDrawerContent]');
+    await expect(drawer).toBeVisible();
+    await expect
+      .poll(async () => {
+        const bounds = await drawer.boundingBox();
+        return bounds
+          ? Math.abs(bounds.width - (page.viewportSize()?.width ?? 0))
+          : Infinity;
+      })
+      .toBeLessThan(1);
+  });
+
   test('closes when dragged far enough toward its edge', async ({ page }) => {
     const { drawer } = await openDrawer(page);
     const box = await drawer.boundingBox();

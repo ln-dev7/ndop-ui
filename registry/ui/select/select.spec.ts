@@ -5,14 +5,16 @@ import {
   shadcnClassStrings,
 } from '../../testing/shadcn-parity';
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectTrigger,
-  SelectValue,
 } from './select';
+import {
+  NdSelect as Select,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /**
  * shadcn's classes as Ndop writes them: logical sides, no Radix custom
@@ -38,6 +40,7 @@ function ndopClasses(classes: string): string | null {
     return 'p-1 scroll-my-1';
   }
   return classes
+    .replaceAll('*:data-[slot=select-value]:', '[&>[ndSelectValue]]:')
     .replace(/origin-\(--radix-[a-z-]+\) /, '')
     .replace(/max-h-\(--radix-[a-z-]+\)/, 'max-h-[min(24rem,80vh)]')
     .replace(
@@ -94,7 +97,7 @@ describe('Select', () => {
     expect(trigger.getAttribute('data-size')).toBe('sm');
     expect(trigger.hasAttribute('data-placeholder')).toBe(true);
     expect(trigger.textContent?.trim()).toBe('Select a fruit');
-    expect(trigger.querySelector('[data-slot=select-value]')?.textContent).toBe(
+    expect(trigger.querySelector('[ndSelectValue]')?.textContent).toBe(
       'Select a fruit',
     );
   });

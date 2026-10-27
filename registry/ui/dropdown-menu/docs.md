@@ -9,6 +9,13 @@ keys and typing move between items, and Escape closes it and returns to
 the button. Items can be checkboxes, radios or open submenus, and can be
 disabled while staying reachable.
 
+Behavior-only parts now come directly from `@ndop/primitives`; styled parts
+remain in your local item file. See [Migrating native overlays](/docs/getting-started/native-overlays)
+for the imports, selectors and customization changes.
+
+The popup uses the native Popover API for top-layer rendering and dismissal.
+Positioning retains a JavaScript fallback where CSS anchors are unavailable.
+
 ## Do
 
 - Name the button after what the menu is for, such as "Actions" or an

@@ -5,7 +5,6 @@ import {
   shadcnClassStrings,
 } from '../../testing/shadcn-parity';
 import {
-  Combobox,
   ComboboxChip,
   ComboboxChipRemove,
   ComboboxChips,
@@ -19,6 +18,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from './combobox';
+import { NdCombobox as Combobox } from '@ndop/primitives/combobox';
 
 /**
  * shadcn's classes as Ndop writes them. shadcn builds its field on

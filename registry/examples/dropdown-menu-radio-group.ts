@@ -5,11 +5,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItemIndicator,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@/ui/dropdown-menu/dropdown-menu';
+import { NdMenuRadioGroup as DropdownMenuRadioGroup } from '@ndop/primitives/menu';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 
 /** Radio items that choose one panel position. */
 @Component({
@@ -36,7 +36,7 @@ import {
         </div>
         <div ndDropdownMenuSeparator></div>
         <div
-          ndDropdownMenuRadioGroup
+          ndMenuRadioGroup
           aria-labelledby="dropdown-menu-radio-group-label"
           [(value)]="position"
         >

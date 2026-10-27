@@ -33,3 +33,10 @@ export const appConfig: ApplicationConfig = {
 ## Docs
 
 https://ndop.dev
+
+Native overlay components require the shared styles import above. It supplies
+closed-state visibility, native backdrop defaults, discrete display/overlay
+transitions and reduced-motion behavior. Customize modal backdrops with
+`backdrop:` utilities on the native `dialog`, rather than a separate overlay
+node. Core and primitives 2.x are released together; see the
+[native overlay migration guide](https://ndop.dev/docs/getting-started/native-overlays).

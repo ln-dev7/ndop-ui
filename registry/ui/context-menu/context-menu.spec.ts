@@ -10,8 +10,8 @@ import {
   ContextMenuItem,
   ContextMenuItemIndicator,
   ContextMenuSeparator,
-  ContextMenuTrigger,
 } from './context-menu';
+import { NdContextMenuTrigger as ContextMenuTrigger } from '@ndop/primitives/context-menu';
 
 /**
  * shadcn's classes as Ndop writes them: logical sides and spacing, and no

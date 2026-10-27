@@ -9,6 +9,13 @@ the options and Enter picks one. With `multiple`, the chosen options
 show as chips beside the field, and Backspace removes the last one. Bind
 forms on its field.
 
+Behavior-only parts now come directly from `@ndop/primitives`; styled parts
+remain in your local item file. See [Migrating native overlays](/docs/getting-started/native-overlays)
+for the imports, selectors and customization changes.
+
+The popup uses the native Popover API for top-layer rendering and dismissal.
+Positioning retains a JavaScript fallback where CSS anchors are unavailable.
+
 ## Do
 
 - Name the field with a label, as any form field.

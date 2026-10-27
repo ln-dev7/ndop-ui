@@ -1,5 +1,7 @@
 # ADR-0004: Primitives on `@angular/aria` + CDK, and custom fallbacks
 
+Native overlay rendering and forwarding directives for the migrated overlay families are superseded by [ADR-0032](0032-native-overlays.md), proposed with issue #3. The remaining decisions below still apply.
+
 - Status: Accepted (approved by Valery on 2026-10-02), with Amendments 1–5
 - Date: 2026-10-02
 - Phase: 1

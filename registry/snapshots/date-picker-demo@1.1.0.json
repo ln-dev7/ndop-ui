@@ -1,0 +1,34 @@
+{
+  "name": "date-picker-demo",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Date Picker demo",
+  "description": "A button that opens a calendar to pick a date, and closes once one is picked.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "calendar",
+    "date-picker",
+    "icons",
+    "popover"
+  ],
+  "files": [
+    {
+      "path": "examples/date-picker-demo.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/date-picker-demo.ts",
+      "content": "import { DatePipe } from '@angular/common';\nimport { Component, signal } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport {\n  Calendar,\n  CalendarCaption,\n  CalendarCell,\n  CalendarDay,\n  CalendarGrid,\n  CalendarHeading,\n  CalendarMonth,\n  CalendarMonths,\n  CalendarNav,\n  CalendarNext,\n  CalendarPrevious,\n  CalendarWeek,\n  CalendarWeekday,\n  CalendarWeekdays,\n} from '@/ui/calendar/calendar';\nimport { DatePickerTrigger } from '@/ui/date-picker/date-picker';\nimport { PopoverContent } from '@/ui/popover/popover';\nimport {\n  NdPopover as Popover,\n  NdPopoverPortal as PopoverPortal,\n  NdPopoverTrigger as PopoverTrigger,\n} from '@ndop/primitives/popover';\n\n/**\n * A button that opens a calendar to pick a date. Opening focuses the chosen\n * day; picking one closes the popover and returns focus to the button.\n */\n@Component({\n  selector: 'example-date-picker-demo',\n  imports: [\n    Calendar,\n    CalendarCaption,\n    CalendarCell,\n    CalendarDay,\n    CalendarGrid,\n    CalendarHeading,\n    CalendarMonth,\n    CalendarMonths,\n    CalendarNav,\n    CalendarNext,\n    CalendarPrevious,\n    CalendarWeek,\n    CalendarWeekday,\n    CalendarWeekdays,\n    DatePickerTrigger,\n    DatePipe,\n    NdIcon,\n    Popover,\n    PopoverContent,\n    PopoverPortal,\n    PopoverTrigger,\n  ],\n  template: `\n    <ng-container ndPopover [(open)]=\"open\">\n      <button ndPopoverTrigger ndDatePickerTrigger [empty]=\"!date()\">\n        <svg ndIcon=\"calendar\"></svg>\n        {{ date() ? (date() | date: 'longDate') : 'Pick a date' }}\n      </button>\n      <ng-template ndPopoverPortal>\n        <div\n          ndPopoverContent\n          align=\"start\"\n          aria-label=\"Choose a date\"\n          class=\"w-auto p-0\"\n        >\n          <div\n            ndCalendar\n            #calendar=\"ndCalendar\"\n            [(value)]=\"date\"\n            (valueChange)=\"open.set(false)\"\n          >\n            <div ndCalendarMonths>\n              <div ndCalendarNav>\n                <button ndCalendarPrevious aria-label=\"Previous month\">\n                  <svg ndIcon=\"chevron-left\"></svg>\n                </button>\n                <button ndCalendarNext aria-label=\"Next month\">\n                  <svg ndIcon=\"chevron-right\"></svg>\n                </button>\n              </div>\n              @for (month of calendar.months(); track month.key) {\n                <div ndCalendarMonth [month]=\"month\">\n                  <div ndCalendarCaption>\n                    <div ndCalendarHeading>{{ month.label }}</div>\n                  </div>\n                  <table ndCalendarGrid>\n                    <thead>\n                      <tr ndCalendarWeekdays>\n                        @for (\n                          weekday of calendar.weekdays();\n                          track weekday.long\n                        ) {\n                          <th ndCalendarWeekday [weekday]=\"weekday\">\n                            {{ weekday.short }}\n                          </th>\n                        }\n                      </tr>\n                    </thead>\n                    <tbody>\n                      @for (week of month.weeks; track week.key) {\n                        <tr ndCalendarWeek>\n                          @for (day of week.days; track day.key) {\n                            <td ndCalendarCell [day]=\"day\">\n                              <button ndCalendarDay [day]=\"day\">\n                                {{ day.label }}\n                              </button>\n                            </td>\n                          }\n                        </tr>\n                      }\n                    </tbody>\n                  </table>\n                </div>\n              }\n            </div>\n          </div>\n        </div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class DatePickerDemoExample {\n  protected readonly open = signal(false);\n  protected readonly date = signal<Date | null>(null);\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DatePickerDemoExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

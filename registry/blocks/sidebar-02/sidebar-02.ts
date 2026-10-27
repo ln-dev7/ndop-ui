@@ -16,11 +16,9 @@ import {
 } from '@/ui/collapsible/collapsible';
 import {
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@/ui/dropdown-menu/dropdown-menu';
 import { Separator } from '@/ui/separator/separator';
 import {
@@ -46,6 +44,8 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from '@/ui/sidebar/sidebar';
+import { NdMenuGroup as DropdownMenuGroup } from '@ndop/primitives/menu';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 
 /** A link in one of the sidebar's groups. */
 interface NavLink {
@@ -276,7 +276,7 @@ interface NavLink {
     </div>
     <ng-template #account>
       <div ndDropdownMenuContent class="w-56">
-        <div ndDropdownMenuGroup aria-labelledby="sidebar-02-account">
+        <div ndMenuGroup aria-labelledby="sidebar-02-account">
           <div ndDropdownMenuLabel id="sidebar-02-account">Amina Njoya</div>
           <div ndDropdownMenuItem (triggered)="choose('Account')">
             <svg ndIcon="user"></svg>

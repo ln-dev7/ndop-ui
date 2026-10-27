@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Combobox,
   ComboboxContent,
   ComboboxControl,
   ComboboxEmpty,
@@ -12,6 +11,7 @@ import {
   ComboboxTrigger,
 } from '@/ui/combobox/combobox';
 import { Label } from '@/ui/label/label';
+import { NdCombobox as Combobox } from '@ndop/primitives/combobox';
 
 /**
  * A framework picker that filters as you type. Focus stays in the field;

@@ -5,8 +5,6 @@ import {
   NdAlertDialogCancel,
   NdAlertDialogContent,
   NdAlertDialogDescription,
-  NdAlertDialogOverlay,
-  NdAlertDialogPortal,
   NdAlertDialogTitle,
   NdAlertDialogTrigger,
 } from '@ndop/primitives/alert-dialog';
@@ -20,8 +18,7 @@ import {
   imports: [
     NdAlertDialog,
     NdAlertDialogTrigger,
-    NdAlertDialogPortal,
-    NdAlertDialogOverlay,
+
     NdAlertDialogContent,
     NdAlertDialogTitle,
     NdAlertDialogDescription,
@@ -35,34 +32,28 @@ import {
         <button ndAlertDialogTrigger class="rounded-md border px-4 py-2">
           Delete project
         </button>
-        <ng-template ndAlertDialogPortal>
-          <div
-            ndAlertDialogOverlay
-            data-testid="overlay"
-            class="fixed inset-0 bg-black/50"
-          ></div>
-          <div
-            ndAlertDialogContent
-            class="bg-background fixed top-1/2 left-1/2 grid w-96 -translate-1/2 gap-3 rounded-lg p-6"
-          >
-            <h2 ndAlertDialogTitle class="text-lg font-semibold">
-              Delete this project?
-            </h2>
-            <p ndAlertDialogDescription>This can't be undone.</p>
-            <div class="flex justify-end gap-2">
-              <button ndAlertDialogCancel class="rounded-md border px-3 py-1">
-                Cancel
-              </button>
-              <button
-                ndAlertDialogAction
-                class="rounded-md border px-3 py-1"
-                (click)="result.set('deleted')"
-              >
-                Delete
-              </button>
-            </div>
+
+        <dialog
+          ndAlertDialogContent
+          class="backdrop:bg-black/50 bg-background fixed top-1/2 left-1/2 grid w-96 -translate-1/2 gap-3 rounded-lg p-6"
+        >
+          <h2 ndAlertDialogTitle class="text-lg font-semibold">
+            Delete this project?
+          </h2>
+          <p ndAlertDialogDescription>This can't be undone.</p>
+          <div class="flex justify-end gap-2">
+            <button ndAlertDialogCancel class="rounded-md border px-3 py-1">
+              Cancel
+            </button>
+            <button
+              ndAlertDialogAction
+              class="rounded-md border px-3 py-1"
+              (click)="result.set('deleted')"
+            >
+              Delete
+            </button>
           </div>
-        </ng-template>
+        </dialog>
       </ng-container>
       <p>Result: {{ result() }}</p>
     </main>

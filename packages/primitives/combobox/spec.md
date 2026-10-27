@@ -9,16 +9,16 @@ is rendered from it.
 [Editable combobox with list autocomplete](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-autocomplete-list/):
 a text field that filters a popup listbox. Focus stays in the field and
 `aria-activedescendant` points at the highlighted option, on the CDK's
-`ActiveDescendantKeyManager`, with the popup in a CDK overlay (ADR-0004,
-amendment 3). With `multiple`, the chosen options show as chips beside the
+`ActiveDescendantKeyManager`, with the popup in a native top-layer popover
+(ADR-0032). With `multiple`, the chosen options show as chips beside the
 field and the listbox is `aria-multiselectable`.
 
 ## Markup
 
 The popup is written in place, after the field. It has the `hidden`
 attribute while closed, so its options render on the server and the field
-can show the selected option's text; opening moves it into an overlay
-below the field (or the chips), and closing puts it back.
+can show the selected option's text. Opening shows it in the native top layer
+below the field (or the chips), without moving its Angular view.
 
 ```html
 <label ndLabel for="framework">Framework</label>
@@ -139,3 +139,14 @@ below the field (or the chips), and closing puts it back.
 
 `start` and `end` alignments are logical and swap in right-to-left
 layouts. The listbox is vertical, so its arrow keys don't change.
+
+## Native top-layer behavior
+
+The popup uses `popover="auto"` and native `toggle` events synchronize its
+open state. Native light dismiss and Escape close the active popup before a containing modal.
+Content remains in its declaring Angular view. Nothing opens on the server;
+bound initial state applies after hydration. Positioning uses CSS anchors where
+supported, with JavaScript flipping/shifting and a fallback that tracks resize,
+scroll and disconnected anchors. Closing cleans up listeners and observers.
+`data-state` supports native discrete display/overlay transitions and
+`@starting-style`; reduced motion is respected. See ADR-0032.

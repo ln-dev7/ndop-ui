@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdir, readFile, rm } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { startLocalRegistry } from '@nx/js/plugins/jest/local-registry';
 import { releaseVersion } from 'nx/release';
@@ -14,6 +14,8 @@ export interface LocalPackages {
   env: NodeJS.ProcessEnv;
   /** URL template of the served Ndop registry, with `{name}`. */
   registryUrl: string;
+  /** Absolute registry folder, including test-only dependency pins. */
+  registryPath: string;
 }
 
 /** Options of {@link withLocalPackages}. */
@@ -120,9 +122,22 @@ export async function withLocalPackages<T>(
     storage: join(options.root, 'tmp/local-registry/storage'),
     clearStorage: true,
   });
-  const server = await serveSite(
-    join(options.root, options.registryPath ?? 'dist/registry'),
+  const sourceRegistry = join(
+    options.root,
+    options.registryPath ?? 'dist/registry',
   );
+  let servedRegistry = sourceRegistry;
+  if (!options.packDir) {
+    // Unique test prereleases cannot satisfy stable item ranges such as ^2.0.0.
+    // Pin only a scratch registry copy; exact release-pack tests keep real ranges.
+    servedRegistry = join(options.root, 'tmp/local-packages/registry');
+    await cp(sourceRegistry, servedRegistry, { recursive: true });
+    await pinRegistryFiles(
+      servedRegistry,
+      new Map(packed.map((release) => [release.name, release.version])),
+    );
+  }
+  const server = await serveSite(servedRegistry);
   try {
     for (const release of packed) {
       await publishTarball(release.tarball, options.root);
@@ -140,7 +155,12 @@ export async function withLocalPackages<T>(
     // Run the apps as on a developer's machine: package managers change
     // install behavior when CI is set, and users don't run ng new in CI.
     delete env['CI'];
-    return await run({ version, env, registryUrl });
+    return await run({
+      version,
+      env,
+      registryUrl,
+      registryPath: servedRegistry,
+    });
   } finally {
     await server.close();
     stopRegistry();
@@ -240,4 +260,60 @@ function runPnpm(args: string[], cwd: string): Promise<void> {
         : fail(new Error(`pnpm ${args.join(' ')} failed:\n${output}`)),
     );
   });
+}
+
+/**
+ * Pins published test packages in a registry item to the exact local versions.
+ * Metadata, other packages and source contents remain unchanged. Used only on
+ * scratch copies for unique prereleases, never on real release-pack registries.
+ *
+ * @param text - Registry JSON text.
+ * @param versions - Package names and their exact local test versions.
+ * @returns Item JSON with matching npm dependency specs pinned.
+ */
+export function pinTestDependencies(
+  text: string,
+  versions: ReadonlyMap<string, string>,
+): string {
+  const item = JSON.parse(text) as {
+    type?: string;
+    dependencies?: string[];
+    devDependencies?: string[];
+  };
+  if (!item.type?.startsWith('registry:')) return text;
+  let changed = false;
+  for (const field of ['dependencies', 'devDependencies'] as const) {
+    if (!item[field]) continue;
+    item[field] = item[field].map((spec) => {
+      const entry = [...versions].find(
+        ([name]) => spec === name || spec.startsWith(`${name}@`),
+      );
+      if (!entry) return spec;
+      const next = `${entry[0]}@${entry[1]}`;
+      changed ||= next !== spec;
+      return next;
+    });
+  }
+  return changed ? `${JSON.stringify(item, null, 2)}\n` : text;
+}
+
+/**
+ * Updates only generated JSON in the test registry copy.
+ *
+ * @param folder - Scratch registry directory.
+ * @param versions - Locally published versions.
+ */
+async function pinRegistryFiles(
+  folder: string,
+  versions: ReadonlyMap<string, string>,
+): Promise<void> {
+  for (const entry of await readdir(folder, { withFileTypes: true })) {
+    const path = join(folder, entry.name);
+    if (entry.isDirectory()) await pinRegistryFiles(path, versions);
+    else if (entry.name.endsWith('.json')) {
+      const before = await readFile(path, 'utf-8');
+      const after = pinTestDependencies(before, versions);
+      if (after !== before) await writeFile(path, after);
+    }
+  }
 }

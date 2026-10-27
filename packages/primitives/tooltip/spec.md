@@ -10,7 +10,8 @@ is rendered from it.
 
 ## Markup
 
-Same overlay convention as Dialog's `spec.md`.
+Content templates instantiate a local Angular view. Native popovers render that
+view in the top layer without moving it into a CDK overlay (ADR-0032).
 
 ```html
 <ng-container ndTooltip>
@@ -59,3 +60,14 @@ Same overlay convention as Dialog's `spec.md`.
 
 As in Popover's `spec.md`: `start` and `end` sides and alignments swap in
 RTL.
+
+## Native top-layer behavior
+
+The popup uses `popover="hint"` and native `toggle` events synchronize its
+open state. Hint popovers keep an enclosing auto popover open. Where hint mode is unavailable, manual mode with Escape handling supplies the same behavior.
+Content remains in its declaring Angular view. Nothing opens on the server;
+bound initial state applies after hydration. Positioning uses CSS anchors where
+supported, with JavaScript flipping/shifting and a fallback that tracks resize,
+scroll and disconnected anchors. Closing cleans up listeners and observers.
+`data-state` supports native discrete display/overlay transitions and
+`@starting-style`; reduced motion is respected. See ADR-0032.

@@ -119,11 +119,13 @@ each component's `@/` imports to relative paths.
 
 ## Your first component
 
-After `ndop add dialog`, import the parts you need from the file it wrote:
+After `ndop add dialog`, import styled parts from the file it wrote and
+behavior-only parts from the primitive package:
 
 ```ts title="src/app/app.ts"
 import { Component } from '@angular/core';
-import { DialogContent, DialogTitle, Dialog, DialogPortal, DialogTrigger } from '@/ui/dialog/dialog';
+import { DialogContent, DialogTitle } from '@/ui/dialog/dialog';
+import { NdDialog as Dialog, NdDialogTrigger as DialogTrigger } from '@ndop/primitives/dialog';
 ```
 
 Every component page shows complete, tested examples.

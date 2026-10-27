@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { logger, type PromiseExecutor } from '@nx/devkit';
 import type { SizeExecutorSchema } from './schema';
@@ -84,6 +84,21 @@ const size: PromiseExecutor<SizeExecutorSchema> = async (options, context) => {
       items: { name: string; type: string; files?: { path: string }[] }[];
     }
   ).items.filter((item) => item.type === 'registry:ui');
+
+  for (const name of options.primitiveEntries ?? []) {
+    items.push({
+      name: `@ndop/primitives/${name}`,
+      type: 'registry:ui',
+      files: [
+        {
+          path: relative(
+            registry,
+            join(root, `packages/primitives/${name}/src/index.ts`),
+          ),
+        },
+      ],
+    });
+  }
 
   const work = join(root, 'tmp/size');
   const out = join(work, 'out');

@@ -1,0 +1,32 @@
+{
+  "name": "tooltip-icon-button",
+  "type": "registry:primitive-usage",
+  "version": "1.1.0",
+  "title": "Tooltip icon button",
+  "description": "An icon-only button with its own accessible name and a tooltip on the end side for sighted users.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "button",
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "examples/tooltip-icon-button.ts",
+      "type": "registry:primitive-usage",
+      "target": "{blocks}/examples/tooltip-icon-button.ts",
+      "content": "import { Component } from '@angular/core';\nimport { NdIcon } from '@ndop/core';\nimport { Button } from '@/ui/button/button';\nimport { TooltipContent } from '@/ui/tooltip/tooltip';\nimport {\n  NdTooltip as Tooltip,\n  NdTooltipPortal as TooltipPortal,\n  NdTooltipTrigger as TooltipTrigger,\n} from '@ndop/primitives/tooltip';\n\n/**\n * An icon-only button with its own accessible name and a tooltip on the\n * end side for sighted users.\n */\n@Component({\n  selector: 'example-tooltip-icon-button',\n  imports: [\n    Tooltip,\n    TooltipTrigger,\n    TooltipPortal,\n    TooltipContent,\n    Button,\n    NdIcon,\n  ],\n  template: `\n    <ng-container ndTooltip [openDelay]=\"300\">\n      <button\n        ndButton\n        ndTooltipTrigger\n        variant=\"ghost\"\n        size=\"icon\"\n        aria-label=\"Dismiss notification\"\n      >\n        <svg ndIcon=\"x\"></svg>\n      </button>\n      <ng-template ndTooltipPortal>\n        <div ndTooltipContent side=\"end\">Dismiss</div>\n      </ng-template>\n    </ng-container>\n  `,\n})\nexport class TooltipIconButtonExample {}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "TooltipIconButtonExample"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

@@ -5,14 +5,16 @@ import {
   registrySource,
 } from '../../testing/shadcn-parity';
 import {
-  Popover,
-  PopoverPortal,
-  PopoverTrigger,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,
   PopoverTitle,
 } from './popover';
+import {
+  NdPopover as Popover,
+  NdPopoverPortal as PopoverPortal,
+  NdPopoverTrigger as PopoverTrigger,
+} from '@ndop/primitives/popover';
 
 describe('Popover', () => {
   it('matches shadcn new-york-v4 classes, except its documented changes', () => {

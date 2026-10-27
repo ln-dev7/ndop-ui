@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectTrigger,
-  SelectValue,
 } from '@/ui/select/select';
+import {
+  NdSelect as Select,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /**
  * A disabled select, and one with a disabled option, which the arrow keys

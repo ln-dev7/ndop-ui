@@ -1,10 +1,10 @@
+import { NdNativeMenuTrigger } from '@ndop/primitives/internal';
 import {
   CdkMenu,
   CdkMenuGroup,
   CdkMenuItem,
   CdkMenuItemCheckbox,
   CdkMenuItemRadio,
-  CdkMenuTrigger,
 } from '@angular/cdk/menu';
 import {
   booleanAttribute,
@@ -89,6 +89,9 @@ function bindItem(
   hostDirectives: [CdkMenu],
   host: {
     'data-state': 'open',
+    // Local top-layer views remain in their parent menu's DOM tree.
+    // CDK menu keyboard events must be handled by only the innermost menu.
+    '(keydown)': '$event.stopPropagation()',
     '[attr.data-side]': 'side()',
   },
 })
@@ -166,7 +169,7 @@ export class NdMenuItem implements OnInit {
   // Its menu opens beside it, not on the side the root menu's trigger
   // asked for.
   providers: [{ provide: ND_MENU_PLACEMENT, useValue: { side: () => 'end' } }],
-  hostDirectives: [CdkMenuItem, CdkMenuTrigger],
+  hostDirectives: [CdkMenuItem, NdNativeMenuTrigger],
   host: {
     '[attr.disabled]': 'null',
     '[attr.data-state]': 'isOpen() ? "open" : "closed"',
@@ -180,7 +183,7 @@ export class NdMenuSubTrigger implements OnInit {
   /** Makes it inert but focusable, with `aria-disabled`. */
   readonly disabled = input(false, { transform: booleanAttribute });
 
-  private readonly trigger = inject(CdkMenuTrigger);
+  private readonly trigger = inject(NdNativeMenuTrigger);
   private readonly sync = bindItem(inject(CdkMenuItem), this.disabled);
 
   /** Whether its submenu is open. */

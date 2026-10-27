@@ -11,21 +11,18 @@ is rendered from it.
 ## Markup
 
 The Dialog convention (see Dialog's `spec.md`): a root on an
-`ng-container` and the content in an `ng-template` portal. Each part
+`ng-container` and native `dialog` content in its declaring view. Each part
 composes the matching Dialog part.
 
 ```html
 <ng-container ndAlertDialog [(open)]="open">
   <button ndAlertDialogTrigger>Delete project</button>
-  <ng-template ndAlertDialogPortal>
-    <div ndAlertDialogOverlay></div>
-    <div ndAlertDialogContent>
-      <h2 ndAlertDialogTitle>Delete this project?</h2>
-      <p ndAlertDialogDescription>This can't be undone.</p>
-      <button ndAlertDialogCancel>Cancel</button>
-      <button ndAlertDialogAction (click)="delete()">Delete</button>
-    </div>
-  </ng-template>
+  <dialog ndAlertDialogContent>
+    <h2 ndAlertDialogTitle>Delete this project?</h2>
+    <p ndAlertDialogDescription>This can't be undone.</p>
+    <button ndAlertDialogCancel>Cancel</button>
+    <button ndAlertDialogAction (click)="delete()">Delete</button>
+  </dialog>
 </ng-container>
 ```
 
@@ -36,8 +33,7 @@ composes the matching Dialog part.
 | AlertDialog            | `[ndAlertDialog]`                  |               |                                                     |                 |
 | AlertDialogTrigger     | `[ndAlertDialogTrigger]`           |               | `aria-haspopup`, `aria-expanded`, `aria-controls`   | `data-state`    |
 | AlertDialogPortal      | `ng-template[ndAlertDialogPortal]` |               |                                                     |                 |
-| AlertDialogOverlay     | `[ndAlertDialogOverlay]`           |               | `aria-hidden`                                       | `data-state`    |
-| AlertDialogContent     | `[ndAlertDialogContent]`           | `alertdialog` | `aria-modal`, `aria-labelledby`, `aria-describedby` | `data-state`    |
+| AlertDialogContent     | `dialog[ndAlertDialogContent]`     | `alertdialog` | `aria-modal`, `aria-labelledby`, `aria-describedby` | `data-state`    |
 | AlertDialogTitle       | `[ndAlertDialogTitle]`             |               |                                                     |                 |
 | AlertDialogDescription | `[ndAlertDialogDescription]`       |               |                                                     |                 |
 | AlertDialogCancel      | `button[ndAlertDialogCancel]`      |               |                                                     |                 |
@@ -53,24 +49,33 @@ composes the matching Dialog part.
 - **AlertDialogCancel** and **AlertDialogAction** close the dialog on
   click; the action's own `(click)` handler runs first. When the dialog
   opens, focus goes to Cancel, the least destructive choice.
-- Everything else is Dialog's: focus trapped while open and returned on
+- Everything else is Dialog's: the background page inert while open and focus returned on
   close, page scroll blocked, never rendered open on the server.
 
 ## Keyboard map
 
-| Key           | Action                                                                          |
-| ------------- | ------------------------------------------------------------------------------- |
-| `Tab`         | Moves focus to the next focusable element inside; wraps from last to first.     |
-| `Shift + Tab` | Moves focus to the previous focusable element inside; wraps from first to last. |
-| `Escape`      | Closes the dialog, as Cancel does.                                              |
+| Key           | Action                                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `Tab`         | Moves forward through native focusable controls. Browser controls remain reachable; the background page is inert. |
+| `Shift + Tab` | Moves backward through native focusable controls; browser controls remain reachable.                              |
+| `Escape`      | Closes the dialog, as Cancel does.                                                                                |
 
 ## Focus behavior
 
 - On open: focus moves to AlertDialogCancel.
-- While open: focus is trapped in the content.
+- While open: the background page is inert. Native Tab navigation may visit
+  browser controls before returning to the dialog; Ndop does not trap browser UI.
 - On close: focus returns to the element that had it before opening,
   usually the trigger.
 
 ## RTL behavior
 
 Nothing mirrors.
+
+## Native rendering
+
+The panel is a native `<dialog>` opened with `showModal()` (ADR-0032).
+The browser owns modal inertness and focus containment. Browser `close` and
+`cancel` events keep the open model synchronized; content never opens on the
+server. Use the dialog's `::backdrop` instead of a separate overlay element.
+The legacy portal directive is an optional local-view compatibility adapter.

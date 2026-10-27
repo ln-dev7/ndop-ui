@@ -59,3 +59,14 @@ keyboardContract('menubar', {
     await expect(item(page, 'File')).toBeFocused();
   },
 });
+
+test('Menubar preserves the active trigger when a menu opened by pointer moves right', async ({
+  page,
+}) => {
+  await gotoHydrated(page, '/primitives/menubar');
+  await item(page, 'File').click();
+  await expect(item(page, 'New tab')).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(item(page, 'New tab')).toBeHidden();
+  await expect(item(page, 'Undo')).toBeVisible();
+});

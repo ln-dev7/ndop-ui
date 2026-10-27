@@ -9,6 +9,13 @@ Clicking outside doesn't close it; Escape and Cancel do, and focus starts
 on Cancel, the safe choice. Use `size="sm"` for a short, centered
 question with buttons side by side.
 
+Behavior-only parts now come directly from `@ndop/primitives`; styled parts
+remain in your local item file. See [Migrating native overlays](/docs/getting-started/native-overlays)
+for the imports, selectors and customization changes.
+
+Content must be a native `dialog`. Style its `::backdrop` with `backdrop:`
+utilities; a separate overlay element is unnecessary.
+
 ## Do
 
 - Ask a question with a clear answer, and name the buttons after what

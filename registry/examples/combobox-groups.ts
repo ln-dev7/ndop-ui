@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Combobox,
   ComboboxContent,
   ComboboxControl,
   ComboboxEmpty,
-  ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
   ComboboxItemIndicator,
@@ -14,6 +12,10 @@ import {
   ComboboxSeparator,
   ComboboxTrigger,
 } from '@/ui/combobox/combobox';
+import {
+  NdCombobox as Combobox,
+  NdComboboxGroup as ComboboxGroup,
+} from '@ndop/primitives/combobox';
 
 /**
  * Options in labelled groups, with separators. A group hides while none

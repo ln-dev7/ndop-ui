@@ -1,0 +1,21 @@
+{
+  "description": "Migrate actual overlay releases while keeping consumer aliases, content classes and a locally extended styled footer.",
+  "kind": "behavior",
+  "item": "dialog",
+  "from": "1.0.0",
+  "to": "2.0.0",
+  "add": ["sheet@1.0.0", "select@1.0.0", "dropdown-menu@1.0.0"],
+  "replace": [{"path": "src/app/ui/dialog/dialog.ts", "find": "export class DialogFooter {", "with": "export class DialogFooter {\n  readonly customLayout = 'stacked';"}],
+  "runs": [{
+    "args": ["sheet@2.0.0", "select@2.0.0", "dropdown-menu@2.0.0"],
+    "expect": {
+      "statuses": {"src/app/ui/dialog/dialog.ts": "merged"},
+      "dependencies": ["@ndop/primitives@^2.0.0", "@ndop/core@^2.0.0"],
+      "contains": {
+        "src/app/pages/consumer.ts": ["NdDialog as Modal", "NdDialog as Panel", "NdSelect as Choice", "NdMenuGroup as Group", "@ndop/primitives/dialog", "@ndop/primitives/select", "@ndop/primitives/menu"],
+        "src/app/pages/consumer.html": ["<dialog ndDialogContent class=\"p-8 backdrop:bg-black/70\">", "<dialog ndSheetContent", "ndDialog #panel=\"ndDialog\"", "<div ndMenuGroup>", "Keep my content"],
+        "src/app/ui/dialog/dialog.ts": ["readonly customLayout = 'stacked';"]
+      }
+    }
+  }]
+}

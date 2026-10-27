@@ -1,14 +1,9 @@
 import { Directionality } from '@angular/cdk/bidi';
 import {
-  createFlexibleConnectedPositionStrategy,
-  createRepositionScrollStrategy,
-  type FlexibleConnectedPositionStrategy,
-  type OverlayRef,
-} from '@angular/cdk/overlay';
-import {
   afterNextRender,
   booleanAttribute,
   Directive,
+  DestroyRef,
   DOCUMENT,
   inject,
   InjectionToken,
@@ -26,7 +21,8 @@ import {
   focusReturnTarget,
   injectFocusFirst,
   injectId,
-  injectOverlay,
+  injectNativePopover,
+  type NdNativePopover,
   injectTabbables,
   placementOf,
   type NdPlacement,
@@ -40,7 +36,7 @@ export const ND_POPOVER = new InjectionToken<NdPopover>('ND_POPOVER');
 /**
  * Root of a popover: non-modal content anchored to a trigger (WAI-ARIA
  * `dialog` role without a focus trap). Renders the
- * `ng-template[ndPopoverPortal]` into a CDK overlay positioned next to the
+ * `ng-template[ndPopoverPortal]` into a native popover positioned next to the
  * trigger, flipping to the opposite side when it doesn't fit. Escape, an
  * outside click or focus leaving the content closes it. Put it on an
  * `ng-container` so it adds no element.
@@ -85,41 +81,27 @@ export class NdPopover {
   content: HTMLElement | null = null;
 
   private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly directionality = inject(Directionality);
   private readonly focusFirst = injectFocusFirst();
   private readonly tabbables = injectTabbables();
   private preferred: NdPlacement = { side: 'bottom', align: 'center' };
   private offset = 4;
-  private strategy: FlexibleConnectedPositionStrategy | null = null;
-  private ref: OverlayRef | null = null;
+  private ref: NdNativePopover | null = null;
   private restoreFocusTo: HTMLElement | null = null;
   private returnFocusOnClose = true;
-  private listening = false;
 
-  private readonly overlay = injectOverlay({
-    config: (injector) => {
-      const strategy = createFlexibleConnectedPositionStrategy(
-        injector,
-        this.trigger ?? this.document.body,
-      )
-        .withPositions(this.positions())
-        .withFlexibleDimensions(false)
-        .withPush(false);
-      strategy.positionChanges.subscribe((change) =>
-        this.placement.set(placementOf(change.connectionPair)),
-      );
-      this.strategy = strategy;
-      return {
-        positionStrategy: strategy,
-        scrollStrategy: createRepositionScrollStrategy(injector),
-        direction: this.directionality,
-      };
-    },
-    onEscape: (event) => {
-      event.preventDefault();
-      this.close(true);
-    },
+  private readonly overlay = injectNativePopover({
+    anchor: () => this.trigger ?? this.document.body,
+    positions: () => this.positions(),
+    rtl: () => this.directionality.value === 'rtl',
+    onPosition: (position) => this.placement.set(placementOf(position)),
+    onDismiss: () =>
+      this.close(
+        this.document.activeElement === this.document.body ||
+          !!this.content?.contains(this.document.activeElement),
+      ),
   });
 
   private readonly hydrated = bindOpenState(this.open, this.defaultOpen, {
@@ -141,7 +123,9 @@ export class NdPopover {
    *   (outside click, focus leaving).
    */
   close(returnFocus: boolean): void {
+    if (this.destroyRef.destroyed) return;
     this.returnFocusOnClose = returnFocus;
+    if (!returnFocus) this.overlay.detach();
     this.open.set(false);
   }
 
@@ -172,10 +156,7 @@ export class NdPopover {
     this.preferred = placement;
     this.offset = offset;
     this.placement.set(placement);
-    this.strategy?.withPositions(this.positions());
-    // The content's inputs arrive while the CDK is still attaching the
-    // portal, before the strategy has a pane to measure; reposition once
-    // rendering is done.
+    // Measure after content inputs and layout have settled.
     afterNextRender(
       () => {
         if (this.ref?.hasAttached()) {
@@ -187,8 +168,8 @@ export class NdPopover {
   }
 
   /**
-   * Handles Tab at the content's edges. The overlay is rendered at the end
-   * of the document, so without this, tabbing out would leave the page flow:
+   * Handles Tab at the content's edges and restores trigger-relative page
+   * navigation when closing the native top-layer popover:
    * past the last element focus moves to whatever follows the trigger, and
    * before the first element it returns to the trigger. Either way the
    * popover closes.
@@ -253,7 +234,6 @@ export class NdPopover {
       return;
     }
     this.ref = ref;
-    this.listen(ref);
     afterNextRender(
       () => {
         if (this.content && untracked(this.open)) {
@@ -264,31 +244,12 @@ export class NdPopover {
     );
   }
 
-  /** Removes the content and, unless dismissed elsewhere, restores focus. */
+  /** Hides native content and, unless dismissed elsewhere, restores focus. */
   private hide(): void {
     this.overlay.detach();
     const target = this.returnFocusOnClose ? this.restoreFocusTo : null;
     this.restoreFocusTo = null;
     this.returnFocusOnClose = true;
     afterNextRender(() => target?.focus(), { injector: this.injector });
-  }
-
-  /**
-   * Closes on clicks outside the content and trigger. The trigger is
-   * excluded because its own click toggles the popover.
-   *
-   * @param ref - The overlay, subscribed once.
-   */
-  private listen(ref: OverlayRef): void {
-    if (this.listening) {
-      return;
-    }
-    this.listening = true;
-    ref.outsidePointerEvents().subscribe((event) => {
-      const target = event.target as Node | null;
-      if (!target || !this.trigger?.contains(target)) {
-        this.close(false);
-      }
-    });
   }
 }

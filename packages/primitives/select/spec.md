@@ -8,15 +8,15 @@ is rendered from it.
 
 [Select-only combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/):
 a button-like combobox that shows its value and opens a listbox of
-options, on the CDK's `CdkListbox` in a CDK overlay (ADR-0004,
-amendment 3).
+options, using CDK `CdkListbox` keyboard behavior and a native top-layer
+popover (ADR-0032).
 
 ## Markup
 
 The listbox is written in place, after the trigger. It has the `hidden`
 attribute while closed, so its options render on the server and the
-trigger can show the selected option's text; opening moves it into an
-overlay next to the trigger, and closing puts it back.
+trigger can show the selected option's text. Opening shows it in the native
+top layer next to the trigger; it stays in its declaring Angular view.
 
 ```html
 <label ndLabel for="fruit">Fruit</label>
@@ -101,3 +101,14 @@ overlay next to the trigger, and closing puts it back.
 
 `start` and `end` alignments are logical and swap in right-to-left
 layouts. The listbox is vertical, so its arrow keys don't change.
+
+## Native top-layer behavior
+
+The popup uses `popover="auto"` and native `toggle` events synchronize its
+open state. Native light dismiss and Escape close the active popup before a containing modal.
+Content remains in its declaring Angular view. Nothing opens on the server;
+bound initial state applies after hydration. Positioning uses CSS anchors where
+supported, with JavaScript flipping/shifting and a fallback that tracks resize,
+scroll and disconnected anchors. Closing cleans up listeners and observers.
+`data-state` supports native discrete display/overlay transitions and
+`@starting-style`; reduced motion is respected. See ADR-0032.

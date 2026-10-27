@@ -115,3 +115,130 @@
 [data-density='comfortable'] {
   --spacing: 0.275rem;
 }
+
+/* Native modality blocks interaction; document scrolling is a separate policy. */
+html:has(
+  dialog:modal:is(
+      [ndDialogContent],
+      [ndAlertDialogContent],
+      [ndSheetContent],
+      [ndDrawerContent]
+    )
+) {
+  overflow: hidden;
+}
+
+@layer base {
+  dialog:is(
+    [ndDialogContent],
+    [ndAlertDialogContent],
+    [ndSheetContent],
+    [ndDrawerContent]
+  ) {
+    margin: 0;
+    inset: auto;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    color: inherit;
+  }
+}
+
+/* Display utilities must never expose a closed native dialog. Discrete
+   transitions defer this change until the closing animation finishes. */
+dialog:is(
+    [ndDialogContent],
+    [ndAlertDialogContent],
+    [ndSheetContent],
+    [ndDrawerContent]
+  ):not([open]) {
+  display: none;
+}
+
+dialog:is(
+  [ndDialogContent],
+  [ndAlertDialogContent],
+  [ndSheetContent],
+  [ndDrawerContent]
+) {
+  transition:
+    display 200ms allow-discrete,
+    overlay 200ms allow-discrete;
+}
+
+dialog:is(
+    [ndDialogContent],
+    [ndAlertDialogContent],
+    [ndSheetContent],
+    [ndDrawerContent]
+  )::backdrop {
+  transition:
+    opacity 200ms,
+    display 200ms allow-discrete,
+    overlay 200ms allow-discrete;
+}
+
+dialog:is(
+    [ndDialogContent],
+    [ndAlertDialogContent],
+    [ndSheetContent],
+    [ndDrawerContent]
+  ):not([open])::backdrop {
+  opacity: 0;
+}
+
+@starting-style {
+  dialog:is(
+      [ndDialogContent],
+      [ndAlertDialogContent],
+      [ndSheetContent],
+      [ndDrawerContent]
+    )::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog:is(
+    [ndDialogContent],
+    [ndAlertDialogContent],
+    [ndSheetContent],
+    [ndDrawerContent]
+  ),
+  dialog:is(
+      [ndDialogContent],
+      [ndAlertDialogContent],
+      [ndSheetContent],
+      [ndDrawerContent]
+    )::backdrop {
+    transition-duration: 0s;
+    animation-duration: 0s;
+  }
+}
+
+@layer base {
+  [data-nd-native-popover] {
+    border-width: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+  }
+}
+
+[data-nd-native-popover] {
+  transition:
+    display var(--tw-duration, 200ms) allow-discrete,
+    overlay var(--tw-duration, 200ms) allow-discrete;
+}
+
+[data-nd-native-popover]:not(:popover-open) {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-nd-native-popover] {
+    transition-duration: 0s;
+    animation-duration: 0s;
+  }
+}

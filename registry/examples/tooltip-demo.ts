@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { Button } from '@/ui/button/button';
+import { TooltipContent } from '@/ui/tooltip/tooltip';
 import {
-  Tooltip,
-  TooltipPortal,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/ui/tooltip/tooltip';
+  NdTooltip as Tooltip,
+  NdTooltipPortal as TooltipPortal,
+  NdTooltipTrigger as TooltipTrigger,
+} from '@ndop/primitives/tooltip';
 
 /** A tooltip describing a button, shown on hover and keyboard focus. */
 @Component({

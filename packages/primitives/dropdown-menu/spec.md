@@ -51,3 +51,14 @@ Inside the menu, Menu's keyboard map applies.
 ## RTL behavior
 
 `start` and `end` sides are logical and swap in right-to-left layouts.
+
+## Native top-layer behavior
+
+The popup uses `popover="auto"` and native `toggle` events synchronize its
+open state. Native light dismiss and Escape close the active popup before a containing modal.
+Content remains in its declaring Angular view. Nothing opens on the server;
+bound initial state applies after hydration. Positioning uses CSS anchors where
+supported, with JavaScript flipping/shifting and a fallback that tracks resize,
+scroll and disconnected anchors. Closing cleans up listeners and observers.
+`data-state` supports native discrete display/overlay transitions and
+`@starting-style`; reduced motion is respected. See ADR-0032.

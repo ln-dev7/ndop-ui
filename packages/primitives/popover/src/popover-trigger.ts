@@ -27,6 +27,9 @@ export class NdPopoverTrigger {
 
   constructor() {
     this.popover.trigger = inject(ElementRef).nativeElement;
-    inject(DestroyRef).onDestroy(() => (this.popover.trigger = null));
+    inject(DestroyRef).onDestroy(() => {
+      this.popover.trigger = null;
+      this.popover.close(false);
+    });
   }
 }

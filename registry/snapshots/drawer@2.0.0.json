@@ -1,0 +1,90 @@
+{
+  "name": "drawer",
+  "type": "registry:ui",
+  "version": "2.0.0",
+  "title": "Drawer",
+  "description": "A panel that slides up from the bottom of the screen and can be dragged away, suited to phones.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "overlays"
+  ],
+  "files": [
+    {
+      "path": "ui/drawer/drawer.ts",
+      "type": "registry:ui",
+      "target": "{ui}/drawer/drawer.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport {\n  NdDrawerContent,\n  NdDrawerDescription,\n  NdDrawerHandle,\n  NdDrawerTitle,\n} from '@ndop/primitives/drawer';\nimport { cn } from '@/lib/utils';\n\n/**\n * The drawer panel (`@ndop/primitives/drawer`): a modal dialog at the edge\n * its `direction` names (`bottom` by default, `top`, `start` or `end`),\n * which follows a drag toward that edge and closes past a quarter of its\n * size. Motion stops for reduced-motion\n * users; the drag still works.\n *\n * @example\n * ```html\n * <dialog ndDrawerContent>\n *   <div ndDrawerHandle></div>\n *   <div ndDrawerHeader><h2 ndDrawerTitle>Move goal</h2></div>\n * </dialog>\n * ```\n */\n@Directive({\n  selector: '[ndDrawerContent]',\n  hostDirectives: [{ directive: NdDrawerContent, inputs: ['direction'] }],\n  host: { 'data-slot': 'drawer-content', '[class]': 'classes()' },\n})\nexport class DrawerContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'backdrop:bg-black/50 group/drawer-content fixed z-50 flex h-auto flex-col bg-background',\n      'data-[direction=top]:inset-x-0 data-[direction=top]:top-0 data-[direction=top]:mb-24 data-[direction=top]:max-h-[80vh] data-[direction=top]:rounded-b-lg data-[direction=top]:border-b',\n      'data-[direction=bottom]:inset-x-0 data-[direction=bottom]:bottom-0 data-[direction=bottom]:mt-24 data-[direction=bottom]:max-h-[80vh] data-[direction=bottom]:rounded-t-lg data-[direction=bottom]:border-t',\n      'data-[direction=end]:inset-y-0 data-[direction=end]:end-0 data-[direction=end]:w-3/4 data-[direction=end]:border-s data-[direction=end]:sm:max-w-sm',\n      'data-[direction=start]:inset-y-0 data-[direction=start]:start-0 data-[direction=start]:w-3/4 data-[direction=start]:border-e data-[direction=start]:sm:max-w-sm',\n      // Follows the drag, and springs back when released short of closing.\n      'transition-[translate] duration-300 ease-out data-dragging:transition-none motion-reduce:transition-none',\n      'data-[direction=bottom]:translate-y-(--nd-drawer-drag) data-[direction=top]:-translate-y-(--nd-drawer-drag)',\n      'data-[direction=end]:translate-x-(--nd-drawer-drag) rtl:data-[direction=end]:-translate-x-(--nd-drawer-drag)',\n      'data-[direction=start]:-translate-x-(--nd-drawer-drag) rtl:data-[direction=start]:translate-x-(--nd-drawer-drag)',\n      'data-[state=open]:animate-in data-[state=open]:duration-500 motion-reduce:animate-none data-[direction=bottom]:slide-in-from-bottom data-[direction=top]:slide-in-from-top data-[direction=end]:slide-in-from-end data-[direction=start]:slide-in-from-start',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * The grip at the top of a bottom drawer, showing it can be dragged;\n * hidden from assistive technology, and on other edges.\n *\n * @example\n * ```html\n * <div ndDrawerHandle></div>\n * ```\n */\n@Directive({\n  selector: '[ndDrawerHandle]',\n  hostDirectives: [NdDrawerHandle],\n  host: { 'data-slot': 'drawer-handle', '[class]': 'classes()' },\n})\nexport class DrawerHandle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted group-data-[direction=bottom]/drawer-content:block',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Lays out a drawer's title and description, centered on top and bottom\n * drawers on small screens.\n *\n * @example\n * ```html\n * <div ndDrawerHeader>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndDrawerHeader]',\n  host: { 'data-slot': 'drawer-header', '[class]': 'classes()' },\n})\nexport class DrawerHeader {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'flex flex-col gap-0.5 p-4 group-data-[direction=bottom]/drawer-content:text-center group-data-[direction=top]/drawer-content:text-center md:gap-1.5 md:text-start',\n      this.class(),\n    ),\n  );\n}\n\n/**\n * Lays out a drawer's buttons at its bottom.\n *\n * @example\n * ```html\n * <div ndDrawerFooter>…</div>\n * ```\n */\n@Directive({\n  selector: '[ndDrawerFooter]',\n  host: { 'data-slot': 'drawer-footer', '[class]': 'classes()' },\n})\nexport class DrawerFooter {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('mt-auto flex flex-col gap-2 p-4', this.class()),\n  );\n}\n\n/**\n * A drawer's title, which labels it.\n *\n * @example\n * ```html\n * <h2 ndDrawerTitle>Move goal</h2>\n * ```\n */\n@Directive({\n  selector: '[ndDrawerTitle]',\n  hostDirectives: [NdDrawerTitle],\n  host: { 'data-slot': 'drawer-title', '[class]': 'classes()' },\n})\nexport class DrawerTitle {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('font-semibold text-foreground', this.class()),\n  );\n}\n\n/**\n * A drawer's description.\n *\n * @example\n * ```html\n * <p ndDrawerDescription>Set your daily activity goal.</p>\n * ```\n */\n@Directive({\n  selector: '[ndDrawerDescription]',\n  hostDirectives: [NdDrawerDescription],\n  host: { 'data-slot': 'drawer-description', '[class]': 'classes()' },\n})\nexport class DrawerDescription {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn('text-sm text-muted-foreground', this.class()),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "DrawerContent",
+      "DrawerHandle",
+      "DrawerHeader",
+      "DrawerFooter",
+      "DrawerTitle",
+      "DrawerDescription"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/drawer.json",
+    "examples": [
+      "drawer-demo",
+      "drawer-directions"
+    ]
+  },
+  "codemods": [
+    {
+      "since": "2.0.0",
+      "kind": "native-dialog",
+      "from": "ndDrawerContent",
+      "to": "dialog",
+      "overlay": "ndDrawerOverlay"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "Drawer",
+      "to": "NdDrawer",
+      "module": "@ndop/primitives/drawer"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "DrawerTrigger",
+      "to": "NdDrawerTrigger",
+      "module": "@ndop/primitives/drawer"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "DrawerPortal",
+      "to": "NdDrawerPortal",
+      "module": "@ndop/primitives/drawer"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "DrawerClose",
+      "to": "NdDrawerClose",
+      "module": "@ndop/primitives/drawer"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "DrawerOverlay",
+      "to": "NdDrawerOverlay",
+      "module": "@ndop/primitives/drawer"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

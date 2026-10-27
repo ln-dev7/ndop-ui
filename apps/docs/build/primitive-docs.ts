@@ -166,7 +166,10 @@ export function primitiveMarkdown(name: string, workspace: string): string {
  * @param name - Entry point name.
  * @returns Its reference.
  */
-function readReference(workspace: string, name: string): PrimitiveReference {
+export function readReference(
+  workspace: string,
+  name: string,
+): PrimitiveReference {
   return JSON.parse(
     readFileSync(
       join(workspace, 'dist/primitives-api', `${name}.json`),

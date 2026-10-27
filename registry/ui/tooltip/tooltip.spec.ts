@@ -3,14 +3,15 @@ import {
   missingShadcnClasses,
   registrySource,
 } from '../../testing/shadcn-parity';
+import { TooltipContent } from './tooltip';
 import {
-  Tooltip,
-  TooltipPortal,
-  TooltipTrigger,
-  TooltipContent,
-} from './tooltip';
+  NdTooltip as Tooltip,
+  NdTooltipPortal as TooltipPortal,
+  NdTooltipTrigger as TooltipTrigger,
+} from '@ndop/primitives/tooltip';
 
 describe('Tooltip', () => {
+  afterEach(() => vi.useRealTimers());
   it('matches shadcn new-york-v4 classes, except its documented changes', () => {
     expect(
       missingShadcnClasses('tooltip', registrySource('ui/tooltip/tooltip.ts'), {
@@ -23,6 +24,7 @@ describe('Tooltip', () => {
   });
 
   it('styles the tooltip bubble', async () => {
+    vi.useFakeTimers();
     const view = await render(
       `<ng-container ndTooltip defaultOpen>
         <button ndTooltipTrigger>Delete</button>
@@ -34,9 +36,11 @@ describe('Tooltip', () => {
         imports: [Tooltip, TooltipTrigger, TooltipPortal, TooltipContent],
       },
     );
-    await view.fixture.whenStable();
-    await new Promise((resolve) => setTimeout(resolve));
-    await view.fixture.whenStable();
+    // Flush Angular's zoneless render frames deterministically, as primitive
+    // Tooltip tests do; this assertion concerns styles, not wall-clock timing.
+    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(20);
+    view.fixture.detectChanges();
     const tooltip = screen.getByRole('tooltip');
     expect(tooltip.getAttribute('data-slot')).toBe('tooltip-content');
     expect(tooltip.classList).toContain('bg-foreground');

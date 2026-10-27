@@ -6,6 +6,8 @@ export interface DocsGuidesExecutorSchema {
   posts?: string;
   /** The built registry's JSON folder. */
   registry?: string;
+  /** Extracted primitive API references. */
+  primitives?: string;
   /** Tsconfig whose `paths` resolve `@/` and the `@ndop` packages. */
   tsconfig?: string;
   /** Folder the blocks are compiled in. */

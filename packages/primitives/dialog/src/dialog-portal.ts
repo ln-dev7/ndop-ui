@@ -13,7 +13,7 @@ import { ND_DIALOG } from './dialog';
  * @example
  * ```html
  * <ng-template ndDialogPortal>
- *   <div ndDialogContent>…</div>
+ *   <dialog ndDialogContent>…</dialog>
  * </ng-template>
  * ```
  */

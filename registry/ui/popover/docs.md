@@ -8,6 +8,13 @@ the page stays usable, and clicking outside or pressing Escape closes it,
 returning focus to the trigger. `side` and `align` place it, using logical
 `start` and `end` so it mirrors in right-to-left layouts.
 
+Behavior-only parts now come directly from `@ndop/primitives`; styled parts
+remain in your local item file. See [Migrating native overlays](/docs/getting-started/native-overlays)
+for the imports, selectors and customization changes.
+
+The popup uses the native Popover API for top-layer rendering and dismissal.
+Positioning retains a JavaScript fallback where CSS anchors are unavailable.
+
 ## Do
 
 - Name the content with `aria-labelledby` pointing at a heading inside it,

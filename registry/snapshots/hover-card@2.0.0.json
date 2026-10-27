@@ -1,0 +1,64 @@
+{
+  "name": "hover-card",
+  "type": "registry:ui",
+  "version": "2.0.0",
+  "title": "Hover Card",
+  "description": "A preview of what's behind a link, shown to pointer and keyboard users while they hover or focus it.",
+  "dependencies": [
+    "@ndop/primitives@^2.0.0",
+    "@ndop/core@^2.0.0"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "categories": [
+    "overlays"
+  ],
+  "files": [
+    {
+      "path": "ui/hover-card/hover-card.ts",
+      "type": "registry:ui",
+      "target": "{ui}/hover-card/hover-card.ts",
+      "content": "import { computed, Directive, input } from '@angular/core';\nimport { NdHoverCardContent } from '@ndop/primitives/hover-card';\nimport { cn } from '@/lib/utils';\n\n/**\n * A hover card (`@ndop/primitives/hover-card`): a preview of what's behind\n * a link, shown after a short delay while the link is hovered or focused\n * with the keyboard, and kept open while the pointer is over it. It's for\n * sighted users only, so the link must make sense without it.\n *\n * @example\n * ```html\n * <ng-container ndHoverCard>\n *   <a ndButton variant=\"link\" ndHoverCardTrigger href=\"/nextjs\">&#64;nextjs</a>\n *   <ng-template ndHoverCardPortal>\n *     <div ndHoverCardContent>…</div>\n *   </ng-template>\n * </ng-container>\n * ```\n */\n@Directive({\n  selector: '[ndHoverCardContent]',\n  hostDirectives: [\n    {\n      directive: NdHoverCardContent,\n      inputs: ['side', 'align', 'sideOffset'],\n    },\n  ],\n  host: { 'data-slot': 'hover-card-content', '[class]': 'classes()' },\n})\nexport class HoverCardContent {\n  /** Extra classes, merged last so they win. */\n  readonly class = input('');\n\n  protected readonly classes = computed(() =>\n    cn(\n      'z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=start]:slide-in-from-end-2 data-[side=end]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',\n      this.class(),\n    ),\n  );\n}\n"
+    }
+  ],
+  "angular": {
+    "minVersion": "21.0.0",
+    "exports": [
+      "HoverCardContent"
+    ],
+    "zoneless": true,
+    "ssr": true
+  },
+  "ndop": {
+    "metadata": "metadata/hover-card.json",
+    "examples": [
+      "hover-card-demo",
+      "hover-card-sides"
+    ]
+  },
+  "codemods": [
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "HoverCard",
+      "to": "NdHoverCard",
+      "module": "@ndop/primitives/hover-card"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "HoverCardTrigger",
+      "to": "NdHoverCardTrigger",
+      "module": "@ndop/primitives/hover-card"
+    },
+    {
+      "since": "2.0.0",
+      "kind": "move-export",
+      "from": "HoverCardPortal",
+      "to": "NdHoverCardPortal",
+      "module": "@ndop/primitives/hover-card"
+    }
+  ],
+  "$schema": "https://ndop.dev/schema/registry-item.json"
+}

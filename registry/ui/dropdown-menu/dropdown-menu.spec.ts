@@ -11,8 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuItemIndicator,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from './dropdown-menu';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
 
 /**
  * shadcn's classes as Ndop writes them: logical sides and spacing, and no

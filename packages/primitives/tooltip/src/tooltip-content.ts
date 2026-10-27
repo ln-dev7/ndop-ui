@@ -1,6 +1,5 @@
 import { addAriaReferencedId, removeAriaReferencedId } from '@angular/cdk/a11y';
 import {
-  DestroyRef,
   Directive,
   effect,
   HostAttributeToken,
@@ -13,7 +12,7 @@ import { ND_TOOLTIP } from './tooltip';
 
 /**
  * The tooltip panel: `role="tooltip"`, never focusable, with `data-side` and
- * `data-align` reporting where it actually sits. While it is rendered, its id
+ * `data-align` reporting where it actually sits. While it is open, its id
  * is in the trigger's `aria-describedby`. Hovering it keeps the tooltip open.
  *
  * @example
@@ -55,14 +54,16 @@ export class NdTooltipContent {
       this.tooltip.contentId.set(ownId);
     }
 
-    const trigger = this.tooltip.trigger;
-    const id = this.tooltip.contentId();
-    if (trigger) {
-      addAriaReferencedId(trigger, 'aria-describedby', id);
-      inject(DestroyRef).onDestroy(() =>
-        removeAriaReferencedId(trigger, 'aria-describedby', id),
-      );
-    }
+    effect((onCleanup) => {
+      const trigger = this.tooltip.trigger;
+      const id = this.tooltip.contentId();
+      if (trigger && this.tooltip.open()) {
+        addAriaReferencedId(trigger, 'aria-describedby', id);
+        onCleanup(() =>
+          removeAriaReferencedId(trigger, 'aria-describedby', id),
+        );
+      }
+    });
 
     effect(() =>
       this.tooltip.setPositioning(

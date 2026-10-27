@@ -1,12 +1,6 @@
 import { Directionality } from '@angular/cdk/bidi';
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
 import {
-  createFlexibleConnectedPositionStrategy,
-  createRepositionScrollStrategy,
-  type FlexibleConnectedPositionStrategy,
-  type OverlayRef,
-} from '@angular/cdk/overlay';
-import {
   afterNextRender,
   booleanAttribute,
   computed,
@@ -36,7 +30,8 @@ import {
   injectFieldDescribedBy,
   injectFormState,
   injectId,
-  injectOverlay,
+  injectNativePopover,
+  type NdNativePopover,
   placementOf,
   readableText,
   type NdAlign,
@@ -77,8 +72,8 @@ function inDocumentOrder<T extends { readonly element: HTMLElement }>(
 /**
  * Root of a select: the WAI-ARIA select-only combobox pattern, a button
  * that shows its value and opens a listbox of options. The listbox composes
- * the CDK's `CdkListbox` and is written in place; opening moves it into a
- * CDK overlay below the trigger. Put it on an `ng-container`, and bind
+ * the CDK's `CdkListbox` and stays in its declaring view; opening shows it
+ * in a native top-layer popover below the trigger. Put it on an `ng-container`, and bind
  * forms on the {@link NdSelectTrigger}.
  *
  * The listbox is never shown on the server; an initial open state takes
@@ -176,36 +171,21 @@ export class NdSelect implements OnInit {
   private readonly directionality = inject(Directionality);
   private preferred: NdPlacement = { side: 'bottom', align: 'start' };
   private offset = 4;
-  private strategy: FlexibleConnectedPositionStrategy | null = null;
-  private ref: OverlayRef | null = null;
-  private listening = false;
+  private ref: NdNativePopover | null = null;
   private returnFocusOnClose = true;
   private typed = '';
   private typedTimer: ReturnType<typeof setTimeout> | undefined;
 
-  private readonly overlay = injectOverlay({
-    config: (injector) => {
-      const strategy = createFlexibleConnectedPositionStrategy(
-        injector,
-        this.trigger ?? this.document.body,
-      )
-        .withPositions(this.positions())
-        .withFlexibleDimensions(false)
-        .withPush(false);
-      strategy.positionChanges.subscribe((change) =>
-        this.placement.set(placementOf(change.connectionPair)),
-      );
-      this.strategy = strategy;
-      return {
-        positionStrategy: strategy,
-        scrollStrategy: createRepositionScrollStrategy(injector),
-        direction: this.directionality,
-      };
-    },
-    onEscape: (event) => {
-      event.preventDefault();
-      this.close(true);
-    },
+  private readonly overlay = injectNativePopover({
+    anchor: () => this.trigger ?? this.document.body,
+    positions: () => this.positions(),
+    rtl: () => this.directionality.value === 'rtl',
+    onPosition: (position) => this.placement.set(placementOf(position)),
+    onDismiss: () =>
+      this.close(
+        this.document.activeElement === this.document.body ||
+          !!this.content?.contains(this.document.activeElement),
+      ),
   });
 
   private readonly hydrated = bindOpenState(this.open, this.defaultOpen, {
@@ -288,6 +268,7 @@ export class NdSelect implements OnInit {
    */
   close(returnFocus: boolean): void {
     this.returnFocusOnClose = returnFocus;
+    if (!returnFocus) this.overlay.detach();
     this.open.set(false);
   }
 
@@ -340,7 +321,7 @@ export class NdSelect implements OnInit {
     this.preferred = placement;
     this.offset = offset;
     this.placement.set(placement);
-    this.strategy?.withPositions(this.positions());
+    this.overlay.updatePosition();
   }
 
   /**
@@ -384,7 +365,7 @@ export class NdSelect implements OnInit {
     );
   }
 
-  /** Moves the listbox into the overlay and focuses the selected option. */
+  /** Shows the native listbox popover and focuses the selected option. */
   private show(): void {
     this.returnFocusOnClose = true;
     this.labelledBy.set(this.labelIds());
@@ -393,7 +374,6 @@ export class NdSelect implements OnInit {
       return;
     }
     this.ref = ref;
-    this.listen(ref);
     afterNextRender(
       () => {
         if (!untracked(this.open)) {
@@ -438,25 +418,6 @@ export class NdSelect implements OnInit {
     const target = this.returnFocusOnClose ? this.trigger : null;
     this.returnFocusOnClose = true;
     afterNextRender(() => target?.focus(), { injector: this.injector });
-  }
-
-  /**
-   * Closes on presses outside the listbox and trigger. The trigger is
-   * excluded because its own click toggles the listbox.
-   *
-   * @param ref - The overlay, subscribed once.
-   */
-  private listen(ref: OverlayRef): void {
-    if (this.listening) {
-      return;
-    }
-    this.listening = true;
-    ref.outsidePointerEvents().subscribe((event) => {
-      const target = event.target as Node | null;
-      if (!target || !this.trigger?.contains(target)) {
-        this.close(false);
-      }
-    });
   }
 }
 
@@ -626,7 +587,7 @@ export class NdSelectValue {
 /**
  * The listbox of options (`role="listbox"`), composing `CdkListbox`. Write
  * it after the trigger: it has the `hidden` attribute while closed, and
- * opening moves it into an overlay below the trigger. It takes its name
+ * opening shows it in a native top-layer popover below the trigger. It takes its name
  * from the trigger's labels, or its own `aria-label`.
  *
  * @example

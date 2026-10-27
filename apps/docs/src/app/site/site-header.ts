@@ -5,26 +5,22 @@ import { filter } from 'rxjs';
 import { NdIcon, type NdopThemeMode } from '@ndop/core';
 import { Button } from '@/ui/button/button';
 import { Separator } from '@/ui/separator/separator';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHandle,
-  DrawerOverlay,
-  DrawerPortal,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/ui/drawer/drawer';
-import {
-  Tooltip,
-  TooltipPortal,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/ui/tooltip/tooltip';
+import { DrawerContent, DrawerHandle, DrawerTitle } from '@/ui/drawer/drawer';
+import { TooltipContent } from '@/ui/tooltip/tooltip';
 import { LogoMark } from './logo-mark';
 import { Preferences } from './preferences';
 import { CommandPalette } from './command-palette';
 import { SiteNav } from './site-nav';
+import {
+  NdDrawer as Drawer,
+  NdDrawerClose as DrawerClose,
+  NdDrawerTrigger as DrawerTrigger,
+} from '@ndop/primitives/drawer';
+import {
+  NdTooltip as Tooltip,
+  NdTooltipPortal as TooltipPortal,
+  NdTooltipTrigger as TooltipTrigger,
+} from '@ndop/primitives/tooltip';
 
 /** The order the theme button cycles through, and how each is shown. */
 const MODES: { mode: NdopThemeMode; icon: string; label: string }[] = [
@@ -64,8 +60,7 @@ const SYSTEM = {
     Button,
     Drawer,
     DrawerTrigger,
-    DrawerPortal,
-    DrawerOverlay,
+
     DrawerContent,
     DrawerHandle,
     DrawerTitle,
@@ -107,59 +102,45 @@ const SYSTEM = {
                  its exit animation ends; its classes are important to beat
                  the open state's animate-in), and can be dragged down from
                  its top to close. -->
-            <ng-template ndDrawerPortal>
-              <div
-                ndDrawerOverlay
-                class="data-[state=open]:duration-300 motion-reduce:animate-none"
-                animate.leave="animate-out! fade-out-0 duration-200! motion-reduce:animate-none!"
-              ></div>
-              <div
-                ndDrawerContent
-                class="max-h-[85svh] data-[state=open]:duration-300 data-[state=open]:ease-[cubic-bezier(0.32,0.72,0,1)]"
-                animate.leave="animate-out! slide-out-to-bottom duration-200! ease-[cubic-bezier(0.32,0,0.67,0)]! motion-reduce:animate-none!"
-              >
-                <div ndDrawerHandle></div>
-                <div class="flex items-center justify-between gap-2 px-6 pt-4">
-                  <h2 ndDrawerTitle>Navigation</h2>
-                  <button
-                    ndButton
-                    ndDrawerClose
-                    variant="ghost"
-                    size="icon-sm"
-                    class="-me-2"
-                    aria-label="Close"
-                  >
-                    <svg ndIcon="x"></svg>
-                  </button>
-                </div>
-                <!-- Scrolls without dragging the sheet. -->
-                <div class="overflow-y-auto px-6 pb-6" data-no-drag>
-                  <div class="my-4 flex items-center gap-2">
-                    <!-- The header's own links hide on small screens. -->
-                    <nav aria-label="Site" class="flex gap-2 text-sm">
-                      <a
-                        ndButton
-                        variant="outline"
-                        size="sm"
-                        routerLink="/blocks"
-                        >Blocks</a
-                      >
-                      <a
-                        ndButton
-                        variant="outline"
-                        size="sm"
-                        routerLink="/themes"
-                        >Themes</a
-                      >
-                      <a ndButton variant="outline" size="sm" routerLink="/blog"
-                        >Blog</a
-                      >
-                    </nav>
-                  </div>
-                  <docs-site-nav />
-                </div>
+
+            <dialog
+              ndDrawerContent
+              class="max-h-[85svh] data-[state=open]:duration-300 data-[state=open]:ease-[cubic-bezier(0.32,0.72,0,1)]"
+              animate.leave="animate-out! slide-out-to-bottom duration-200! ease-[cubic-bezier(0.32,0,0.67,0)]! motion-reduce:animate-none!"
+            >
+              <div ndDrawerHandle></div>
+              <div class="flex items-center justify-between gap-2 px-6 pt-4">
+                <h2 ndDrawerTitle>Navigation</h2>
+                <button
+                  ndButton
+                  ndDrawerClose
+                  variant="ghost"
+                  size="icon-sm"
+                  class="-me-2"
+                  aria-label="Close"
+                >
+                  <svg ndIcon="x"></svg>
+                </button>
               </div>
-            </ng-template>
+              <!-- Scrolls without dragging the sheet. -->
+              <div class="overflow-y-auto px-6 pb-6" data-no-drag>
+                <div class="my-4 flex items-center gap-2">
+                  <!-- The header's own links hide on small screens. -->
+                  <nav aria-label="Site" class="flex gap-2 text-sm">
+                    <a ndButton variant="outline" size="sm" routerLink="/blocks"
+                      >Blocks</a
+                    >
+                    <a ndButton variant="outline" size="sm" routerLink="/themes"
+                      >Themes</a
+                    >
+                    <a ndButton variant="outline" size="sm" routerLink="/blog"
+                      >Blog</a
+                    >
+                  </nav>
+                </div>
+                <docs-site-nav />
+              </div>
+            </dialog>
           </ng-container>
         }
 

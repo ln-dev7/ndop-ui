@@ -478,24 +478,20 @@ export function addDevCommand(
 
 /** A page that uses Dialog correctly, which `ndop verify` must pass. */
 export const GOOD_PAGE = `import { Component } from '@angular/core';
+import { NdDialog, NdDialogTrigger } from '@ndop/primitives/dialog';
 import {
   DialogContent,
   DialogTitle,
-  Dialog,
-  DialogPortal,
-  DialogTrigger,
 } from '@/ui/dialog/dialog';
 
 @Component({
   selector: 'app-good',
-  imports: [Dialog, DialogTrigger, DialogPortal, DialogContent, DialogTitle],
+  imports: [NdDialog, NdDialogTrigger, DialogContent, DialogTitle],
   template: \`
     <h1>Account</h1>
     <ng-container ndDialog>
       <button type="button" ndDialogTrigger>Delete account</button>
-      <ng-template ndDialogPortal>
-        <div ndDialogContent><h2 ndDialogTitle>Delete your account?</h2></div>
-      </ng-template>
+      <dialog ndDialogContent><h2 ndDialogTitle>Delete your account?</h2></dialog>
     </ng-container>
   \`,
 })

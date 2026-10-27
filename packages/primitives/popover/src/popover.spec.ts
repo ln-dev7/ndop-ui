@@ -52,6 +52,16 @@ async function setup() {
 }
 
 describe('NdPopover', () => {
+  it('does not emit model changes while destroying an open trigger and root', async () => {
+    const view = await render(Host);
+    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await view.fixture.whenStable();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    view.fixture.destroy();
+    expect(warn.mock.calls.flat().join(' ')).not.toContain('NG0953');
+    warn.mockRestore();
+  });
+
   it('wires the trigger to the content while open', async () => {
     const { trigger, open } = await setup();
     expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
@@ -67,11 +77,11 @@ describe('NdPopover', () => {
     expect(content.getAttribute('data-align')).toBe('start');
   });
 
-  it('closes on Escape and returns focus to the trigger', async () => {
+  it('synchronizes native dismissal and returns focus to the trigger', async () => {
     const { host, trigger, settle, open } = await setup();
     trigger.focus();
     await open();
-    await userEvent.keyboard('{Escape}');
+    screen.getByRole('dialog').hidePopover();
     await settle();
     expect(host.open()).toBe(false);
     expect(document.activeElement).toBe(trigger);
@@ -92,6 +102,8 @@ describe('NdPopover', () => {
     await open();
     const outside = screen.getByRole('button', { name: 'Outside' });
     await userEvent.click(outside);
+    const content = document.querySelector<HTMLElement>('[ndPopoverContent]');
+    content?.hidePopover();
     await settle();
     expect(host.open()).toBe(false);
     expect(document.activeElement).toBe(outside);

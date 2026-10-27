@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
 import { NdIcon } from '@ndop/core';
 import {
-  Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectLabel,
   SelectSeparator,
   SelectTrigger,
-  SelectValue,
 } from '@/ui/select/select';
+import {
+  NdSelect as Select,
+  NdSelectGroup as SelectGroup,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /** A long list of time zones in labelled groups, which scrolls. */
 @Component({

@@ -10,23 +10,18 @@ import {
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuItemIndicator,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@/ui/dropdown-menu/dropdown-menu';
 import { Input } from '@/ui/input/input';
 import { Label } from '@/ui/label/label';
 import {
-  Select,
   SelectContent,
   SelectItem,
   SelectItemIndicator,
-  SelectItemText,
   SelectTrigger,
-  SelectValue,
 } from '@/ui/select/select';
 import { Skeleton } from '@/ui/skeleton/skeleton';
 import {
@@ -46,6 +41,13 @@ import {
   type TaskStatus,
   tasksResource,
 } from './data';
+import { NdMenuGroup as DropdownMenuGroup } from '@ndop/primitives/menu';
+import { NdDropdownMenuTrigger as DropdownMenuTrigger } from '@ndop/primitives/dropdown-menu';
+import {
+  NdSelect as Select,
+  NdSelectItemText as SelectItemText,
+  NdSelectValue as SelectValue,
+} from '@ndop/primitives/select';
 
 /** Each status's name and icon. */
 const STATUSES: Record<TaskStatus, { label: string; icon: string }> = {
@@ -164,7 +166,7 @@ const byOrder =
           </button>
           <ng-template #statusMenu>
             <div ndDropdownMenuContent align="start" class="w-48">
-              <div ndDropdownMenuGroup aria-labelledby="data-table-01-status">
+              <div ndMenuGroup aria-labelledby="data-table-01-status">
                 <div ndDropdownMenuLabel id="data-table-01-status">
                   Filter by status
                 </div>
@@ -210,7 +212,7 @@ const byOrder =
           </button>
           <ng-template #columnsMenu>
             <div ndDropdownMenuContent align="end" class="w-44">
-              <div ndDropdownMenuGroup aria-labelledby="data-table-01-columns">
+              <div ndMenuGroup aria-labelledby="data-table-01-columns">
                 <div ndDropdownMenuLabel id="data-table-01-columns">
                   Toggle columns
                 </div>

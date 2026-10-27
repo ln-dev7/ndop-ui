@@ -1,120 +1,14 @@
 import { computed, Directive, input } from '@angular/core';
 import {
-  NdDialog,
   NdDialogClose,
   NdDialogContent,
   NdDialogDescription,
-  NdDialogOverlay,
-  NdDialogPortal,
   NdDialogTitle,
-  NdDialogTrigger,
 } from '@ndop/primitives/dialog';
 import { cn, variants, type VariantOf } from '@/lib/utils';
-
-/**
- * A sheet: a modal dialog (`@ndop/primitives/dialog`) that slides in from
- * an edge, for secondary content such as settings or filters. Put it on
- * an `ng-container`; `open`, `defaultOpen`, `closeOnEscape` and
- * `closeOnOverlayClick` are Dialog's.
- *
- * @example
- * ```html
- * <ng-container ndSheet>
- *   <button ndButton variant="outline" ndSheetTrigger>Open</button>
- *   <ng-template ndSheetPortal>
- *     <div ndSheetOverlay></div>
- *     <div ndSheetContent side="end">
- *       <div ndSheetHeader><h2 ndSheetTitle>Edit profile</h2></div>
- *     </div>
- *   </ng-template>
- * </ng-container>
- * ```
- */
-@Directive({
-  selector: '[ndSheet]',
-  exportAs: 'ndSheet',
-  hostDirectives: [
-    {
-      directive: NdDialog,
-      inputs: ['open', 'defaultOpen', 'closeOnEscape', 'closeOnOverlayClick'],
-      outputs: ['openChange'],
-    },
-  ],
-})
-export class Sheet {}
-
-/**
- * The button that opens a sheet.
- *
- * @example
- * ```html
- * <button ndButton ndSheetTrigger>Open</button>
- * ```
- */
-@Directive({
-  selector: '[ndSheetTrigger]',
-  hostDirectives: [NdDialogTrigger],
-  host: { 'data-slot': 'sheet-trigger' },
-})
-export class SheetTrigger {}
-
-/**
- * Marks the `ng-template` a sheet renders while open.
- *
- * @example
- * ```html
- * <ng-template ndSheetPortal>…</ng-template>
- * ```
- */
-@Directive({
-  selector: 'ng-template[ndSheetPortal]',
-  hostDirectives: [NdDialogPortal],
-})
-export class SheetPortal {}
-
-/**
- * A button that closes its sheet.
- *
- * @example
- * ```html
- * <button ndButton ndSheetClose>Cancel</button>
- * ```
- */
-@Directive({
-  selector: '[ndSheetClose]',
-  hostDirectives: [NdDialogClose],
-  host: { 'data-slot': 'sheet-close' },
-})
-export class SheetClose {}
-
-/**
- * The dimmed backdrop behind a sheet; clicking it closes the sheet.
- *
- * @example
- * ```html
- * <div ndSheetOverlay></div>
- * ```
- */
-@Directive({
-  selector: '[ndSheetOverlay]',
-  hostDirectives: [NdDialogOverlay],
-  host: { 'data-slot': 'sheet-overlay', '[class]': 'classes()' },
-})
-export class SheetOverlay {
-  /** Extra classes, merged last so they win. */
-  readonly class = input('');
-
-  protected readonly classes = computed(() =>
-    cn(
-      'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-      this.class(),
-    ),
-  );
-}
-
 /** Class table for {@link SheetContent}. */
 export const sheetVariants = variants({
-  base: 'fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500',
+  base: 'backdrop:bg-black/50 fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500',
   variants: {
     side: {
       end: 'inset-y-0 end-0 h-full w-3/4 border-s data-[state=closed]:slide-out-to-end data-[state=open]:slide-in-from-end sm:max-w-sm',
@@ -138,7 +32,7 @@ export type SheetSide = VariantOf<typeof sheetVariants, 'side'>;
  *
  * @example
  * ```html
- * <div ndSheetContent side="end">…</div>
+ * <dialog ndSheetContent side="end">…</dialog>
  * ```
  */
 @Directive({

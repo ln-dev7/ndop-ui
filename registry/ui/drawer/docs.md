@@ -4,10 +4,17 @@ keywords: drawer, bottom sheet, mobile, swipe, drag, panel, vaul
 
 A drawer is a panel that slides up from the bottom of the screen, the
 way phone apps show options, and can be dragged back down to close. It's
-a modal dialog underneath, so it's labelled by its title, traps focus
+a native modal dialog underneath, so it's labelled by its title, makes the background inert
 while open, and closes with Escape, its backdrop or a close button too.
 Dragging past a quarter of its height, or flicking it, closes it; a
 shorter drag springs back. Reduced-motion users get no animation.
+
+Behavior-only parts now come directly from `@ndop/primitives`; styled parts
+remain in your local item file. See [Migrating native overlays](/docs/getting-started/native-overlays)
+for the imports, selectors and customization changes.
+
+Content must be a native `dialog`. Style its `::backdrop` with `backdrop:`
+utilities; a separate overlay element is unnecessary.
 
 ## Do
 

@@ -1,15 +1,10 @@
 import { computed, Directive, input } from '@angular/core';
-import { NdDialog } from '@ndop/primitives/dialog';
 import {
-  NdAlertDialog,
   NdAlertDialogAction,
   NdAlertDialogCancel,
   NdAlertDialogContent,
   NdAlertDialogDescription,
-  NdAlertDialogOverlay,
-  NdAlertDialogPortal,
   NdAlertDialogTitle,
-  NdAlertDialogTrigger,
 } from '@ndop/primitives/alert-dialog';
 import {
   buttonVariants,
@@ -19,90 +14,13 @@ import {
 import { cn } from '@/lib/utils';
 
 /**
- * An alert dialog (`@ndop/primitives/alert-dialog`): a modal question the
- * user must answer. Clicking outside doesn't close it; Escape and Cancel
- * do. Put it on an `ng-container`; `open` is two-way bindable.
- *
- * @example
- * ```html
- * <ng-container ndAlertDialog>…</ng-container>
- * ```
- */
-@Directive({
-  selector: '[ndAlertDialog]',
-  hostDirectives: [
-    {
-      directive: NdDialog,
-      inputs: ['open', 'defaultOpen'],
-      outputs: ['openChange'],
-    },
-  ],
-})
-export class AlertDialog {}
-
-/**
- * The button that opens its alert dialog.
- *
- * @example
- * ```html
- * <button ndButton variant="destructive" ndAlertDialogTrigger>Delete</button>
- * ```
- */
-@Directive({
-  selector: '[ndAlertDialogTrigger]',
-  hostDirectives: [NdAlertDialogTrigger],
-  host: { 'data-slot': 'alert-dialog-trigger' },
-})
-export class AlertDialogTrigger {}
-
-/**
- * Marks the `ng-template` its alert dialog renders while open.
- *
- * @example
- * ```html
- * <ng-template ndAlertDialogPortal>…</ng-template>
- * ```
- */
-@Directive({
-  selector: 'ng-template[ndAlertDialogPortal]',
-  hostDirectives: [NdAlertDialogPortal],
-})
-export class AlertDialogPortal {}
-
-/**
- * The dimmed backdrop behind an alert dialog. Clicking it does nothing:
- * the user must answer.
- *
- * @example
- * ```html
- * <div ndAlertDialogOverlay></div>
- * ```
- */
-@Directive({
-  selector: '[ndAlertDialogOverlay]',
-  hostDirectives: [NdAlertDialogOverlay],
-  host: { 'data-slot': 'alert-dialog-overlay', '[class]': 'classes()' },
-})
-export class AlertDialogOverlay {
-  /** Extra classes, merged last so they win. */
-  readonly class = input('');
-
-  protected readonly classes = computed(() =>
-    cn(
-      'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-      this.class(),
-    ),
-  );
-}
-
-/**
  * The alert dialog box (`@ndop/primitives/alert-dialog`): an
  * `alertdialog` labelled by its title, with focus starting on Cancel.
  * `size="sm"` is a compact, centered layout with side-by-side buttons.
  *
  * @example
  * ```html
- * <div ndAlertDialogContent>
+ * <dialog ndAlertDialogContent>
  *   <div ndAlertDialogHeader>
  *     <h2 ndAlertDialogTitle>Delete this project?</h2>
  *     <p ndAlertDialogDescription>This can't be undone.</p>
@@ -111,7 +29,7 @@ export class AlertDialogOverlay {
  *     <button ndAlertDialogCancel>Cancel</button>
  *     <button ndAlertDialogAction variant="destructive">Delete</button>
  *   </div>
- * </div>
+ * </dialog>
  * ```
  */
 @Directive({
@@ -132,7 +50,7 @@ export class AlertDialogContent {
 
   protected readonly classes = computed(() =>
     cn(
-      'group/alert-dialog-content fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[size=sm]:max-w-xs data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[size=default]:sm:max-w-lg',
+      'backdrop:bg-black/50 group/alert-dialog-content fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[size=sm]:max-w-xs data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[size=default]:sm:max-w-lg',
       this.class(),
     ),
   );

@@ -9,6 +9,9 @@ export default defineConfig(() => ({
   plugins: [angular(), nxViteTsPaths()],
   test: {
     name: 'registry',
+    // Style-heavy JSDOM role queries take seconds even in isolation. Serialize
+    // files rather than relaxing the normal timeout under parallel CPU pressure.
+    maxWorkers: 1,
     watch: false,
     globals: true,
     environment: 'jsdom',

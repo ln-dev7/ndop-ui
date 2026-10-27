@@ -17,7 +17,7 @@ test('⌘K finds a prop and opens its API reference', async ({ page }) => {
     (await listbox.getByRole('option').first().getAttribute('id')) ?? '',
   );
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/docs\/components\/dialog#api-Dialog$/);
+  await expect(page).toHaveURL(/\/docs\/primitives\/dialog#api-NdDialog$/);
   await expect(combobox).toHaveCount(0);
 });
 

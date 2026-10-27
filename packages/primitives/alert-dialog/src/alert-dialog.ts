@@ -30,13 +30,13 @@ import {
  * <ng-container ndAlertDialog [(open)]="confirming">
  *   <button ndAlertDialogTrigger>Delete project</button>
  *   <ng-template ndAlertDialogPortal>
- *     <div ndAlertDialogOverlay></div>
- *     <div ndAlertDialogContent>
+ *
+ *     <dialog ndAlertDialogContent>
  *       <h2 ndAlertDialogTitle>Delete this project?</h2>
  *       <p ndAlertDialogDescription>This can't be undone.</p>
  *       <button ndAlertDialogCancel>Cancel</button>
  *       <button ndAlertDialogAction (click)="delete()">Delete</button>
- *     </div>
+ *     </dialog>
  *   </ng-template>
  * </ng-container>
  * ```
@@ -84,13 +84,14 @@ export class NdAlertDialogTrigger {}
 export class NdAlertDialogPortal {}
 
 /**
- * The backdrop behind an {@link NdAlertDialog}, hidden from assistive
- * technology. Unlike a dialog's, clicking it does nothing: the user must
- * choose.
+ * Legacy separate backdrop marker, retained for migration compatibility.
+ * Native modal rendering uses the content element's `::backdrop` instead.
+ *
+ * @deprecated Style the native dialog's `::backdrop`; no overlay node is needed.
  *
  * @example
  * ```html
- * <div ndAlertDialogOverlay></div>
+ * <dialog ndAlertDialogContent aria-label="Details" class="backdrop:bg-black/50">…</dialog>
  * ```
  */
 @Directive({
@@ -107,17 +108,19 @@ export class NdAlertDialogOverlay {
 /**
  * The alert dialog box: `role="alertdialog"`, `aria-modal="true"`,
  * labelled by its title and described by its description. Focus is
- * trapped inside it while open.
+ * managed by native modality while the background page is inert.
  *
  * @example
  * ```html
- * <div ndAlertDialogContent>…</div>
+ * <dialog ndAlertDialogContent>…</dialog>
  * ```
  */
 @Directive({
-  selector: '[ndAlertDialogContent]',
+  selector: 'dialog[ndAlertDialogContent]',
   host: {
     role: 'alertdialog',
+    '(cancel)': 'dialog.cancel($event)',
+    '(close)': 'dialog.closed()',
     'aria-modal': 'true',
     tabindex: '-1',
     '[attr.id]': 'dialog.contentId()',
@@ -179,8 +182,7 @@ export class NdAlertDialogDescription {}
 @Directive({
   selector: 'button[ndAlertDialogCancel]',
   hostDirectives: [NdDialogClose],
-  // The CDK focus trap the dialog opens with focuses this element first.
-  host: { type: 'button', cdkFocusInitial: '' },
+  host: { type: 'button', autofocus: '' },
 })
 export class NdAlertDialogCancel {}
 

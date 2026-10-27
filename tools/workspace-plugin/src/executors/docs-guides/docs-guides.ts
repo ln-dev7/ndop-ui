@@ -97,7 +97,10 @@ const docsGuides: PromiseExecutor<DocsGuidesExecutorSchema> = async (
     ...readGuides(root, options.guides),
     ...(options.posts ? readPosts(root, options.posts) : []),
   ]);
-  const { directives, items } = readRegistry(registry);
+  const { directives, items } = readRegistry(
+    registry,
+    join(root, options.primitives ?? 'dist/primitives-api'),
+  );
   const issues: GuideIssue[] = [];
   const blocks: CodeBlock[] = [];
   for (const [guide, markdown] of guides) {
@@ -264,9 +267,13 @@ function readPosts(root: string, folder: string): Map<string, string> {
  * the directives of their metadata.
  *
  * @param registry - Absolute path of the built registry's `r` folder.
+ * @param primitives - Absolute folder of extracted primitive API references.
  * @returns Directives by attribute name, and item types by item name.
  */
-function readRegistry(registry: string): {
+function readRegistry(
+  registry: string,
+  primitives: string,
+): {
   directives: ReturnType<typeof knownDirectives>;
   items: Map<string, string>;
 } {
@@ -295,7 +302,19 @@ function readRegistry(registry: string): {
     ]),
   );
   return {
-    directives: knownDirectives(metadata, itemFiles),
+    directives: knownDirectives(
+      metadata,
+      itemFiles,
+      readdirSync(primitives)
+        .filter((file) => file.endsWith('.json') && file !== 'index.json')
+        .map(
+          (file) =>
+            JSON.parse(readFileSync(join(primitives, file), 'utf-8')) as {
+              importPath: string;
+              parts: { name: string; selector: string }[];
+            },
+        ),
+    ),
     items: new Map(index.items.map((item) => [item.name, item.type])),
   };
 }

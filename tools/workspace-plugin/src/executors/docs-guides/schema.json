@@ -27,6 +27,11 @@
       "type": "string",
       "description": "Workspace-relative folder the blocks are written to and compiled in; emptied on every run.",
       "default": "tmp/docs-guides"
+    },
+    "primitives": {
+      "type": "string",
+      "description": "Workspace-relative folder of extracted primitive API references.",
+      "default": "dist/primitives-api"
     }
   },
   "required": ["guides"]

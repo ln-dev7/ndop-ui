@@ -2,13 +2,14 @@ import { Directive, inject } from '@angular/core';
 import { ND_DIALOG } from './dialog';
 
 /**
- * Optional backdrop rendered behind the content. Hidden from assistive
- * technology; a click on it closes the dialog unless `closeOnOverlayClick`
- * is `false`.
+ * Legacy separate backdrop marker, retained for migration compatibility.
+ * Native modal rendering uses the content element's `::backdrop` instead.
+ *
+ * @deprecated Style the native dialog's `::backdrop`; no overlay node is needed.
  *
  * @example
  * ```html
- * <div ndDialogOverlay class="fixed inset-0 bg-black/50"></div>
+ * <dialog ndDialogContent aria-label="Details" class="backdrop:bg-black/50">…</dialog>
  * ```
  */
 @Directive({

@@ -9,6 +9,9 @@
     "drawer": 8000,
     "select": 8000,
     "sheet": 8000,
-    "sidebar": 8000
+    "sidebar": 8000,
+    "dropdown-menu": 8000,
+    "context-menu": 8000,
+    "menubar": 8000
   }
 }

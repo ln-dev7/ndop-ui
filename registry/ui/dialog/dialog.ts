@@ -1,115 +1,18 @@
 import { computed, Directive, input } from '@angular/core';
 import {
-  NdDialog,
   NdDialogClose,
   NdDialogContent,
   NdDialogDescription,
-  NdDialogOverlay,
-  NdDialogPortal,
   NdDialogTitle,
-  NdDialogTrigger,
 } from '@ndop/primitives/dialog';
 import { cn } from '@/lib/utils';
-
-/**
- * A modal dialog (`@ndop/primitives/dialog`): it renders its portal's
- * content over the page while open, traps focus inside it and returns it on
- * close, and closes on Escape or a backdrop click. Put it on an
- * `ng-container`; `open` is two-way bindable.
- *
- * @example
- * ```html
- * <ng-container ndDialog [(open)]="open">…</ng-container>
- * ```
- */
-@Directive({
-  selector: '[ndDialog]',
-  hostDirectives: [
-    {
-      directive: NdDialog,
-      inputs: ['open', 'defaultOpen', 'closeOnEscape', 'closeOnOverlayClick'],
-      outputs: ['openChange'],
-    },
-  ],
-})
-export class Dialog {}
-
-/**
- * The button that opens its dialog, with `aria-haspopup`, `aria-expanded`
- * and `aria-controls`.
- *
- * @example
- * ```html
- * <button ndButton ndDialogTrigger>Edit profile</button>
- * ```
- */
-@Directive({
-  selector: '[ndDialogTrigger]',
-  hostDirectives: [NdDialogTrigger],
-  host: { 'data-slot': 'dialog-trigger' },
-})
-export class DialogTrigger {}
-
-/**
- * Marks the `ng-template` its dialog renders while open.
- *
- * @example
- * ```html
- * <ng-template ndDialogPortal>…</ng-template>
- * ```
- */
-@Directive({
-  selector: 'ng-template[ndDialogPortal]',
-  hostDirectives: [NdDialogPortal],
-})
-export class DialogPortal {}
-
-/**
- * A button that closes its dialog.
- *
- * @example
- * ```html
- * <button ndButton variant="outline" ndDialogClose>Cancel</button>
- * ```
- */
-@Directive({
-  selector: '[ndDialogClose]',
-  hostDirectives: [NdDialogClose],
-  host: { 'data-slot': 'dialog-close' },
-})
-export class DialogClose {}
-
-/**
- * Backdrop behind the dialog; a click on it closes the dialog.
- *
- * @example
- * ```html
- * <div ndDialogOverlay></div>
- * ```
- */
-@Directive({
-  selector: '[ndDialogOverlay]',
-  hostDirectives: [NdDialogOverlay],
-  host: { 'data-slot': 'dialog-overlay', '[class]': 'classes()' },
-})
-export class DialogOverlay {
-  /** Extra classes, merged last so they win. */
-  readonly class = input('');
-
-  protected readonly classes = computed(() =>
-    cn(
-      'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-      this.class(),
-    ),
-  );
-}
 
 /**
  * The dialog box, centered on screen.
  *
  * @example
  * ```html
- * <div ndDialogContent>…</div>
+ * <dialog ndDialogContent>…</dialog>
  * ```
  */
 @Directive({
@@ -123,7 +26,7 @@ export class DialogContent {
 
   protected readonly classes = computed(() =>
     cn(
-      'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg',
+      'backdrop:bg-black/50 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg',
       this.class(),
     ),
   );

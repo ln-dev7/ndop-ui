@@ -5,13 +5,13 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerOverlay,
   DrawerTitle,
-  Drawer,
-  DrawerClose,
-  DrawerPortal,
-  DrawerTrigger,
 } from '@/ui/drawer/drawer';
+import {
+  NdDrawer as Drawer,
+  NdDrawerClose as DrawerClose,
+  NdDrawerTrigger as DrawerTrigger,
+} from '@ndop/primitives/drawer';
 
 /**
  * Drawers from the end side and the top, each dragged back toward its
@@ -25,11 +25,11 @@ import {
     DrawerDescription,
     DrawerFooter,
     DrawerHeader,
-    DrawerOverlay,
+
     DrawerTitle,
     Drawer,
     DrawerClose,
-    DrawerPortal,
+
     DrawerTrigger,
   ],
   template: `
@@ -39,18 +39,16 @@ import {
           <button ndButton variant="outline" ndDrawerTrigger class="capitalize">
             {{ direction }}
           </button>
-          <ng-template ndDrawerPortal>
-            <div ndDrawerOverlay></div>
-            <div ndDrawerContent [direction]="direction">
-              <div ndDrawerHeader>
-                <h2 ndDrawerTitle class="capitalize">{{ direction }} drawer</h2>
-                <p ndDrawerDescription>Drag it toward its edge to close it.</p>
-              </div>
-              <div ndDrawerFooter>
-                <button ndButton variant="outline" ndDrawerClose>Close</button>
-              </div>
+
+          <dialog ndDrawerContent [direction]="direction">
+            <div ndDrawerHeader>
+              <h2 ndDrawerTitle class="capitalize">{{ direction }} drawer</h2>
+              <p ndDrawerDescription>Drag it toward its edge to close it.</p>
             </div>
-          </ng-template>
+            <div ndDrawerFooter>
+              <button ndButton variant="outline" ndDrawerClose>Close</button>
+            </div>
+          </dialog>
         </ng-container>
       }
     </div>
