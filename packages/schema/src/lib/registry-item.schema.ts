@@ -35,6 +35,34 @@ export const codemodSchema = {
     {
       type: 'object',
       additionalProperties: false,
+      required: ['since', 'kind', 'from', 'to', 'module'],
+      description:
+        'Moves a forwarding export to its primitive package, preserving local and public aliases.',
+      properties: {
+        since: { type: 'string', pattern: SEMVER_PATTERN },
+        kind: { const: 'move-export' },
+        from: { type: 'string', pattern: IDENTIFIER_PATTERN },
+        to: { type: 'string', pattern: IDENTIFIER_PATTERN },
+        module: { type: 'string', minLength: 1 },
+      },
+    },
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['since', 'kind', 'from', 'to', 'overlay'],
+      description:
+        'Converts modal content to a native dialog and moves static overlay classes to its backdrop.',
+      properties: {
+        since: { type: 'string', pattern: SEMVER_PATTERN },
+        kind: { const: 'native-dialog' },
+        from: { type: 'string', pattern: IDENTIFIER_PATTERN },
+        to: { const: 'dialog' },
+        overlay: { type: 'string', pattern: IDENTIFIER_PATTERN },
+      },
+    },
+    {
+      type: 'object',
+      additionalProperties: false,
       required: ['since', 'kind', 'from', 'to'],
       description:
         "Renames an export of the item where the project imports it, and the name's uses in those files.",

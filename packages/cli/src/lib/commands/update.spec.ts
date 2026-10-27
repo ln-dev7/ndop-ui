@@ -677,6 +677,142 @@ export class Page {
       ]);
     });
 
+    it('plans native dialog and export moves together, including dry-run and repeat updates', async () => {
+      const codemods: NonNullable<RegistryItem['codemods']> = [
+        {
+          since: '2.0.0',
+          kind: 'move-export',
+          from: 'sizes',
+          to: 'NdDialog',
+          module: '@ndop/primitives/dialog',
+        },
+        {
+          since: '2.0.0',
+          kind: 'native-dialog',
+          from: 'ndDialogContent',
+          to: 'dialog',
+          overlay: 'ndDialogOverlay',
+        },
+      ];
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        sizes('2.0.0', { 'sizes.ts': V1 }, { codemods }),
+      );
+      const source = page.replace(
+        '<span ndSize size="sm"></span>',
+        '<div ndDialogOverlay class="bg-black/70"></div><div ndDialogContent class="p-8">Mine</div>',
+      );
+      environment.project.files.set('src/app/page.ts', source);
+      const before = new Map(environment.project.files);
+      await runNdop(environment, 'update', '--yes', '--dry-run');
+      expect(environment.project.files).toEqual(before);
+      const result = await update(environment);
+      const migrated = read(environment, 'src/app/page.ts');
+      expect(migrated).toContain('NdDialog as sizes');
+      expect(migrated).toContain(
+        '<dialog ndDialogContent class="p-8 backdrop:bg-black/70">Mine</dialog>',
+      );
+      expect(migrated).not.toContain('ndDialogOverlay');
+      expect(result.updates[0].codemods).toHaveLength(2);
+      await update(environment);
+      expect(read(environment, 'src/app/page.ts')).toBe(migrated);
+      await runNdop(environment, 'update', '--continue');
+      expect(read(environment, 'src/app/page.ts')).toBe(migrated);
+    });
+
+    it('keeps native migration idempotent while resolving an item merge with --continue', async () => {
+      const next = V1.replace("'h-10'", "'h-12'");
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        sizes(
+          '2.0.0',
+          { 'sizes.ts': next },
+          {
+            codemods: [
+              {
+                since: '2.0.0',
+                kind: 'move-export',
+                from: 'sizes',
+                to: 'NdDialog',
+                module: '@ndop/primitives/dialog',
+              },
+              {
+                since: '2.0.0',
+                kind: 'native-dialog',
+                from: 'ndDialogContent',
+                to: 'dialog',
+                overlay: 'ndDialogOverlay',
+              },
+            ],
+          },
+        ),
+      );
+      edit(environment, SIZES, (text) => text.replace("'h-10'", "'h-14'"));
+      environment.project.files.set(
+        'src/app/page.ts',
+        page.replace(
+          '<span ndSize size="sm"></span>',
+          '<div ndDialogContent>Mine</div>',
+        ),
+      );
+      const first = await update(environment);
+      expect(
+        first.updates[0].files.some(
+          (file: { status: string }) => file.status === 'conflict',
+        ),
+      ).toBe(true);
+      const migrated = read(environment, 'src/app/page.ts');
+      expect(migrated).toContain('NdDialog as sizes');
+      expect(migrated).toContain('<dialog ndDialogContent>Mine</dialog>');
+      environment.project.files.set(SIZES, next);
+      const result = await update(environment, '--continue');
+      expect(result.ok).toBe(true);
+      expect(read(environment, 'src/app/page.ts')).toBe(migrated);
+      expect(locked(environment, 'sizes').version).toBe('2.0.0');
+      expect(
+        locked(environment, 'sizes').files.every(
+          (file: { version?: string }) => !file.version,
+        ),
+      ).toBe(true);
+    });
+
+    it('leaves every file and the lock untouched if a native migration is unsafe', async () => {
+      const environment = await sizesProject(
+        sizes('1.0.0', { 'sizes.ts': V1 }),
+        sizes(
+          '2.0.0',
+          { 'sizes.ts': V1 },
+          {
+            codemods: [
+              {
+                since: '2.0.0',
+                kind: 'move-export',
+                from: 'sizes',
+                to: 'NdDialog',
+                module: '@ndop/primitives/dialog',
+              },
+              {
+                since: '2.0.0',
+                kind: 'native-dialog',
+                from: 'ndDialogContent',
+                to: 'dialog',
+                overlay: 'ndDialogOverlay',
+              },
+            ],
+          },
+        ),
+      );
+      environment.project.files.set('src/app/page.ts', page);
+      environment.project.files.set(
+        'src/app/unsafe.html',
+        '<div ndDialogOverlay (click)="track()"></div><div ndDialogContent></div>',
+      );
+      const before = new Map(environment.project.files);
+      const { err } = await runNdop(environment, 'update', '--yes');
+      expect(err).toContain('Custom ndDialogOverlay behavior');
+      expect(environment.project.files).toEqual(before);
+    });
+
     it('asks you to rename inputs yourself without an Angular compiler', async () => {
       const environment = await sizesProject(
         sizes('1.0.0', { 'sizes.ts': V1 }),

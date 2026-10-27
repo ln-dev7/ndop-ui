@@ -4,6 +4,8 @@ import type { InstallContext } from '../install/project-files';
 import {
   codemodsBetween,
   renameExports,
+  moveExports,
+  nativeDialogs,
   renameInlineInputs,
   renameInputs,
   type AngularCompiler,
@@ -135,5 +137,190 @@ export const size: Size = 'sm';
     expect(
       renameExports(context, 'src/app/index.ts', text, modules, codemods),
     ).toBe(text.replace('export { ButtonSize }', 'export { ButtonScale }'));
+  });
+});
+
+describe('moveExports', () => {
+  const modules = ['src/app/ui/dialog/dialog'];
+  const mods: Codemod[] = [
+    {
+      since: '2.0.0',
+      kind: 'move-export',
+      from: 'Dialog',
+      to: 'NdDialog',
+      module: '@ndop/primitives/dialog',
+    },
+  ];
+  const run = (text: string) =>
+    moveExports(context, 'src/app/page.ts', text, modules, mods);
+
+  it('preserves local aliases and unrelated imports without renaming uses', () => {
+    const result = run(
+      `import { Dialog as Modal, DialogContent } from '@/ui/dialog/dialog';\nconst parts = [Modal, DialogContent];`,
+    );
+    expect(result).toContain('DialogContent');
+    expect(result).toContain('NdDialog as Modal');
+    expect(result).toContain('@ndop/primitives/dialog');
+    expect(result).toContain('const parts = [Modal, DialogContent]');
+    expect(run(result)).toBe(result);
+  });
+
+  it('preserves type-only imports and public barrel names', () => {
+    const result = run(
+      `import type { Dialog } from './ui/dialog/dialog';\nexport { Dialog as Modal } from './ui/dialog/dialog';\nexport type { Dialog } from './ui/dialog/dialog';`,
+    );
+    expect(result).toContain('import type { NdDialog as Dialog }');
+    expect(result).toContain('NdDialog as Modal');
+    expect(result).toContain('export type { NdDialog as Dialog }');
+    expect(run(result)).toBe(result);
+  });
+
+  it('keeps styled star exports and explicitly restores moved exports once', () => {
+    const result = run(`export * from './ui/dialog/dialog';`);
+    expect(result).toContain("export * from './ui/dialog/dialog'");
+    expect(result).toContain('NdDialog as Dialog');
+    expect(run(result)).toBe(result);
+  });
+
+  it('stops unsafe namespace migration before applying changes', () => {
+    expect(() => run(`import * as Dialog from './ui/dialog/dialog';`)).toThrow(
+      'namespace import',
+    );
+    expect(() => run(`export * as Dialog from './ui/dialog/dialog';`)).toThrow(
+      'namespace re-export',
+    );
+    expect(run(`import { Dialog } from './unrelated';`)).toBe(
+      `import { Dialog } from './unrelated';`,
+    );
+  });
+});
+
+describe('nativeDialogs', () => {
+  const mods: Codemod[] = [
+    {
+      since: '2.0.0',
+      kind: 'native-dialog',
+      from: 'ndDialogContent',
+      to: 'dialog',
+      overlay: 'ndDialogOverlay',
+    },
+  ];
+  const run = (text: string) => nativeDialogs(compiler, text, mods);
+
+  it('preserves content customizations, control flow and lazy templates', () => {
+    const before = `<ng-template ndDialogPortal>\n  <div ndDialogOverlay class="bg-black/70 dark:bg-black/80"></div>\n  <section ndDialogContent class="p-8" (click)="go()">@if (ok) { <b>Keep</b> }</section>\n</ng-template>`;
+    const result = run(before);
+    expect(result).toContain('<ng-template ndDialogPortal>');
+    expect(result).not.toContain('ndDialogOverlay');
+    expect(result).toContain(
+      '<dialog ndDialogContent class="p-8 backdrop:bg-black/70 backdrop:dark:bg-black/80" (click)="go()">',
+    );
+    expect(result).toContain('@if (ok) { <b>Keep</b> }</dialog>');
+    expect(run(result)).toBe(result);
+  });
+
+  it('migrates multiple and nested dialogs independently', () => {
+    const before = `<div ndDialogContent><div ndDialog><i ndDialogOverlay></i><main ndDialogContent>Nested</main></div></div><article ndDialogContent>Other</article>`;
+    const result = run(before);
+    expect(result.match(/<dialog /g)).toHaveLength(3);
+    expect(result.match(/<\/dialog>/g)).toHaveLength(3);
+    expect(run(result)).toBe(result);
+  });
+
+  it('refuses custom overlay behavior, ambiguous pairing and invalid templates', () => {
+    expect(() =>
+      run(
+        `<i ndDialogOverlay (click)="track()"></i><div ndDialogContent></div>`,
+      ),
+    ).toThrow('Custom');
+    expect(() =>
+      run(`<i ndDialogOverlay></i><div><main ndDialogContent></main></div>`),
+    ).toThrow('pair');
+    expect(() => run(`<div ndDialogContent><span></div>`)).toThrow(
+      'parse errors',
+    );
+    expect(() =>
+      run(
+        `<i ndDialogOverlay class="bg-red-500"></i><div ndDialogContent [class]="custom"></div>`,
+      ),
+    ).toThrow('bound');
+  });
+
+  it('handles escaped inline strings, aliased decorators and local constants', () => {
+    const before = `import { Component as C } from '@angular/core';\nconst HTML = '<div ndDialogContent title="It\\'s yours">Hello</div>';\n@C({ template: HTML }) class Demo {}`;
+    const result = renameInlineInputs(
+      compiler,
+      'src/app/demo.ts',
+      before,
+      mods,
+    );
+    expect(result).toContain('<dialog ndDialogContent');
+    expect(result).toContain("It\\'s yours");
+    expect(renameInlineInputs(compiler, 'src/app/demo.ts', result, mods)).toBe(
+      result,
+    );
+  });
+});
+
+describe('native inline template safety', () => {
+  const mods: Codemod[] = [
+    {
+      since: '2.0.0',
+      kind: 'native-dialog',
+      from: 'ndDialogContent',
+      to: 'dialog',
+      overlay: 'ndDialogOverlay',
+    },
+  ];
+  it('changes a shared template constant only once', () => {
+    const text =
+      'const HTML = `<div ndDialogContent></div>`; @Component({ template: HTML }) class A {} @Component({ template: HTML }) class B {}';
+    const result = renameInlineInputs(compiler, 'page.ts', text, mods);
+    expect(result).toBe(
+      text.replace(
+        '<div ndDialogContent></div>',
+        '<dialog ndDialogContent></dialog>',
+      ),
+    );
+  });
+  it('refuses computed templates and custom CSS backdrop classes', () => {
+    expect(() =>
+      renameInlineInputs(
+        compiler,
+        'page.ts',
+        '@Component({template: getTemplate()}) class A {}',
+        mods,
+      ),
+    ).toThrow('computed or imported');
+    expect(() =>
+      nativeDialogs(
+        compiler,
+        '<i ndDialogOverlay class="my-overlay"></i><div ndDialogContent></div>',
+        mods,
+      ),
+    ).toThrow('custom or arbitrary');
+  });
+});
+
+describe('dynamic primitive migration imports', () => {
+  it('requires named imports before changing a module with removed exports', () => {
+    const mods: Codemod[] = [
+      {
+        since: '2.0.0',
+        kind: 'move-export',
+        from: 'Dialog',
+        to: 'NdDialog',
+        module: '@ndop/primitives/dialog',
+      },
+    ];
+    expect(() =>
+      moveExports(
+        context,
+        'src/app/page.ts',
+        "const module = import('./ui/dialog/dialog');",
+        ['src/app/ui/dialog/dialog'],
+        mods,
+      ),
+    ).toThrow('dynamic or require');
   });
 });
