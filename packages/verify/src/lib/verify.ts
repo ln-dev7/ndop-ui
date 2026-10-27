@@ -13,6 +13,7 @@ import type {
   VerifyResult,
 } from './types';
 import { checkUsage } from './usage';
+import { primitiveSelectors } from './primitive-selectors';
 import { findApp, projectTypescript } from './workspace';
 
 /** Folders a folder path never descends into. */
@@ -108,6 +109,7 @@ export async function verify(options: VerifyOptions): Promise<VerifyResult> {
       await options.metadata.installed(),
       await options.metadata.available().catch(() => []),
       options.addCommand,
+      primitiveSelectors(ts, files, app.root),
     ),
   }));
   await step('build', async () => {

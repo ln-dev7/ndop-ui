@@ -3,6 +3,7 @@
 '@ndop/core': major
 '@ndop/cli': minor
 '@ndop/schema': minor
+'@ndop/verify': minor
 ---
 
 Use native modal dialogs and top-layer popovers for overlay components. Modal
@@ -16,3 +17,7 @@ selectors, Sheet exportAs references, native modal markup and simple static
 backdrop customizations. Unsafe custom templates or overlays stop preparation
 with instructions before any files are written. See the native overlay migration
 guide for markup, focus behavior and customization details.
+
+Verification recognizes directly imported primitive selectors from the installed
+Angular declaration metadata, including aliases and local re-exports. Unknown
+selectors still fail and the application build validates primitive bindings.

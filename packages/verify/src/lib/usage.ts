@@ -187,6 +187,7 @@ const HTML_ATTRIBUTES = new Set(
  * @param installed - Metadata of the installed components.
  * @param available - Metadata of every component the registry offers.
  * @param addCommand - The command that installs a component.
+ * @param primitiveSelectors - Actual selectors from imported primitive declarations.
  * @returns The problems found.
  */
 export function checkUsage(
@@ -194,6 +195,7 @@ export function checkUsage(
   installed: readonly ComponentDoc[],
   available: readonly ComponentDoc[],
   addCommand: (name: string) => string = (name) => `npx @ndop/cli add ${name}`,
+  primitiveSelectors: readonly string[] = [],
 ): Problem[] {
   const parts = partsOf(installed);
   const installedNames = new Set(installed.map((doc) => doc.name));
@@ -206,12 +208,18 @@ export function checkUsage(
     );
   const known = new Set([
     ...attributesOf(parts),
+    ...primitiveSelectors.flatMap((selector) =>
+      compounds(selector).flatMap((compound) => compound.attributes),
+    ),
     ...CORE_SELECTORS.flatMap((selector) =>
       compounds(selector).flatMap((compound) => compound.attributes),
     ),
   ]);
-  const spelled = [...parts, ...others].flatMap(({ part }) =>
-    [...part.selector.matchAll(/\[([^\]=]+)/g)].map((match) => match[1] ?? ''),
+  const spelled = [
+    ...[...parts, ...others].map(({ part }) => part.selector),
+    ...primitiveSelectors,
+  ].flatMap((selector) =>
+    [...selector.matchAll(/\[([^\]=]+)/g)].map((match) => match[1] ?? ''),
   );
   const problems: Problem[] = [];
 
