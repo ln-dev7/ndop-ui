@@ -11,10 +11,13 @@ Upgrade the CLI first, then preview the registry update:
 
 ```bash
 npm install --save-dev @ndop/cli@^2
-npx ndop update dialog alert-dialog sheet drawer popover tooltip hover-card dropdown-menu context-menu menubar select combobox --dry-run
+npx ndop update --dry-run
 ```
 
-Apply the same command without `--dry-run` after reviewing the diff. The new
+Update installed overlay items together: their shared runtime changes to 2.x,
+so mixing old styled overlay markup with the new runtime is unsupported. The
+command without item names selects only items already installed in your project.
+Apply it without `--dry-run` after reviewing the diff. The new
 items require `@ndop/primitives` and `@ndop/core` 2.x; the CLI plans these
 package updates with the files. Keep the existing import of `@ndop/core/styles.css`.
 
