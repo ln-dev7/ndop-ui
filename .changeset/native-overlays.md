@@ -21,3 +21,7 @@ guide for markup, focus behavior and customization details.
 Verification recognizes directly imported primitive selectors from the installed
 Angular declaration metadata, including aliases and local re-exports. Unknown
 selectors still fail and the application build validates primitive bindings.
+
+Retained native menu content updates its data-state before close transitions,
+including programmatic close, Escape and light dismiss. Menubar root content
+also supplies its missing exit animation class.

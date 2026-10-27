@@ -336,9 +336,14 @@ export function injectNativePopover(
         options.onDismiss();
       }
     };
+    // State must change before the browser starts its discrete exit transition.
+    const state = (event: Event) =>
+      content.setAttribute('data-state', (event as ToggleEvent).newState);
+    content.addEventListener('beforetoggle', state);
     content.addEventListener('toggle', toggle);
     if (manualHint) document.addEventListener('keydown', escape);
     cleanup = () => {
+      content.removeEventListener('beforetoggle', state);
       content.removeEventListener('toggle', toggle);
       document.removeEventListener('keydown', escape);
     };

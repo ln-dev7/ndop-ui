@@ -14,6 +14,11 @@ for the imports, selectors and customization changes.
 
 The popup uses the native Popover API for top-layer rendering and dismissal.
 Positioning retains a JavaScript fallback where CSS anchors are unavailable.
+Content remains in its view after close; native `beforetoggle` updates
+`data-state` before the discrete exit transition, so root and submenu exit
+animations finish before display changes where CSS `overlay` transitions are
+supported. Engines without that feature close immediately while preserving
+state, focus restoration and reopening.
 
 ## Do
 

@@ -97,5 +97,6 @@ available in the browser; older browsers need application-supplied polyfills.
 Nothing opens on the server; bound initial state applies after hydration.
 
 Exit motion uses `data-state`, `@starting-style` and discrete display/overlay
-transitions. Reduced-motion preferences are respected. Test your customized
+transitions where CSS `overlay` transitions are supported. Engines without that
+feature close immediately, with the same state and focus semantics. Reduced-motion preferences are respected. Test your customized
 content, backdrop and focus behavior in the browsers your application supports.

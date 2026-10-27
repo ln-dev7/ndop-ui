@@ -28,7 +28,13 @@ function ndopClasses(classes: string): string | null {
   ) {
     return null;
   }
-  return classes
+  const nativeExit = classes.includes('data-[state=closed]:animate-out')
+    ? classes
+    : classes.replace(
+        'data-[state=closed]:fade-out-0',
+        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
+      );
+  return nativeExit
     .replace(/origin-\(--radix-[a-z-]+\) /, '')
     .replace(/max-h-\(--radix-[a-z-]+\)/, 'max-h-[80vh]')
     .replace(

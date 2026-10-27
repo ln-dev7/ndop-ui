@@ -37,7 +37,11 @@ adapter that instantiates a local view; it no longer uses a CDK overlay.
 
 Exit animations use discrete `display` and `overlay` transitions with
 `@starting-style`; the content remains in its declaring view after closing.
-Native overlay state remains available through `data-state`.
+Native overlay state remains available through `data-state`, updated during
+`beforetoggle` before native visibility changes. Engines without CSS `overlay`
+transitions close immediately: the top layer cannot be retained there without
+replacing native dismissal. The pinned WebKit has this limitation; state, focus
+restoration and reopening are still tested, rather than skipping these cases.
 
 ## Consequences
 

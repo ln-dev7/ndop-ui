@@ -40,18 +40,24 @@ export function installNativeOverlayMocks(): void {
         this.setAttribute('popover', value);
       },
     });
-    const toggle = (element: HTMLElement, newState: string) => {
-      const event = new Event('toggle');
+    const toggle = (
+      element: HTMLElement,
+      newState: string,
+      type = 'toggle',
+    ) => {
+      const event = new Event(type);
       Object.defineProperty(event, 'newState', { value: newState });
       element.dispatchEvent(event);
     };
     HTMLElement.prototype.showPopover = function () {
+      toggle(this, 'open', 'beforetoggle');
       opened.add(this);
       this.hidden = false;
       toggle(this, 'open');
     };
     HTMLElement.prototype.hidePopover = function () {
       if (!opened.has(this)) return;
+      toggle(this, 'closed', 'beforetoggle');
       opened.delete(this);
       this.hidden = true;
       toggle(this, 'closed');

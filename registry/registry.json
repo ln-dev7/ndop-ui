@@ -1817,7 +1817,7 @@
     {
       "name": "menubar",
       "type": "registry:ui",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "title": "Menubar",
       "description": "A bar of menus, such as a desktop app's File and Edit menus.",
       "dependencies": ["@ndop/primitives@^2.0.0", "@ndop/core@^2.0.0"],

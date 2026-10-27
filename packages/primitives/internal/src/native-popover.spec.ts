@@ -121,12 +121,14 @@ describe('native popover lifecycle', () => {
     controller.setElement(content);
     expect(controller.attach()).toBe(controller);
     expect(content.popover).toBe('auto');
+    expect(content.dataset['state']).toBe('open');
     expect(content.matches(':popover-open')).toBe(true);
     expect(content.parentElement).toBe(document.body);
     expect(content.style.left).toBe('100px');
     expect(content.style.top).toBe('134px');
     expect(positioned).toHaveBeenCalledTimes(1);
     content.hidePopover();
+    expect(content.dataset['state']).toBe('closed');
     expect(dismissed).toHaveBeenCalledTimes(1);
     expect(controller.hasAttached()).toBe(false);
     window.dispatchEvent(new Event('resize'));

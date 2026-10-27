@@ -242,3 +242,18 @@ dialog:is(
     animation-duration: 0s;
   }
 }
+
+/* Without overlay transitions a closing top-layer element cannot remain above
+   its surroundings. Close immediately rather than animate in ordinary layout. */
+@supports not (overlay: auto) {
+  dialog:is(
+      [ndDialogContent],
+      [ndAlertDialogContent],
+      [ndSheetContent],
+      [ndDrawerContent]
+    ):not([open]),
+  [data-nd-native-popover][data-state='closed'] {
+    transition-duration: 0s;
+    animation-duration: 0s;
+  }
+}
