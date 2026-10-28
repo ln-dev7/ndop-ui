@@ -157,6 +157,15 @@ jobs:
       - if: github.event_name == 'push'
         run: pnpm nx run-many -t e2e --projects=harness-e2e,docs-e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
 
+      - name: Preserve failed browser evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-failures-${{ matrix.browser }}-${{ matrix.shard }}
+          path: dist/.playwright/apps/
+          if-no-files-found: ignore
+          retention-days: 7
+
   # ADR-0021: every example, block and theme sheet against committed
   # baselines. The browser runs in Playwright's Docker image, so one job is
   # enough; it has its own runner so it runs beside the e2e jobs rather
