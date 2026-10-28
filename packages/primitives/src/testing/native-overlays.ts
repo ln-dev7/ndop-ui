@@ -25,6 +25,26 @@ export function installNativeOverlayMocks(): void {
   }
   if (!HTMLElement.prototype.showPopover) {
     const opened = new WeakSet<Element>();
+    const computedStyle = window.getComputedStyle;
+    const resolvingStyle = new WeakSet<Element>();
+    // JSDOM's internal :popover-open matcher asks for computed visibility
+    // while its own UA stylesheet is resolving that same selector. Supply
+    // native open state only for that recursive lookup; normal style and
+    // accessibility queries still use JSDOM's complete cascade.
+    window.getComputedStyle = function (element, pseudo) {
+      if (resolvingStyle.has(element) && element.hasAttribute('popover')) {
+        const state = document.createElement('div').style;
+        state.display = opened.has(element) ? 'block' : 'none';
+        state.visibility = 'visible';
+        return state;
+      }
+      resolvingStyle.add(element);
+      try {
+        return computedStyle.call(this, element, pseudo);
+      } finally {
+        resolvingStyle.delete(element);
+      }
+    };
     const matches = Element.prototype.matches;
     Element.prototype.matches = function (this: Element, selector: string) {
       return selector === ':popover-open'
@@ -52,6 +72,8 @@ export function installNativeOverlayMocks(): void {
     HTMLElement.prototype.showPopover = function () {
       toggle(this, 'open', 'beforetoggle');
       opened.add(this);
+      // Invalidate JSDOM's style cache when the unimplemented native state changes.
+      this.setAttribute('data-nd-test-popover-open', '');
       this.hidden = false;
       toggle(this, 'open');
     };
@@ -59,6 +81,7 @@ export function installNativeOverlayMocks(): void {
       if (!opened.has(this)) return;
       toggle(this, 'closed', 'beforetoggle');
       opened.delete(this);
+      this.removeAttribute('data-nd-test-popover-open');
       this.hidden = true;
       toggle(this, 'closed');
     };
