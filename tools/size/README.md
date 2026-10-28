@@ -39,16 +39,16 @@ sources are unchanged in the comparison. Bytes gzip:
 
 | Complete menu composition | Base own | Pre-review PR own | Optimized own | Base with CDK | Optimized with CDK |
 | ------------------------- | -------: | ----------------: | ------------: | ------------: | -----------------: |
-| Dropdown Menu             |    3,584 |             6,759 |         6,442 |        23,363 |             25,666 |
-| Context Menu              |    3,037 |             7,176 |         6,867 |        23,364 |             26,104 |
-| Menubar                   |    3,481 |             6,690 |         6,368 |        23,413 |             25,753 |
+| Dropdown Menu             |    3,584 |             6,759 |         6,447 |        23,363 |             25,671 |
+| Context Menu              |    3,037 |             7,176 |         6,873 |        23,364 |             26,109 |
+| Menubar                   |    3,481 |             6,690 |         6,374 |        23,413 |             25,758 |
 
 The earlier styled-only menu figures omitted required primitive root triggers
 and understated the cost after forwarding removal. They are superseded by this
 table. The optimization uses the native implicit invoker anchor, numeric CSS
 fallbacks and the already computed physical offsets, avoiding duplicated logical
 position math, generated anchor names and mutations to the trigger's styles.
-The net reduction is 317/309/322 bytes, including the closing-state correction.
+The net reduction is 312/303/316 bytes, including the closing-state correction.
 
 **The original 4 kB own-code policy is still not met by these menus.** The three
 8 kB allowances in `budgets.json` remain proposals in ADR-0032 and require

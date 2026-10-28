@@ -28,3 +28,6 @@ also supplies its missing exit animation class.
 
 Preserve modal viewport position when WebKit scrolls through a fixed body,
 while allowing nested content scrolling and restoring styles and position on close.
+
+Keep native popover source association compatible with TypeScript 5.9's DOM
+declarations, as required by Angular 21 consumers.

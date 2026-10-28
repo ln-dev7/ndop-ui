@@ -378,7 +378,11 @@ export function injectNativePopover(
       if (!cleanup) bind();
       if (!shown) {
         element.hidden = false;
-        element.showPopover({
+        // TypeScript 5.9's DOM library predates the source option. Keep the
+        // native invoker association for nesting and implicit CSS anchoring.
+        (
+          element.showPopover as (options?: { source?: HTMLElement }) => void
+        ).call(element, {
           source:
             options.source?.() ??
             ('getBoundingClientRect' in options.anchor()

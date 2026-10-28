@@ -109,6 +109,7 @@ describe('native popover lifecycle', () => {
   it('synchronizes native dismissal and stops position listeners while closed', () => {
     const dismissed = vi.fn();
     const positioned = vi.fn();
+    const show = vi.spyOn(content, 'showPopover');
     const controller = TestBed.runInInjectionContext(() =>
       injectNativePopover({
         anchor: () => anchor,
@@ -120,6 +121,8 @@ describe('native popover lifecycle', () => {
     );
     controller.setElement(content);
     expect(controller.attach()).toBe(controller);
+    expect(show).toHaveBeenCalledWith({ source: anchor });
+    expect(show.mock.contexts[0]).toBe(content);
     expect(content.popover).toBe('auto');
     expect(content.dataset['state']).toBe('open');
     expect(content.matches(':popover-open')).toBe(true);

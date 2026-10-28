@@ -146,13 +146,13 @@ has no import of the root trigger.
 Native anchoring now reuses the invoker's implicit anchor with numeric CSS
 fallbacks and already computed physical offsets. This removes generated names,
 mutations to anchor styles and duplicate logical-position arithmetic. It reduces
-the complete compositions by 317/309/322 bytes net, including the state fix.
+the complete compositions by 312/303/316 bytes net, including the state fix.
 
 | Complete composition, bytes gzip | Base own | Optimized own | Base with CDK | Optimized with CDK |
 | -------------------------------- | -------: | ------------: | ------------: | -----------------: |
-| Dropdown Menu                    |    3,584 |         6,442 |        23,363 |             25,666 |
-| Context Menu                     |    3,037 |         6,867 |        23,364 |             26,104 |
-| Menubar                          |    3,481 |         6,368 |        23,413 |             25,753 |
+| Dropdown Menu                    |    3,584 |         6,447 |        23,363 |             25,671 |
+| Context Menu                     |    3,037 |         6,873 |        23,364 |             26,109 |
+| Menubar                          |    3,481 |         6,374 |        23,413 |             25,758 |
 
 **The original 4 kB allowance remains unmet.** The retained cost includes native
 popover lifecycle/model synchronization, retained Angular views for exit motion,
